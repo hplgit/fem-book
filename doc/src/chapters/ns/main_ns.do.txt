@@ -1,0 +1,9 @@
+TITLE: Numerical methods for the Navier-Stokes equations
+# #include "../AUTHOR.txt"
+DATE: today
+
+Note: _PRELIMINARY VERSION_ (expect lots of typos!)
+
+TOC: on
+
+# #include "ns.do.txt"

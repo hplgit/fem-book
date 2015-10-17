@@ -1,0 +1,562 @@
+!split
+======= Time-dependent problems =======
+label{fem:deq:timedep}
+
+ * So far: used the finite element framework for discretizing in space
+ * What about $u_t = u_{xx} + f$?
+   o Use finite differences in time to obtain a set of recursive spatial
+     problems
+   o Solve the spatial problems by the finite element method
+
+!split
+===== Example: diffusion problem =====
+
+!bt
+\begin{align*}
+\frac{\partial u}{\partial t} &= \dfc\nabla^2 u + f(\x, t),\quad
+&\x\in\Omega, t\in (0,T]\\
+u(\x, 0) & = I(\x),\quad &\x\in\Omega\\
+\frac{\partial u}{\partial n} &= 0,\quad &\x\in\partial\Omega,\ t\in (0,T]
+\end{align*}
+!et
+
+!split
+===== A Forward Euler scheme; ideas =====
+
+!bt
+\begin{equation*}
+[D_t^+ u = \dfc\nabla^2 u + f]^n,\quad n=1,2,\ldots,N_t-1
+\end{equation*}
+!et
+
+Solving wrt $u^{n+1}$:
+
+!bt
+\begin{equation*}
+u^{n+1} = u^n + \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_n)\right)
+\end{equation*}
+!et
+
+ * $u^n = \sum_jc_j^n\baspsi_j\, \in V$,
+   $u^{n+1} = \sum_jc_j^{n+1}\baspsi_j\,\in V$
+ * Compute $u^0$ from $I$
+ * Compute $u^{n+1}$ from $u^n$ by solving the PDE for $u^{n+1}$
+   at each time level
+
+!split
+===== A Forward Euler scheme; stages in the discretization =====
+
+ * $\uex(\x,t)$: exact solution of the PDE problem
+ * $\uex^n(\x)$: exact solution of time-discrete problem (after applying
+   a finite difference scheme in time)
+ * $\uex^n(\x)\approx u^n = \sum_{j\in\If}c_j^n\baspsi_j =$
+   solution of the time- and space-discrete problem
+   (after applying a Galerkin method in space)
+
+!bt
+\begin{equation*}
+\frac{\partial \uex}{\partial t} = \dfc\nabla^2 \uex + f(\x, t)
+\end{equation*}
+!et
+
+!bt
+\begin{equation*}
+\uex^{n+1} = \uex^n + \Delta t \left( \dfc\nabla^2 \uex^n + f(\x, t_n)\right)
+\end{equation*}
+!et
+
+!bt
+\[
+\uex^n \approx u^n = \sum_{j=0}^{N} c_j^{n}\baspsi_j(\x),\quad
+\uex^{n+1} \approx u^{n+1} = \sum_{j=0}^{N} c_j^{n+1}\baspsi_j(\x)
+\]
+!et
+
+!bt
+\[ R = u^{n+1} - u^n - \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_n)\right)\]
+!et
+
+!split
+===== A Forward Euler scheme; weighted residual (or Galerkin) principle =====
+
+!bt
+\[ R = u^{n+1} - u^n - \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_n)\right)\]
+!et
+
+The weighted residual principle:
+
+!bt
+\[ \int_\Omega Rw\dx = 0,\quad \forall w\in W\]
+!et
+
+results in
+
+!bt
+\[
+\int_\Omega
+\left\lbrack
+u^{n+1} - u^n - \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_n)\right)
+\right\rbrack w \dx =0, \quad \forall w \in W
+\]
+!et
+
+Galerkin: $W=V$, $w=v$
+
+!split
+===== A Forward Euler scheme; integration by parts =====
+
+Isolating the unknown $u^{n+1}$ on the left-hand side:
+
+!bt
+\[
+\int_{\Omega} u^{n+1}\baspsi_i\dx = \int_{\Omega}
+\left\lbrack u^n + \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_n)\right)
+\right\rbrack v\dx
+\]
+!et
+
+Integration by parts of $\int\dfc(\nabla^2 u^n) v\dx$:
+
+!bt
+\[ \int_{\Omega}\dfc(\nabla^2 u^n)v \dx =
+-\int_{\Omega}\dfc\nabla u^n\cdot\nabla v\dx +
+\underbrace{\int_{\partial\Omega}\dfc\frac{\partial u^n}{\partial n}v \dx}_{=0\quad\Leftarrow\quad\partial u^n/\partial n=0}
+\]
+!et
+
+Variational form:
+
+!bt
+\begin{equation*}
+\int_{\Omega} u^{n+1} v\dx =
+\int_{\Omega} u^n v\dx -
+\Delta t \int_{\Omega}\dfc\nabla u^n\cdot\nabla v\dx +
+\Delta t\int_{\Omega}f^n v\dx,\quad\forall v\in V
+\end{equation*}
+!et
+
+
+!split
+===== New notation for the solution at the most recent time levels =====
+
+ * $u$ and `u`: the spatial unknown function to be computed
+ * $u_1$ and `u_1`: the spatial function at the previous time level $t-\Delta t$
+ * $u_2$ and `u_2`: the spatial function at $t-2\Delta t$
+ * This new notation gives close correspondence between code and math
+
+!bt
+\begin{equation*}
+\int_{\Omega} u v\dx =
+\int_{\Omega} u_1 v\dx -
+\Delta t \int_{\Omega}\dfc\nabla u_1\cdot\nabla v\dx +
+\Delta t\int_{\Omega}f^n v\dx
+\end{equation*}
+!et
+
+or shorter
+
+!bt
+\begin{equation*}
+(u,v) = (u_1,v) -
+\Delta t (\dfc\nabla u_1,\nabla v) +
+(f^n, v)
+\end{equation*}
+!et
+
+!split
+===== Deriving the linear systems =====
+
+ * $u = \sum_{j=0}^{N}c_j\baspsi_j(\x)$
+ * $u_1 = \sum_{j=0}^{N} c_{1,j}\baspsi_j(\x)$
+ * $\forall v\in V$: for $v=\baspsi_i$, $i=0,\ldots,N$
+
+Insert these in
+
+!bt
+\[
+(u, \baspsi_i) = (u_1,\baspsi_i) -
+\Delta t (\dfc\nabla u_1,\nabla\baspsi_i) +
+(f^n,\baspsi_i)
+\]
+!et
+
+and order terms as matrix-vector products ($\quad i=0,\ldots,N$):
+
+!bt
+\begin{equation*}
+\sum_{j=0}^{N} \underbrace{(\baspsi_i,\baspsi_j)}_{M_{i,j}} c_j =
+\sum_{j=0}^{N} \underbrace{(\baspsi_i,\baspsi_j)}_{M_{i,j}} c_{1,j}
+-\Delta t \sum_{j=0}^{N}
+\underbrace{(\nabla\baspsi_i,\dfc\nabla\baspsi_j)}_{K_{i,j}} c_{1,j}
++ (f^n,\baspsi_i)
+\end{equation*}
+!et
+
+!split
+===== Structure of the linear systems =====
+
+!bt
+\begin{equation*}
+Mc = Mc_1 - \Delta t Kc_1 + f
+\end{equation*}
+!et
+
+!bt
+\begin{align*}
+M &= \{M_{i,j}\},\quad M_{i,j}=(\baspsi_i,\baspsi_j),\quad i,j\in\If\\
+K &= \{K_{i,j}\},\quad K_{i,j}=(\nabla\baspsi_i,\dfc\nabla\baspsi_j),\quad i,j\in\If\\
+f &= \{(f(\x,t_n),\baspsi_i)\}_{i\in\If}\\
+c &= \{c_i\}_{i\in\If}\\
+c_1 &= \{c_{1,i}\}_{i\in\If}
+\end{align*}
+!et
+
+!split
+===== Computational algorithm =====
+
+ o Compute $M$ and $K$.
+ o Initialize $u^0$ by either interpolation or projection
+ o For $n=1,2,\ldots,N_t$:
+   o compute $b = Mc_1 - \Delta t Kc_1 + f$
+   o solve $Mc = b$
+   o set $c_1 = c$
+
+
+Initial condition:
+
+ * Either interpolation: $c_{1,j} = I(\x_j)$ (finite elements)
+ * Or projection: solve $\sum_j M_{i,j}c_{1,j} = (I,\baspsi_i)$, $i\in\If$
+
+!split
+===== Comparing P1 elements with the finite difference method; ideas =====
+label{fem:deq:diffu:FE:fdvsP1fe}
+
+ * P1 elements in 1D
+ * Uniform mesh on $[0,L]$ with cell length $h$
+ * No Dirichlet conditions: $\baspsi_i=\basphi_i$, $i=0,\ldots,N=N_n-1$
+ * Have found formulas for $M$ and $K$ at the element level
+ * Have assembled the global matrices
+ * Have developed corresponding finite difference operator formulas
+ * $M$: $h[D_t^+(u + \frac{1}{6}h^2D_xD_x u)]^n_i$
+ * $K$: $h[\dfc D_xD_x u]^n_i$
+
+!split
+===== Comparing P1 elements with the finite difference method; results =====
+
+Diffusion equation with finite elements is equivalent to
+
+!bt
+\begin{equation*}
+[D_t^+(u + \frac{1}{6}h^2D_xD_x u) = \dfc D_xD_x u + f]^n_i
+\end{equation*}
+!et
+
+Can lump the mass matrix by Trapezoidal integration and get
+the standard finite difference scheme
+
+!bt
+\begin{equation*}
+[D_t^+u  = \dfc D_xD_x u + f]^n_i
+\end{equation*}
+!et
+
+!split
+===== Discretization in time by a Backward Euler scheme =====
+label{fem:deq:diffu:analysis:FE}
+
+Backward Euler scheme in time:
+
+!bt
+\[
+[D_t^- u = \dfc\nabla^2 u + f(\x, t)]^n
+\]
+!et
+
+!bt
+\begin{equation*}
+\uex^{n} - \Delta t \left( \dfc\nabla^2 \uex^n + f(\x, t_{n})\right) =
+\uex^{n-1}
+\end{equation*}
+!et
+
+!bt
+\[ \uex^n \approx u^n = \sum_{j=0}^{N} c_j^{n}\baspsi_j(\x),\quad
+\uex^{n+1} \approx u^{n+1} = \sum_{j=0}^{N} c_j^{n+1}\baspsi_j(\x)\]
+!et
+
+!split
+===== The variational form of the time-discrete problem =====
+
+!bt
+\begin{equation*}
+\int_{\Omega} \left( u^{n}v
++ \Delta t \dfc\nabla u^n\cdot\nabla v\right)\dx
+= \int_{\Omega} u^{n-1}  v\dx -
+\Delta t\int_{\Omega}f^n v\dx,\quad\forall v\in V
+\end{equation*}
+!et
+
+or
+
+!bt
+\begin{equation*}
+(u,v)
++ \Delta t (\dfc\nabla u,\nabla v)
+= (u_1,v) +
+\Delta t (f^n,\baspsi_i)
+\end{equation*}
+!et
+
+The linear system: insert $u=\sum_j c_j\baspsi_i$ and $u_1=\sum_j c_{1,j}\baspsi_i$,
+
+!bt
+\begin{equation*}
+(M + \Delta t \dfc K)c = Mc_1 + f
+\end{equation*}
+!et
+
+!split
+===== Calculations with P1 elements in 1D =====
+
+Can interpret the resulting equation system as
+
+!bt
+\begin{equation*}
+[D_t^-(u + \frac{1}{6}h^2D_xD_x u) = \dfc D_xD_x u + f]^n_i
+\end{equation*}
+!et
+
+Lumped mass matrix (by Trapezoidal integration) gives a standard
+finite difference method:
+
+!bt
+\begin{equation*}
+[D_t^- u = \dfc D_xD_x u + f]^n_i
+\end{equation*}
+!et
+
+!split
+===== Dirichlet boundary conditions =====
+label{fem:deq:diffu:Dirichlet}
+
+Dirichlet condition at $x=0$ and Neumann condition at $x=L$:
+
+!bt
+\begin{align*}
+u(\x,t) &= u_0(\x,t),\quad & \x\in\partial\Omega_D\\
+-\dfc\frac{\partial}{\partial n} u(\x,t) &= g(\x,t),\quad
+& \x\in\partial{\Omega}_N
+\end{align*}
+!et
+
+Forward Euler in time, Galerkin's method, and integration by parts:
+
+!bt
+\begin{equation*}
+\int_\Omega u^{n+1}v\dx =
+\int_\Omega (u^n - \Delta t\dfc\nabla u^n\cdot\nabla v)\dx -
+\Delta t\int_{\partial\Omega_N} gv\ds,\quad \forall v\in V
+\end{equation*}
+!et
+
+Requirement: $v=0$ on $\partial\Omega_D$
+
+!split
+===== Boundary function =====
+
+!bt
+\[ u^n(\x) = u_0(\x,t_n) + \sum_{j\in\If}c_j^n\baspsi_j(\x)\]
+!et
+
+!bt
+\begin{align*}
+\sum_{j\in\If} & \left(\int_\Omega \baspsi_i\baspsi_j\dx\right)
+c^{n+1}_j = \sum_{j\in\If}
+\left(\int_\Omega\left( \baspsi_i\baspsi_j -
+\Delta t\dfc\nabla \baspsi_i\cdot\nabla\baspsi_j\right)\dx\right) c_j^n - \\
+&\quad  \int_\Omega\left( u_0(\x,t_{n+1}) - u_0(\x,t_n)
++ \Delta t\dfc\nabla u_0(\x,t_n)\cdot\nabla
+\baspsi_i\right)\dx \\
+& \quad  + \Delta t\int_\Omega f\baspsi_i\dx -
+\Delta t\int_{\partial\Omega_N} g\baspsi_i\ds,
+\quad i\in\If
+\end{align*}
+!et
+
+!split
+===== Finite element basis functions =====
+
+ * $B(\x,t_n)=\sum_{j\in\Ifb} U_j^n\basphi_j$
+ * $\baspsi_i = \basphi_{\nu(j)}$, $j\in\If$
+ * $\nu(j)$, $j\in\If$, are the node numbers corresponding to all
+   nodes without a Dirichlet condition
+
+!bt
+\begin{align*}
+u^n &= \sum_{j\in\Ifb} U_j^n\basphi_j + \sum_{j\in\If}c_{1,j}\basphi_{\nu(j)},\\
+u^{n+1} &= \sum_{j\in\Ifb} U_j^{n+1}\basphi_j +
+\sum_{j\in\If}c_{j}\basphi_{\nu(j)}
+\end{align*}
+!et
+
+!bt
+\begin{align*}
+\sum_{j\in\If} & \left(\int_\Omega \basphi_i\basphi_j\dx\right)
+c_j = \sum_{j\in\If}
+\left(\int_\Omega\left( \basphi_i\basphi_j -
+\Delta t\dfc\nabla \basphi_i\cdot\nabla\basphi_j\right)\dx\right) c_{1,j}
+- \\
+&\quad  \sum_{j\in\Ifb}\int_\Omega\left( \basphi_i\basphi_j(U_j^{n+1} - U_j^n)
++ \Delta t\dfc\nabla \basphi_i\cdot\nabla
+\basphi_jU_j^n\right)\dx \\
+&\quad + \Delta t\int_\Omega f\basphi_i\dx -
+\Delta t\int_{\partial\Omega_N} g\basphi_i\ds,
+\quad i\in\If
+\end{align*}
+!et
+
+!split
+===== Modification of the linear system; the raw system =====
+
+ * Drop boundary function
+ * Compute as if there are not Dirichlet conditions
+ * Modify the linear system to incorporate Dirichlet conditions
+ * $\If$ holds the indices of all nodes $\{0,1,\ldots,N=N_n-1\}$
+
+!bt
+\begin{align*}
+\sum_{j\in\If}
+\biggl(\underbrace{\int_\Omega \basphi_i\basphi_j\dx}_{M_{i,j}}\biggr)
+c_j &= \sum_{j\in\If}
+\biggl(\underbrace{\int_\Omega \basphi_i\basphi_j \dx}_{M_{i,j}} -
+\Delta t\underbrace{\int_\Omega
+\dfc\nabla \basphi_i\cdot\nabla\basphi_j\dx}_{K_{i,j}}\biggr) c_{1,j}
+\\
+&\quad \underbrace{-\Delta t\int_\Omega f\basphi_i\dx -
+\Delta t\int_{\partial\Omega_N} g\basphi_i\ds}_{f_i},\quad i\in\If
+\end{align*}
+!et
+
+!split
+===== Modification of the linear system; setting Dirichlet conditions =====
+
+!bt
+\begin{equation*}
+Mc = b,\quad b = Mc_1 - \Delta t Kc_1 + \Delta t f
+\end{equation*}
+!et
+
+For each $k$ where a Dirichlet condition applies,
+$u(\xno{k},t_{n+1})=U_k^{n+1}$,
+
+ * set row $k$ in $M$ to zero and 1 on the diagonal:
+   $M_{k,j}=0$, $j\in\If$, $M_{k,k}=1$
+ * $b_k = U_k^{n+1}$
+
+Or apply the slightly more complicated modification which
+preserves symmetry of $M$
+
+!split
+===== Modification of the linear system; Backward Euler example =====
+
+Backward Euler discretization in time gives a more complicated
+coefficient matrix:
+
+!bt
+\begin{equation*}
+Ac=b,\quad A = M + \Delta t K,\quad b = Mc_1 + \Delta t f
+\end{equation*}
+!et
+
+ * Set row $k$ to zero and 1 on the diagonal:
+   $M_{k,j}=0$, $j\in\If$, $M_{k,k}=1$
+ * Set row $k$ to zero: $K_{k,j}=0$, $j\in\If$
+ * $b_k = U_k^{n+1}$
+
+Observe: $A_{k,k} = M_{k,k} + \Delta t K_{k,k} = 1 + 0$, so
+$c_k = U_k^{n+1}$
+
+
+!split
+======= Analysis of the discrete equations =======
+label{fem:deq:diffu:anal}
+
+The diffusion equation $u_t = \dfc u_{xx}$ allows a (Fourier)
+wave component
+
+!bt
+\begin{equation*}
+u = \Aex^n e^{ikx},\quad \Aex = e^{-\dfc k^2\Delta t}
+\end{equation*}
+!et
+
+Numerical schemes often allow the similar solution
+
+!bt
+\begin{equation*}
+u^n_q = A^n e^{ikx}
+\end{equation*}
+!et
+
+ * $A$: amplification factor to be computed
+ * How good is this $A$ compared to the exact one?
+
+!split
+===== Handy formulas =====
+
+!bt
+\begin{align*}
+[D_t^+ A^n e^{ikq\Delta x}]^n &= A^n e^{ikq\Delta x}\frac{A-1}{\Delta t},\\
+[D_t^- A^n e^{ikq\Delta x}]^n &= A^n e^{ikq\Delta x}\frac{1-A^{-1}}{\Delta t},\\
+[D_t A^n e^{ikq\Delta x}]^{n+\half} &= A^{n+\half} e^{ikq\Delta x}\frac{A^{\half}-A^{-\half}}{\Delta t} = A^ne^{ikq\Delta x}\frac{A-1}{\Delta t},\\
+[D_xD_x A^ne^{ikq\Delta x}]_q &= -A^n \frac{4}{\Delta x^2}\sin^2\left(\frac{k\Delta x}{2}\right)
+\end{align*}
+!et
+
+
+!split
+===== Amplification factor for the Forward Euler method; results =====
+
+Introduce $p=k\Delta x/2$ and $C=\dfc\Delta t/\Delta x^2$:
+
+!bt
+\[ A = 1 - 4C\frac{\sin^2 p}{1 - \underbrace{\frac{2}{3}\sin^2 p}_{\hbox{from }M}}\]
+!et
+
+(See notes for details)
+
+Stability: $|A|\leq 1$:
+
+!bt
+\begin{equation*}
+C\leq \frac{1}{6}\quad\Rightarrow\quad \Delta t\leq \frac{\Delta x^2}{6\dfc}
+\end{equation*}
+!et
+
+Finite differences: $C\leq {\half}$, so finite elements give a *stricter*
+stability criterion for this PDE!
+
+
+!split
+===== Amplification factor for the Backward Euler method; results =====
+
+Coarse meshes:
+
+!bt
+\[
+A = \left( 1 + 4C\frac{\sin^2 p}{1 + \frac{2}{3}\sin^2 p}\right)^{-1}
+\hbox{ (unconditionally stable)}
+\]
+!et
+
+FIGURE: [fig-femtime/diffu_A_factors_coarse_BE, width=400 frac=0.8]
+
+!split
+===== Amplification factors for smaller time steps; Forward Euler =====
+
+FIGURE: [fig-femtime/diffu_A_factors_fine_FE, width=400 frac=0.8]
+
+!split
+===== Amplification factors for smaller time steps; Backward Euler =====
+
+FIGURE: [fig-femtime/diffu_A_factors_fine_BE, width=400 frac=0.8]

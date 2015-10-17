@@ -1,0 +1,57 @@
+======= A quick introduction to the finite element method =======
+label{fem:quick}
+
+Understanding all details of the computational machinery of the finite element
+method, which is the goal of this book, is a time-consuming and demanding
+undertaking. Before diving into the details, it is wise to get a brief
+overview of the most important ideas of the finite element algorithm.
+The following text tries to communicate such an overview through a
+specific example.
+
+===== PDE problem =====
+
+The finite element method is primarily used for spatial discretization so
+we target a PDE problem without the time coordinate:
+
+!bt
+\begin{align}
+-\nabla\cdot\left( \dfc\nabla u\right) & f,
+\quad\x\in\Omega,
+label{fem:quick:PDE}\\
+u &= u_0,\quad\x\in\partial\Omega_D,
+label{fem:quick:Dirichlet}\\
+-\dfc\frac{\partial u}{\partial n} &= g,\quad\x\in\partial\Omega_N
+label{fem:quick:Neumann}
+\tp
+\end{align}
+!et
+Here,
+
+ * $\Omega$ is an arbitrary spatial domain in 1D, 2D, or 3D
+ * The boundary $\partial\Omega$ of $\Omega$ is divided into two
+   non-overlapping parts $\partial\Omega_D$ and $\partial\Omega_N$
+ * $u(\x)$ is the unknown function
+ * $\dfc(\x)$, $u_0(\x)$, and $g(\x)$ are known functions
+
+Our goal is to seek an approximate solution, often named $u_h\approx
+u$ in the literature, but in this text we almost exclusively talk
+about the approximate solution, so we reserve $u$ for that quantity
+and introduce $\uex$ as the exact solution of
+(ref{fem:quick:PDE})-(ref{fem:quick:Neumann}) - when we occasionally need it.
+
+===== Discretization of the domain =====
+
+Show a mesh and explain it. Rectangle with circular hole?
+
+===== Mesh function =====
+
+Introduce the idea. Show figures of basis functions.
+
+===== Variational formulation =====
+
+State the principle/idea, show final result. Tell what it implies of
+computations.
+
+===== The element-wise algorithm =====
+
+===== FEniCS =====

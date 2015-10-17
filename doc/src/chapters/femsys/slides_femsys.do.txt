@@ -1,0 +1,12 @@
+TITLE: Study guide: Computing with variational forms for systems of PDEs
+# #include "../AUTHOR.txt"
+DATE: today
+
+# #ifdef WITH_TOC
+!split
+TOC: on
+# #endif
+
+# #include "../mako_code.txt"
+
+# #include "slides-femsys/femsys.do.txt"

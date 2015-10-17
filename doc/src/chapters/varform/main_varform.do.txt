@@ -1,0 +1,23 @@
+TITLE: Stationary variational forms
+# #include "../AUTHOR.txt"
+DATE: today
+
+# Externaldocuments: ../approx/main_approx
+
+# #include "../mako_code.txt"
+
+_PRELIMINARY VERSION_
+
+TOC: on
+
+# #define PHI_WLABEL
+
+## Need a split for bootstrap and jumbotron
+!split
+# #include "varform.do.txt"
+
+!split
+
+======= Bibliography =======
+
+BIBFILE: ../papers.pub

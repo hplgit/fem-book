@@ -1,0 +1,21 @@
+http://lorenabarba.com/blog/cfd-python-12-steps-to-navier-stokes/
+
+https://bitbucket.org/cfdpython/cfd-python-class/overview
+
+The definite local source is Joakim's 5620 project on his bitbucket
+account. Splendid! CHeck also Imran's project in imranal/ns_rans on
+bitbucket (good for deriving var forms in vector notation and for
+RANS models).
+
+Outline:
+
+ * Chorin
+ * IPCS
+ * Variational formulation, vector formulation
+ * Variational formulation, scalar version
+ * Read the AWR paper, Kent's notes based on it, Imran's report
+ * Add info on stabilization methods
+ * Fully implicit method
+ * FEniCS impl vector vs scalar version
+ * finite differences in space...
+

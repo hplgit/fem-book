@@ -1,0 +1,23 @@
+TITLE: Variational forms for systems of PDEs
+# #include "../AUTHOR.txt"
+DATE: today
+
+# Externaldocuments: ../approx/main_approx, ../varform/main_varform, ../femtime/main_femtime
+
+# #include "../mako_code.txt"
+
+_PRELIMINARY VERSION_
+
+TOC: on
+
+# #define PHI_WLABEL
+
+## Need a split for bootstrap and jumbotron
+!split
+# #include "femsys.do.txt"
+
+!split
+
+======= Bibliography =======
+
+BIBFILE: ../papers.pub

@@ -1,0 +1,416 @@
+!split
+======= The physical and mathematical problem =======
+label{ns:mathphys}
+
+#MOVIE: [http://www.youtube.com/watch?v=P8VcZzgdfSc]
+
+MOVIE: [http://www.youtube.com/embed/P8VcZzgdfSc, width=420 height=315]
+
+MOVIE: [http://www.youtube.com/embed/sI2uCHH3qIM, width=420 height=315]
+
+!split
+===== Lots of physical applications involve fluid flow =====
+
+ * Weather (flow in the atmosphere)
+ * Ocean currents
+ * Flight
+ * Drag on cars
+ * Blood circulation
+ * Breathing
+
+!split
+===== The physical assumptions behind the Navier-Stokes equations =====
+
+Assumptions:
+
+  * Incompressible flow (velocity $< 1/3$ of the speed of sound)
+  * Laminar flow
+  * Simple fluids (constant viscosity $\nu$)
+
+Primary unknowns:
+
+  * velocity $\u(\x,t)$
+  * pressure $p(\x,t)$
+
+FIGURE: [fig-ns/flow_around_cylinder, width=600] Flow around a cylinder.
+
+!split
+===== The Navier-Stokes equations =====
+
+Momentum balance (Newton's 2nd law):
+
+!bt
+\[
+ \u_t + (\u\cdot\nabla) \u = -\frac{1}{\varrho}\nabla p + \nu\nabla^2\u + \f
+\]
+!et
+
+Mass balance (eq. of continuity):
+
+!bt
+\[
+\nabla\cdot\u = 0
+\]
+!et
+
+!split
+===== Boundary conditions =====
+
+ * Dirichlet conditions: components of $\u$ are known
+ * Neumann conditions:
+    * Stress condition: components of the stress vector $\stress\cdot\normalvec$ are prescribed
+    * Outflow or symmetry condition: $\partial\u/\partial n=0$ (or
+      components of this vector are zero)
+ * Pressure known at *a single point*
+
+!split
+======= The classical splitting method =======
+
+Idea: split the N-S equations into simpler problems (*operator splitting*).
+
+!split
+===== A simple, naive approach =====
+
+The equation for $\u$ looks like a diffusion equation...why not
+a Forward Euler scheme?
+
+!bt
+\[
+ \u_t + (\u\cdot\nabla) \u = -\frac{1}{\varrho}\nabla p + \nu\nabla^2\u + \f
+\]
+!et
+
+!bt
+\[
+\frac{\u^{n+1}-\u^n}{\Delta t} + (\u^n\cdot\nabla)\u^n = -\frac{1}{\varrho}
+\nabla p^n + \nu\nabla^2\u^n + \f^n
+\]
+!et
+
+!bt
+\[
+\u^{n+1} = \u^n - \Delta t(\u^n\cdot\nabla)\u^n -\frac{\Delta t}{\varrho}
+\nabla p^n + \Delta t\,\nu\nabla^2\u^n + \Delta t\f^n
+\]
+!et
+
+Two fundamental problems:
+
+ o $\nabla\cdot\u^{n+1}\neq 0$ (that equation is not used!)
+ o no computation of $p^{n+1}$
+
+!split
+===== A working scheme =====
+
+Idea: Forward Euler in time, but evaluate $\nabla p$ at $t_{n+1}$
+and enforce $\nabla\cdot\u^{n+1} = 0$.
+
+!bt
+\begin{align*}
+\u^{n+1} &= \u^n - \Delta t(\u^n\cdot\nabla)\u^n -\frac{\Delta t}{\varrho}
+\nabla p^{n+1} + \Delta t\,\nu\nabla^2\u^n + \Delta t\f^n,\\
+\nabla\cdot\u^{n+1} &= 0
+\thinspace
+\end{align*}
+!et
+
+Note: *implicit system* for $\u^{n+1}$ and $p^{n+1}$
+
+!split
+===== We solve the implicit system by a splitting technique =====
+
+  * Use old $\beta\nabla p^n$ for $\nabla p^{n+1}$
+    and advance to intermediate velocity $\u^*$
+  * Correct the $\u^*$ velocity by $\nabla\cdot\u^{n+1} = 0$
+
+Intermediate velocity (Forward Euler):
+
+!bt
+\[
+\u^{*} = \u^n - \Delta t(\u^n\cdot\nabla)\u^n - \beta\frac{\Delta t}{\varrho}
+\nabla p^{n} + \Delta t\,\nu\nabla^2\u^n + \Delta t\f^n
+\]
+!et
+
+Seek correction $\delta\u$ such that
+
+!bt
+\[
+\u^{n+1} = \u^* + \delta\u
+\]
+!et
+fulfills
+
+!bt
+\[ \nabla\cdot \u^{n+1} = 0 \]
+!et
+
+!split
+===== A Poisson equation must be solved to ensure $\nabla\cdot\u = 0$ =====
+
+Subtract $\u^*$ equation from original $\u^{n+1}$ equation to
+find $\delta\u$:
+
+!bt
+\[
+\delta\u = \u^{n+1} - \u^* = -\frac{\Delta t}{\varrho}\nabla\Phi
+\]
+!et
+where
+
+!bt
+\[
+\Phi = p^{n+1} - \beta p^n
+\]
+!et
+
+The oldest methods had $\beta=0$, but $\beta\neq 0$ gives in general
+better speed and accuracy.
+
+$\nabla\cdot \u^{n+1} = 0$ implies
+
+!bt
+\[ \nabla\cdot\delta\u = - \nabla\cdot \u^* \]
+!et
+which gives
+
+!bt
+\[
+\nabla^2 \Phi = \frac{\varrho}{\Delta t}\nabla\cdot\u^*
+\]
+!et
+
+When $\Phi$ is computed,
+
+!bt
+\[
+\u^{n+1}  = \u^* -\frac{\Delta t}{\varrho}\nabla\Phi
+\]
+!et
+and
+
+!bt
+\[ p^{n+1} = \Phi + \beta p^n \]
+!et
+
+!split
+===== Summary =====
+
+ o Compute the intermediate velocity $\u^*$
+ o Solve the Poisson equation for $\Phi$
+ o Update the velocity: $\u^{n+1}  = \u^* -\frac{\Delta t}{\varrho}\nabla\Phi$
+ o Update the pressure: $p^{n+1} = \Phi + \beta p^n$
+
+Basically, we have $u=f$ approximation problems (1, 3, 4) and a
+Poisson equation to solve.
+
+!split
+===== Boundary conditions =====
+
+Problem: $p$ condition at one point only in the original N-S equations.
+Now we need boundary conditions for $\Phi$ along the whole boundary
+(Poisson equation).
+
+ * Use conditions for $\u$ also for $\u^*$
+ * Known pressure: known $\Phi$
+ * Known pressure gradient: known $\partial\Phi/\partial n$
+ * Otherwise $\partial\Phi/\partial n = 0$
+
+!split
+===== Spatial discretization by the finite element method =====
+
+ * $\u^*,\u^{n+1}\in V^{(u)}$ (modulo nonzero Dirichlet cond.)
+ * $p^{n+1}\in V^{(\Phi)}$ (modulo nonzero Dirichlet cond.)
+ * Test function $\v^{(u)}\in V^{(u)}$ for vector equations (velocity)
+ * Test function $v^{(\Phi)}\in V^{(\Phi)}$ for scalar equations (pressure)
+ * Take inner product of vector equation and $\v^{(u)}$
+ * Integrate $\nabla^2\u\cdot \v^{(u)}$ by parts
+ * Integrate $\nabla p\cdot \v^{(u)}$ by parts (optional)
+ * Notation: $\u$ is $\u^{n+1}$, $\u_1$ is $\u^n$, $p$ is $p^{n+1}$,
+   $p_1$ is $p^n$ (as in code)
+
+!bt
+\begin{align}
+\int_\Omega \bigl( \u^*\cdot\v^{(u)} &+
+\Delta t((\u_1\cdot\nabla)\nabla\u_1)\cdot\v^{(u)}
+- \frac{\Delta t}{\varrho}p\nabla\cdot\v^{(u)} + \nonumber\\
+& \Delta t\,\nu\nabla\u_1\cdot\nabla\v^{(u)} - \Delta t f_1\bigr)\dx
++ \int_{\partial\Omega_{N,u}}\left(
+\nu\frac{\partial\u}{\partial n} - p\normalvec\right)\cdot\v^{(u)}\ds,
+label{ns:split:FE2:vf}
+\end{align}
+!et
+$\forall\v^{(u)}\in V^{(u)}$.
+
+Natural boundary condition:
+
+!bt
+\[ \nu\frac{\partial\u}{\partial n} - p\normalvec \quad (=0)\]
+!et
+Usually ${\partial\u /\partial n}=0$ and $p=0$ at outlets.
+
+Pressure Poisson equation:
+
+!bt
+\begin{equation}
+\int_\Omega\nabla\Phi\cdot\nabla v^{(\Phi)}\dx =
+\frac{\varrho}{\Delta t}\int_\Omega \nabla\cdot\u^*\, v^{(\Phi)}\dx
++ \int_{\partial\Omega_{N,p}} \frac{\partial\Phi}{\partial n}v^{(\Phi)}\ds,
+\quad\forall v^{(\Phi)}\in V^{(\Phi)}
+\tp
+label{ns:split:Poisson:vf}
+\end{equation}
+!et
+
+Velocity update:
+
+!bt
+\begin{equation}
+\int_\Omega \u\cdot\v^{(u)}\dx = \int_{\Omega} (\u^* -\frac{\Delta t}{\varrho}
+\nabla\Phi)\cdot\v^{(u)}\dx,\quad\forall\v^{(u)}\in V^{(u)}
+\tp
+label{ns:split:u:np1:vf}
+\end{equation}
+!et
+
+Pressure update:
+
+!bt
+\begin{equation}
+\int_\Omega p v^{(\Phi)}\dx = \int_{\Omega} (\Phi + \beta p_1)v^{(\Phi)}\dx,
+\quad\forall v^{(\Phi)}\in V^{(\Phi)}
+\tp
+label{ns:split:p:np1:vf}
+\end{equation}
+!et
+
+!split
+===== Increasing the implicitness =====
+
+Stability (due to Forward Euler-style scheme):
+
+!bt
+\begin{equation}
+\Delta t \leq \frac{h^2}{2\nu + Uh}
+\tp
+\end{equation}
+!et
+$h$: minimum element size, $U$: typical velocity.
+
+Better stability by a Backward Euler scheme:
+
+!bt
+\begin{align}
+\u^{n+1} &= \u^n - \Delta t(\u^{n+1}\cdot\nabla)\u^{n+1}
+-\frac{\Delta t}{\varrho}
+\nabla p^{n+1} + \Delta t\,\nu\nabla^2\u^{n+1} + \Delta t\f^{n+1},
+label{ns:split:BE}\\
+\nabla\cdot\u^{n+1} &= 0
+\tp
+\end{align}
+!et
+
+Intermediate velocity ($\nabla p^{n+1}\rightarrow \beta p^n$):
+
+!bt
+\[
+\u^{*} = \u^n - \Delta t(\u^{*}\cdot\nabla)\u^{*} -
+\beta\frac{\Delta t}{\varrho}
+p^{n+1} + \Delta t\,\nu\nabla^2\u^{*} + \Delta t\f^{n+1}
+label{ns:split:BE1}
+\thinspace
+\]
+!et
+
+Deal with nonlinearity in a simple way (1 Pickard it.):
+
+!bt
+\begin{equation}
+(\u^{*}\cdot\nabla)\u^{*} \approx (\u^{n}\cdot\nabla)\u^{*}
+\tp
+\end{equation}
+!et
+
+Then we have a linear problem for $\u^*$:
+
+!bt
+\[
+\u^{*} = \u^n - \Delta t(\u^{n}\cdot\nabla)\u^{*} -
+\beta\frac{\Delta t}{\varrho}
+\nabla p^{n} + \Delta t\,\nu\nabla^2\u^{*} + \Delta t\f^{n+1}
+label{ns:split:BE2}
+\thinspace
+\]
+!et
+
+Correction (assume $\u^{n+1}-\u^*$ small):
+
+!bt
+\[
+\delta\u =
+\Delta t((\u^{n+1}\cdot\nabla)\u^{n+1} - (\u^{n}\cdot\nabla)\u^{*})
+-\frac{\Delta t}{\varrho}
+\nabla \Phi + \Delta t\,\nu (\nabla^2 (\u^{n+1} - \u^*)
+\approx -\frac{\Delta t}{\varrho}
+\nabla \Phi
+\tp \]
+!et
+
+So, as before,
+
+!bt
+\[ \nabla^2 \Phi = \frac{\varrho}{\Delta t}\nabla\cdot\u^* \]
+!et
+
+ * Need to solve an implicit equation (linear system) for $\u^*$
+ * The other steps are the same
+ * A Crank-Nicolson method is more accurate (also implicit scheme for $\u^*$)
+
+!split
+======= Methods based on slight compressibility =======
+
+$\nabla\cdot\u=0$ is problematic. Allow slight compressibility in
+the fluid:
+
+!bt
+\[ p_t  + c^2\nabla\cdot\u =0 \tp  \]
+!et
+$c$: speed of sound.
+
+Now we have evolution equations for $\u$ and $p$:
+
+!bt
+\begin{align}
+\u_t &= -(\u\cdot\nabla) \u -\frac{1}{\varrho}\nabla p + \nu\nabla^2\u + \f,\\
+p_t  &= - c^2\nabla\cdot\u
+\tp
+\end{align}
+!et
+
+Forward Euler:
+
+!bt
+\begin{align}
+\u^{n+1} &= \u^n - \Delta t (\u^n\cdot\nabla) \u^n -\frac{\Delta t}{\varrho}\nabla p^n + \Delta t\,\nu\nabla^2\u^n + \Delta t\f^n,\\
+p^{n+1}  &= p^n - \Delta t c^2\nabla\cdot\u^n
+\tp
+\end{align}
+!et
+
+ * Stability requires $\Delta t\sim h^2/c$
+ * $c$ is large
+ * Remedy: choose smaller $c$ ("pseudo sound speed")
+ * Can use Runge-Kutta methods
+ * Can use implicit methods (but then the other scheme with $\nabla\cdot\u=0$
+   is not more complicated)
+
+!split
+======= Applications =======
+
+FIGURE: [fig-ns/flow_in_channel, width=600] Flow in a channel. label{ns:app:figs:channel}
+
+FIGURE: [fig-ns/flow_in_channel_symm, width=600] Flow in a half a channel with a symmetry line. label{ns:app:figs:channel:symm}
+
+FIGURE: [fig-ns/flow_over_bfs, width=600] Flow over a backward facing step. label{ns:app:figs:channel:bfs}
+
+FIGURE: [fig-ns/flow_around_cylinder, width=600] Flow around a cylinder. label{ns:app:figs:cylinder}

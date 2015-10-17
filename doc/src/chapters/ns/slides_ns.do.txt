@@ -1,0 +1,10 @@
+TITLE: Study guide: Numerical solution of the Navier-Stokes equations
+# #include "../AUTHOR.txt"
+DATE: today
+
+# #ifdef WITH_TOC
+!split
+TOC: on
+# #endif
+
+# #include "slides-ns/ns.do.txt"

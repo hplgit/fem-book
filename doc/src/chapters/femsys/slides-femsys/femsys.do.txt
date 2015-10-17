@@ -1,0 +1,317 @@
+
+!split
+======= Systems of differential equations =======
+label{fem:sys}
+
+Consider $m+1$ unknown functions: $u^{(0)},\ldots, u^{(m)}$ governed
+by $m+1$ differential equations:
+
+!bt
+\begin{align*}
+\mathcal{L}_0(u^{(0)},\ldots,u^{(m)}) &= 0\\
+&\vdots\\
+\mathcal{L}_{m}(u^{(0)},\ldots,u^{(m)}) &= 0,
+\end{align*}
+!et
+
+!bnotice Goals
+ * How do we derive variational formulations of systems of differential
+   equations?
+ * How do we apply the finite element method?
+!enotice
+
+!split
+===== Variational forms: treat each PDE as a scalar PDE =====
+label{fem:sys:vform}
+
+ * First approach: treat each equation as a scalar equation
+ * For equation no. $i$, use test function $v^{(i)}\in V^{(i)}$
+
+!bt
+\begin{align*}
+\int_\Omega \mathcal{L}^{(0)}(u^{(0)},\ldots,u^{(m)}) v^{(0)}\dx &= 0\\
+&\vdots\\
+\int_\Omega \mathcal{L}^{(m)}(u^{(0)},\ldots,u^{(m)}) v^{(m)}\dx &= 0
+\end{align*}
+!et
+Terms with second-order derivatives may be integrated by parts, with
+Neumann conditions inserted in boundary integrals.
+
+!bt
+\[ V^{(i)} = \hbox{span}\{\basphi_0^{(i)},\ldots,\basphi_{N_i}^{(i)}\},\]
+!et
+
+!bt
+\[ u^{(i)} = B^{(i)}(\x) + \sum_{j=0}^{N_i} c_j^{(i)} \basphi_j^{(i)}(\x),
+\]
+!et
+
+Can derive $m$ coupled linear systems for the unknowns
+$c_j^{(i)}$, $j=0,\ldots,N_i$,
+$i=0,\ldots,m$.
+
+!split
+===== Variational forms: treat the PDE system as a vector PDE =====
+
+ * Second approach: work with vectors (and vector notation)
+ * $\u = (u^{(0)},\ldots,u^{(m)})$
+ * $\v = (u^{(0)},\ldots,u^{(m)})$
+ * $\u, \v \in  \V = V^{(0)}\times \cdots \times V^{(m)}$
+ * Note: if $\bm{B} = (B^{(0)},\ldots,B^{(m)})$ is needed for
+   nonzero Dirichlet conditions, $\u - \bm{B}\in \V$ (not $\u$ in $\V$)
+ * $\bm{\mathcal{L}}(\u ) = 0$
+ * $\bm{\mathcal{L}}(\u ) = (\mathcal{L}^{(0)}(\u),\ldots, \mathcal{L}^{(m)}(\u))$
+
+The variational form is derived by taking the *inner product* of
+$\bm{\mathcal{L}}(\u )$ and $\v$:
+
+!bt
+\begin{equation*}
+\int_\Omega \bm{\mathcal{L}}(\u )\cdot\v = 0\quad\forall\v\in\V
+\end{equation*}
+!et
+
+ * Observe: this is a scalar equation (!).
+ * Can derive $m$ independent equation by choosing $m$ independent $\v$
+ * E.g.: $\v = (v^{(0)},0,\ldots,0)$ recovers (ref{fem:sys:vform:1by1a})
+ * E.g.: $\v = (0,\ldots,0,v^{(m)}$ recovers (ref{fem:sys:vform:1by1b})
+
+!split
+===== A worked example =====
+label{fem:sys:uT:ex}
+
+!bt
+\begin{align*}
+\mu \nabla^2 w &= -\beta\\
+\kappa\nabla^2 T &= - \mu ||\nabla w||^2 \quad (= \mu \nabla w\cdot\nabla w)
+\end{align*}
+!et
+
+ * Unknowns: $w(x,y)$, $T(x,y)$
+ * Known constants: $\mu$, $\beta$, $\kappa$
+ * Application: fluid flow in a straight pipe, $w$ is velocity, $T$ is
+   temperature
+ * $\Omega$: cross section of the pipe
+ * Boundary conditions: $w=0$ and $T=T_0$ on $\partial\Omega$
+ * Note: $T$ depends on $w$, but $w$ does not depend on $T$ (one-way coupling)
+
+!split
+===== Identical function spaces for the unknowns =====
+
+Let $w, (T-T_0) \in V$ with test functions $v\in V$.
+
+!bt
+\[ V = \hbox{span}\{\basphi_0(x,y),\ldots,\basphi_N(x,y)\}, \]
+!et
+
+!bt
+\begin{equation*}
+w = \sum_{j=0}^N c^{(w)}_j \basphi_j,\quad T = T_0 +
+\sum_{j=0}^N c^{(T)}_j\basphi_j
+\end{equation*}
+!et
+
+!split
+===== Variational form of each individual PDE =====
+
+Inserting (ref{fem:sys:wT:ex:sum})
+in the PDEs, results in the residuals
+
+!bt
+\begin{align*}
+R_w &= \mu \nabla^2 w + \beta\\
+R_T &= \kappa\nabla^2 T + \mu ||\nabla w||^2
+\end{align*}
+!et
+
+Galerkin's method: make residual orthogonal to $V$,
+
+!bt
+\begin{align*}
+\int_\Omega R_w v \dx &=0\quad\forall v\in V\\
+\int_\Omega R_T v \dx &=0\quad\forall v\in V
+\end{align*}
+!et
+
+Integrate by parts and use $v=0$ on $\partial\Omega$ (Dirichlet conditions!):
+
+!bt
+\begin{align*}
+\int_\Omega \mu \nabla w\cdot\nabla v \dx &= \int_\Omega \beta v\dx
+\quad\forall v\in V\\
+\int_\Omega \kappa \nabla T\cdot\nabla v \dx &= \int_\Omega \mu
+\nabla w\cdot\nabla w\, v\dx \quad\forall v\in V
+\end{align*}
+!et
+
+!split
+===== Compound scalar variational form =====
+
+ * Test vector function $\v\in\V = V\times V$
+ * Take the inner product of $\v$ and the system of PDEs (and integrate)
+
+!bt
+\[ \int_{\Omega} (R_w, R_T)\cdot\v \dx = 0\quad\forall\v\in\V
+ \]
+!et
+
+With $\v = (v_0,v_1)$:
+
+!bt
+\[ \int_{\Omega} (R_w v_0 + R_T v_1) \dx = 0\quad\forall\v\in\V
+ \]
+!et
+
+!bt
+\begin{equation*}
+\int_\Omega (\mu\nabla w\cdot\nabla v_0 + \kappa\nabla T\cdot\nabla v_1)\dx
+= \int_\Omega (\beta v_0 + \mu\nabla w\cdot\nabla w\, v_1)\dx,
+\quad\forall \v\in\V
+\end{equation*}
+!et
+
+Choosing $v_0=v$ and $v_1=0$ gives the variational form
+(ref{fem:sys:wT:ex:w:vf1}), while $v_0=0$ and $v_1=v$ gives
+(ref{fem:sys:wT:ex:T:vf1}).
+
+!split
+===== Alternative inner product notation =====
+
+!bt
+\begin{align*}
+\mu (\nabla w,\nabla v) &= (\beta, v)
+\quad\forall v\in V\\
+\kappa(\nabla T,\nabla v) &= \mu(\nabla w\cdot\nabla w, v)\quad\forall v\in V
+\end{align*}
+!et
+
+
+!split
+===== Decoupled linear systems =====
+
+!bt
+\begin{align*}
+\sum_{j=0}^N A^{(w)}_{i,j} c^{(w)}_j &= b_i^{(w)},\quad i=0,\ldots,N\\
+\sum_{j=0}^N A^{(T)}_{i,j} c^{(T)}_j &= b_i^{(T)},\quad i=0,\ldots,N\\
+A^{(w)}_{i,j} &= \mu(\nabla \basphi_j,\nabla\basphi_i)\\
+b_i^{(w)} &= (\beta, \basphi_i)\\
+A^{(T)}_{i,j} &= \kappa(\nabla \basphi_j,\nabla\basphi_i)\\
+b_i^{(T)} &= (\mu\nabla w_{-}\cdot (\sum_k
+c^{(w)}_k\nabla\basphi_k), \basphi_i)
+\end{align*}
+!et
+
+Matrix-vector form (alternative notation):
+
+!bt
+\begin{align*}
+\mu K c^{(w)} &= b^{(w)}\\
+\kappa K c^{(T)} &= b^{(T)}
+\end{align*}
+!et
+where
+
+!bt
+\begin{align*}
+K_{i,j} &= (\nabla \basphi_j,\nabla \basphi_i)\\
+b^{(w)} &= (b_0^{(w)},\ldots,b_{N}^{(w)})\\
+b^{(T)} &= (b_0^{(T)},\ldots,b_{N}^{(T)})\\
+c^{(w)} &= (c_0^{(w)},\ldots,c_{N}^{(w)})\\
+c^{(T)} &= (c_0^{(T)},\ldots,c_{N}^{(T)})
+\end{align*}
+!et
+
+
+First solve the system for $c^{(w)}$, then solve the system for $c^{(T)}$
+
+!split
+===== Coupled linear systems =====
+
+ * Pretend two-way coupling, i.e., need to solve for $w$ and $T$ simultaneously
+ * Want to derive *one system* for $c_j^{(w)}$ and $c_j^{(T)}$, $j=0,\ldots,N$
+ * The system is nonlinear because of $\nabla w\cdot\nabla w$
+ * Linearization: pretend an iteration where $\hat w$ is computed
+   in the previous iteration and set $\nabla w\cdot\nabla w
+   \approx \nabla\hat w\cdot\nabla w$ (so the term becomes linear in $w$)
+
+!bt
+\begin{align*}
+\sum_{j=0}^N A^{(w,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^N A^{(w,T)}_{i,j} c^{(T)}_j
+&= b_i^{(w)},\quad i=0,\ldots,N,
+\\
+\sum_{j=0}^N A^{(T,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^N A^{(T,T)}_{i,j} c^{(T)}_j &= b_i^{(T)},\quad i=0,\ldots,N,\\
+A^{(w,w)}_{i,j} &= \mu(\nabla \basphi_j,\basphi_i)\\
+A^{(w,T)}_{i,j} &= 0\\
+b_i^{(w)} &= (\beta, \basphi_i)\\
+A^{(w,T)}_{i,j} &= \mu(\nabla w_{-}\cdot\nabla\basphi_j), \basphi_i)\\
+A^{(T,T)}_{i,j} &= \kappa(\nabla \basphi_j,\basphi_i)\\
+b_i^{(T)} &= 0
+\end{align*}
+!et
+
+!split
+===== Alternative notation for coupled linear system =====
+
+!bt
+\begin{align*}
+\mu K c^{(w)} &= b^{(w)}\\
+L c^{(w)} + \kappa K c^{(T)} & =0
+\end{align*}
+!et
+$L$ is the matrix from the $\nabla w_{-}\cdot\nabla$ operator:
+$L_{i,j} = A^{(w,T)}_{i,j}$.
+
+Corresponding block form:
+
+!bt
+\[
+\left(\begin{array}{cc}
+\mu K & 0\\
+L & \kappa K
+\end{array}\right)
+\left(\begin{array}{c}
+c^{(w)}\\
+c^{(T)}
+\end{array}\right) =
+\left(\begin{array}{c}
+b^{(w)}\\
+0
+\end{array}\right)
+\]
+!et
+
+!split
+===== Different function spaces for the unknowns =====
+
+idx{mixed finite elements}
+
+ * Generalization: $w\in V^{(w)}$ and $T\in V^{(T)}$,
+   $V^{(w)} \neq V^{(T)}$
+ * This is called a *mixed finite element method*
+
+!bt
+\begin{align*}
+V^{(w)} &= \hbox{span}\{\basphi_0^{(w)},\ldots,\basphi_{N_w}^{(w)}\}\\
+V^{(T)} &= \hbox{span}\{\basphi_0^{(T)},\ldots,\basphi_{N_T}^{(T)}\}
+\end{align*}
+!et
+
+!bt
+\begin{align*}
+\int_\Omega \mu \nabla w\cdot\nabla v^{(w)} \dx &= \int_\Omega \beta v^{(w)}\dx
+\quad\forall v^{(w)}\in V^{(w)}\\
+\int_\Omega \kappa \nabla T\cdot\nabla v^{(T)} \dx &= \int_\Omega \mu
+\nabla w\cdot\nabla w\, v^{(T)}\dx \quad\forall v^{(T)}\in V^{(T)}
+\end{align*}
+!et
+
+Take the inner product with $\v = (v^{(w)}, v^{(T)})$ and integrate:
+
+!bt
+\begin{equation*}
+\int_\Omega (\mu\nabla w\cdot\nabla v^{(w)} +
+\kappa\nabla T\cdot\nabla v^{(T)})\dx
+= \int_\Omega (\beta v^{(w)} + \mu\nabla w\cdot\nabla w\, v^{(T)})\dx,
+\end{equation*}
+!et
+valid $\forall \v\in\V = V^{(w)}\times V^{(T)}$.
