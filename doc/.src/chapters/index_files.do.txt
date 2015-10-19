@@ -25,7 +25,7 @@ for name in published:
 pub_url = '.'
 %>
 
-TITLE: Finite Difference Computing with Exponential Decay Models
+TITLE: Introduction to Numerical Methods for Variational Problems
 
 TOC: off
 
