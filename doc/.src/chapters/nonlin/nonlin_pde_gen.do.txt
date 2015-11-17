@@ -164,7 +164,7 @@ J_{i,j} =
 \nabla u^{-}\cdot\nabla \baspsi_i +
 \Delta t\,\dfc(u^{-})\nabla\baspsi_j\cdot\nabla\baspsi_i - \nonumber\\
 &\ \Delta t f^{\prime}(u^{-})\baspsi_j\baspsi_i)\dx\tp
-label{nonlin:alglevel:dD:fe:Jij}
+label{nonlin:alglevel:dD:fe:Jij2}
 \end{align}
 !et
 Hopefully, this example also shows how convenient the notation

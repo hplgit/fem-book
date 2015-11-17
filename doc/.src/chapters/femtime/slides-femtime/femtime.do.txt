@@ -159,7 +159,7 @@ or shorter
 \begin{equation*}
 (u,v) = (u_1,v) -
 \Delta t (\dfc\nabla u_1,\nabla v) +
-(f^n, v)
+\Delta t (f^n, v)
 \end{equation*}
 !et
 
@@ -176,11 +176,11 @@ Insert these in
 \[
 (u, \baspsi_i) = (u_1,\baspsi_i) -
 \Delta t (\dfc\nabla u_1,\nabla\baspsi_i) +
-(f^n,\baspsi_i)
+\Delta t (f^n,\baspsi_i)
 \]
 !et
 
-and order terms as matrix-vector products ($\quad i=0,\ldots,N$):
+and order terms as matrix-vector products ($i=0,\ldots,N$):
 
 !bt
 \begin{equation*}
@@ -188,7 +188,7 @@ and order terms as matrix-vector products ($\quad i=0,\ldots,N$):
 \sum_{j=0}^{N} \underbrace{(\baspsi_i,\baspsi_j)}_{M_{i,j}} c_{1,j}
 -\Delta t \sum_{j=0}^{N}
 \underbrace{(\nabla\baspsi_i,\dfc\nabla\baspsi_j)}_{K_{i,j}} c_{1,j}
-+ (f^n,\baspsi_i)
++ \Delta t (f^n,\baspsi_i)
 \end{equation*}
 !et
 
@@ -197,7 +197,7 @@ and order terms as matrix-vector products ($\quad i=0,\ldots,N$):
 
 !bt
 \begin{equation*}
-Mc = Mc_1 - \Delta t Kc_1 + f
+Mc = Mc_1 - \Delta t Kc_1 +\Delta t f
 \end{equation*}
 !et
 
@@ -217,7 +217,7 @@ c_1 &= \{c_{1,i}\}_{i\in\If}
  o Compute $M$ and $K$.
  o Initialize $u^0$ by either interpolation or projection
  o For $n=1,2,\ldots,N_t$:
-   o compute $b = Mc_1 - \Delta t Kc_1 + f$
+   o compute $b = Mc_1 - \Delta t Kc_1 + \Delta t f$
    o solve $Mc = b$
    o set $c_1 = c$
 
@@ -226,6 +226,71 @@ Initial condition:
 
  * Either interpolation: $c_{1,j} = I(\x_j)$ (finite elements)
  * Or projection: solve $\sum_j M_{i,j}c_{1,j} = (I,\baspsi_i)$, $i\in\If$
+
+!split
+===== Example using sinusoidal basis functions =====
+label{fem:deq:diffu:FE:cosex}
+
+!bt
+\begin{align}
+\frac{\partial u}{\partial t} &= \dfc\frac{\partial^2 u}{\partial x^2},\quad
+&x\in (0,L),\ t\in (0,T],
+label{fem:deq:diffu:pde1D:eq}\\
+u(x, 0) & = A\cos(\pi\x/L) + B\cos(10\pi x/L),\quad &x\in[0,L],
+label{fem:deq:diffu:pde1D:ic}\\
+\frac{\partial u}{\partial x} &= 0,\quad &x=0,L,\ t\in (0,T]
+label{fem:deq:diffu:pde1D:bcN}
+\tp
+\end{align}
+!et
+
+!bt
+\[ \baspsi_i = \cos(i\pi x/L)\tp\]
+!et
+
+!split
+===== Approximating the initial condition =====
+
+$I(x)\in V$ implies perfect approximation of the initial condition:
+
+!bt
+\[ c_{1,1}=A,\quad c_{1,10}=B,\]
+!et
+while $c_{1,i}=0$ for $i\neq 1,10$.
+
+!split
+===== Computing the $M$ and $K$ matrices =====
+
+Note that $\baspsi_i$ and $\baspsi_i'$
+are orthogonal on $[0,L]$ such that we only need
+to compute the diagonal elements $M_{i,i}$ and $K_{i,i}$!
+
+!bt
+\[ M_{0,0}=L,\quad M_{i,i}=L/2,\ i>0,\quad K_{0,0}=0,\quad K_{i,i}=\frac{\pi^2 i^2}{2L},\ i>0\tp\]
+!et
+
+!split
+===== Solving the equation system =====
+
+!bt
+\begin{align*}
+Lc_0 &= Lc_{1,0} - \Delta t \cdot 0\cdot c_{1,0},\\
+\frac{L}{2}c_i &= \frac{L}{2}c_{1,i} - \Delta t
+\frac{\pi^2 i^2}{2L} c_{1,i},\quad i>0\tp
+\end{align*}
+!et
+
+!bt
+\[ c_i = (1-\Delta t (\frac{\pi i}{L})^2) c_{1,i}\tp \]
+!et
+
+We actually get a closed-form discrete solution:
+
+!bt
+\[ u^n_i = A(1-\Delta t (\frac{\pi}{L})^2)^n \cos(\pi x/L)
++ B(1-\Delta t (\frac{10\pi }{L})^2)^n \cos(10\pi x/L)\tp\]
+!et
+
 
 !split
 ===== Comparing P1 elements with the finite difference method; ideas =====
@@ -291,7 +356,7 @@ Backward Euler scheme in time:
 \begin{equation*}
 \int_{\Omega} \left( u^{n}v
 + \Delta t \dfc\nabla u^n\cdot\nabla v\right)\dx
-= \int_{\Omega} u^{n-1}  v\dx -
+= \int_{\Omega} u^{n-1}  v\dx +
 \Delta t\int_{\Omega}f^n v\dx,\quad\forall v\in V
 \end{equation*}
 !et
@@ -311,7 +376,7 @@ The linear system: insert $u=\sum_j c_j\baspsi_i$ and $u_1=\sum_j c_{1,j}\baspsi
 
 !bt
 \begin{equation*}
-(M + \Delta t \dfc K)c = Mc_1 + f
+(M + \Delta t K)c = Mc_1 + \Delta t f
 \end{equation*}
 !et
 
@@ -354,7 +419,8 @@ Forward Euler in time, Galerkin's method, and integration by parts:
 !bt
 \begin{equation*}
 \int_\Omega u^{n+1}v\dx =
-\int_\Omega (u^n - \Delta t\dfc\nabla u^n\cdot\nabla v)\dx -
+\int_\Omega (u^n - \Delta t\dfc\nabla u^n\cdot\nabla v)\dx +
+\Delta t\int_\Omega fv \dx -
 \Delta t\int_{\partial\Omega_N} gv\ds,\quad \forall v\in V
 \end{equation*}
 !et
@@ -432,7 +498,7 @@ c_j &= \sum_{j\in\If}
 \Delta t\underbrace{\int_\Omega
 \dfc\nabla \basphi_i\cdot\nabla\basphi_j\dx}_{K_{i,j}}\biggr) c_{1,j}
 \\
-&\quad \underbrace{-\Delta t\int_\Omega f\basphi_i\dx -
+&\quad \underbrace{+\Delta t\int_\Omega f\basphi_i\dx -
 \Delta t\int_{\partial\Omega_N} g\basphi_i\ds}_{f_i},\quad i\in\If
 \end{align*}
 !et

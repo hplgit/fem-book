@@ -1082,7 +1082,9 @@ the potential energy $F(v)$ in a string,
 \[ F(v) = \half\int_0^L \left((v')^2 - fv\right)\dx\tp\]
 !et
 That is, $F(u) = \min_{v\in V}F(v)$. The quantity $F(v)$ is called a
-functional: a function of a function. Functionals very often involve
+functional: it takes one or more functions as input and produces a
+number. Loosely speaking, we may say that a functional is
+``a function of functions''. Functionals very often involve
 integral expressions as above.
 
 A range of physical problems can be formulated either as a differential

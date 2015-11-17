@@ -66,7 +66,7 @@ unlimited access to resources (as in the beginning when $u$ is small).
 The idea is that $a(u)\sim\varrho$ when $u$ is small and that
 $a(t)\rightarrow 0$ as $u\rightarrow M$.
 
-A $a(u)$ that generalizes the linear choice is the polynomial form
+An $a(u)$ that generalizes the linear choice is the polynomial form
 
 !bt
 \begin{equation}
@@ -245,20 +245,21 @@ asymptotic value to be accurate (using `eps_r=1E-3` leads to a value
 
 !bsubex
 Perform experiments with Newton and Picard iteration for
-the models (reflabel{nonlin:exer:logistic:gen:r1})
-and (reflabel{nonlin:exer:logistic:gen:r2}). See how sensitive
+the models (ref{nonlin:exer:logistic:gen:r1})
+and (ref{nonlin:exer:logistic:gen:r2}). See how sensitive
 the number of iterations is to $\Delta t$ and $p$.
 
 !bsol
 Appropriate code is
 
 @@@CODE exer-nonlin/logistic_p.py fromto: from scitools.std@raw_input
-[[[
+
+[hpl: Not finished!]
 !esol
 !esubex
 
-===== Exercise: Derive a relaxation formula =====
-file=relaxed_Newton
+#===== Exercise: Derive a relaxation formula =====
+#file=relaxed_Newton
 
 ===== Problem: Experience the behavior of Newton's method =====
 label{nonlin:exer:Newton:problems1}

@@ -1,5 +1,4 @@
 !split
-======= Time-dependent problems =======
 label{fem:deq:timedep}
 
 The finite element method is normally used for discretization in
@@ -18,7 +17,7 @@ We shall exemplify these strategies using a simple diffusion problem
 !bt
 \begin{align}
 \frac{\partial u}{\partial t} &= \dfc\nabla^2 u + f(\x, t),\quad
-&\x\in\Omega, t\in (0,T],
+&\x\in\Omega,\ t\in (0,T],
 label{fem:deq:diffu:eq}\\
 u(\x, 0) & = I(\x),\quad &\x\in\Omega,
 label{fem:deq:diffu:ic}\\
@@ -32,14 +31,14 @@ $f(\x,t)$ and $I(x)$ are given functions. We have assigned the particular
 boundary condition (ref{fem:deq:diffu:bcN}) to minimize
 the details on handling boundary conditions in the finite element method.
 
-===== Discretization in time by a Forward Euler scheme =====
+======= Discretization in time by a Forward Euler scheme =======
 label{fem:deq:diffu:FE}
 
 # 2DO
 # N_s out: use N_t in time N in general space in all examples,
 # and change decay and vib to N_t
 
-=== Time discretization ===
+===== Time discretization =====
 
 We can apply a finite difference method in time to (ref{fem:deq:diffu:eq}).
 First we need a mesh in time, here taken as uniform with
@@ -74,31 +73,8 @@ label{fem:deq:diffu:FE:eq:unp1}
 Given $u^0=I$, we can use (ref{fem:deq:diffu:FE:eq:unp1}) to compute
 $u^1,u^2,\dots,u^{N_t}$.
 
-For absolute clarity in the various stages of the discretizations, we
-introduce $\uex(\x,t)$ as the exact solution of the space-and time-continuous
-partial differential equation (ref{fem:deq:diffu:eq}) and
-$\uex^n(\x)$ as the time-discrete approximation, arising from the finite
-difference method in time (ref{fem:deq:diffu:FE:eq:FEop}).
-More precisely, $\uex$ fulfills
 
-!bt
-\begin{equation}
-\frac{\partial \uex}{\partial t} = \dfc\nabla^2 \uex + f(\x, t)
-label{fem:deq:diffu:eq:uex},
-\end{equation}
-!et
-while $\uex^{n+1}$, with a superscript,
-is the solution of the time-discrete equations
-
-!bt
-\begin{equation}
-\uex^{n+1} = \uex^n + \Delta t \left( \dfc\nabla^2 \uex^n + f(\x, t_n)\right)
-label{fem:deq:diffu:FE:eq:uex:n}
-\tp
-\end{equation}
-!et
-
-=== Space discretization ===
+===== Space discretization =====
 
 We now introduce a finite element approximation to $\uex^n$ and $\uex^{n+1}$
 in (ref{fem:deq:diffu:FE:eq:uex:n}), where the coefficients depend on the
@@ -122,9 +98,38 @@ We define a space $V$ spanned by the basis functions $\sequencei{\baspsi}$.
 #need to refer to the exact solution and the time-discrete solution,
 #respectively.
 
+!bnotice More precise notation
+For absolute clarity in the various stages of the discretizations, we
+introduce $\uex(\x,t)$ as the exact solution of the space-and time-continuous
+partial differential equation (ref{fem:deq:diffu:eq}) and
+$\uex^n(\x)$ as the time-discrete approximation, arising from the finite
+difference method in time (ref{fem:deq:diffu:FE:eq:FEop}).
+More precisely, $\uex$ fulfills
+
+!bt
+\begin{equation}
+\frac{\partial \uex}{\partial t} = \dfc\nabla^2 \uex + f(\x, t)
+label{fem:deq:diffu:eq:uex},
+\end{equation}
+!et
+while $\uex^{n+1}$, with a superscript,
+is the solution of the time-discrete equations
+
+!bt
+\begin{equation}
+\uex^{n+1} = \uex^n + \Delta t \left( \dfc\nabla^2 \uex^n + f(\x, t_n)\right)
+label{fem:deq:diffu:FE:eq:uex:n}
+\tp
+\end{equation}
+!et
+The $\uex^{n+1}$ quantity is then discretized in space and approximated
+by $u^{n+1}$.
+!enotice
+
 ===== Variational forms =====
 
-A weighted residual method with weighting functions $w_i$ can
+A Galerkin method or a
+weighted residual method with weighting functions $w_i$ can
 now be formulated. We insert (ref{fem:deq:diffu:femapprox:n}) and
 (ref{fem:deq:diffu:femapprox:np1}) in
 (ref{fem:deq:diffu:FE:eq:uex:n}) to obtain the residual
@@ -153,7 +158,7 @@ Isolating the unknown $u^{n+1}$ on the left-hand side gives
 
 !bt
 \[
-\int_{\Omega} u^{n+1}\baspsi_i\dx = \int_{\Omega}
+\int_{\Omega} u^{n+1}v\dx = \int_{\Omega}
 \left\lbrack u^n + \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_n)\right)
 \right\rbrack v\dx,\quad \forall v\in V
 \tp
@@ -208,16 +213,15 @@ label{fem:deq:diffu:femapprox:np1:B}
 ===== Simplified notation for the solution at recent time levels =====
 
 In a program it is only necessary to store $u^{n+1}$ and $u^n$ at the
-same time. We therefore drop the $n$ index in programs and work with
-two functions: `u` for $u^{n+1}$, the new unknown, and `u_1` for
-$u^n$, the solution at the previous time level. The motivation for
-this notation is that just `u` is the natural variable in software
-for holding the unknown (spatial) values at a new time level.
+same time. It is therefore unnatural to use the index $n$ in
+computer code. Instead a natural variable naming is
+`u` for $u^{n+1}$, the new unknown, and `u_1` for
+$u^n$, the solution at the previous time level.
 When we have several preceding (already computed) time levels, it is
-also natural to number them like `u_1`, `u_2`, `u_3`, etc., backwards
+natural to number them like `u_1`, `u_2`, `u_3`, etc., backwards
 in time. From this notation in software, we introduce a similar
-mathematical notation to help make the mapping from mathematics to
-implementation as simple as possible. This principle implies that
+mathematical notation to help make the mapping from mathematical
+formulas to implementation as direct as possible. This principle implies that
 we let $u_1$ be the discrete unknown at the previous
 time level ($u^{n}$) and $u$ represents the
 discrete unknown at the new time level ($u^{n+1}$).
@@ -241,7 +245,7 @@ product notation:
 \begin{equation}
 (u,v) = (u_1,v) -
 \Delta t (\dfc\nabla u_1,\nabla v) +
-(f^n, v)
+\Delta t (f^n, v)
 \tp
 label{fem:deq:diffu:FE:vf:u:short}
 \end{equation}
@@ -249,8 +253,13 @@ label{fem:deq:diffu:FE:vf:u:short}
 
 ===== Deriving the linear systems =====
 
-To derive the equations for the new unknown coefficients $c_j^{n+1}$,
-now just called $c_j$, we insert
+In the following,
+we adopt the
+convention that the unknowns $c_j^{n+1}$ are written as
+$c_j$, while the known $c_j^n$ from the previous time level
+are denoted by $c_{1,j}$.
+To derive the equations for the new unknown coefficients
+$c_j$, we insert
 
 !bt
 \[ u = \sum_{j=0}^{N}c_j\baspsi_j(\x),\quad
@@ -265,7 +274,7 @@ and order the terms as matrix-vector products:
 \sum_{j=0}^{N} (\baspsi_i,\baspsi_j) c_j =
 \sum_{j=0}^{N} (\baspsi_i,\baspsi_j) c_{1,j}
 -\Delta t \sum_{j=0}^{N} (\nabla\baspsi_i,\dfc\nabla\baspsi_j) c_{1,j}
-+ (f^n,\baspsi_i),\quad i=0,\ldots,N
++ \Delta t (f^n,\baspsi_i),\quad i=0,\ldots,N
 \tp
 \end{equation}
 !et
@@ -280,7 +289,7 @@ and
 !bt
 \[ b_i = \sum_{j=0}^{N} (\baspsi_i,\baspsi_j) c_{1,j}
 -\Delta t \sum_{j=0}^{N} (\nabla\baspsi_i,\dfc\nabla\baspsi_j) c_{1,j}
-+ (f^n,\baspsi_i)\tp  \]
++ \Delta t (f^n,\baspsi_i)\tp  \]
 !et
 
 It is instructive and convenient for implementations to write the linear
@@ -288,7 +297,7 @@ system on the form
 
 !bt
 \begin{equation}
-Mc = Mc_1 - \Delta t Kc_1 + f,
+Mc = Mc_1 - \Delta t Kc_1 + \Delta t f,
 \end{equation}
 !et
 where
@@ -314,17 +323,14 @@ is often known as the *stiffness matrix*. (The terms mass and stiffness
 stem from the early days of finite elements when applications to
 vibrating structures dominated. The mass matrix arises from the
 mass times acceleration term in Newton's second law, while the stiffness
-matrix arises from the elastic forces in that law. The mass and stiffness
+matrix arises from the elastic forces (the ``stiffness'') in that law.
+The mass and stiffness
 matrix appearing in a diffusion have slightly different mathematical
-formulas.)
+formulas compared to the classic structure problem.)
 
 __Remark.__ The mathematical symbol $f$ has two meanings, either the
 function $f(\x,t)$ in the PDE or the $f$ vector in the linear system
-to be solved at each time level. The symbol $u$ also has different
-meanings, basically the unknown in the PDE or the finite element
-function representing the unknown at a time level. The actual
-meaning should be evident from the context.
-
+to be solved at each time level.
 
 ===== Computational algorithm =====
 
@@ -336,7 +342,7 @@ The computational algorithm has the following steps:
  o Compute $M$ and $K$.
  o Initialize $u^0$ by interpolation or projection
  o For $n=1,2,\ldots,N_t$:
-   o compute $b = Mc_1 - \Delta t Kc_1 + f$
+   o compute $b = Mc_1 - \Delta t Kc_1 + \Delta t f$
    o solve $Mc = b$
    o set $c_1 = c$
 
@@ -345,7 +351,7 @@ initial condition at the nodes means $c_{1,j} = I(\x_j)$. Otherwise
 one has to solve the linear system
 
 !bt
-\[ \sum_j\baspsi_j(\xno{i})c_j = I(\xno{i}),\]
+\[ \sum_j\baspsi_j(\xno{i})c_{1,j} = I(\xno{i}),\]
 !et
 where $\x_j$ denotes an interpolation point.  Projection
 (or Galerkin's method) implies solving a linear system with $M$ as
@@ -355,6 +361,92 @@ coefficient matrix:
 \[ \sum_j M_{i,j}c_{1,j} = (I,\baspsi_i),\quad i\in\If\tp\]
 !et
 
+===== Example using sinusoidal basis functions =====
+label{fem:deq:diffu:FE:cosex}
+
+Let us go through a computational example and demonstrate the
+algorithm from the previous section. We consider a 1D problem
+
+!bt
+\begin{align}
+\frac{\partial u}{\partial t} &= \dfc\frac{\partial^2 u}{\partial x^2},\quad
+&x\in (0,L),\ t\in (0,T],
+label{fem:deq:diffu:pde1D:eq}\\
+u(x, 0) & = A\cos(\pi\x/L) + B\cos(10\pi x/L),\quad &x\in[0,L],
+label{fem:deq:diffu:pde1D:ic}\\
+\frac{\partial u}{\partial x} &= 0,\quad &x=0,L,\ t\in (0,T]
+label{fem:deq:diffu:pde1D:bcN}
+\tp
+\end{align}
+!et
+We use a Galerkin method with basis functions
+
+!bt
+\[ \baspsi_i = \cos(i\pi x/L)\tp\]
+!et
+These basis functions fulfill (ref{fem:deq:diffu:pde1D:bcN}), which is
+not a requirement (there are no Dirichlet conditions in this problem),
+but helps to make the approximation good.
+
+Since the initial condition (ref{fem:deq:diffu:pde1D:ic}) lies in the
+space $V$ where we seek the approximation, we know that a Galerkin or
+least squares approximation of the initial condition becomes exact.
+Therefore,
+
+!bt
+\[ c_{1,1}=A,\quad c_{1,10}=B,\]
+!et
+while $c_{1,i}=0$ for $i\neq 1,10$.
+
+The $M$ and $K$ matrices are easy to compute since the basis functions
+are orthogonal on $[0,L]$. We get
+
+!bc pyshell
+>>> import sympy as sym
+>>> x, L = sym.symbols('x L')
+>>> i = sym.symbols('i', integer=True)
+>>> sym.integrate(sym.cos(i*x*sym.pi/L)**2, (x,0,L))
+Piecewise((L, Eq(pi*i/L, 0)), (L/2, True))
+!ec
+which means $L$ if $i=0$ and $L/2$ otherwise. Similarly,
+
+!bc pyshell
+>>> sym.integrate(sym.diff(cos(i*x*sym.pi/L),x)**2, (x,0,L))
+pi**2*i**2*Piecewise((0, Eq(pi*i/L, 0)), (L/2, True))/L**2
+!ec
+so
+
+!bt
+\[ M_{0,0}=L,\quad M_{i,i}=L/2,\ i>0,\quad K_{0,0}=0,\quad K_{i,i}=\frac{\pi^2 i^2}{2L},\ i>0\tp\]
+!et
+The equation system becomes
+
+!bt
+\begin{align*}
+Lc_0 &= Lc_{1,0} - \Delta t \cdot 0\cdot c_{1,0},\\
+\frac{L}{2}c_i &= \frac{L}{2}c_{1,i} - \Delta t
+\frac{\pi^2 i^2}{2L} c_{1,i},\quad i>0\tp
+\end{align*}
+!et
+The first equation always leads to $c_0=0$ since we start with $c_{1,0}=0$.
+The others imply
+
+!bt
+\[ c_i = (1-\Delta t (\frac{\pi i}{L})^2) c_{1,i}\tp \]
+!et
+With the notation $c^n_i$ for $c_i$ at the $n$-th time level, we can apply
+the relation above recursively and get
+
+!bt
+\[ c^n_i = (1-\Delta t (\frac{\pi i}{L})^2)^n c^0_i\tp\]
+!et
+Since only two of the coefficients are nonzero at time $t=0$, we have
+the closed-form discrete solution
+
+!bt
+\[ u^n_i = A(1-\Delta t (\frac{\pi}{L})^2)^n \cos(\pi x/L)
++ B(1-\Delta t (\frac{10\pi }{L})^2)^n \cos(10\pi x/L)\tp\]
+!et
 
 ===== Comparing P1 elements with the finite difference method =====
 label{fem:deq:diffu:FE:fdvsP1fe}
@@ -378,7 +470,7 @@ in the document "Approximation of functions":
 "http://tinyurl.com/k3sdbuv/pub/approx" cite{Langtangen_deqbook_approx}]
 we know that $M$ can be
 interpreted as the finite difference approximation
-$[u + \frac{1}{6}h^2D_xD_x u]^n_i$ (times $h$). The equation system $Mc=b$
+$h[u + \frac{1}{6}h^2D_xD_x u]^n_i$. The equation system $Mc=b$
 in the algorithm is therefore equivalent to the finite difference scheme
 
 !bt
@@ -422,7 +514,8 @@ lead to improved overall accuracy in the finite element method.
 The interplay of the errors in the current problem is
 analyzed in detail in Section ref{fem:deq:diffu:anal}.
 The effect of the error is at least not more severe than what is
-produced by the finite difference method.
+produced by the finite difference method since both are
+$\mathcal{O}(h^2)$.
 
 idx{mass matrix} idx{mass lumping} idx{lumped mass matrix}
 
@@ -435,10 +528,10 @@ the same result.
 
 
 
-===== Discretization in time by a Backward Euler scheme =====
+======= Discretization in time by a Backward Euler scheme =======
 label{fem:deq:diffu:BE}
 
-=== Time discretization ===
+===== Time discretization =====
 
 The Backward Euler scheme in time applied to our diffusion problem
 can be expressed as follows using the finite difference operator notation:
@@ -455,24 +548,25 @@ the time-discrete differential equation becomes
 
 !bt
 \begin{equation}
-\uex^{n} - \Delta t \left( \dfc\nabla^2 \uex^n + f(\x, t_{n})\right) =
-\uex^{n-1}
+\u^{n} - \Delta t \left( \dfc\nabla^2 \u^n + f(\x, t_{n})\right) =
+\u^{n-1}
 label{fem:deq:diffu:BE:eq:un}
 \tp
 \end{equation}
 !et
 Equation (ref{fem:deq:diffu:BE:eq:un}) can compute
-$\uex^1,\uex^2,\dots,\uex^{N_t}$,
-if we have a start $\uex^0=I$ from the initial condition.
+$\u^1,\u^2,\dots,\u^{N_t}$,
+if we have a start $\u^0=I$ from the initial condition.
 However, (ref{fem:deq:diffu:BE:eq:un}) is a partial differential
 equation in space and needs a solution method based on discretization
 in space. For this purpose we use an expansion as in
 (ref{fem:deq:diffu:femapprox:n})-(ref{fem:deq:diffu:femapprox:np1}).
 
-=== Variational forms ===
+===== Variational forms =====
 
 Inserting (ref{fem:deq:diffu:femapprox:n})-(ref{fem:deq:diffu:femapprox:np1})
-in (ref{fem:deq:diffu:BE:eq:un}), multiplying by $\baspsi_i$ (or $v\in V$),
+in (ref{fem:deq:diffu:BE:eq:un}), multiplying by any $v\in V$
+(or $\baspsi_i\in V$),
 and integrating by parts, as we did in the Forward Euler case, results
 in the variational form
 
@@ -480,13 +574,13 @@ in the variational form
 \begin{equation}
 \int_{\Omega} \left( u^{n}v
 + \Delta t \dfc\nabla u^n\cdot\nabla v\right)\dx
-= \int_{\Omega} u^{n-1}  v\dx -
+= \int_{\Omega} u^{n-1}  v\dx +
 \Delta t\int_{\Omega}f^n v\dx,\quad\forall v\in V
 label{fem:deq:diffu:BE:vf:u:n}
 \tp
 \end{equation}
 !et
-Expressed with $u$ as $u^n$ and $u_1$ as $u^{n-1}$, this becomes
+Expressed with $u$ as $u^n$ and $u_1$ as $u^{n-1}$, the variational form becomes
 
 !bt
 \begin{equation}
@@ -509,7 +603,7 @@ label{fem:deq:diffu:BE:vf:u:short}
 \end{equation}
 !et
 
-=== Linear systems ===
+===== Linear systems =====
 
 Inserting $u=\sum_j c_j\baspsi_i$ and $u_1=\sum_j c_{1,j}\baspsi_i$,
 and choosing $v$ to be the basis functions $\baspsi_i\in V$,
@@ -519,7 +613,7 @@ solved at each time level:
 
 !bt
 \begin{equation}
-(M + \Delta t K)c = Mc_1 + f,
+(M + \Delta t K)c = Mc_1 + \Delta t f,
 label{fem:deq:diffu:BE:vf:linsys}
 \end{equation}
 !et
@@ -530,7 +624,7 @@ The computational algorithm goes as follows.
  o Compute $M$, $K$, and $A=M + \Delta t K$
  o Initialize $u^0$ by interpolation or projection
  o For $n=1,2,\ldots,N_t$:
-   o compute $b = Mc_1 + f$
+   o compute $b = Mc_1 + \Delta t f$
    o solve $Ac = b$
    o set $c_1 = c$
 
@@ -539,8 +633,10 @@ initial condition at the nodes means $c_{1,j} = I(\x_j)$. Otherwise
 one has to solve the linear system $\sum_j\baspsi_j(\xno{i})c_j =
 I(\xno{i})$, where $\x_j$ denotes an interpolation point.  Projection
 (or Galerkin's method) implies solving a linear system with $M$ as
-coefficient matrix : $\sum_j M_{i,j}c_{1,j} = (I,\baspsi_i)$,
+coefficient matrix: $\sum_j M_{i,j}c_{1,j} = (I,\baspsi_i)$,
 $i\in\If$.
+
+=== Finite difference operators corresponding to P1 elements ===
 
 We know what kind of finite difference operators the $M$ and $K$
 matrices correspond to (after dividing by $h$), so
@@ -569,7 +665,7 @@ label{fem:deq:diffu:BE:fdinterp:lumped}
 \end{equation}
 !et
 
-===== Dirichlet boundary conditions =====
+======= Dirichlet boundary conditions =======
 label{fem:deq:diffu:Dirichlet}
 
 Suppose now that the boundary condition (ref{fem:deq:diffu:bcN}) is
@@ -588,13 +684,14 @@ form at a time level becomes
 
 !bt
 \begin{equation}
-\int_\Omega u^{n+1}v\dx =
-\int_\Omega (u^n - \Delta t\dfc\nabla u^n\cdot\nabla v)\dx -
-\Delta t\int_{\partial\Omega_N} gv\ds,\quad \forall v\in V\tp
+\int\limits_\Omega u^{n+1}v\dx =
+\int\limits_\Omega (u^n - \Delta t\dfc\nabla u^n\cdot\nabla v)\dx +
+\Delta t\int\limits_\Omega fv \dx -
+\Delta t\int\limits_{\partial\Omega_N} gv\ds,\quad \forall v\in V\tp
 \end{equation}
 !et
 
-=== Boundary function ===
+===== Boundary function =====
 
 The Dirichlet condition $u=u_0$ at $\partial\Omega_D$ can be incorporated
 through a boundary function $B(\x)=u_0(\x)$ and demanding that $v=0$
@@ -608,24 +705,20 @@ hold for all basis functions $\baspsi_i$ leads to the linear system
 
 !bt
 \begin{align*}
-\sum_{j\in\If} \left(\int_\Omega \baspsi_i\baspsi_j\dx\right)
+\sum_{j\in\If} \left(\int\limits_\Omega \baspsi_i\baspsi_j\dx\right)
 c^{n+1}_j &= \sum_{j\in\If}
-\left(\int_\Omega\left( \baspsi_i\baspsi_j -
+\left(\int\limits_\Omega\left( \baspsi_i\baspsi_j -
 \Delta t\dfc\nabla \baspsi_i\cdot\nabla\baspsi_j\right)\dx\right) c_j^n - \\
-&\quad  \int_\Omega\left( u_0(\x,t_{n+1}) - u_0(\x,t_n)
+&\quad  \int\limits_\Omega\left( u_0(\x,t_{n+1}) - u_0(\x,t_n)
 + \Delta t\dfc\nabla u_0(\x,t_n)\cdot\nabla
 \baspsi_i\right)\dx \\
-& \quad + \Delta t\int_\Omega f\baspsi_i\dx -
-\Delta t\int_{\partial\Omega_N} g\baspsi_i\ds,
+& \quad + \Delta t\int\limits_\Omega f\baspsi_i\dx -
+\Delta t\int\limits_{\partial\Omega_N} g\baspsi_i\ds,
 \quad i\in\If\tp
 \end{align*}
 !et
-In the following,
-we adopt the convention that the unknowns $c_j^{n+1}$ are written as
-$c_j$, while the known $c_j^n$ from the previous time level
-are denoted by $c_{1,j}$.
 
-=== Finite element basis functions ===
+===== Finite element basis functions =====
 
 When using finite elements, each basis function $\basphi_i$ is associated
 with a node $\xno{i}$. We have a collection of nodes
@@ -654,21 +747,21 @@ The equations for the unknown coefficients $\sequencej{c}$ become
 
 !bt
 \begin{align*}
-\sum_{j\in\If} \left(\int_\Omega \basphi_i\basphi_j\dx\right)
+\sum_{j\in\If} \left(\int\limits_\Omega \basphi_i\basphi_j\dx\right)
 c_j &= \sum_{j\in\If}
-\left(\int_\Omega\left( \basphi_i\basphi_j -
+\left(\int\limits_\Omega\left( \basphi_i\basphi_j -
 \Delta t\dfc\nabla \basphi_i\cdot\nabla\basphi_j\right)\dx\right) c_{1,j}
 - \\
-&\quad  \sum_{j\in\Ifb}\int_\Omega\left( \basphi_i\basphi_j(U_j^{n+1} - U_j^n)
+&\quad  \sum_{j\in\Ifb}\int\limits_\Omega\left( \basphi_i\basphi_j(U_j^{n+1} - U_j^n)
 + \Delta t\dfc\nabla \basphi_i\cdot\nabla
 \basphi_jU_j^n\right)\dx \\
-&\quad + \Delta t\int_\Omega f\basphi_i\dx -
-\Delta t\int_{\partial\Omega_N} g\basphi_i\ds,
+&\quad + \Delta t\int\limits_\Omega f\basphi_i\dx -
+\Delta t\int\limits_{\partial\Omega_N} g\basphi_i\ds,
 \quad i\in\If\tp
 \end{align*}
 !et
 
-=== Modification of the linear system ===
+===== Modification of the linear system =====
 
 Instead of introducing a boundary function $B$ we can work with
 basis functions associated with all the nodes and incorporate the
@@ -680,22 +773,22 @@ variational form becomes
 
 !bt
 \begin{align*}
-\sum_{j\in\If} \left(\int_\Omega \basphi_i\basphi_j\dx\right)
+\sum_{j\in\If} \left(\int\limits_\Omega \basphi_i\basphi_j\dx\right)
 c_j &= \sum_{j\in\If}
-\left(\int_\Omega\left( \basphi_i\basphi_j -
+\left(\int\limits_\Omega\left( \basphi_i\basphi_j -
 \Delta t\dfc\nabla \basphi_i\cdot\nabla\basphi_j\right)\dx\right) c_{1,j}
  \\
-&\quad - \Delta t\int_\Omega f\basphi_i\dx -
-\Delta t\int_{\partial\Omega_N} g\basphi_i\ds\tp
+&\quad + \Delta t\int\limits_\Omega f\basphi_i\dx -
+\Delta t\int\limits_{\partial\Omega_N} g\basphi_i\ds\tp
 \end{align*}
 !et
 We introduce the matrices $M$ and $K$ with entries
-$M_{i,j}=\int_\Omega\basphi_i\basphi_j\dx$ and
-$K_{i,j}=\int_\Omega\dfc\nabla\basphi_i\cdot\nabla\basphi_j\dx$,
+$M_{i,j}=\int\limits_\Omega\basphi_i\basphi_j\dx$ and
+$K_{i,j}=\int\limits_\Omega\dfc\nabla\basphi_i\cdot\nabla\basphi_j\dx$,
 respectively.
 In addition, we define the vectors $c$, $c_1$, and $f$ with
 entries $c_i$, $c_{1,i}$, and
-$\int_\Omega f\basphi_i\dx - \int_{\partial\Omega_N}g\basphi_i\ds$.
+$\int\limits_\Omega f\basphi_i\dx - \int\limits_{\partial\Omega_N}g\basphi_i\ds$, respectively.
 The equation system can then be written as
 
 !bt
@@ -812,15 +905,16 @@ c_0 &= a\sin\omega t_n,\\
 +2c_i + c_{i+1}) &= \frac{h}{6}(c_{1,i-1} + 4c_{1,i} + c_{1,i+1}),\\
 &\qquad i=1,\ldots,N_n-2,\nonumber\\
 \frac{h}{6}(c_{i-1} + 2c_i) + \Delta t\frac{\dfc}{h}(-c_{i-1}
-+c_i) &= \frac{h}{6}(c_{1,i-1} + 2c_{1,i}),\quad i=N_n-1\tp
++c_i) &= \frac{h}{6}(c_{1,i-1} + 2c_{1,i}),\\
+&\qquad i=N_n-1\tp
 \end{align}
 !et
 
 The Dirichlet boundary condition can alternatively be implemented
-through a boundary function $B(x,t)=a\sin\omega t\basphi_0(x)$:
+through a boundary function $B(x,t)=a\sin\omega t\,\basphi_0(x)$:
 
 !bt
-\[ u^n(x) = a\sin\omega t_n\basphi_0(x) +
+\[ u^n(x) = a\sin\omega t_n\,\basphi_0(x) +
 \sum_{j\in\If} c_j\basphi_{\nu(j)}(x),\quad
 \nu(j) = j+1\tp\]
 !et
@@ -829,7 +923,7 @@ $1,2,\ldots,N_n-1$. The right-hand side gets a contribution
 
 !bt
 \begin{equation}
-\int_0^L \left(
+\int\limits_0^L \left(
 a(\sin\omega t_n - \sin\omega t_{n-1})\basphi_0\basphi_i
 - \Delta t\dfc a\sin\omega t_n\nabla\basphi_0\cdot\nabla\basphi_i\right)\dx
 \tp
@@ -855,8 +949,10 @@ element vector corresponding to the extra term
 # Show assembled form
 # #endif
 
-===== Analysis of the discrete equations =====
+======= Analysis of the discrete equations =======
 label{fem:deq:diffu:anal}
+
+===== Fourier components =====
 
 The diffusion equation $u_t = \dfc u_{xx}$ allows a (Fourier)
 wave component
@@ -876,7 +972,7 @@ label{fem:deq:diffu:analysis:Ae}
 \end{equation}
 !et
 Many numerical schemes for the diffusion equation
-has a similar wave component as solution:
+have a similar wave component as solution:
 
 !bt
 \begin{equation}
@@ -897,7 +993,8 @@ in the same way as for finite difference methods. Expressing the
 discrete finite element equations as finite difference operators turns
 out to be very convenient for the calculations.
 
-We introduce $x=qh$, or $x=q\Delta x$ to align the notation with
+We introduce $x_q=qh$, or $x_q=q\Delta x$, for the node coordinates,
+to align the notation with
 that frequently used in finite difference methods.
 A convenient start of the calculations is to establish some
 results for various finite difference operators acting
@@ -923,7 +1020,7 @@ are listed below.
 \end{align}
 !et
 
-=== Forward Euler discretization ===
+===== Forward Euler discretization =====
 
 We insert (ref{fem:deq:diffu:analysis:uni}) in the
 Forward Euler scheme with P1 elements in space and $f=0$ (note that
@@ -998,11 +1095,11 @@ finite difference method for the diffusion equation, which demands
 $C\leq 1/2$.
 Lumping the mass matrix will, however, recover the finite difference
 method and therefore imply $C\leq 1/2$ for stability.
-In other words, introducing an error in the integration improves the]
+In other words, introducing an error in the integration improves the
 stability by a factor of 3.
 
 
-=== Backward Euler discretization ===
+===== Backward Euler discretization =====
 
 We can use the same approach and insert
 (ref{fem:deq:diffu:analysis:uni}) in the
@@ -1034,7 +1131,7 @@ The quantity in the parentheses is always greater than unity, so
 $|A|\leq 1$ regardless of the size of $C$ and $p$.
 As expected, the Backward Euler scheme is unconditionally stable.
 
-=== Comparing amplification factors ===
+===== Comparing amplification factors =====
 
 It is of interest to compare $A$ and $\Aex$ as functions of $p$
 for some $C$ values. Figure
@@ -1077,7 +1174,7 @@ Crank-Nicolson scheme in time:
 
 !bt
 \[ \frac{u^{n+1}- u^n}{\Delta t} = \dfc \half\left(
-\frac{\partial u^{n+1}}{\partial x^2}
+\frac{\partial u^{n+1}}{\partial x^2} +
 \frac{\partial u^{n}}{\partial x^2}\right),\]
 !et
 or written compactly with finite difference operators,
