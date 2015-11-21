@@ -46,6 +46,14 @@
    status:    published
    entrytype: article
 * books
+** Finite Difference Computing with Partial Differential Equations
+   key:       Langtangen_Linge
+   author:    H. P. Langtangen, S. Linge
+   year:      2015
+   status:    published
+   note:      \url{http://tinyurl.com/nho95qh/web}
+   url:       http://tinyurl.com/nho95qh/web
+   entrytype: book
 ** Scientific Computation: {Python} Hacking for Math Junkies
    key:       Shapiro_2015
    author:    B. E. Shapiro
@@ -281,7 +289,7 @@
    entrytype: book
 ** Scaling of Differential Equations
    key:       Langtangen_scaling
-   author:    H. P. Langtangen
+   author:    H. P. Langtangen, G. K. Pedersen
    year:      2015
    status:    published
    note:      \url{http://tinyurl.com/qfjgxmf/web}
