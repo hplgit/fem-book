@@ -409,7 +409,7 @@ dt**2*Subs(Derivative(P(_x), _x, _x), (_x,), (0,))/8 + O(dt**4)
 Use these examples to investigate the error of
 (ref{nonlin:exer:products:arith:mean:f}) and
 (ref{nonlin:exer:products:arith:mean:p}) for $n=0$. (Choosing $n=0$
-is necessary for making the expressions too complicated for `sympy`,
+is necessary for not making the expressions too complicated for `sympy`,
 but there is of course no lack of generality by using $n=0$ rather
 than an arbitrary $n$ - the main point is the product and addition
 of Taylor series.)
@@ -444,7 +444,7 @@ finite difference method on a uniform mesh.
 
 !bsubex
 Discretize (ref{nonlin:exer:1D:1pu2:fem:pde}) by a finite
-element method with P1 of equal length.
+element method with P1 elements of equal length.
 Use the Trapezoidal method to compute all integrals.
 Set up the resulting matrix system in symbolic form such that the
 equations can be compared with those in a).
