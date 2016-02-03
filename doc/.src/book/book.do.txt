@@ -26,36 +26,23 @@ TOC: on
 ========= Quick overview of the finite element method =========
 label{ch:overview}
 
-!split
-========= Approximation of functions =========
-label{ch:approx}
+# #include "approx.do.txt"
 
-# #include "../chapters/approx/approx.do.txt"
+# #include "varform.do.txt"
 
-!split
-========= Stationary variational forms =========
-label{ch:varform}
+# #include "femtime.do.txt"
 
-# #include "../chapters/varform/varform.do.txt"
+# #include "femsys.do.txt"
 
-!split
-========= Time-dependent variational forms =========
-label{ch:femtime}
+### #include "nonlin.do.txt"
 
-# #include "../chapters/femtime/femtime.do.txt"
 
 
 !split
-========= Variational forms for systems of PDEs =========
-label{ch:femsys}
-
-# #include "../chapters/femsys/femsys.do.txt"
-
-!split
-========= Uncertainty quantificationn and polynomial chaos expansions =========
+========= Uncertainty quantification and polynomial chaos expansions =========
 label{ch:pce}
 
-### #include "../chapters/femsys/femsys.do.txt"
+### #include "polychaos.do.txt"
 
 
 !split

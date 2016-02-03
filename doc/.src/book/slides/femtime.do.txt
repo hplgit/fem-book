@@ -615,14 +615,14 @@ A = \left( 1 + 4C\frac{\sin^2 p}{1 + \frac{2}{3}\sin^2 p}\right)^{-1}
 \]
 !et
 
-FIGURE: [fig-femtime/diffu_A_factors_coarse_BE, width=400 frac=0.8]
+FIGURE: [fig/diffu_A_factors_coarse_BE, width=400 frac=0.8]
 
 !split
 ===== Amplification factors for smaller time steps; Forward Euler =====
 
-FIGURE: [fig-femtime/diffu_A_factors_fine_FE, width=400 frac=0.8]
+FIGURE: [fig/diffu_A_factors_fine_FE, width=400 frac=0.8]
 
 !split
 ===== Amplification factors for smaller time steps; Backward Euler =====
 
-FIGURE: [fig-femtime/diffu_A_factors_fine_BE, width=400 frac=0.8]
+FIGURE: [fig/diffu_A_factors_fine_BE, width=400 frac=0.8]

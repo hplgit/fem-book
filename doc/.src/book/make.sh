@@ -25,7 +25,7 @@ function system {
   fi
 }
 
-rm tmp_*
+rm -f tmp_*
 
 if [ $# -ge 1 ]; then
   spellcheck=$1
@@ -33,15 +33,11 @@ else
   spellcheck=spell
 fi
 
-system doconce spellcheck -d .dict4spell.txt book.do.txt preface.do.txt
+
 # No spellchecking of local files here since book.do.txt just includes files.
 # Spellcheck all *.do.txt files in each chapter.
 if [ "$spellcheck" != 'nospell' ]; then
-    python -c 'import scripts; scripts.spellcheck()'
-    if [ $? -ne 0 ]; then
-	echo "Go to relevant directory, run bash make.sh and update dictionary!"
-	exit 1
-    fi
+    system doconce spellcheck -d .dict4spell.txt *.do.txt
 fi
 
 system preprocess -DFORMAT=pdflatex ../chapters/newcommands_keep.p.tex > newcommands_keep.tex
@@ -86,6 +82,7 @@ newname=${topicname}-book-4screen-sol
 password="d!e!cay"
 pdftk $name.pdf output $newname.pdf owner_pw foo user_pw $password
 cp $name.pdf ${name}-sol.pdf # good to have a copy without password
+exit
 
 compile --device=screen --without_solutions --without_answers
 newname=${topicname}-book-4screen

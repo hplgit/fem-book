@@ -1,0 +1,18 @@
+TITLE: Study guide: Numerical Methods for Variational Problems
+# #include "../AUTHOR.txt"
+DATE: today
+
+# #ifdef WITH_TOC
+!split
+TOC: on
+# #endif
+
+# #include "../mako_code.txt"
+
+# #include "slides/approx.do.txt"
+
+# #include "slides/varform.do.txt"
+
+# #include "slides/femtime.do.txt"
+
+# #include "slides/femsys.do.txt"

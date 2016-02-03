@@ -1,5 +1,5 @@
 The present book is essentially a book on the finite element method,
-athough we discuss many other choices of basis functions. The
+although we discuss many other choices of basis functions. The
 literature on finite elements contains books of many different
 flavors, ranging from the abstract view of the method
 cite{JohnsonFEM87,Quarteroni_Valli,Brenner_Scott,Braess} via more
@@ -37,7 +37,7 @@ have tried to write out all details of the finite element ``engine''
 such that a reader can calculate a finite element problem by
 hand. Explaining all details and carrying them out by hand are
 formidable tasks in two- and three-dimensional PDE problems, so we
-restrict the attention to one space dimenions when it comes to
+restrict the attention to one space dimensions when it comes to
 detailed calculations.  Although we imagine that the reader will use
 FEniCS or other similar software to solve finite element problems, we
 strongly believe that successful application of such software requires
@@ -110,33 +110,42 @@ as well. When also the exact solution of the PDE problem is needed,
 it is usually denoted by $\uex$. Especially in the chapter on
 nonlinear problems we introduce notations that are handy in a program
 and use the same notation in the mathematics such that we achieve
-as close correspondance as possible between the mathematics and the code.
+as close correspondence as possible between the mathematics and the code.
 
 The very first chapter starts with a quick overview of how PDE
 problems are solved by the finite element method. The next four
 chapters go into deep detail of the algorithms. We employ a successful
-idea, persued by Larson and Bengzon cite{Larson_2013} in particular,
+idea, pursued by Larson and Bengzon cite{Larson_2013} in particular,
 of first treating finite element approximation *before* attacking PDE
-problems. Chapter ref{ch:approx} explains approximation of functions
-in function spaces from general point of view, where finite element
-basis functions constitute one example.  The principles of variational
-formulations and a lot of details of the finite element machinery are
-met already in the approximation problem.  When these topics are
-familiar, it is easier in Chapter ref{ch:varform} to meet the new
-concept of variational formulation of PDE problems, with boundary
-conditions, and the necessary extensions of finite element algorithms.
-Our experience is that such a two-step approach greatly simplifies the
-learning process for students.
-Chapter ref{ch:femtime} explains how time-dependent problems are
-attacked, primarily by using finite difference discretizations in
-time. Here we develop the corresponding finite difference schemes
-and analyze them via Fourier components and numerical dispersion
-relations. How to set up variational formulations of
-systems of PDEs, and in particular the way systems are
-treated in FEniCS, is the topic of Chapter ref{ch:femsys}.
-With all the fundamental building blocks from Chapter ref{ch:approx},
-we have most of the elements in place for a quick treatment of
-the popular polynomial chaos expansion method for uncertainty quantification.
-This chapter becomes a nice illustration of the power of the theory
-in the beginning of the book.
-[hpl: Mention linear systems if we do that.]
+problems. Chapter ref{ch:approx:global} explains approximation of
+functions in function spaces from general point of view, where finite
+element basis functions constitute one example to be explored in
+Chapter ref and ref{ch:approx:fe}.  The principles of variational
+formulations constitute the subject of Chapter ref{ch:varform:global}.
+A lot of details of the finite element machinery are met already in
+the approximation problem in Chapter ref{ch:approx:fe}, so when these
+topics are familiar together with the variational formulations of
+Chapter ref{ch:varform:global}, it is easier in Chapter
+ref{ch:varform:fe} to meet the new concept of variational formulation
+of PDE problems, with boundary conditions, and the necessary
+extensions of finite element algorithms.  Our experience is that such
+a two-step approach greatly simplifies the learning process for
+students.  Chapter ref{ch:femtime} explains how time-dependent
+problems are attacked, primarily by using finite difference
+discretizations in time. Here we develop the corresponding finite
+difference schemes and analyze them via Fourier components and
+numerical dispersion relations. How to set up variational formulations
+of systems of PDEs, and in particular the way systems are treated in
+FEniCS, is the topic of Chapter ref{ch:femsys}.  With all the
+fundamental building blocks from Chapter ref{ch:approx:global}, we have most
+of the elements in place for a quick treatment of the popular
+polynomial chaos expansion method for uncertainty quantification.
+This chapter becomes a nice illustration of the power of the theory in
+the beginning of the book.  [hpl: Mention linear systems if we do
+that.]
+
+=== Supplementary materials ===
+
+All program and data files referred to in this book are available
+from the book's primary web site:
+URL: "http://hplgit.github.io/fem-book/doc/web/".

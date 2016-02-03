@@ -1,0 +1,642 @@
+======= Classical Iterative Methods =======
+label{ch:linalg2:classic}
+
+Classical iterative methods, like Jacobi, Gauss-Seidel, SOR, and SSOR
+iteration, are seldom used as stand-alone solvers nowadays. Nevertheless,
+these methods are frequently used as preconditioners in
+conjugate gradient-like techniques and as smoothers in multigrid methods.
+Our treatment of classical iterative methods is here very brief as there is
+an extensive literature on the subject. An updated and comprehensive
+textbook is Hackbusch cite{Hackbusch}, while Bruaset
+cite{BruBok} is well suited as
+a compact extension of the present exposition.
+
+
+===== A General Framework =====
+label{ch:linalg2:classic:framework}
+
+idx{start vector!linear solvers}
+
+The linear system to be solved is written as
+
+!bt
+\begin{equation*}
+\A\x = \b,\quad \A\in\Re^{n,n},\ \x,\b\in\Re^n \tp
+\end{equation*}
+!et
+Let us split the matrix $\A$ into two parts $\M$ and $\N$ such that
+$\A = \M -\N$, where $\M$ is invertible and linear systems with $\M$
+as coefficient matrix are in some sense cheap to solve.
+The linear system then takes the form
+
+!bt
+\begin{equation*} \M\x = \N\x + \b , \end{equation*}
+!et
+which suggests an iteration method
+
+!bt
+\begin{equation}
+\M\x^{k} = \N\x^{k-1} + \b,\quad k=1,2,\ldots
+label{linalg2:classic:eq1}
+\end{equation}
+!et
+where $\x^{k}$ is a new approximation to $\x$ in the $k$-th iteration.
+To initiate the iteration, we need a start vector $\x^0$.
+
+An alternative form of \req{linalg2:classic:eq1} is
+
+
+idx{residual}
+
+!bt
+\begin{equation}
+\x^{k} = \x^{k-1} + \M^{-1}\bfr^{k-1},
+label{linalg2:classic:eq2}
+\end{equation}
+!et
+where $\bfr^{k-1} = \b -\A\x^{k-1}$ is the *residual*
+after iteration $k-1$.
+For further analysis, but not for the implementation, %of the numerical properties of the iterative scheme
+the following version of
+(ref{linalg2:classic:eq1}) is useful
+
+!bt
+\begin{equation*} \x^{k} = \G\x^{k-1} + \c,\quad k=1,2,\ldots,\end{equation*}
+!et
+where $\G = \M^{-1}\N$ and $\c = \M^{-1}\b$.
+The matrix $\G$ plays a fundamental role in the *convergence* of
+this iterative method, because one can easily show that
+
+!bt
+\begin{equation*} \x^{k} - \x = \G^{k} (\x^0 - \x )\tp \end{equation*}
+!et
+That is, $\lim_{k\rightarrow\infty}||\G^{k}|| =0$ is a necessary and sufficient
+condition for convergence of the sequence $\{\x^{k}\}$ towards the
+exact solution $\x$. This is equivalently expressed as
+
+idx{spectral radius}
+
+!bt
+\begin{equation*} \varrho (\G ) < 1,\end{equation*}
+!et
+where $\varrho (\G )$ is the *spectral radius*
+of $\G$. The spectral radius is defined as
+$\varrho (\G )=\max_{i=1,\ldots,n}|\lambda_i|$,
+where $\lambda_i$ are the real or complex eigenvalues of $\G$. Making
+$\varrho (\G )$ smaller increases the speed of convergence.
+Of special interest is the *asymptotic rate of convergence*
+$R_{\infty} (\G) = -\ln\varrho (\G )$.
+To reduce the initial error by a factor $\epsilon$, that is,
+${ ||\x -\x^{k-1}||}\leq\epsilon  ||\x -\x^0|| $,
+one needs $-\ln\epsilon /R_{\infty}(\G )$ iterations cite{BruBok}.
+
+We shall first give examples on popular choices of splittings
+(i.e. the matrices $\M$ and $\N$) that define classical iterative solution
+algorithms for linear systems. Thereafter, we will return to
+the convergence issue and list some characteristic results
+regarding the value of $R_{\infty}(\G )$ for the suggested iterative methods
+in a model problem.
+
+In the following, we  need to write $\A$ as a sum of a diagonal part
+$\D$, a lower triangular matrix $\L$, and an upper triangular
+matrix $\U$:
+
+!bt
+\begin{equation*} \A = \L + \D + \U \tp \end{equation*}
+!et
+The precise definition of these matrices are
+$L_{i,j} =A_{i,j}$ if $i>j$, else zero,
+$U_{i,j} = A_{i,j}$ if $i<j$, else zero, and
+$D_{i,j} = A_{i,j}$ if $i=j$, else zero.
+
+As a PDE-related example on a common linear system, we shall make use of
+the five-point 2D finite difference discretization of the Poisson
+equation $-\nabla^2 u =f$ with $u=0$ on the boundary. The domain is
+the unit square, with $m$ grid points in each space direction.
+The unknown grid-point values $u_{i,j}$ are then coupled in a linear
+system
+
+!bt
+\begin{equation}
+u_{i,j-1} + u_{i-1,j} + u_{i+1,j} + u_{i,j+1} -4u_{i,j} = -h^2f_{i,j},
+label{linalg2:classic:umodel}
+\end{equation}
+!et
+for $i,j=2,\ldots,m-1$.
+The parameter $h$
+is the grid increment: $h=1/(m-1)$.
+In the start vector we impose a zero value at
+the boundary points $i=1,m$, $j=1,m$.
+Updating only the inner points, $2\leq i,j\leq m-1$, then preserves
+the correct boundary values in each iteration.
+
+===== Jacobi, Gauss-Seidel, SOR, and SSOR Iteration =====
+
+
+=== Simple Iteration ===
+
+The simplest choice is of course to
+let $\M =\Id$ and $\N = \Id -\A$, resulting in the iteration
+
+!bt
+\begin{equation}
+\x^{k} = \x^{k-1} + \bfr^{k-1} \tp
+label{linalg2:classic:Rich1}
+\end{equation}
+!et
+
+idx{linear solvers!Jacobi}
+
+=== Jacobi Iteration ===
+
+Another simple choice is to let
+$\M$ equal the diagonal of $\A$, which means that $\M =\D$ and
+$\N =-\L -\U$. From (ref{linalg2:classic:eq2}) we then get the
+iteration
+
+!bt
+\begin{equation}
+\x^{k} = \x^{k-1} + \D^{-1}\bfr^{k-1} \tp
+label{linalg2:classic:Jacobi1}
+\end{equation}
+!et
+We can write the iteration explicitly, component by component,
+
+!bt
+\begin{equation}
+x_i^{k} = x_i^{k-1} + {1\over A_{i,i}}\left(
+ b_i - \sum_{j=1}^n A_{i,j}x_j^{k-1}\right),\quad i=1,\ldots,n
+\tp
+\end{equation}
+!et
+An alternative (and perhaps more intuitive) formula arises from just solving
+equation no. $i$ with respect to $x_i$, using old values for all the
+other unknowns:
+
+!bt
+\begin{equation*} x_i^k = {1\over A_{i,i}} \left(b_i - \sum_{j=1}^{i-1}A_{i,j}x_j^{k-1}
+- \sum_{j=i+1}^{n}A_{i,j}x_j^{k-1}\right),\quad i=1,\ldots,n\tp \end{equation*}
+!et
+Applying this iteration to our model problem (ref{linalg2:classic:umodel})
+yields
+
+!bt
+\begin{equation}
+u^{k}_{i,j} = {1\over4}\left(
+u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right)
+label{linalg2:classic:Jacobi2},
+\end{equation}
+!et
+for $i,j=2,\ldots,m-1$.
+
+=== Relaxed Jacobi Iteration ===
+
+label{ch:linalg2:relaxed:Jacobi}
+
+Let $\x^*$ denote the
+predicted value of $\x$ in iteration $k$ with the Jacobi method.
+We could then compute $\x^{k}$ as a weighted combination of $\x^*$
+and the previous value $\x^{k-1}$:
+
+!bt
+\begin{equation}
+\x^{k} = \omega\x^* + (1-\omega )\x^{k-1}
+label{linalg:relax}\tp
+\end{equation}
+!et
+For $\omega\in [0,1]$ this is a weighted mean of $\x^*$ and $\x^{k-1}$.
+The corresponding scheme is called *relaxed* Jacobi iteration.
+As an example, the relaxed Jacobi method applied to the model
+problem (ref{linalg2:classic:umodel}) reads
+
+!bt
+\begin{equation}
+u^{k}_{i,j} = {\omega\over4}\left(
+u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k-1}
+label{linalg2:classic:Jacobi3},
+\end{equation}
+!et
+for $i,j=2,\ldots,m-1$.
+
+idx{pseudo time stepping}
+idx{linear solvers!pseudo time stepping}
+
+\subsubsection{On
+the Equivalence of Jacobi Iteration and Explicit Time Stepping.}
+Consider the heat equation
+
+!bt
+\begin{equation}
+\alpha{\partial u\over\partial t} = \nabla^2 u + f
+label{linalg2:classic:heat1}
+\end{equation}
+!et
+on a 2D grid over the unit square.
+If we assume that a stationary state, defined as $\partial u/\partial t=0$,
+is reached as $t\rightarrow\infty$, we can solve the
+associated stationary problem  $-\nabla^2 u=f$ by solving the
+time-dependent version (ref{linalg2:classic:heat1}) until
+$\partial u /\partial t $ is sufficiently close to zero.
+This is often called *pseudo time stepping*.
+Let us discretize (ref{linalg2:classic:heat1}) using an
+explicit forward Euler scheme in time, combined with the standard
+5-point finite difference discretization of the $\nabla^2u$ term.
+With $u_{i,j}^{k}$ as the approximation to $u$ at grid point $(i,j)$ and
+time level $k$, the scheme reads
+
+!bt
+\begin{equation}
+u^{k}_{i,j} = u^{k-1}_{i,j} + {\Delta t\over\alpha h^2}
+\left( u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
+-4 u_{i,j}^{k-1} + h^2f_{i,j}\right) ,
+\end{equation}
+!et
+with $\Delta t$ being the time step length.
+This scheme can alternatively be expressed as
+
+!bt
+\begin{equation}
+u^{k}_{i,j} = \left(1- 4{\Delta t\over\alpha h^2}\right)
+u^{k-1}_{i,j} + {\Delta t\over\alpha h^2}
+\left( u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
+ + h^2f_{i,j}\right) label{linalg2:classic:heat2}\tp
+\end{equation}
+!et
+Comparison with (ref{linalg2:classic:Jacobi3}) reveals that
+(ref{linalg2:classic:heat2}) is nothing but a relaxed Jacobi iteration
+for solving a finite difference form of $-\nabla^2u=f$.
+The relaxation parameter $\omega$ is seen to equal $4\Delta t/(\alpha h^2)$.
+The stability criterion of the explicit forward scheme
+for the heat equation in two dimensions is given by
+(ref{fdm:stability:2Dheat:stabcrit}): $\Delta t \leq \alpha h^2/4$, or
+equivalently, $\omega \leq 1$.
+The original Jacobi method is recovered by the choice
+$\omega =1$, which  in light of
+the transient problem indicates that this is the most efficient value of
+the relaxation parameter since it corresponds to the largest possible
+time step.
+
+The analogy between explicit time integration of a heat equation
+and Jacobi iteration for the Poisson equation, together with
+the smoothing properties of the heat equation (see
+Example ref{stability:examp2} on page (_PROBLEM: pageref_) \pageref{stability:examp2}),
+suggest that Jacobi's
+method will efficiently damp any irregular behavior in $\x^0$.
+This property is utilized when relaxed Jacobi iteration is used as a
+smoother in multigrid methods, and $\omega =1$ is in this context
+not the optimal value
+with respect to efficient damping of high frequencies in the solution
+(cf. Exercise ref{linalg2:cg:exer3}).
+
+
+
+idx{linear solvers!Gauss-Seidel}
+
+=== Gauss-Seidel Iteration ===
+
+Linear systems where the coefficient matrix is
+upper or lower triangular are easy to solve. Choosing $\M$ to be the
+lower or upper triangular part of $\A$ is therefore attractive.
+With $\M = \D + \L$ and $\N =-\U$ we obtain *Gauss-Seidel's method*:
+
+!bt
+\begin{equation} (\D + \L )\x^{k} = -\U\x^{k-1} + \b \tp
+\end{equation}
+!et
+Combining this formula on component form with the standard algorithm for
+solving a system with lower triangular coefficient matrix yields
+
+!bt
+\begin{equation}
+x_i^{k} = {1\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k}
+- \sum_{j=i+1}^n A_{i,j}x_j^{k-1} \right),\quad
+i=1,\ldots,n \tp
+label{linalg2:classic:GS1}
+\end{equation}
+!et
+This equation has a simple interpretation; it is similar to the $i$-th
+equation in Jacobi's method, but we utilize the new values
+$x_1^k,\ldots,x_{i-1}^k$, which we have already computed in this iteration,
+on the right-hand side. In other words, the Gauss-Seidel always applies
+the most recently computed approximations in the equations.
+
+For our Poisson equation scheme, the Gauss-Seidel iteration takes the form
+
+!bt
+\begin{equation}
+u^{k}_{i,j} = {1\over4}\left(
+u^{k}_{i,j-1} + u^{k}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right)
+\tp
+label{linalg2:classic:GS2}
+\end{equation}
+!et
+We here assume that we run through the $(i,j)$ indices in a double loop,
+with $i$ and $j$ going from 1 to $m$.
+However, if we for some reason should
+reverse the loops (decrementing $i$ and $j$), the available
+ ``new'' ($k$) values on the right-hand side change.
+The efficiency of the Gauss-Seidel method is strongly dependent on the
+ordering of the equations and unknowns in many applications.
+The ordering also affects the performance of implementations on
+parallel and vector computers.
+A quick overview of various orderings and versions of Gauss-Seidel iteration
+is provided in cite[Ch. 4.3]{Wesseling92}.
+
+From an implementational point of view, one should notice that
+the new values $x_i^{k}$ or $u_{i,j}^{k}$ can overwrite the
+corresponding old values $x_i^{k-1}$ and $u_{i,j}^{k-1}$.
+This is not possible in the Jacobi algorithm.
+
+===== Example =====
+label{ch:linalg:examp1}
+
+Consider the Poisson
+equation $\nabla^2 u=2$ on the unit square, with $u=0$ for $x=0$, and
+$u=1$ for $x=1$. At the boundaries $y=0,1$ we impose homogeneous
+Neumann conditions: $\partial u/\partial y = 0$.
+The exact solution is then $u(x,y)=x^2$.
+We introduce a grid over $(0,1)\times (0,1)$
+with points $i,j=1,\ldots,m$ as shown in
+Figure ref{ch:linalg:figGS}.
+The discrete equations are to be solved by the Gauss-Seidel method.
+At all inner points, $i,j=2,\ldots,m-1$, we can use the difference equation
+(ref{linalg2:classic:GS2}) directly.
+At $j=1$ we have by the boundary condition $u_{i,2}=u_{i,0}$.
+Similarly, $u_{i,m-1} = u_{i,m+1}$.
+These relations can be used to eliminate the fictitious values
+$u_{i,m+1}$ and $u_{i,0}$ in the difference equations at $j=1$ and $j=m$:
+
+!bt
+\begin{align*}
+u^{k}_{i,1} &= {1\over4}\left(
+u^{k}_{i,2} + u^{k}_{i-1,1} + u^{k-1}_{i+1,1} + u^{k-1}_{i,2}
++ h^2f_{i,1}\right),\\
+u^{k}_{i,m} &= {1\over4}\left(
+u^{k}_{i,m-1} + u^{k}_{i-1,m} + u^{k-1}_{i+1,m} + u^{k-1}_{i,m-1}
++ h^2f_{i,1}\right) \tp
+\end{align*}
+!et
+The start values $u^0_{i,j}$ can be arbitrary as long as
+$u^0_{1,j}=0$ and $u^0_{m,j}=1$ such that the preceding iteration formulas
+sample the correct values at $i=1,m$.
+
+The demo program `src/linalg/GaussSeidelDemo/main.cpp` contains a
+suggested implementation of the solution algorithm.  In that program,
+the field values $u^{k}_{i,j}$ overwrite $u^{k-1}_{i,j}$.  Moreover,
+the start values are $u_{i,j}^0=0$ or $u_{i,j}^0=(-1)^i$, except for
+$u_{1,j}$ and $u_{m,j}$, which must equal the prescribed boundary
+conditions.  Included in this directory is a little \perl\ script
+`play.pl` that takes $m$ and the start-vector type as argument,
+runs the program, and thereafter displays an animation of the error
+along $x$ as the iteration index $k$ increases. There is also a GUI
+version of the script, called `play-GUI.pl`.
+
+For small values of $m$ the Gauss-Seidel method is seen to converge
+rapidly to the exact solution.  For $m=80$ we see that the error is
+initially steep, and during the first iterations it is effectively
+reduced and smoothed. However, the convergence slows down
+significantly.  After 1000 iterations the maximum error is still as
+high as 20 percent of the initial maximum error.
+
+The property that the first few Gauss-Seidel iterations are
+very effective in reducing and smoothing the error,
+is a key ingredient in multigrid methods.
+
+
+FIGURE: [figs/GaussSeidel.xfig.eps, width=400] Sketch of a grid for finite difference approximation of   $\nabla^2u=2$ on the unit square, with $u$ prescribed for $i=1,m$   and $\partial u /\partial y=0$ for $j=1,m$.   The difference equations must be modified for points at $j=1,m$ by   using the boundary condition $\partial u/\partial y=0$,   involving the points marked   with bullets. The boundary points marked with circles have   prescribed $u$ values and can remain untouched. label{ch:linalg:figGS}
+
+
+
+idx{linear solvers!SOR}
+
+=== Successive Over-Relaxation ===
+
+The idea of relaxation as introduced in the Jacobi method is also
+relevant to Gauss-Seidel iteration.
+If $\x^*$ is the new solution predicted by a Gauss-Seidel step,
+we may set
+
+
+idx{Successive Over-Relaxation}
+
+!bt
+\begin{equation}
+\x^{k} = \omega\x^* + (1-\omega )\x^{k-1}\tp
+label{linalg2:classic:SOR1}
+\end{equation}
+!et
+The resulting method is called *Successive Over-Relaxation*,
+abbreviated SOR.
+It turns out that
+$\omega >1$ is a good choice when solving stationary PDEs of the
+Poisson-equation type.
+One can prove that $\omega\in (0,2)$ is a necessary condition for
+convergence.
+In terms of $\M$ and $\N$, the method can be expressed as
+
+!bt
+\begin{equation*} \M = {1\over\omega }\D +  \L,\quad \N = {1-\omega \over\omega}\D - \U \tp\end{equation*}
+!et
+The algorithm is a trivial combination of
+(ref{linalg2:classic:GS1}) and (ref{linalg2:classic:SOR1}):
+
+!bt
+\begin{equation}
+label{linalg2:classic:SOR2}
+x_i^{k} =  {\omega\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k}
+- \sum_{j=i+1}^n A_{i,j}x_j^{k-1}\right) + (1-\omega )x_i^{k-1} ,
+\end{equation}
+!et
+for $i=1,\ldots,n$.
+The SOR method for the discrete Poisson equation can be written as
+
+!bt
+\begin{equation}
+u^{k}_{i,j} = {\omega \over4}\left(
+u^{k}_{i,j-1} + u^{k}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k-1},
+label{linalg2:classic:SOR3}
+\end{equation}
+!et
+for $i,j=2,\ldots,m-1$.
+By a clever choice of $\omega$, the convergence of SOR can be much faster
+than the convergence of Jacobi and Gauss-Seidel iteration.
+A guiding value is $\omega = 2-\mathcal{O}(h)$, but the optimal choice of
+$\omega$ can be theoretically estimated in simple model problems involving
+the Laplace or Poisson equations.
+One should observe that SOR with $\omega =1$ recovers the Gauss-Seidel method.
+
+idx{Symmetric SOR}
+idx{linear solvers!SSOR}
+
+=== Symmetric Successive Over-Relaxation ===
+
+The *Symmetric SOR* method, abbreviated SSOR,
+is a two-step SOR procedure where we in the first step
+apply a standard SOR sweep, whereas we in the second SOR step run through the
+unknowns in reversed order (backward sweep).
+The matrix $\M$ is now given by
+
+!bt
+\begin{equation}
+\M = {1\over 2-\omega }\left( {1\over\omega}\D + \L\right)
+\left({1\over\omega}\D\right)^{-1}
+\left( {1\over\omega}\D + \U\right) \tp
+\end{equation}
+!et
+In the algorithm we need to solve a linear system with $\M$ as
+coefficient matrix. This is efficiently done since the above $\M$
+is written on a factorized form. The solution can hence be performed
+in three steps, involving two triangular coefficient matrices and one
+diagonal matrix.
+As for SOR, $\omega\in (0,2)$ is necessary for convergence, but
+SSOR is less sensitive than SOR to
+the value of $\omega$.
+To formulate an SSOR method for our Poisson equation problem, we
+make explicit use of the ideas behind the algorithm, namely a
+forward and backward SOR sweep.
+We first execute
+
+!bt
+\begin{equation}
+u^{k,*}_{i,j} = {\omega \over4}\left(
+u^{k,*}_{i,j-1} + u^{k,*}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k-1},
+label{linalg2:classic:SSOR2}
+\end{equation}
+!et
+for $i,j=2,\ldots,m-1$.
+The second step consists in running through the grid points in reversed
+order,
+
+!bt
+\begin{equation}
+u^{k}_{i,j} = {\omega \over4}\left(
+u^{k,*}_{i,j-1} + u^{k,*}_{i-1,j} + u^{k}_{i+1,j} + u^{k}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k,*},
+label{linalg2:classic:SSOR3}
+\end{equation}
+!et
+for $i,j=m-1,m-2,\ldots,2$. Notice that $u_{i,j}^{k,*}$ are the ``old''
+values in step two.
+
+=== Line SOR Iteration ===
+
+The methods considered so far update only one entry at a time in
+the solution vector. The speed of such *pointwise* algorithms
+can often be improved by finding new values for a subset of
+the unknowns {simultaneously}. For example, in our Poisson equation
+problem we could find new values of $u_{i,j}^{k}$ simultaneously
+along a line. The SOR algorithm could then be formulated as
+
+!bt
+\begin{align}
+ -u_{i-1,j}^* + 4u_{i,j}^* - u_{i+1,j}^* &= u_{i,j-1}^{k}
++ u_{i,j+1}^{k-1} + h^2f_{i,j}, label{linalg:LSOR1}\\
+u_{i,j}^{k} &= \omega u_{i,j}^* + (1-\omega )u_{i,j}^{k-1} \tp
+\end{align}
+!et
+For a fixed $j$, (ref{linalg:LSOR1}) is a tridiagonal system coupling
+$u$ values along a line $j=\mbox{const}$. We can solve for these
+values simultaneously and then continue with the line $j+1$.
+The algorithm is naturally called *line SOR* iteration.
+Instead of working with lines, we could solve simultaneously for
+an arbitrary local block of unknowns.
+This general approach is referred to as *block SOR* iteration.
+The ideas of lines and blocks apply of course to Jacobi and
+Gauss-Seidel iteration as well.
+
+The solution of a stationary PDE (like the Poisson equation)
+at a point is dependent on all the boundary
+data. Therefore, we cannot expect an iterative method to converge properly
+before the boundary conditions have influenced sufficiently large portions
+of the domain. The information in the pointwise versions of the
+classical iterative methods is transported one grid point per iteration,
+whereas
+line or block versions transmit the information along a line
+or throughout a block per iterative step.
+This gives a degree of implicitness in the iteration methods that we expect
+to be reflected in an increased convergence rate.
+The figures in the next section demonstrate this feature.
+
+
+=== Convergence Rates for the Poisson Problem ===
+
+Bruaset cite{BruBok} presents some estimates of
+$R_{\infty}(\G )$ when solving the 2D Poisson equation $-\nabla^2u =f$
+by a standard centered finite difference method on a uniform grid over
+the unit square, with $u=0$ on the boundary.
+For the point Jacobi, Gauss-Seidel, SOR, and SSOR methods we have the
+asymptotic estimates: label{ch:linalg:SORconv}
+
+# #if FORMAT in ("latex", "pdflatex")
+\vspace{0.3cm}
+# #endif
+
+\begin{center}
+
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| rate                        | \mbox{\ \ \ }               | Jacobi                      | \mbox{\ \ Gauss-Seidel\ \ } | SOR                         | \hbox{\ \ \ SSOR\ \ \  }    |
+|-------------c----------------------------c----------------------------c----------------------------c----------------------------c----------------------------c--------------------|
+| $R_{\infty}(\G )$           |                             | $\pi^2h^2/2$                | $\pi^2h^2$                  | $2\pi h$                    | $>\pi h$                    |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+
+\end{center}
+
+# #if FORMAT in ("latex", "pdflatex")
+\vspace{0.3cm}
+# #endif
+
+# #if FORMAT in ("latex", "pdflatex")
+\noindent
+# #endif
+The estimates for the SOR and SSOR methods are based on using a
+theoretically known optimal value of the relaxation parameter $\omega$
+for the present model problem.
+
+Similar convergence
+results for the line versions of the classical iterative methods
+are given in the next table.
+
+# #if FORMAT in ("latex", "pdflatex")
+\vspace{0.3cm}
+# #endif
+
+\begin{center}
+
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| rate                        | \mbox{\ \ \ }               | Jacobi                      | \mbox{\ \ Gauss-Seidel\ \ } | SOR                         | \hbox{\ \ \   SSOR\ \ \   } |
+|-------------c----------------------------c----------------------------c----------------------------c----------------------------c----------------------------c--------------------|
+| $R_{\infty}(\G )$           |                             | $\pi^2h^2$                  | $2\pi^2 h^2$                | $2\sqrt{2}\pi h$            |                             |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+
+\end{center}
+
+# #if FORMAT in ("latex", "pdflatex")
+\vspace{0.3cm}
+# #endif
+
+# #if FORMAT in ("latex", "pdflatex")
+\noindent
+# #endif
+Recalling that $1/R_{\infty}(\G )$ is proportional to the expected
+number of iterations needed to reach a prescribed reduction of the
+initial error, we see that Gauss-Seidel is twice as fast as Jacobi,
+and that SOR and SSOR are significantly superior to the former
+two on fine grids
+($h$ vs. $h^2$).
+The line versions are about twice
+as fast as the corresponding point versions.
+
+From the results above it is clear that Jacobi iteration is a slow method.
+However, because of its explicit updating nature,
+this type of iterative approach, either used as a stand-alone solver, as
+a preconditioner, or as a smoother in multigrid,
+has been popular
+on vector and parallel machines, where more sophisticated methods
+may have difficulties in exploiting the hardware features.

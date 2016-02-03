@@ -1,0 +1,1719 @@
+
+
+
+\index{linear solvers!iterative}
+\index{linear systems!iterative solvers}
+
+When discretizing PDEs by finite difference or finite element methods,
+we often end up solving systems of linear algebraic equations
+(frequently just called \emph{linear systems}).  For large classes of
+problems, the computational effort spent on solving linear systems
+dominate the overall computing time.  Consequently, it is of vital
+importance to have access to efficient solvers for linear systems
+(often called \emph{linear solvers}).  Since the optimal choice of a
+linear solver is highly problem dependent, this calls for software
+that allows and even encourages you to test several alternative
+methods. The linear algebra tools available in Diffpack provide a
+flexible environment tailored for this purpose.  The current appendix
+aims at introducing the basic concepts of common iterative methods for
+linear solvers and thereby equipping the reader with the required
+theoretical knowledge for efficient utilization of the corresponding
+software tools in Diffpack.  The next appendix is devoted to the
+practical usage of the software tools.
+
+Linear systems can be solved by \emph{direct} or \emph{iterative} methods.
+The term direct methods normally means some type of Gaussian elimination, where
+the solution is computed by an algorithm with precisely known
+complexity, independent of the underlying PDE and its
+discretization. On the contrary, the performance of an iterative method
+is often strongly problem dependent.
+
+For most large-scale applications arising from PDEs, iterative methods
+are superior to direct solvers with respect to computational
+efficiency.  The main reason for this superiority is that iterative
+methods can take great advantage of the sparse matrices that arise
+from finite difference and finite element discretizations of PDEs.
+The effect is especially pronounced in 3D problems, where the pattern
+of the corresponding coefficient matrices tend to be extremely
+sparse. To exemplify, only 0.004\%{} of the coefficient matrix will be
+occupied by nonzeroes when the 3D Poisson
+problem %from {\LaChap}~\ref{ch:linalg:matex}
+is discretized on a $60 \times 60 \times 60$ grid by standard finite
+differences. This mesh spacing, leading to $n=216,000$ unknowns, is
+moderate and further refinements would decrease the sparsity factor
+considerably. In general, the fraction of nonzeroes in the coefficient
+matrix is about $7q^{-6}$ on a $q\times q\times q$ grid.  Even such
+rough estimates reveal the potential of iterative methods that compute
+with the nonzeroes only.  In contrast to most direct methods,
+iterative solvers can usually be formulated in terms of a few basic
+operations on matrices and vectors, e.g.\ matrix-vector products,
+inner products, and vector additions. The way these operations are
+combined distinguish one iterative scheme from another.  Naturally,
+the critical issue for any iterative solver is whether the iterations
+will converge sufficiently fast. For this reason, a major concern in
+this field is the construction of efficient \emph{preconditioners}
+capable of improving the convergence rate.
+
+Bruaset \cite{BruBok} presents some exact figures on the efficiency of
+preconditioned iterative methods relative to direct methods for the
+finite difference discretized 3D Poisson equation on the unit cube
+with homogeneous Dirichlet boundary conditions.  The direct solver was
+banded Gaussian elimination, whereas a MILU preconditioned Conjugate
+Gradient method was used as iterative solver.  The ratio $C$ of the
+CPU time of the direct and iterative methods as well as the ratio $M$
+of the memory requirements were computed for various grid
+sizes\footnote{On large grids, banded Gaussian elimination is too slow
+  for practical computations, but the expected CPU time, neglecting
+  the effect of swapping etc., can be estimated from the formula for
+  the work involved in the Gaussian elimination algorithm.}.  For a
+small grid with 3 375 unknowns, $C=72$ and $M=20$, which means that
+the MILU preconditioned Conjugate Gradient method is 72 times faster
+than banded Gaussian elimination and reduces the memory requirements
+by a factor of 20.  For 27,000 unknowns, the largest grid where the
+direct method could be run on the particular computer used in
+\cite{BruBok}, $C=924$ and $M=95$. As the number of unknowns
+increases, the effect of using iterative methods become even more
+dramatic.  With 8,000,000 unknowns, theoretical estimates give
+$C=10^7$ and $M=4 871$. This means that the iterative method used
+about 2,600 seconds, wheras the direct method would use 832 years, if
+there had been a machine with 2,400 Gb RAM to store the banded matrix!
+
+We begin the presentation of iterative solvers
+with a compact review of the simple classical iterative
+methods, such as Jacobi and Gauss-Seidel iteration.
+Then we describe the foundations for Conjugate Gradient-like methods
+and show that we can reuse much of the reasoning from
+Section \ref{ch:fem1:theory} on finite element methods also for
+solving \emph{algebraic equations} approximately.
+Thereafter we treat some fundamental preconditioning techniques.
+The fundamental ideas of domain decomposition and multigrid methods are
+described at the end of the appendix.
+
+
+\section{Classical Iterative Methods}
+\label{ch:linalg2:classic}
+
+Classical iterative methods, like Jacobi, Gauss-Seidel, SOR, and SSOR
+iteration, are seldom used as stand-alone solvers nowadays. Nevertheless,
+these methods are frequently used as preconditioners in
+conjugate gradient-like techniques and as smoothers in multigrid methods.
+Our treatment of classical iterative methods is here very brief as there is
+an extensive literature on the subject. An updated and comprehensive
+textbook is Hackbusch \cite{Hackbusch}, while Bruaset
+\cite{BruBok} is well suited as
+a compact extension of the present exposition.
+
+
+\subsection{A General Framework}
+\label{ch:linalg2:classic:framework}
+The linear system to be solved is written as
+\[ \A\x = \b,\quad \A\in\Re^{n,n},\ \x,\b\in\Re^n \tp\]
+Let us split the matrix $\A$ into two parts $\M$ and $\N$ such that
+$\A = \M -\N$, where $\M$ is invertible and linear systems with $\M$
+as coefficient matrix are in some sense cheap to solve.
+The linear system then takes the form
+\[ \M\x = \N\x + \b , \]
+which suggests an iteration method
+
+\begin{equation}
+\M\x^{k} = \N\x^{k-1} + \b,\quad k=1,2,\ldots
+\label{linalg2:classic:eq1}
+\end{equation}
+where $\x^{k}$ is a new approximation to $\x$ in the $k$th iteration.
+\index{start vector!linear solvers}
+To initiate the iteration, we need a start vector $\x^0$.
+
+An alternative form of \req{linalg2:classic:eq1} is
+
+\begin{equation}
+\x^{k} = \x^{k-1} + \M^{-1}\bfr^{k-1},
+\label{linalg2:classic:eq2}
+\end{equation}
+where $\bfr^{k-1} = \b -\A\x^{k-1}$ is the \index{residual}\emph{residual}
+after iteration $k-1$.
+For further analysis, but not for the implementation, %of the numerical properties of the iterative scheme
+the following version of
+\eqref{linalg2:classic:eq1} is useful
+\[ \x^{k} = \G\x^{k-1} + \c,\quad k=1,2,\ldots,\]
+where $\G = \M^{-1}\N$ and $\c = \M^{-1}\b$.
+The matrix $\G$ plays a fundamental role in the \emph{convergence} of
+this iterative method, because one can easily show that
+\[ \x^{k} - \x = \G^{k} (\x^0 - \x )\tp \]
+That is, $\lim_{k\rightarrow\infty}||\G^{k}|| =0$ is a necessary and sufficient
+condition for convergence of the sequence $\{\x^{k}\}$ towards the
+exact solution $\x$. This is equivalently expressed as
+\[ \varrho (\G ) < 1,\]
+where $\varrho (\G )$ is the \emph{spectral radius} \index{spectral radius}
+of $\G$. The spectral radius is defined as
+$\varrho (\G )=\max_{i=1,\ldots,n}|\lambda_i|$,
+where $\lambda_i$ are the real or complex eigenvalues of $\G$. Making
+$\varrho (\G )$ smaller increases the speed of convergence.
+Of special interest is the \emph{asymptotic rate of convergence}
+$R_{\infty} (\G) = -\ln\varrho (\G )$.
+To reduce the initial error by a factor $\epsilon$, that is,
+${ ||\x -\x^{k-1}||}\leq\epsilon  ||\x -\x^0|| $,
+one needs $-\ln\epsilon /R_{\infty}(\G )$ iterations \cite{BruBok}.
+
+We shall first give examples on popular choices of splittings
+(i.e.~the matrices $\M$ and $\N$) that define classical iterative solution
+algorithms for linear systems. Thereafter, we will return to
+the convergence issue and list some characteristic results
+regarding the value of $R_{\infty}(\G )$ for the suggested iterative methods
+in a model problem.
+
+In the following, we  need to write $\A$ as a sum of a diagonal part
+$\D$, a lower triangular matrix $\L$, and an upper triangular
+matrix $\U$:
+\[ \A = \L + \D + \U \tp \]
+The precise definition of these matrices are
+$L_{i,j} =A_{i,j}$ if $i>j$, else zero,
+$U_{i,j} = A_{i,j}$ if $i<j$, else zero, and
+$D_{i,j} = A_{i,j}$ if $i=j$, else zero.
+
+As a PDE-related example on a common linear system, we shall make use of
+the five-point 2D finite difference discretization of the Poisson
+equation $-\nabla^2 u =f$ with $u=0$ on the boundary. The domain is
+the unit square, with $m$ grid points in each space direction.
+The unknown grid-point values $u_{i,j}$ are then coupled in a linear
+system
+
+\begin{equation}
+u_{i,j-1} + u_{i-1,j} + u_{i+1,j} + u_{i,j+1} -4u_{i,j} = -h^2f_{i,j},
+\label{linalg2:classic:umodel}
+\end{equation}
+for $i,j=2,\ldots,m-1$.
+The parameter $h$
+is the grid increment: $h=1/(m-1)$.
+In the start vector we impose a zero value at
+the boundary points $i=1,m$, $j=1,m$.
+Updating only the inner points, $2\leq i,j\leq m-1$, then preserves
+the correct boundary values in each iteration.
+
+\subsection{Jacobi, Gauss-Seidel, SOR, and SSOR Iteration}
+
+
+\subsubsection{Simple Iteration.} The simplest choice is of course to
+let $\M =\Id$ and $\N = \Id -\A$, resulting in the iteration
+
+\begin{equation}
+\x^{k} = \x^{k-1} + \bfr^{k-1} \tp
+\label{linalg2:classic:Rich1}
+\end{equation}
+
+\subsubsection{Jacobi Iteration.}
+\index{linear solvers!Jacobi}
+Another simple choice is to let
+$\M$ equal the diagonal of $\A$, which means that $\M =\D$ and
+$\N =-\L -\U$. From \eqref{linalg2:classic:eq2} we then get the
+iteration
+\begin{equation}
+\x^{k} = \x^{k-1} + \D^{-1}\bfr^{k-1} \tp
+\label{linalg2:classic:Jacobi1}
+\end{equation}
+We can write the iteration explicitly, component by component,
+
+\begin{equation}
+x_i^{k} = x_i^{k-1} + {1\over A_{i,i}}\left(
+ b_i - \sum_{j=1}^n A_{i,j}x_j^{k-1}\right),\quad i=1,\ldots,n
+\tp
+\end{equation}
+An alternative (and perhaps more intuitive) formula arises from just solving
+equation no.~$i$ with respect to $x_i$, using old values for all the
+other unknowns:
+\[ x_i^k = {1\over A_{i,i}} \left(b_i - \sum_{j=1}^{i-1}A_{i,j}x_j^{k-1}
+- \sum_{j=i+1}^{n}A_{i,j}x_j^{k-1}\right),\quad i=1,\ldots,n\tp \]
+Applying this iteration to our model problem \eqref{linalg2:classic:umodel}
+yields
+
+\begin{equation}
+u^{k}_{i,j} = {1\over4}\left(
+u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right)
+\label{linalg2:classic:Jacobi2},
+\end{equation}
+for $i,j=2,\ldots,m-1$.
+
+\subsubsection{Relaxed Jacobi Iteration.}
+\label{ch:linalg2:relaxed:Jacobi}
+Let $\x^*$ denote the
+predicted value of $\x$ in iteration $k$ with the Jacobi method.
+We could then compute $\x^{k}$ as a weighted combination of $\x^*$
+and the previous value $\x^{k-1}$:
+
+\begin{equation}
+\x^{k} = \omega\x^* + (1-\omega )\x^{k-1}
+\label{linalg:relax}\tp
+\end{equation}
+For $\omega\in [0,1]$ this is a weighted mean of $\x^*$ and $\x^{k-1}$.
+The corresponding scheme is called \emph{relaxed} Jacobi iteration.
+As an example, the relaxed Jacobi method applied to the model
+problem \eqref{linalg2:classic:umodel} reads
+
+\begin{equation}
+u^{k}_{i,j} = {\omega\over4}\left(
+u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k-1}
+\label{linalg2:classic:Jacobi3},
+\end{equation}
+for $i,j=2,\ldots,m-1$.
+
+\subsubsection{On
+the Equivalence of Jacobi Iteration and Explicit Time Stepping.}
+\index{linear solvers!pseudo time stepping}
+\index{pseudo time stepping}
+Consider the heat equation
+
+\begin{equation}
+\alpha{\partial u\over\partial t} = \nabla^2 u + f
+\label{linalg2:classic:heat1}
+\end{equation}
+on a 2D grid over the unit square.
+If we assume that a stationary state, defined as $\partial u/\partial t=0$,
+is reached as $t\rightarrow\infty$, we can solve the
+associated stationary problem  $-\nabla^2 u=f$ by solving the
+time-dependent version \eqref{linalg2:classic:heat1} until
+$\partial u /\partial t $ is sufficiently close to zero.
+This is often called \emph{pseudo time stepping}.
+Let us discretize \eqref{linalg2:classic:heat1} using an
+explicit forward Euler scheme in time, combined with the standard
+5-point finite difference discretization of the $\nabla^2u$ term.
+With $u_{i,j}^{k}$ as the approximation to $u$ at grid point $(i,j)$ and
+time level $k$, the scheme reads
+
+\begin{equation}
+u^{k}_{i,j} = u^{k-1}_{i,j} + {\Delta t\over\alpha h^2}
+\left( u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
+-4 u_{i,j}^{k-1} + h^2f_{i,j}\right) ,
+\end{equation}
+with $\Delta t$ being the time step length.
+This scheme can alternatively be expressed as
+
+\begin{equation}
+u^{k}_{i,j} = \left(1- 4{\Delta t\over\alpha h^2}\right)
+u^{k-1}_{i,j} + {\Delta t\over\alpha h^2}
+\left( u^{k-1}_{i,j-1} + u^{k-1}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
+ + h^2f_{i,j}\right) \label{linalg2:classic:heat2}\tp
+\end{equation}
+Comparison with \eqref{linalg2:classic:Jacobi3} reveals that
+\eqref{linalg2:classic:heat2} is nothing but a relaxed Jacobi iteration
+for solving a finite difference form of $-\nabla^2u=f$.
+The relaxation parameter $\omega$ is seen to equal $4\Delta t/(\alpha h^2)$.
+The stability criterion of the explicit forward scheme
+for the heat equation in two dimensions is given by
+\eqref{fdm:stability:2Dheat:stabcrit}: $\Delta t \leq \alpha h^2/4$, or
+equivalently, $\omega \leq 1$.
+The original Jacobi method is recovered by the choice
+$\omega =1$, which  in light of
+the transient problem indicates that this is the most efficient value of
+the relaxation parameter since it corresponds to the largest possible
+time step.
+
+The analogy between explicit time integration of a heat equation
+and Jacobi iteration for the Poisson equation, together with
+the smoothing properties of the heat equation (see
+Example~\ref{stability:examp2} on page~\pageref{stability:examp2}),
+suggest that Jacobi's
+method will efficiently damp any irregular behavior in $\x^0$.
+This property is utilized when relaxed Jacobi iteration is used as a
+smoother in multigrid methods, and $\omega =1$ is in this context
+not the optimal value
+with respect to efficient damping of high frequencies in the solution
+(cf.~Exercise~\ref{linalg2:cg:exer3}).
+
+
+
+\subsubsection{Gauss-Seidel Iteration.}
+\index{linear solvers!Gauss-Seidel}
+Linear systems where the coefficient matrix is
+upper or lower triangular are easy to solve. Choosing $\M$ to be the
+lower or upper triangular part of $\A$ is therefore attractive.
+With $\M = \D + \L$ and $\N =-\U$ we obtain \emph{Gauss-Seidel's method}:
+
+\begin{equation} (\D + \L )\x^{k} = -\U\x^{k-1} + \b \tp
+\end{equation}
+Combining this formula on component form with the standard algorithm for
+solving a system with lower triangular coefficient matrix yields
+
+\begin{equation}
+x_i^{k} = {1\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k}
+- \sum_{j=i+1}^n A_{i,j}x_j^{k-1} \right),\quad
+i=1,\ldots,n \tp
+\label{linalg2:classic:GS1}
+\end{equation}
+This equation has a simple interpretation; it is similar to the $i$th
+equation in Jacobi's method, but we utilize the new values
+$x_1^k,\ldots,x_{i-1}^k$, which we have already computed in this iteration,
+on the right-hand side. In other words, the Gauss-Seidel always applies
+the most recently computed approximations in the equations.
+
+For our Poisson equation scheme, the Gauss-Seidel iteration takes the form
+
+\begin{equation}
+u^{k}_{i,j} = {1\over4}\left(
+u^{k}_{i,j-1} + u^{k}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right)
+\tp
+\label{linalg2:classic:GS2}
+\end{equation}
+We here assume that we run through the $(i,j)$ indices in a double loop,
+with $i$ and $j$ going from 1 to $m$.
+However, if we for some reason should
+reverse the loops (decrementing $i$ and $j$), the available
+ ``new'' ($k$) values on the right-hand side change.
+The efficiency of the Gauss-Seidel method is strongly dependent on the
+ordering of the equations and unknowns in many applications.
+The ordering also affects the performance of implementations on
+parallel and vector computers.
+A quick overview of various orderings and versions of Gauss-Seidel iteration
+is provided in \cite[Ch.~4.3]{Wesseling92}.
+
+From an implementational point of view, one should notice that
+the new values $x_i^{k}$ or $u_{i,j}^{k}$ can overwrite the
+corresponding old values $x_i^{k-1}$ and $u_{i,j}^{k-1}$.
+This is not possible in the Jacobi algorithm.
+
+\subsection{Example}
+\label{ch:linalg:examp1}
+
+Consider the Poisson
+equation $\nabla^2 u=2$ on the unit square, with $u=0$ for $x=0$, and
+$u=1$ for $x=1$. At the boundaries $y=0,1$ we impose homogeneous
+Neumann conditions: $\partial u/\partial y = 0$.
+The exact solution is then $u(x,y)=x^2$.
+We introduce a grid over $(0,1)\times (0,1)$
+with points $i,j=1,\ldots,m$ as shown in
+Figure \ref{ch:linalg:figGS}.
+The discrete equations are to be solved by the Gauss-Seidel method.
+At all inner points, $i,j=2,\ldots,m-1$, we can use the difference equation
+\eqref{linalg2:classic:GS2} directly.
+At $j=1$ we have by the boundary condition $u_{i,2}=u_{i,0}$.
+Similarly, $u_{i,m-1} = u_{i,m+1}$.
+These relations can be used to eliminate the fictitious values
+$u_{i,m+1}$ and $u_{i,0}$ in the difference equations at $j=1$ and $j=m$:
+\begin{align*}
+u^{k}_{i,1} &= {1\over4}\left(
+u^{k}_{i,2} + u^{k}_{i-1,1} + u^{k-1}_{i+1,1} + u^{k-1}_{i,2}
++ h^2f_{i,1}\right),\\
+u^{k}_{i,m} &= {1\over4}\left(
+u^{k}_{i,m-1} + u^{k}_{i-1,m} + u^{k-1}_{i+1,m} + u^{k-1}_{i,m-1}
++ h^2f_{i,1}\right) \tp
+\end{align*}
+The start values $u^0_{i,j}$ can be arbitrary as long as
+$u^0_{1,j}=0$ and $u^0_{m,j}=1$ such that the preceding iteration formulas
+sample the correct values at $i=1,m$.
+
+The demo program \emp{src/linalg/GaussSeidelDemo/main.cpp} contains a
+suggested implementation of the solution algorithm.  In that program,
+the field values $u^{k}_{i,j}$ overwrite $u^{k-1}_{i,j}$.  Moreover,
+the start values are $u_{i,j}^0=0$ or $u_{i,j}^0=(-1)^i$, except for
+$u_{1,j}$ and $u_{m,j}$, which must equal the prescribed boundary
+conditions.  Included in this directory is a little \perl\ script
+\emp{play.pl} that takes $m$ and the start-vector type as argument,
+runs the program, and thereafter displays an animation of the error
+along $x$ as the iteration index $k$ increases. There is also a GUI
+version of the script, called \emp{play-GUI.pl}.
+
+For small values of $m$ the Gauss-Seidel method is seen to converge
+rapidly to the exact solution.  For $m=80$ we see that the error is
+initially steep, and during the first iterations it is effectively
+reduced and smoothed. However, the convergence slows down
+significantly.  After 1000 iterations the maximum error is still as
+high as 20 percent of the initial maximum error.
+
+The property that the first few Gauss-Seidel iterations are
+very effective in reducing and smoothing the error,
+is a key ingredient in multigrid methods.
+
+
+\begin{figure}[htb]
+  \centerline{\psfig{figure=figs/GaussSeidel.xfig.eps,width=7cm}}
+  \caption{Sketch of a grid for finite difference approximation of
+  $\nabla^2u=2$ on the unit square, with $u$ prescribed for $i=1,m$
+  and $\partial u /\partial y=0$ for $j=1,m$.
+  The difference equations must be modified for points at $j=1,m$ by
+  using the boundary condition $\partial u/\partial y=0$,
+  involving the points marked
+  with bullets. The boundary points marked with circles have
+  prescribed $u$ values and can remain untouched.
+  \label{ch:linalg:figGS} }
+\end{figure}
+
+
+
+\subsubsection{Successive Over-Relaxation.}
+\index{linear solvers!SOR}
+The idea of relaxation as introduced in the Jacobi method is also
+relevant to Gauss-Seidel iteration.
+If $\x^*$ is the new solution predicted by a Gauss-Seidel step,
+we may set
+
+\begin{equation}
+\x^{k} = \omega\x^* + (1-\omega )\x^{k-1}\tp
+\label{linalg2:classic:SOR1}
+\end{equation}
+The resulting method is called \emph{Successive Over-Relaxation},
+abbreviated SOR.\index{Successive Over-Relaxation}
+It turns out that
+$\omega >1$ is a good choice when solving stationary PDEs of the
+Poisson-equation type.
+One can prove that $\omega\in (0,2)$ is a necessary condition for
+convergence.
+In terms of $\M$ and $\N$, the method can be expressed as
+\[ \M = {1\over\omega }\D +  \L,\quad \N = {1-\omega \over\omega}\D - \U \tp\]
+The algorithm is a trivial combination of
+\eqref{linalg2:classic:GS1} and \eqref{linalg2:classic:SOR1}:
+
+\begin{equation}
+\label{linalg2:classic:SOR2}
+x_i^{k} =  {\omega\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k}
+- \sum_{j=i+1}^n A_{i,j}x_j^{k-1}\right) + (1-\omega )x_i^{k-1} ,
+\end{equation}
+for $i=1,\ldots,n$.
+The SOR method for the discrete Poisson equation can be written as
+
+\begin{equation}
+u^{k}_{i,j} = {\omega \over4}\left(
+u^{k}_{i,j-1} + u^{k}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k-1},
+\label{linalg2:classic:SOR3}
+\end{equation}
+for $i,j=2,\ldots,m-1$.
+By a clever choice of $\omega$, the convergence of SOR can be much faster
+than the convergence of Jacobi and Gauss-Seidel iteration.
+A guiding value is $\omega = 2-\mathcal{O}(h)$, but the optimal choice of
+$\omega$ can be theoretically estimated in simple model problems involving
+the Laplace or Poisson equations.
+One should observe that SOR with $\omega =1$ recovers the Gauss-Seidel method.
+
+\subsubsection{Symmetric Successive Over-Relaxation.}
+\index{linear solvers!SSOR}
+\index{Symmetric SOR}
+The \emph{Symmetric SOR} method, abbreviated SSOR,
+is a two-step SOR procedure where we in the first step
+apply a standard SOR sweep, whereas we in the second SOR step run through the
+unknowns in reversed order (backward sweep).
+The matrix $\M$ is now given by
+
+\begin{equation}
+\M = {1\over 2-\omega }\left( {1\over\omega}\D + \L\right)
+\left({1\over\omega}\D\right)^{-1}
+\left( {1\over\omega}\D + \U\right) \tp
+\end{equation}
+In the algorithm we need to solve a linear system with $\M$ as
+coefficient matrix. This is efficiently done since the above $\M$
+is written on a factorized form. The solution can hence be performed
+in three steps, involving two triangular coefficient matrices and one
+diagonal matrix.
+As for SOR, $\omega\in (0,2)$ is necessary for convergence, but
+SSOR is less sensitive than SOR to
+the value of $\omega$.
+To formulate an SSOR method for our Poisson equation problem, we
+make explicit use of the ideas behind the algorithm, namely a
+forward and backward SOR sweep.
+We first execute
+
+\begin{equation}
+u^{k,*}_{i,j} = {\omega \over4}\left(
+u^{k,*}_{i,j-1} + u^{k,*}_{i-1,j} + u^{k-1}_{i+1,j} + u^{k-1}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k-1},
+\label{linalg2:classic:SSOR2}
+\end{equation}
+for $i,j=2,\ldots,m-1$.
+The second step consists in running through the grid points in reversed
+order,
+
+\begin{equation}
+u^{k}_{i,j} = {\omega \over4}\left(
+u^{k,*}_{i,j-1} + u^{k,*}_{i-1,j} + u^{k}_{i+1,j} + u^{k}_{i,j+1}
++ h^2f_{i,j}\right) + (1-\omega )u_{i,j}^{k,*},
+\label{linalg2:classic:SSOR3}
+\end{equation}
+for $i,j=m-1,m-2,\ldots,2$. Notice that $u_{i,j}^{k,*}$ are the ``old''
+values in step two.
+
+\subsubsection{Line SOR Iteration.}
+The methods considered so far update only one entry at a time in
+the solution vector. The speed of such \emph{pointwise} algorithms
+can often be improved by finding new values for a subset of
+the unknowns {simultaneously}. For example, in our Poisson equation
+problem we could find new values of $u_{i,j}^{k}$ simultaneously
+along a line. The SOR algorithm could then be formulated as
+\begin{align}
+ -u_{i-1,j}^* + 4u_{i,j}^* - u_{i+1,j}^* &= u_{i,j-1}^{k}
++ u_{i,j+1}^{k-1} + h^2f_{i,j},\label{linalg:LSOR1}\\
+u_{i,j}^{k} &= \omega u_{i,j}^* + (1-\omega )u_{i,j}^{k-1} \tp
+\end{align}
+For a fixed $j$, \eqref{linalg:LSOR1} is a tridiagonal system coupling
+$u$ values along a line $j=\mbox{const}$. We can solve for these
+values simultaneously and then continue with the line $j+1$.
+The algorithm is naturally called \emph{line SOR} iteration.
+Instead of working with lines, we could solve simultaneously for
+an arbitrary local block of unknowns.
+This general approach is referred to as \emph{block SOR} iteration.
+The ideas of lines and blocks apply of course to Jacobi and
+Gauss-Seidel iteration as well.
+
+The solution of a stationary PDE (like the Poisson equation)
+at a point is dependent on all the boundary
+data. Therefore, we cannot expect an iterative method to converge properly
+before the boundary conditions have influenced sufficiently large portions
+of the domain. The information in the pointwise versions of the
+classical iterative methods is transported one grid point per iteration,
+whereas
+line or block versions transmit the information along a line
+or throughout a block per iterative step.
+This gives a degree of implicitness in the iteration methods that we expect
+to be reflected in an increased convergence rate.
+The figures in the next section demonstrate this feature.
+
+
+\subsubsection{Convergence Rates for the Poisson Problem.}
+Bruaset \cite{BruBok} presents some estimates of
+$R_{\infty}(\G )$ when solving the 2D Poisson equation $-\nabla^2u =f$
+by a standard centered finite difference method on a uniform grid over
+the unit square, with $u=0$ on the boundary.
+For the point Jacobi, Gauss-Seidel, SOR, and SSOR methods we have the
+asymptotic estimates:\label{ch:linalg:SORconv}
+
+\vspace{0.3cm}
+
+\begin{center}
+\begin{tabular}{cccccc}
+\hline\noalign{\smallskip}
+rate & \mbox{\ \ \ } & Jacobi  & \mbox{\ \ Gauss-Seidel\ \ } & SOR & \hbox{\ \ \ SSOR\ \ \  } \\
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+$R_{\infty}(\G )$ & & $\pi^2h^2/2$ & $\pi^2h^2$ & $2\pi h$ & $>\pi h$\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+
+\noindent
+The estimates for the SOR and SSOR methods are based on using a
+theoretically known optimal value of the relaxation parameter $\omega$
+for the present model problem.
+
+Similar convergence
+results for the line versions of the classical iterative methods
+are given in the next table.
+
+\vspace{0.3cm}
+
+\begin{center}
+\begin{tabular}{cccccc}
+\hline\noalign{\smallskip}
+rate & \mbox{\ \ \ } & Jacobi  & \mbox{\ \ Gauss-Seidel\ \ } & SOR & \hbox{\ \ \   SSOR\ \ \   }\\
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+$R_{\infty}(\G )$ & & $\pi^2h^2$ & $2\pi^2 h^2$ & $2\sqrt{2}\pi h$ &
+$\geq \sqrt{2}\pi h$\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+
+\noindent
+Recalling that $1/R_{\infty}(\G )$ is proportional to the expected
+number of iterations needed to reach a prescribed reduction of the
+initial error, we see that Gauss-Seidel is twice as fast as Jacobi,
+and that SOR and SSOR are significantly superior to the former
+two on fine grids
+($h$ vs.~$h^2$).
+The line versions are about twice
+as fast as the corresponding point versions.
+
+From the results above it is clear that Jacobi iteration is a slow method.
+However, because of its explicit updating nature,
+this type of iterative approach, either used as a stand-alone solver, as
+a preconditioner, or as a smoother in multigrid,
+has been popular
+on vector and parallel machines, where more sophisticated methods
+may have difficulties in exploiting the hardware features.
+
+
+\section{Conjugate Gradient-Like Iterative Methods}
+\label{ch:linalg:CGmethods}
+A successful family of methods, usually referred to as Conjugate Gradient-like
+algorithms, can be viewed as Galerkin or least-squares methods applied
+to a linear system $\A\x =\b$.
+This view is different from the standard approaches to deriving
+the classical Conjugate Gradient method in the
+literature. Nevertheless, the Galerkin or
+least-squares framework makes it possible to reuse the principal
+numerical ideas
+from Section \ref{ch:fem1:wrm} and the analysis from Section \ref{ch:fem1:math}
+when solving linear systems approximately.
+We believe that this view may increase the general
+understanding of variational methods and their applicability.
+
+Our exposition focuses on the basic reasoning behind the methods,  and
+a natural continuation of the material here is provided by
+two review texts;
+Bruaset \cite{BruBok}
+gives an accessible theoretical overview of a wide range
+of Conjugate Gradient-like methods, whereas
+Barrett et al.~\cite{linalgtemplates93}
+present a collection of computational algorithms and give
+valuable information about the practical use of the methods.
+Every Diffpack practitioner who needs to access
+library modules for iterative solution of linear systems should
+spend some time on these two references.
+For further study of iterative solvers
+we refer the reader to the comprehensive
+books by Hackbusch \cite{Hackbusch} and Axelsson \cite{Axelsson}.
+
+\subsection{Galerkin and Least-Squares Methods}
+Given a linear system
+
+\begin{equation}
+\A\x = \b,\quad\x,\b\in\Re^n,\ \A\in\Re^{n,n}
+\end{equation}
+and a start vector $\x^0$,
+we want to construct an iterative solution method that produces approximations
+$\x^1,\x^2,\ldots$, which hopefully converge to the exact solution $\x$.
+In iteration no.~$k$ we seek an approximation
+
+\begin{equation}
+\x^k = \x^{k-1} + \sum_{j=1}^k \alpha_j\q_j,
+\label{linalg:xk:update}
+\end{equation}
+where $\q_j\in\Re^n$ are known vectors and $\alpha_j$ are constants to
+be determined by a Galerkin or least-squares method.
+The corresponding error in the equation $\A\x =\b$, the residual, becomes
+
+\[ \bfr^k = \b -\A\x^k = \bfr^{k-1} -\sum_{j=1}^k\alpha_j\A\q_j \tp \]
+
+\subsubsection{The Galerkin Method.}
+Galerkin's method states that the inner product of the residual and
+$k$ independent weights $\q_i$ vanish:
+
+\begin{equation}
+(\bfr^k,\q_i )=0,\quad i=1,\ldots,k\tp
+\label{linalg2:cg:eq1}
+\end{equation}
+Here $(\cdot,\cdot )$ is the standard Euclidean inner product on $\Re^n$.
+Inserting the expression for $\bfr^k$ in \eqref{linalg2:cg:eq1}
+gives a linear system
+for $\alpha_j$:
+
+\begin{equation}
+\sum_{j=1}^k (\A\q_i,\q_j )\alpha_j = (\bfr^{k-1},\q_i),\quad i=1,\ldots,k
+\tp
+\end{equation}
+
+\subsubsection{The Least-Squares Method.}
+The idea of the least-squares method is to
+minimize the square of the norm of the
+residual with respect to the free parameters $\alpha_1,\ldots,\alpha_k$.
+That is, we minimize $(\bfr^k,\bfr^k)$:
+
+\[ {\partial\over\partial\alpha_i} (\bfr^k,\bfr^k) = 2({\partial\bfr^k\over
+\partial\alpha_i},\bfr^k) =0,\quad i=1,\ldots,k\tp \]
+Since ${\partial\bfr^k /\partial\alpha_i} = -\A\q_i$, this approach leads to
+the following linear system:
+
+\begin{equation}
+\sum_{j=1}^k (\A\q_i,\A\q_j)\alpha_j = (\bfr^{k-1},\A\q_i),\quad i=1,\ldots,k\tp
+\label{ch:linalg:ls:eq1}
+\end{equation}
+Equation~\eqref{ch:linalg:ls:eq1}
+can  be viewed as a weighted residual method with weights
+$\A\q_i$, also called a Petrov-Galerkin method.
+
+\index{Petrov-Galerkin formulation}
+
+\subsubsection{A More Abstract Formulation.}
+The presentation of the Galerkin and least-squares methods above follow
+closely the reasoning in Section \ref{ch:fem1:theory}. We can also view
+these methods in a more abstract framework like we did in
+Section \ref{ch:fem2:theory:weakform}.
+Let
+
+\[ \mathcal{B}=\{\q_1,\ldots,\q_k \} \]
+be a basis for the $k$-dimensional vector space $V_k\subset\Re^n$.
+The methods can then be formulated as: \emph{Find $\x^k-\x^{k-1}\in
+V_k$ such that}
+
+\begin{align*}
+ (\bfr^k,\v )&= 0,\quad\forall\v\in V_k\hbox{  (Galerkin)}\\
+ (\bfr^k,\A\v ) &= 0,\quad\forall\v\in V_k\hbox{  (least-squares)}
+\end{align*}
+Provided that the solutions of the resulting linear systems exist and are
+unique, we have found a new approximation $\x^k$ to $\x$.
+When $k=n$, the only solution to the equations above is $\bfr^n={\bf 0}$.
+This means that the exact solution is found in at most $n$ iterations,
+neglecting effects of round-off errors.
+
+The Galerkin condition can alternatively be written as
+\[ a(\x^k,\v) = L(\v ),\quad\forall\v\in V_k, \]
+with $a(\u,\v) = (\A\u,\v )$ and $L(\v) = (\b,\v )$.
+The analogy with the abstract formulation of the finite element method in
+Section \ref{ch:fem2:theory:weakform} is hence clearly demonstrated.
+
+\subsubsection{Krylov Subspaces.}
+To obtain a complete algorithm, we need to establish a rule to update
+the basis $\cal B$ for the next iteration. That is, we need to
+compute a new basis vector $\q_{k+1}\in V_{k+1}$ such that
+
+\begin{equation}
+\mathcal{B} =\{ \q_1,\ldots,\q_{k+1}\}
+\label{linalg2:cg:Basis}
+\end{equation}
+is a basis for the space $V_{k+1}$ that is used in the next iteration.
+The present family of methods applies the \emph{Krylov subspace}
+\index{Krylov space}
+
+\begin{equation}
+V_k = \mbox{span} \left\lbrace \bfr^0,\A\bfr^0,\A^2\bfr^0,\ldots
+\A^{k-1}\bfr^0 \right\rbrace \tp
+\end{equation}
+Some frequent names
+of the associated iterative methods are therefore
+{Krylov subspace iteration}, Krylov projection methods,
+or simply Krylov methods.
+
+\subsubsection{Computation of the Basis Vectors.}
+Two possible formulas for updating $\q_{k+1}$, such that
+$\q_{k+1}\in V_{k+1}$, are
+
+\begin{align}
+\q_{k+1} &= \bfr^k + \sum_{j=1}^k\beta_j\q_k, \label{linalg:q:update1}\\
+\q_{k+1} &= \A\bfr^k + \sum_{j=1}^k\beta_j\q_k,\label{linalg:q:update2}
+\end{align}
+where the free parameters $\beta_j$ can be used to enforce desirable
+orthogonality properties of $\q_1,\ldots,\q_{k+1}$. For example,
+it is convenient to require that the coefficient matrices in the linear
+systems for $\alpha_1,\ldots,\alpha_k$ are diagonal.
+Otherwise, we must solve a $k\times k$ linear system in each iteration.
+If $k$ should approach
+$n$, the systems for the coefficients $\alpha_i$ are of
+the same size as our original system $\A\x =\b$!
+A diagonal matrix ensures an efficient closed form solution for
+$\alpha_1,\ldots,\alpha_k$.
+To obtain a diagonal coefficient matrix, we require in Galerkin's method
+that
+\[ (\A\q_i,\q_j)=0\quad \mbox{when}\ i\neq j, \]
+whereas we in the least-squares method require
+\[ (\A\q_i,\A\q_j)=0\quad \mbox{when}\ i\neq j\tp \]
+We can define
+the inner product
+
+\begin{equation}
+\langle \u,\v\rangle\equiv (\A\u,\v ) =\u^T\A\v,
+\end{equation}
+provided $\A$ is symmetric and positive definite. Another
+useful inner product is
+
+\begin{equation}
+[\u,\v ]\equiv (\A\u,\A\v) = \u^T\A^T\A\v \tp
+\end{equation}
+These inner products will be be referred to as the $\A$ product, with the
+associated $\A$ norm, and the $\A^T\A$ product, with the associated
+$\A^T\A$ norm.
+
+The orthogonality condition on the $\q_i$ vectors are then
+$\langle \q_{k+1},\q_i\rangle =0$ in the Galerkin method
+and  $[\q_{k+1},\q_i]=0$ in the least-squares method, where $i$
+runs from 1 to $k$.
+A standard Gram-Schmidt process can be used for constructing
+$\q_{k+1}$ orthogonal to $\q_1,\ldots,\q_k$. This leads to the determination
+of the $\beta_1,\ldots,\beta_k$ constants as
+
+\begin{align}
+\beta_i &= { \langle\bfr^k,\q_i\rangle\over\langle\q_i,\q_i\rangle}
+\quad\hbox{(Galerkin)}\label{linsys:betaiG}\\
+\beta_i &= { [\bfr^k,\q_i]\over [\q_i,\q_i] }
+\quad\hbox{(least squares)}
+\end{align}
+for $i=1,\ldots,k$.
+
+\subsubsection{Computation of a New Solution Vector.}
+The orthogonality condition on the basis vectors $\q_i$ leads to
+the following solution for $\alpha_1,\ldots,\alpha_k$:
+
+\begin{align}
+\alpha_i &= { (\bfr^{k-1},\q_i)\over \langle \q_i,\q_i\rangle}
+\quad\hbox{(Galerkin)}\label{linsys:alpha:G}\\
+\alpha_i &= { (\bfr^{k-1},\A\q_i)\over [ \q_i,\q_i]}
+\quad\hbox{(least squares)}\label{linsys:alpha:LS}
+\end{align}
+In iteration $k-1$, $(\bfr^{k-1},\q_i)=0$ and $(\bfr^{k-1},\A\q_i)=0$, for
+$i=1,\ldots,k-1$, in the Galerkin and least-squares case, respectively.
+Hence, $\alpha_i =0$, for $i=1,\ldots, k-1$. In other words,
+\[ \x^{k} = \x^{k-1} + \alpha_k\q_k \tp\]
+When $\A$ is symmetric and positive definite, one can show that
+also $\beta_i=0$, for $i=1,\ldots,k-1$, in both the Galerkin and least-squares
+methods \cite{BruBok}.
+This means that $\x^k$ and $\q_{k+1}$ can be updated using only
+$\q_k$ and not the previous $\q_1,\ldots,\q_{k-1}$ vectors.
+This property has of course dramatic effects on the storage requirements
+of the algorithms as the number of iterations increases.
+
+For the suggested algorithms to work,
+we must require that the denominators in
+\eqref{linsys:alpha:G} and \eqref{linsys:alpha:LS} do not vanish.
+This is always fulfilled for the least-squares method, while a
+(positive or negative) definite matrix $\A$ avoids break-down of
+the Galerkin-based iteration (provided $\q_i \neq \mathbf{0}$).
+
+
+The Galerkin solution method for linear systems was originally devised
+as a \emph{direct} method in the 1950s.
+After $n$ iterations the exact solution is
+found in exact arithmetic, but at a higher cost compared with
+Gaussian elimination. Naturally, the method did not receive significant
+popularity before researchers discovered (in the beginning of the 1970s) that
+the method could produce a good approximation to $\x$ for $k\ll n$ iterations.
+
+Finally, we mention how to terminate the iteration.
+The simplest criterion is $||\bfr^k||\leq\epsilon_r$, where
+$\epsilon_r$ is a small prescribed quantity.
+Sometimes it is appropriate to use a relative residual,
+$||\bfr^k||/||\bfr^0||\leq\epsilon_r$.
+Termination criteria for Conjugate Gradient-like methods is a subject
+on its own \cite{BruBok}, and Diffpack offers a framework for
+monitoring convergence and combining termination criteria.
+{\LaChap}~\ref{ch:linalg:conv} deals with the details of this topic.
+
+
+\subsection{Summary of the Algorithms}
+
+\subsubsection{Summary of the Least-Squares Method.}
+In Algorithm~\ref{linalg2:cg:alg1} we have summarized
+the computational steps in the least-squares method.
+Notice that we update the residual recursively instead of using
+$\bfr^k=\b - \A\x^k$ in each iteration since we then avoid a possibly
+expensive matrix-vector product.
+
+\algor{Least-squares Krylov iteration.\label{linalg2:cg:alg1}}{
+given a start vector $\x^0$,\\
+compute $\bfr^0=\b - \A\x^0$ and set $\q_0 =\bfr^0$.\\
+for $k=1,2,\ldots$ until termination criteria are fulfilled:\\
+\> $\alpha_k = {(\bfr^{k-1},\A\q_k)/ [\q_k,\q_k]}$\\
+\> $\x^{k} = \x^{k-1} + \alpha_k\q_k$\\
+\> $\bfr^{k} = \bfr^{k-1} - \alpha_k\A\q_k$\\
+\> if $\A$ is symmetric then\\
+\>\> $\beta_k = {[\bfr^k,\q_k]/ [\q_k,\q_k]}$\\
+\>\> $\q_{k+1} = \bfr^k - \beta_k\q_k$\\
+\> else\\
+\>\> $\beta_j = {[\bfr^k,\q_j]/ [\q_j,\q_j]},\quad j=1,\ldots,k$\\
+\>\> $\q_{k+1} = \bfr^k - \sum_{j=1}^k\beta_j\q_j$
+}
+
+
+\paragraph{Remark.} The algorithm above is just a summary of the
+steps in the derivation of the least-squares method and should not be
+directly used for practical computations without further developments.
+
+\subsubsection{Truncation and Restart.}
+When $\A$ is nonsymmetric, the storage requirements of $\q_1,\ldots,\q_k$
+may be prohibitively large. It has become a standard trick to
+either \emph{truncate} or \emph{restart} the algorithm.
+In the latter case one restarts the algorithm every $K$th step, i.e.,
+one aborts the iteration and starts the algorithm again with $\x^0=\x^K$.
+The other alternative is to truncate the sum $\sum_{j=1}^k\beta_j\q_j$
+and use only the last $K$ vectors:
+\[ \x^k = \x^{k-1} + \sum_{j=k-K+1}^k \beta_j\q_j\tp \]
+Both the restarted and truncated version of the algorithm require
+storage of only $K$ basis vectors $\q_{k-K+1},\ldots,\q_k$.
+The basis vectors are also often called \emph{search direction vectors},
+\index{search (direction) vectors} and this name is used in Diffpack.
+The truncated version of the least-squares method in
+Algorithm~\ref{linalg2:cg:alg1} is widely known as
+Orthomin, often written as Orthomin$(K)$ to explicitly indicate the
+number of search direction vectors.
+%The naming convention of iterative methods in Diffpack employs the
+%prefix T- for truncated methods and R- for restarted versions.
+%The Diffpack name for
+%Orthomin$(K)$ is T-OM($K$), while R-OM$(K)$ is the name of the
+%least-squares method in
+%Algorithm~\ref{linalg2:cg:alg1} with restart after $K$ iterations.
+In the literature one encounters the name
+\emph{Generalized Conjugate Residual method}, abbreviated CGR, for
+the restarted version of Orthomin. When $\A$ is symmetric, the method
+is known under the name \emph{Conjugate Residuals}.
+\index{linear solvers!generalized conjugate residuals}
+\index{linear solvers!minimum residuals}
+\index{linear solvers!GCR}
+\index{linear solvers!Orthomin}
+\index{linear solvers!T-OM}
+\index{linear solvers!R-OM}
+
+One can devise very efficient implementational forms of the
+truncated and restarted Orthomin algorithm. We refer to
+\cite{Lan90} for
+the details of such an algorithm.
+
+\subsubsection{Summary of the Galerkin Method.}
+In case of Galerkin's method, we assume that $\A$ is symmetric and
+positive definite. The resulting computational procedure
+is the famous Conjugate Gradient
+method, listed in Algorithm~\ref{linalg2:cg:alg2}.
+\index{linear solvers!conjugate gradients}
+Since $\A$ must be symmetric, the recursive update of
+$\q_{k+1}$ needs only one previous search direction vector $\q_k$, that is,
+$\beta_j=0$ for $j<k$.
+
+\algor{Galerkin Krylov iteration (Conjugate Gradient method).
+\label{linalg2:cg:alg2}}{
+given a start vector $\x^0$,\\
+compute $\bfr^0=\b - \A\x^0$ and set $\q_0 =\bfr^0$.\\
+for $k=1,2,\ldots$ until termination criteria are fulfilled:\\
+\> $\alpha_k = {(\bfr^{k-1},\q_k) / \langle \q_k,\q_k\rangle}$\\
+\> $\x^{k} = \x^{k-1} + \alpha_k\q_k$\\
+\> $\bfr^{k} = \bfr^{k-1} - \alpha_k\A\q_k$\\
+\> $\beta_k = {\langle\bfr^k,\q_k\rangle / \langle\q_k,\q_k\rangle}$\\
+\> $\q_{k+1} = \bfr^k - \beta_k\q_k$
+}
+
+The previous remark that the listed algorithm is just a summary of the
+steps in the solution procedure, and not an efficient algorithm
+that should be implemented in its present form, must be repeated here. An
+efficient Conjugate Gradient
+algorithm suitable for implementation is given in
+\cite[Ch.~2.3]{linalgtemplates93}.
+
+Looking at Algorithms~\ref{linalg2:cg:alg1} and \ref{linalg2:cg:alg2},
+one can notice that the matrix $\A$ is only used in matrix-vector
+products. This means that it is sufficient
+to store only the nonzero entries of $\A$.
+The rest of the algorithms consists of vector operations of the
+type $\y \leftarrow a\x + \y$,
+the slightly more general variant $\q\leftarrow a\x +\y$, as well as
+inner products.
+
+\subsection{A Framework Based on the Error}
+Let us define the error $\e^k = \x - \x^k$. Multiplying this equation by $\A$
+leads to the well-known relation between the error and the residual
+for linear systems:
+
+\begin{equation}
+\A\e^k = \bfr^k \tp
+\label{linalg:erroreq}
+\end{equation}
+Using $\bfr^k = \A\e^k$ we can reformulate the Galerkin and least-squares
+methods in terms of the error.
+The Galerkin method can then be written
+
+\begin{equation}
+(\bfr^k,\q_i ) = (\A\e^k,\q_i) = \langle\e^k,\q_i\rangle = 0,\quad
+i=1,\ldots,k\tp
+\end{equation}
+For the least-squares method we obtain
+
+\begin{equation}
+(\bfr^k,\A\q_i) = [\e^k,\q_i] =0,\quad i=1,\ldots,k\tp
+\end{equation}
+This means that
+
+\begin{align*}
+\langle \e^k,\v\rangle  &= 0\quad\forall\v\in V_k\hbox{ (Galerkin)}\\
+\lbrack \e^k,\v \rbrack  &= 0\quad\forall\v\in V_k\hbox{ (least-squares)}
+\end{align*}
+In other words, the error is $\A$-orthogonal
+to the space $V_k$ in the Galerkin method, whereas the error is
+$\A^T\A$-orthogonal to $V_k$ in the least-squares method.
+This formulation of the Galerkin principle should be compared with
+similar statements in the finite element method, see
+the proof of Theorem~\ref{fem1:theory:bestapproxA:theorem} in
+Section \ref{ch:femanal:theorems}.
+
+
+We can unify these results by introducing the inner product
+$ (\u,\v )_{\B} \equiv (\B\u,\v )$, provided $\B$ is symmetric and
+positive definite. The associated norm reads
+$||\v||_{\B}=(\v,\v )_{\B}^{1\over2}$.
+ Given a linear space $V_k$ with basis
+\eqref{linalg2:cg:Basis}, $\x^k = \x^{k-1}+\sum_j\alpha_j\q_j$
+can be determined such that
+
+\begin{equation}
+(\e^k,\v )_{\B} =0\quad\forall\v\in V_k\tp
+\label{linalg:eBort}
+\end{equation}
+When the error is orthogonal to a space $V_k$, the approximate solution
+$\x^k$ is then the best approximation to $\x$ among all vectors
+in $V_k$. A proof of this well-known result was given on
+page~\pageref{fem1:theory:bestapproxA2}.
+In the present context, where that proof must be slightly modified
+for an $\x^0\neq {\bf 0}$, we can state the best approximation
+principle more precisely as \cite{BruBok}
+
+\begin{equation}
+||\x - \x^k||_{\B} \leq ||\x - (\x^0 + \v )||_{\B}\quad\forall\v\in V_k\tp
+\end{equation}
+One can also show that the error is nonincreasing: $||\e^k||_{\B}
+\leq ||\e^{k-1}||_{\B}$, which is an attractive property.
+The reader should notify the similarities between the results here
+and those for the finite element method in Section \ref{ch:fem1:math}.
+
+Choosing $\B =\A$ when $\A$ is symmetric and positive definite gives
+the Conjugate Gradient method, which then minimizes the error in the
+$\A$ norm. With $\B =\A^T\A$ we recover the least-squares method.
+Many other choices of $\B$ are possible, also when
+$(\cdot,\cdot )_{\B}$ is no longer a proper inner product. If
+$\B\A = \A^T\B$, the recurrence is short, and there is no need to
+store all the basis vectors $\q_i$
+(cf.~Algorithm~\ref{linalg2:cg:alg1} in the case $\A$ is symmetric).
+We refer to Bruaset \cite{BruBok} for a framework covering numerous
+Conjugate Gradient-like methods based on \eqref{linalg:eBort}.
+
+Several Conjugate Gradient-like methods have been developed during the
+last two decades, and some of the most popular methods do not fit
+directly into the framework presented here.  The theoretical
+similarities between the methods are covered in \cite{BruBok}, whereas
+we refer to \cite{linalgtemplates93} for algorithms and practical
+comments related to widespread methods, such as the SYMMLQ method (for
+symmetric indefinite systems), the Generalized Minimal Residual
+(GMRES) method, the BiConjugate Gradient (BiCG) method, the
+Quasi-Minimal Residual (QMR) method, and the BiConjugate Gradient
+Stabilized (BiCGStab) method.  When $\A$ is symmetric and positive
+definite, the Conjugate Gradient method is the optimal choice with
+respect to computational efficiency, but when $\A$ is nonsymmetric,
+the performance of the methods is strongly problem dependent.
+Diffpack offers all the aforementioned iterative procedures.
+
+
+\section{Preconditioning}
+\label{ch:linalg2:preconditioning}
+\index{linear systems!preconditioned}
+\index{linear solvers!preconditioning}
+
+\subsection{Motivation and Basic Principles}
+\index{preconditioning}
+\label{ch:linalg2:condno}
+The Conjugate Gradient method has been subject to extensive analysis,
+and its convergence properties are well understood.
+To reduce the initial error $\e^0 =\x -\x^0$ with a factor
+$0 <\epsilon\ll 1$ after $k$ iterations, or more precisely,
+$||\e^k||_{\A}\leq\epsilon ||\e^0||_{\A}$, it can be shown that
+$k$ is bounded by
+\[  {1\over2}\ln{2\over\epsilon}\sqrt{\kappa},\]
+where $\kappa$ is the ratio of the largest and smallest eigenvalue of
+$\A$. The quantity $\kappa$  is commonly referred to as
+the spectral \emph{condition number}\footnote{The spectral
+condition number is defined as
+the ratio of the magnitudes of the
+largest and the smallest eigenvalue of $\A$ \cite[Ch.~2]{QuartValli94}.}
+ of $\A$. Actually, the number of iterations
+for the Conjugate Gradient method to meet a certain termination criterion
+is influenced by the complete
+distribution of eigenvalues of $\A$.
+
+Common finite element and finite difference discretizations of
+Poisson-like PDEs lead to $\kappa\sim h^{-2}$, where $h$ denotes the
+mesh size. This implies that the Conjugate Gradient method converges
+slowly in PDE problems with fine grids, as the number of iterations is
+proportional to $h^{-1}$.  However, the performance is better than for
+the Jacobi and Gauss-Seidel methods, which in our example from
+page~\pageref{ch:linalg:SORconv} required $\mathcal{O}(h^{-2})$
+iterations. Although SOR and SSOR have the same asymptotic behavior as
+the Conjugate Gradient method, the latter does not need estimation of
+any parameters, such as $\omega$ in SOR and SSOR.  The number of
+unknowns in a hypercube domain in $\Re^d$ is approximately $n=(1/h)^d$
+implying that $\sqrt{\kappa}$ and thereby number of iterations goes
+like $n^{1/d}$.
+
+To speed up the Conjugate Gradient method, we should
+manipulate the eigenvalue distribution. For instance, we could reduce
+the condition number $\kappa$. This can be achieved by so-called
+\emph{preconditioning}. Instead of applying the iterative method to
+the system $\A\x =\b$, we multiply by a matrix $\M^{-1}$ and
+apply the iterative method to the mathematically equivalent system
+\begin{equation} \M^{-1}\A\x = \M^{-1}\b \tp\end{equation}
+The aim now is to construct a nonsingular \emph{preconditioning matrix}
+\index{preconditioning!matrix (def.)}  $\M$  such that $\M^{-1}\A$
+has a more favorable condition number than $\A$.
+
+\label{ch:linalg:CLandCR}
+For increased flexibility we can write
+$\M^{-1} = \C_L\C_R$ and transform the system according to
+
+\begin{equation}
+\C_L\A\C_R\y = \C_L\b,\quad \y =\C_R^{-1}\x ,
+\end{equation}
+where $\C_L$ is the \emph{left} and $\C_R$ is the \emph{right}
+preconditioner. If the original coefficient matrix
+$\A$ is symmetric and positive definite,
+$\C_L = \C_R^T$ leads to preservation of these properties in the
+transformed system. This is important when applying the Conjugate
+Gradient method to the preconditioned linear system\footnote{Even if
+$\A$ and $\M$ are symmetric and positive definite, $\M^{-1}\A$ does
+not necessarily inherit these properties.}.
+It appears that for practical purposes one
+can express the iterative algorithms
+such that it is sufficient to work with a single preconditioning matrix
+$\M$ only \cite{linalgtemplates93,BruBok}.
+We shall therefore speak of preconditioning in terms of the
+left preconditioner $\M$ in the following.
+
+\subsubsection{Use of the Preconditioning Matrix in the Iterative Methods}
+
+Optimal convergence rate for the Conjugate Gradient method is
+achieved when the coefficient matrix $\M^{-1}\A$ equals the identity matrix
+$\Id$. In the algorithm we need to perform matrix-vector products
+$\M^{-1}\A\u$ for an arbitrary $\u\in\Re^n$.
+This means that we have to solve a linear system with $\M$ as coefficient
+matrix in each iteration since we implement the product $\y =\M^{-1}\A\u$
+in a two step fashion: First we compute $\v = \A\u$ and then we
+solve the linear system $\M\y =\v$ for $\y$. The optimal choice $\M =\A$
+therefore involves the solution of $\A\y =\v$ in each iteration, which
+is a problem of the same complexity as our original system $\A\x =\b$.
+The strategy must hence be to compute an $\M\approx \A$ such that the
+algorithmic operations involving $\M$ are cheap.
+
+The preceding discussion motivates the following
+demands on the preconditioning matrix $\M$:
+\ben
+\item $\M$ should be a good approximation to $\A$,
+\item $\M$ should be
+inexpensive to compute,
+\item $\M$ should be sparse in order to minimize
+storage requirements, and
+\item linear systems with $\M$ as coefficient
+matrix must be efficiently solved.
+\een
+Regarding the last property, such systems
+must be solved in $\mathcal{O}(n)$ operations, that is, a complexity
+of the same order as the vector updates in the Conjugate Gradient-like
+algorithms.
+These four properties are contradictory and some sort of compromise must
+be sought.
+
+\subsection{Classical Iterative Methods as Preconditioners}
+\label{ch:linalg:SORprecond}
+\index{preconditioning!classical iterations}
+\index{preconditioning!Jacobi}
+\index{preconditioning!Gauss-Seidel}
+\index{preconditioning!SOR}
+\index{preconditioning!SSOR}
+\index{preconditioning!matrix splittings}
+
+Consider the basic iterative method \eqref{linalg2:classic:Rich1},
+\[ \x^k = \x^{k-1} + \bfr^{k-1} \tp \]
+Applying this method to the preconditioned system
+$\M^{-1}\A\x =\M^{-1}\b$ results in the scheme
+\[ \x^{k} = \x^{k-1} + \M^{-1}\bfr^{k-1} , \]
+which is nothing but a classical iterative method,
+cf.~\eqref{linalg2:classic:eq2}. This motivates for choosing $\M$ from
+the matrix splittings in
+{\LaChap}~\ref{ch:linalg2:classic} and thereby defining a class of
+preconditioners for Conjugate Gradient-like methods.
+To be specific, the appropriate choices of the preconditioning matrix $\M$
+are as follows.
+\bit
+\item Jacobi preconditioning: $\M =\D$.
+\item Gauss-Seidel preconditioning: $\M = \D + \L$.
+\item SOR preconditioning: $\M = \omega^{-1}\D +\L$.
+\item SSOR preconditioning: \[ \M = (2-\omega )^{-1}
+\left( \omega^{-1}\D + \L\right)
+\left( \omega^{-1}\D\right)^{-1}
+\left( \omega^{-1}\D + \U\right)\tp \]
+\eit
+Line and block versions of the classical
+schemes can also be used as preconditioners.
+
+Turning our attention to the four requirements of the
+preconditioning matrix, we
+realize that the suggested $\M$ matrices do not demand additional storage,
+linear systems with $\M$ as coefficient matrix are solved effectively in
+$\mathcal{O}(n)$ operations, and $\M$ needs no initial computation.
+The only questionable property is how well $\M$ approximates $\A$, and
+that is the weak point of using classical iterative methods as
+preconditioners.
+
+The implementation of the given choices for $\M$ is very simple;
+solving linear systems $\M\y =\v$ is accomplished by performing
+exactly one iteration of a classical iterative method.
+The Conjugate Gradient
+method can only utilize the Jacobi and SSOR preconditioners among the classical
+iterative methods, because the $\M$ matrix in that case is on the form
+$\M^{-1}=\C_L\C_L^T$, which is necessary to
+ensure that the coefficient matrix of the preconditioned system is
+symmetric and positive.
+For certain PDEs, like the Poisson equation, it can be shown that the SSOR
+preconditioner reduces the condition number with an order of magnitude,
+i.e., from $\mathcal{O}(h^{-2})$ to $\mathcal{O}(h^{-1})$,
+provided we use the optimal choice of the relaxation parameter $\omega$.
+The performance of the SSOR preconditioned Conjugate Gradient method is
+not very sensitive to the choice of $\omega$, and for PDEs with
+second-order spatial derivatives
+a reasonably optimal choice is $\omega =2/(1+ch)$, where $c$ is a positive constant.
+
+
+We refer to \cite{linalgtemplates93,BruBok} for more information about
+classical iterative methods as preconditioners.
+
+\subsection{Incomplete Factorization Preconditioners}
+\label{linalg:RILU:def}
+\index{preconditioning!incomplete factorization}
+\index{preconditioning!ILU}
+\index{preconditioning!MILU}
+\index{preconditioning!RILU}
+\index{ILU}
+\index{MILU}
+\index{RILU}
+Imagine that we choose $\M =\A$ and solve systems $\M\y =\v$ by a direct
+method. Such methods typically first compute the LU factorization
+$\M =\bar \L\bar \U$ and thereafter
+perform two triangular solves. The lower and upper
+triangular factors $\bar\L$ and
+$\bar\U$ are computed from a Gaussian elimination procedure.
+Unfortunately, $\bar\L$ and $\bar\U$ contain nonzero values, so-called
+\emph{fill-in}, in many locations where the original matrix $\A$ contains
+zeroes. This decreased sparsity of $\bar\L$ and $\bar\U$ increases
+both the storage requirements and the computational efforts related to
+solving systems $\M\y =\v$.
+An idea to improve the situation is to compute \emph{sparse} versions of
+the  factors
+$\bar\L$ and $\bar\U$. This is achieved by performing Gaussian
+elimination, but neglecting the fill-in. In this way
+we can compute approximate factors $\widehat\L$ and $\widehat\U$
+that become as sparse as $\A$.
+The storage requirements are hence only doubled by introducing a
+preconditioner, and the
+triangular solves become an
+$\mathcal{O}(n)$ operation since the number of nonzeroes in
+the $\widehat\L$
+and $\widehat\U$ matrices (and $\A$) is $\mathcal{O}(n)$ when the underlying PDE
+is discretized by finite difference or finite element methods.
+We call $\M =\widehat\L\widehat\U$ an \emph{Incomplete LU Factorization}
+preconditioner, often just referred to as the ILU preconditioner.
+
+Instead of throwing away all fill-in entries, we can add them to the
+main diagonal. This yields the \emph{Modified Incomplete LU Factorization}
+method, commonly known as the MILU preconditioner.
+If the fill-in to be added on the main diagonal is multiplied by a
+factor $\omega\in [0,1]$, we get the \emph{Relaxed Incomplete LU Factorization}
+preconditioner, with the acronym RILU.
+MILU and ILU preconditioning are recovered with $\omega =1$ and $\omega =0$,
+respectively.
+
+For certain second-order PDEs with associated
+symmetric positive definite coefficient matrix, it can be
+proven that the MILU preconditioner reduces the condition number from
+$\mathcal{O}(h^{-2})$ to $\mathcal{O }(h^{-1})$.
+This property is also present in numerical
+experiments going beyond the limits of existing convergence theory.
+When using ILU or  RILU factorization (with $\omega < 1$), the
+condition number remains of order $\mathcal{O}(h^{-2})$, but the convergence rate
+is far better than for the simple Jacobi preconditioner.
+Some work has been done on estimating the optimal
+relaxation parameter $\omega$ in model problems. For the 2D Poisson
+equation with $u=0$ on the boundary, the optimal $\omega$ is
+$1-\delta \dx$, where $\dx$ is the mesh size and $\delta$ is
+independent of $\dx$.
+It appears that $\omega =1$ can often give a dramatic increase in the
+number of iterations in the Conjugate Gradient method, compared with
+using an $\omega$ slightly smaller than unity. The value $\omega =0.95$
+could be regarded as a reasonable all-round choice.
+However, in a particular problem one should run some multiple loops
+in Diffpack to determine a suitable choice of $\omega$ and other
+parameters influencing the efficiency of iterative solvers.
+
+The general algorithm for RILU preconditioning follows the steps of
+traditional exact Gaussian elimination, except that
+we restrict the computations to the nonzero entries in $\A$.
+The factors $\widehat\L$ and $\widehat\U$ can be stored directly in the
+sparsity structure of $\A$, that is, the algorithm overwrites a copy
+$\M$ of $\A$ with
+its RILU factorization. The steps in the RILU factorizations are
+listed in Algorithm~\ref{linalg2:cg:alg3}.
+
+
+\algor{Incomplete LU factorization.\label{linalg2:cg:alg3}}{
+given a sparsity pattern as an index set $\mathcal{I}$\\
+copy $M_{i,j}\leftarrow A_{i,j}$, $i,j=1,\ldots,n$\\
+for $k=1,2,\ldots, n$\\
+\> for $i=k+1,\ldots,n$\\
+\>\> if $(i,k)\in\mathcal{I}$ then\\
+\>\>\> $M_{i,k}\leftarrow M_{i,k}/M_{k,k}$\\
+\>\> else\\
+\>\>\> $M_{i,k} = 0$ \\
+\>\> $r=M_{i,k}$\\
+\>\> for $j=k+1,\ldots,n$\\
+\>\>\> if $j=i$ then\\
+\>\>\>\> $M_{i,j}\leftarrow M_{i,j} - rM_{k,j} + \omega\sum_{p=k+1}^n
+\left( M_{i,p} - rM_{k,p}\right)$\\
+\>\>\> else\\
+\>\>\> if $(i,j)\in\mathcal{I}$ then\\
+\>\>\>\> $M_{i,j}\leftarrow M_{i,j} - rM_{k,j}$\\
+\>\>\> else\\
+\>\>\>\> $M_{i,j} =0$
+}
+
+We also remark here that the algorithm above needs careful refinement
+before it should be implemented in a code. For example,
+one will not run through a series of $(i,j)$ indices and test for
+each of them if $(i,j)\in\mathcal{I}$. Instead one should run more directly
+through the sparsity structure of $\A$.
+See \cite{Lan89} for an ILU/MILU algorithm on implementational form.
+
+The RILU methodology can be extended in various ways. For example,
+one can allow
+a certain level of fill-in in the sparse factors. This will improve
+the quality of $\M$, but also increase the storage and the work
+associated with solving systems $\M\y =\v$. Block-oriented versions
+of the pointwise RILU algorithm above have proven to be effective.
+We refer to \cite{linalgtemplates93,BruBok} for an overview of various
+incomplete factorization techniques.
+A comprehensive treatment of incomplete factorization
+preconditioners is found in the text
+by Axelsson \cite{Axelsson}.
+
+\section{Multigrid and Domain Decomposition Methods.}
+\label{ch:linalg:MLDD}
+The classical iterative methods and the Conjugate Gradient-like procedures
+we have sketched so far are general algorithms that have proven to
+be successful in a wide range of problems.
+A particularly attractive feature is the simplicity of these algorithms.
+However, the methods are not \emph{optimal} in the sense that
+they can solve a linear system with $n$ unknowns in $\mathcal{O}(n)$ operations.
+The MILU preconditioned Conjugate Gradient method typically demands
+$\mathcal{O}(n^{1+1/2d})$ operations, which means $\mathcal{O}(n^{1.17})$
+in a 3D problem. RILU preconditioning in general leads to
+$\mathcal{O}(n^{1.33})$ operations in 3D.
+This unfavorable asymptotic behavior has motivated the research for
+optimal algorithms.
+
+Two classes of optimal iterative strategies that can solve a system with
+$n$ unknowns in $\mathcal{O}(n)$ operations, are the \emph{multigrid}
+and \emph{domain decomposition}
+methods.
+These methods are more complicated to formulate and analyze, and the
+associated algorithms are problem dependent, both with respect to
+the algorithmic details and the performance.
+On parallel computers, however, multigrid and domain decomposition
+algorithms are much easier to deal with than RILU-like preconditioned
+iterative methods.
+The recent book by Smith et al.~\cite{SmithBjorstadGropp96} gives
+an excellent introduction to the algorithms and analysis of
+domain decomposition and multigrid methods and their applications
+to several types of stationary PDEs.
+Our very brief introduction to the subject is meant as an appetizer for
+studying \cite{SmithBjorstadGropp96} and applying, for instance, Diffpack's tools for
+multigrid and domain decomposition methods \cite{DD9}.
+
+\subsection{Domain Decomposition}
+\index{domain decomposition}
+We consider again our model problem $-\nabla^2u =f$ in $\Omega\in\Re^d$
+with $u=g$ on the boundary $\partial\Omega$.
+As the name implies, domain decomposition methods consists in decomposing
+the domain $\Omega$ into subdomains $\Omega_s$, $s=1,\ldots,D$.
+The basic idea is then to solve the PDE in each subdomain rather than in
+the complete $\Omega$. A fundamental problem is to assign appropriate
+boundary conditions on the inner non-physical boundaries.
+The classical \emph{alternating Schwarz} method accomplishes this problem
+through an iterative procedure.
+The subdomains must in this case be
+\emph{overlapping}.
+Let $u_s^k$ be the solution on
+$\Omega_s$ after $k$ iterations.
+Given an initial guess $u^0_s$, we solve for $s=1,\ldots,D$ the
+PDE $-\nabla^2u_s^k=f$  on $\Omega_s$ using $u_s^k=g$ on physical
+boundaries. On the inner boundaries of $\Omega_s$ we apply Dirichlet
+conditions with values taken from the most recently computed solutions
+in the overlapping neighboring subdomains.
+These values are of course not correct, but by repeating the procedure
+we can hope for convergence towards the solution $u$.
+This can indeed be proved for the present model problem.
+
+The Schwarz method can be viewed
+as a kind of block Gauss-Seidel method, where each block corresponds to
+a subdomain. If we only use Dirichlet values on inner boundaries from
+the previous iteration step, a block Jacobi-like procedure is obtained.
+All the subproblems in an iteration step can now be solved in parallel.
+This is a very attractive feature of the domain decomposition approach
+and forms the background for many parallel PDE solvers.
+Parallel computing with Diffpack is also founded on such domain
+decomposition strategies \cite{DPparallel}.
+The subdomain solvers can be iterative or direct and perhaps based
+on different discretization techniques. The approach can also be extended
+to letting the physical model, i.e.~the PDEs, vary among the subdomains.
+
+Although domain decomposition can be used as an efficient
+stand-alone solver, the Schwarz method is frequently applied as
+preconditioner for  a Krylov subspace iteration method.
+There is only need for an approximate solve on each subdomain in this case.
+A popular class of
+domain decomposition-based preconditioners employs \emph{non-overlapping}
+grids. We refer to \cite{linalgtemplates93} for a quick overview
+of domain decomposition preconditioners and to \cite{SmithBjorstadGropp96} for a
+thorough explanation of the ideas and the associated
+computational algorithms.
+
+The primitive alternating Schwarz method as explained above exhibits
+rather slow
+convergence unless it is combined with a so-called \emph{coarse grid
+correction}. This means that we also
+solve the PDE on the complete $\Omega$ in each iteration,
+using a coarse grid. The coarse grid solution over $\Omega$ is then
+combined with the
+fine grid subdomain solutions. Such combination of different levels
+of discretizations is the key point in \emph{multigrid methods}.
+
+\subsection{Multigrid Methods}
+\label{ch:linalg:ML}
+\index{linear solvers!multigrid}
+\index{multigrid}
+In Example~\ref{ch:linalg:examp1} we developed a demo program for the
+2D Poisson equation, where the linear system arising from a finite
+difference discretization is solved by Gauss-Seidel iteration.
+The animation of the error as the iteration index $k$ grows, shows that
+the error is efficiently smoothed and damped during the first iterations,
+but then further reduction of the error slows down.
+Considering a one-dimensional equation for simplicity, $-u''=f$,
+we can easily write down the Gauss-Seidel iteration in terms of
+quantities $u_j^{\ell}$, where $j=1,\ldots,m$
+is the spatial grid index and $\ell$ \emph{represents
+the iteration number:}
+\[ 2u_j^\ell =  u_{j-1}^{\ell} + u_{j+1}^{\ell-1} + \dx^2f_j \tp \]
+The error $e_i^\ell =u_i^\ell - u_i^\infty$ satisfies
+the homogeneous version of the difference equation:
+
+\begin{equation}
+2e_j^\ell =  e_{j-1}^{\ell} + e_{j+1}^{\ell-1}\tp
+\label{linalg:MG1}
+\end{equation}
+As explained in Section \ref{ch:fdm:analdiscr}, we may anticipate that
+the solution of \eqref{linalg:MG1} can be written as a sum of
+wave components:
+
+\[ e_j^\ell = \sum_k A_k\exp{(i(kj\dx - \tilde\omega\ell\Delta t ))}\tp \]
+An alternative form, which  simplifies the expressions a bit, reads
+
+\[ e_j^\ell = \sum_k A_k\xi^\ell\exp{(ikj\dx )},\quad \xi =
+\exp{(-i\tilde\omega\Delta t )}\tp \]
+Inserting a wave component in the Gauss-Seidel scheme results in
+
+\begin{equation}
+\xi = \exp{(-i\tilde\omega\Delta t)} = {\exp{(ik\dx )}\over
+2 - \exp{(-ik\dx )}} \tp
+\label{linalg:MG2}
+\end{equation}
+The reduction in amplitude due to one iteration is represented by
+the factor $\xi$, because
+$e_j^{\ell} = \xi e_j^{\ell -1}$.
+ The absolute value of this
+damping factor, here named $F(k\dx )$, follows from
+\eqref{linalg:MG2}: $F(k\dx ) =(5-4\cos k\dx )^{-1/2}$.
+In the grid we can represent waves with wave
+length $\lambda \rightarrow \infty$ (a constant)
+down to waves with wave length $\lambda = 2\dx$. The corresponding
+range of $k$ becomes $(0,\pi /\dx ]$.
+Figure~\ref{linalg:MG:fig1} shows a graph of $F(p)$, $p=k\dx\in [0,\pi]$.
+As we see, only the shortest waves are significantly damped.
+This means that if the error is rough, i.e., wave components with short
+wave length have significant amplitude, the Gauss-Seidel
+iteration will quickly damp
+these components out, and the error becomes smooth relative to the grid.
+The convergence is then slow because the wave components with longer
+wave length are only slightly damped from iteration to iteration.
+
+\begin{figure}
+\centerline{\psfig{file=figs/GSsmoother.ps,angle=-90,width=9cm}}
+\caption{\label{linalg:MG:fig1}
+Damping factor $F(p)$ of the error in one Gauss-Seidel iteration for the
+equation $-u''=f$, where $p=k\dx$ ($\lambda =2\pi /k$ being the
+wave length and $\dx$ being the grid cell size).}
+\end{figure}
+
+\index{smoother (multigrid)}.
+
+The basic observation in this analysis is that $F(p)$ decreases as
+$p=k\dx $ increases. Hence, if the error is dominated by wave components
+whose $p$ values are too small for efficient damping,
+we can increase $\dx$.
+That is, transferring the error to a coarser grid turns low-frequency
+wave components into high-frequency wave components on the coarser grid.
+These high-frequency components are efficiently damped by a few
+Gauss-Seidel iterations.
+We can repeat this process, and when the grid is coarse enough, we can
+solve the error equation exactly (e.g.~by a direct method).
+The error must then be transferred back to the original fine grid
+such that we can derive the solution of the fine-grid problem.
+An iterative method that is used to damp high-frequency components of
+the error on a grid is often called a
+Instead of Gauss-Seidel iteration, one  can use a relaxed version of
+Jacobi's method or
+incomplete factorization techniques as smoothers \cite{Wesseling92}.
+
+We now assume that we have a sequence of $K$ grids, $G^q$, $q=1,\ldots,K$,
+where the cell size decreases with increasing $q$. That is, $q=1$
+corresponds to the coarsest grid and $q=K$ is the fine grid on which our
+PDE problem of interest is posed.
+With each of these grids we associate a linear system
+$\A^q\u^q =\b^q$, arising from discretization of the PDE on the grid
+$G^q$.
+Any vector $\v^q$ of grid point values can be
+transferred to
+grid $G^{q-1}$ by the \emph{restriction operator} $\bfr^q$: $\v^{q-1}=\bfr^q\v^q$.
+The opposite action, i.e.,
+transferring a vector $\v^{q}$ on $G^q$ to $\v^{q+1}$
+on a finer grid $G^{q+1}$, is obtained by the
+\emph{prolongation operator} $\P^q$: $\v^{q+1} = \P^q\v^{q}$.
+We mention briefly how the restriction and prolongation
+operators can be defined. Consider a one-dimensional problem and
+assume that if $G^q$ has grid size $\dx$; then $G^{q-1}$ has grid
+size $2\dx$.
+Going from the fine grid $G^q$ to the coarse grid $G^{q-1}$ can
+be done by a local weighted average as illustrated in
+Figure \ref{linalg:MG:fig3}a, whereas the prolongation step can make
+use of standard linear interpolation (Figure \ref{linalg:MG:fig3}b).
+
+
+\begin{figure}
+\centerline{
+\subfigure[]{\psfig{file=figs/MGrestrict2.xfig.eps,width=10cm}}}
+\centerline{
+\subfigure[]{\psfig{file=figs/MGprolongate2.xfig.eps,width=11cm}}}
+\caption{\label{linalg:MG:fig3}
+Example on (a) restriction and (b) prolongation on one-dimensional
+grids, where the cell size ratio of $G^{q-1}$ and $G^q$ equals two.
+The weighted restriction sets a coarse grid value $u_j$ equal
+to $0.25 u_{2j-1}^f + 0.5 u_{2j}^f + 0.25u_{2j+1}^f$, where superscript
+$f$ denotes a fine grid value and $j$ is a coarse grid-point number
+in the figure. At the ends, the boundary conditions (here zero) must
+be fulfilled.
+}
+\end{figure}
+
+On every grid we can define a smoother and introduce the
+notation
+$S(\tilde\u^q,\v^q,\f^q,\nu_q,q)$ for running $\nu_q$
+iterations of the smoother
+on the system $\A^q\x^q =\f^q$, yielding the approximation $\v^q$ to $\x^q$,
+with $\tilde\u^q$ as start vector for the iterations.
+
+In the multigrid method, we start with some guess $\tilde\u^q$ for
+the exact solution on some grid $G^q$ and proceed with smoothing
+operations on successively coarser grids until we reach the coarsest
+grid $q=1$, where we solve the associated linear system by a direct method.
+One can of course also use an iterative method at the coarsest level; the point
+is to solve the linear system with sufficient accuracy.
+The method is commonly expressed as a recursive procedure, as the one
+in Algorithm~\ref{linalg2:cg:alg4}. The
+$\mbox{LMG} (\tilde\u^q ,\v^q ,\f^q, q)$ function in that algorithm
+has the arguments
+$\tilde\u^q$ for the start vector for the current iteration, $\v^q$ for
+the returned (improved) approximation, $\f^q$ for the right-hand side in
+the linear system, and $q$ is the grid-level number.
+
+\algor{Multigrid method for linear systems.\label{linalg2:cg:alg4}}{
+routine $\mbox{LMG} (\tilde\u^q ,\v^q ,\f^q, q)$\\
+\> if $q=1$\\
+\>\> solve $\A^q\v^q =\f^q$ sufficiently accurately\\
+\> else\\
+\>\> $S(\tilde\u^q ,\v^q,\f^q,\nu_q,q)$\\
+\>\> $\bfr^q = \f^q - \A^q\v^q$\\
+\>\> $\f^{q-1} = \bfr^{q}\bfr^q$\\
+\>\> $\tilde\u^{q-1}=\mathbf{0}$\\
+\>\> for $i=1,\ldots,\gamma_q$\\
+\>\>\> $\mbox{LMG}(\tilde\u^{q-1},\v^{q-1},\f^{q-1},q-1)$\\
+\>\>\> $\tilde\u^{q-1} = \v^{q-1}$\\
+\>\> $\v^q\leftarrow \v^q + \P^{q-1}\v^{q-1}$\\
+\>\> $S(\v^q,\v^q,\f^q,\mu_q ,q)$
+}
+
+Let us write out Algorithm~\ref{linalg2:cg:alg4}
+in detail for the case of two grids, i.e.,
+$K=2$.
+We start the algorithm by calling $\mbox{LMG}(\tilde\u^2,\u^2,\b,2)$,
+where $\tilde\u^2$ is an initial guess for the solution $\u^2$ of the
+discrete PDE problem on
+the fine grid.
+The algorithm then runs a smoother for $\nu_2$ iterations and
+computes the residual $\bfr^2=\b -\A^2\v^2$, where now $\v^2$ is
+the result after $\nu_2$ iterations of the smoother.
+This is called \emph{pre-smoothing}.
+We then restrict $\bfr^2$ to $\bfr^{1}$.
+In a two-grid algorithm we branch into the $q=1$ part of the LMG
+routine in the next recursive call $\mbox{LMG}(\mathbf{0},\v^{1},\f^{1},1)$.
+The system $\A^{1}\v^{1}=\bfr^{1}$ is then solved for the error,
+represented by the symbol $\v^{1}$ on this grid level (notice that
+we change the
+right-hand side from $\b$ on the finest level to the residual $\bfr^q$
+on coarser levels, and the solution of linear systems with a residual
+on the right-hand side is then an error quantity, see
+\eqref{linalg:erroreq}).
+In a two-grid algorithm it does not make sense to perform the inner
+call to LMG more than once, hence $\gamma_k=1$.
+We then proceed with prolongating the error $\v^{1}$ to the fine grid
+and add this error as a correction to the result $\v^2$ obtained after the
+first smoothing process. Finally, we run the smoothing procedure
+$\mu_2$ times, referred to as \emph{post-smoothing}, to improve the $\v^2$
+values.
+
+The parameters $\nu_q$, $\mu_q$, and $\gamma_q$ can be varied, yielding
+different versions of the multigrid strategy.
+Figure~\ref{linalg:MG:fig2} illustrates how the algorithm visits the
+various grid levels in the particular example of $K=4$ and two
+choices of $\gamma_q$: 1 and 2. This results in the well-known
+$V$- and $W$-cycles. The reader is encouraged to work through
+the LMG algorithm in order to understand Figure \ref{linalg:MG:fig2}.
+To solve a given system of linear equations by multigrid, one runs
+a number of cycles, i.e., the LMG routine is embedded in a loop that runs
+until a suitable termination criterion is fulfilled.
+
+\begin{figure}
+\centerline{\psfig{file=figs/MGcycle.xfig.eps,width=8cm}}
+\caption{\label{linalg:MG:fig2}
+The LMG algorithm and the sequence of smoothing and coarse grids solves
+for the particular choice of $K=4$;
+$\gamma_q=1$ (V-cycle) and $\gamma_q=2$ (W-cycle).}
+\end{figure}
+
+Multigrid can also be used as a preconditioner for Conjugate Gradient-like
+methods. Solving the system $\M\y =\w$ can then consist in
+running one multigrid cycle on $\A\y =\w$.
+
+The perhaps most attractive feature of multigrid is that one can prove
+for many model problems that the complexity of the algorithm is
+$\mathcal{O}(n)$, where $n$ is the number of unknowns in the system
+\cite{Wesseling92}.  Moreover, the LMG algorithm can be slightly
+modified and then applied to nonlinear systems.  We refer to
+\cite{Wesseling92} for intuitive analysis and extension of the
+concepts.
+
+Diffpack offers extensive support for multigrid calculations, but the
+description of the software tools is beyond the scope of the present
+text. Readers can consult the introductory report \cite{DPMGintro}.
+In Section \ref{ch:NS:fdm} we present a simulator for
+incompressible viscous fluid flow, where a special-purpose
+multigrid implementation
+is used for solving a 3D Poisson equation problem
+that arises in a solution algorithm for the Navier-Stokes equations.
+
+\exer{\label{linalg2:cg:exer4}}{Implement the line SOR method in
+the program from
+Example~\ref{ch:linalg:examp1}.}
+
+\exer{\label{linalg2:cg:exer1}}{Write the algorithm above on
+implementational form, ready for coding. Store the $\A\q_j$ vectors
+for computational efficiency, but otherwise try to minimize the
+storage requirements.}
+\answer{ME-IN 324 book.}
+
+\exer{\label{linalg2:cg:exer2}}{Let \eqref{linalg:eBort} be the
+principle for determining $\alpha_1,\ldots,\alpha_k$ in an
+expansion \eqref{linalg:xk:update}.
+The updating formula for $\q_{k+1}$, like \eqref{linalg:q:update1} and
+\eqref{linalg:q:update2}, can be written more generally as
+$\q_{k+1} = \z_k + \sum_{j=1}^k\beta_j\q_k$,
+where different choices of $\z_k$ yield different methods.
+Derive the corresponding generalized
+algorithm and present it on the same form as
+Algorithms~\ref{linalg2:cg:alg1} or \ref{linalg2:cg:alg2}.
+}
+
+
+\exer{\label{linalg2:cg:exer3}}{Apply the relaxed Jacobi method from
+page~\pageref{ch:linalg2:relaxed:Jacobi} to the one-dimensional
+error equation $[\delta_x\delta_x e]_j =0$ and analyze its damping
+properties.
+}

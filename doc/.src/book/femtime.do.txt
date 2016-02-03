@@ -1,5 +1,6 @@
 !split
-label{fem:deq:timedep}
+========= Time-dependent variational forms =========
+label{ch:femtime}
 
 The finite element method is normally used for discretization in
 space. There are two alternative strategies for performing
@@ -1149,11 +1150,11 @@ the same value of $C$. Lumping the mass matrix to recover the
 numerical amplification factor $A$ of the finite difference method
 is therefore a good idea in this problem.
 
-FIGURE: [fig-femtime/diffu_A_factors_coarse_BE, width=600 frac=0.8] Comparison of coarse-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:BE}
+FIGURE: [fig/diffu_A_factors_coarse_BE, width=600 frac=0.8] Comparison of coarse-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:BE}
 
-FIGURE: [fig-femtime/diffu_A_factors_fine_FE, width=600 frac=0.8] Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:FE2}
+FIGURE: [fig/diffu_A_factors_fine_FE, width=600 frac=0.8] Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:FE2}
 
-FIGURE: [fig-femtime/diffu_A_factors_fine_BE, width=600 frac=0.8] Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:BE2}
+FIGURE: [fig/diffu_A_factors_fine_BE, width=600 frac=0.8] Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:BE2}
 
 
 Remaining tasks:

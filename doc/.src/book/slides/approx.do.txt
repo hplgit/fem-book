@@ -16,18 +16,18 @@
 # serious limitations of the method in time-dependent problems
 # and the necessary adjustments)
 
-FIGURE: [fig-approx/dolfin_mesh, width=400 frac=0.8]
+FIGURE: [fig/dolfin_mesh, width=400 frac=0.8]
 
 
 !split
 ===== A dolphin and its flow =====
 
 !bslidecell 01
-FIGURE: [fig-approx/dolfin_mesh, width=400 frac=1]
+FIGURE: [fig/dolfin_mesh, width=400 frac=1]
 !eslidecell
 
 !bslidecell 01
-FIGURE: [fig-approx/dolfin_flow.gif, width=400 frac=1]
+FIGURE: [fig/dolfin_flow.gif, width=400 frac=1]
 !eslidecell
 
 !split
@@ -66,7 +66,7 @@ strategy minimizes the mixing of ideas, concepts, and technical details.
 !split
 ======= Find a vector in some space that approximates a given vector in a space of higher dimension =======
 
-FIGURE: [fig-approx/vecapprox_plane, width=300 frac=0.5]
+FIGURE: [fig/vecapprox_plane, width=300 frac=0.5]
 
 !split
 ===== The approximation is a linear combination of prescribed basis functions =====
@@ -103,7 +103,7 @@ label{fem:approx:vec:plane}
 Given a vector $\f = (3,5)$, find an approximation
 to $\f$ directed along a given line.
 
-FIGURE: [fig-approx/vecapprox_plane, width=300 frac=0.6]
+FIGURE: [fig/vecapprox_plane, width=300 frac=0.6]
 
 !split
 ===== Approximation of planar vectors; vector space terminology =====
@@ -393,7 +393,7 @@ Solution of 2x2 linear system:
 !split
 ===== Example: fit a parabola by a straight line; plot =====
 
-FIGURE: [fig-approx/parabola_ls_linear, width=700]
+FIGURE: [fig/parabola_ls_linear, width=700]
 
 !split
 ===== Ideas for implementing the least squares method via symbolic computations =====
@@ -504,7 +504,7 @@ All code in module "`approx1D.py`": "${src_approx}/approx1D.py"
 >>> comparison_plot(f, u, Omega=[1, 2])
 !ec
 
-FIGURE: [fig-approx/parabola_ls_linear, width=600]
+FIGURE: [fig/parabola_ls_linear, width=600]
 
 !split
 ===== The approximation is exact if $f\in V$ =====
@@ -606,7 +606,7 @@ Will we get this result with finite precision computer arithmetic?
 Source or problem: the $x^i$ functions become almost linearly dependent
 as $i$ grows:
 
-FIGURE: [fig-approx/ill_conditioning, width=500 frac=0.7]
+FIGURE: [fig/ill_conditioning, width=500 frac=0.7]
 
 !split
 ===== Ill-conditioning: general conclusions =====
@@ -655,7 +655,7 @@ comparison_plot(f, u, Omega)
 Left: $N=3$, right: $N=11$:
 <linebreak>
 
-FIGURE: [fig-approx/parabola_ls_sines4_12, width=900 frac=1]
+FIGURE: [fig/parabola_ls_sines4_12, width=900 frac=1]
 
 !bblock Problem:
 All $\baspsi_i(0)=0$ and hence $u(0)=0 \neq f(0)=9$. Similar problem at $x=1$.
@@ -681,7 +681,7 @@ approximation!
 
 $N=3$ vs $N=11$:
 
-FIGURE: [fig-approx/parabola_ls_sines4_12_wfterm, width=900 frac=1.2]
+FIGURE: [fig/parabola_ls_sines4_12_wfterm, width=900 frac=1.2]
 
 
 !split
@@ -821,7 +821,7 @@ def interpolation(f, psi, points):
 
 $(4/3,5/3)$ vs $(1,2)$:
 
-FIGURE: [fig-approx/parabola_inter, width=700 frac=1.2]
+FIGURE: [fig/parabola_inter, width=700 frac=1.2]
 
 !split
 ===== The regression method =====
@@ -831,7 +831,7 @@ label{fem:approx:global:regression}
  * Problem: More equations than unknowns
  * But this is well known as regression in statistics
 
-FIGURE: [fig-approx/parabola_by_regression, width=800]
+FIGURE: [fig/parabola_by_regression, width=800]
 
 !split
 ===== The regression method leads to an overdetermined linear system =====
@@ -933,7 +933,7 @@ u(x) &= 10x - 12.7,\quad 64\hbox{ points}
 \end{align*}
 !et
 
-FIGURE: [fig-approx/parabola_by_regression, width=800]
+FIGURE: [fig/parabola_by_regression, width=800]
 
 !split
 ===== What is the regression method used for? =====
@@ -1005,12 +1005,12 @@ def Lagrange_polynomial(x, i, points):
 !split
 ===== Lagrange polynomials; successful example =====
 
-FIGURE: [fig-approx/Lagrange_ls_interp_sin_4, width=800 frac=1.2]
+FIGURE: [fig/Lagrange_ls_interp_sin_4, width=800 frac=1.2]
 
 !split
 ===== Lagrange polynomials; a less successful example =====
 
-FIGURE: [fig-approx/Lagrange_interp_abs_8_15, width=800 frac=1.2]
+FIGURE: [fig/Lagrange_interp_abs_8_15, width=800 frac=1.2]
 
 !split
 ===== Lagrange polynomials; oscillatory behavior =====
@@ -1018,7 +1018,7 @@ FIGURE: [fig-approx/Lagrange_interp_abs_8_15, width=800 frac=1.2]
 12 points, degree 11, plot of two of the Lagrange polynomials - note that
 they are zero at all points except one.
 
-FIGURE: [fig-approx/Lagrange_basis_12, width=500]
+FIGURE: [fig/Lagrange_basis_12, width=500]
 
 Problem: strong oscillations near the boundaries for larger $N$ values.
 
@@ -1038,7 +1038,7 @@ on an interval $[a,b]$.
 !split
 ===== Lagrange polynomials; recalculation with Chebyshev nodes =====
 
-FIGURE: [fig-approx/Lagrange_interp_abs_Cheb_8_15, width=800 frac=1.2]
+FIGURE: [fig/Lagrange_interp_abs_Cheb_8_15, width=800 frac=1.2]
 
 !split
 ===== Lagrange polynomials; less oscillations with Chebyshev nodes =====
@@ -1046,18 +1046,18 @@ FIGURE: [fig-approx/Lagrange_interp_abs_Cheb_8_15, width=800 frac=1.2]
 12 points, degree 11, plot of two of the Lagrange polynomials - note that
 they are zero at all points except one.
 
-FIGURE: [fig-approx/Lagrange_basis_Cheb_12, width=500]
+FIGURE: [fig/Lagrange_basis_Cheb_12, width=500]
 
 !split
 ======= Finite element basis functions =======
 label{fem:approx:fe}
 
-FIGURE: [fig-approx/fe_mesh1D_phi_2_3, width=500 frac=0.7]
+FIGURE: [fig/fe_mesh1D_phi_2_3, width=500 frac=0.7]
 
 !split
 ===== The basis functions have so far been global: $\baspsi_i(x) \neq 0$ almost everywhere =====
 
-FIGURE: [fig-approx/u_example_sin, width=800]
+FIGURE: [fig/u_example_sin, width=800]
 
 !split
 ===== In the finite element method we use basis functions with local support =====
@@ -1070,12 +1070,12 @@ FIGURE: [fig-approx/u_example_sin, width=800]
  * We introduce $\basphi_i$ as the name of these finite element hat
    functions (and for now choose $\baspsi_i=\basphi_i$)
 
-FIGURE: [fig-approx/fe_mesh1D_phi_2_3, width=500 frac=0.6]
+FIGURE: [fig/fe_mesh1D_phi_2_3, width=500 frac=0.6]
 
 !split
 ===== The linear combination of hat functions is a piecewise linear function =====
 
-FIGURE: [fig-approx/u_example_fe2, width=500]
+FIGURE: [fig/u_example_fe2, width=500]
 
 !split
 ===== Elements and nodes =====
@@ -1101,7 +1101,7 @@ points called *nodes*: $\xno{0},\ldots,\xno{N_n-1}$
 !split
 ===== Example on elements with two nodes (P1 elements) =====
 
-FIGURE: [fig-approx/fe_mesh1D_P1, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_P1, width=500 frac=0.8]
 
 Data structure: `nodes` holds coordinates or nodes, `elements` holds the
 node numbers in each element
@@ -1114,13 +1114,13 @@ elements = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]]
 !split
 ===== Illustration of two basis functions on the mesh =====
 
-FIGURE: [fig-approx/fe_mesh1D_phi_2_3, width=600 frac=0.8]
+FIGURE: [fig/fe_mesh1D_phi_2_3, width=600 frac=0.8]
 
 
 !split
 ===== Example on elements with three nodes (P2 elements) =====
 
-FIGURE: [fig-approx/fe_mesh1D_P2, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_P2, width=500 frac=0.8]
 
 !bc pycod
 nodes = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
@@ -1130,12 +1130,12 @@ elements = [[0, 1, 2], [2, 3, 4], [4, 5, 6], [6, 7, 8]]
 !split
 ===== Some corresponding basis functions (P2 elements) =====
 
-FIGURE: [fig-approx/phi/mpl_fe_basis_p2_4e, width=600]
+FIGURE: [fig/phi/mpl_fe_basis_p2_4e, width=600]
 
 !split
 ===== Examples on elements with four nodes (P3 elements) =====
 
-FIGURE: [fig-approx/fe_mesh1D_d4_stretched, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_d4_stretched, width=500 frac=0.8]
 
 !bc pycod
 d = 3  # d+1 nodes per element
@@ -1148,12 +1148,12 @@ elements = [[i*d+j for j in range(d+1)] for i in range(num_elements)]
 !split
 ===== Some corresponding basis functions (P3 elements) =====
 
-FIGURE: [fig-approx/phi/mpl_fe_basis_p3_4e, width=600]
+FIGURE: [fig/phi/mpl_fe_basis_p3_4e, width=600]
 
 !split
 ===== The numbering does not need to be regular from left to right =====
 
-FIGURE: [fig-approx/fe_mesh1D_random_numbering, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_random_numbering, width=500 frac=0.8]
 
 !bc pycod
 nodes = [1.5, 5.5, 4.2, 0.3, 2.2, 3.1]
@@ -1186,12 +1186,12 @@ because $\basphi_j(\xno{i}) =0$ if $i\neq j$ and $\basphi_i(\xno{i}) =1$
 Since $A_{i,j}=\int\basphi_i\basphi_j\dx$,
 *most of the elements in the coefficient matrix will be zero*
 
-FIGURE: [fig-approx/fe_mesh1D_phi_i_im1, width=500 frac=0.5]
+FIGURE: [fig/fe_mesh1D_phi_i_im1, width=500 frac=0.5]
 
 !split
 ===== How to construct quadratic $\basphi_i$ (P2 elements) =====
 
-FIGURE: [fig-approx/phi/mpl_fe_basis_p2_4e, width=500 frac=0.6]
+FIGURE: [fig/phi/mpl_fe_basis_p2_4e, width=500 frac=0.6]
 
  o Associate Lagrange polynomials with the nodes in an element
  o When the polynomial is 1 on the element boundary, combine it
@@ -1201,7 +1201,7 @@ FIGURE: [fig-approx/phi/mpl_fe_basis_p2_4e, width=500 frac=0.6]
 !split
 ===== Example on linear $\basphi_i$ (P1 elements) =====
 
-FIGURE: [fig-approx/phi/mpl_fe_basis_p1_4e, width=500 frac=0.6]
+FIGURE: [fig/phi/mpl_fe_basis_p1_4e, width=500 frac=0.6]
 
 !bt
 \[
@@ -1221,19 +1221,19 @@ FIGURE: [fig-approx/phi/mpl_fe_basis_p1_4e, width=500 frac=0.6]
 !split
 ===== Example on cubic $\basphi_i$ (P3 elements) =====
 
-FIGURE: [fig-approx/phi/mpl_fe_basis_p3_4e, width=500 frac=0.6]
+FIGURE: [fig/phi/mpl_fe_basis_p3_4e, width=500 frac=0.6]
 
 
 !split
 ======= Calculating the linear system for $c_i$ =======
 label{fem:approx:global:linearsystem}
 
-FIGURE: [fig-approx/sparsity_pattern_1D_30unif, width=600 frac=0.8]
+FIGURE: [fig/sparsity_pattern_1D_30unif, width=600 frac=0.8]
 
 !split
 ===== Computing a specific matrix entry (1) =====
 
-FIGURE: [fig-approx/fe_mesh1D_phi_2_3, width=300 frac=0.5]
+FIGURE: [fig/fe_mesh1D_phi_2_3, width=300 frac=0.5]
 
 $A_{2,3}=\int_\Omega\basphi_2\basphi_3 dx$: $\basphi_2\basphi_3\neq 0$
 only over element 2. There,
@@ -1254,7 +1254,7 @@ A_{2,3} = \int_\Omega \basphi_2\basphi_{3}\dx =
 !split
 ===== Computing a specific matrix entry (2) =====
 
-FIGURE: [fig-approx/fe_mesh1D_phi_2_3, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_phi_2_3, width=500 frac=0.8]
 
 !bt
 \[ A_{2,2} =
@@ -1269,7 +1269,7 @@ FIGURE: [fig-approx/fe_mesh1D_phi_2_3, width=500 frac=0.8]
 !split
 ===== Calculating a general row in the matrix; figure =====
 
-FIGURE: [fig-approx/fe_mesh1D_phi_i_im1, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_phi_i_im1, width=500 frac=0.8]
 
 !bt
 \[ A_{i,i-1} = \int_\Omega \basphi_i\basphi_{i-1}\dx = \hbox{?}\]
@@ -1299,7 +1299,7 @@ A_{i,i-1} &= \int_\Omega \basphi_i\basphi_{i-1}\dx\\
 !split
 ===== Calculation of the right-hand side =====
 
-FIGURE: [fig-approx/fe_mesh1D_phi_i_f, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_phi_i_f, width=500 frac=0.8]
 
 !bt
 \[
@@ -1346,12 +1346,12 @@ c_2 = 2h - \frac{23}{6}h^2
 \begin{equation*} u(x)=c_0\basphi_0(x) + c_1\basphi_1(x) + c_2\basphi_2(x)\end{equation*}
 !et
 
-FIGURE: [fig-approx/fe_p1_x2_2e, width=600 frac=0.7]
+FIGURE: [fig/fe_p1_x2_2e, width=600 frac=0.7]
 
 !split
 ===== Specific example with four elements; plot =====
 
-FIGURE: [fig-approx/fe_p1_x2_2e_4e, width=800 frac=1.0]
+FIGURE: [fig/fe_p1_x2_2e_4e, width=800 frac=1.0]
 
 !split
 ===== Specific example: what about P2 elements? =====
@@ -1367,7 +1367,7 @@ can represent a 2nd-degree polynomial exactly.
 ======= Assembly of elementwise computations =======
 label{fem:approx:fe:elementwise}
 
-FIGURE: [mov-approx/fe_assembly_irregular/fe_assembly_irregular, width=300 frac=0.5]
+FIGURE: [mov/fe_assembly_irregular/fe_assembly_irregular, width=300 frac=0.5]
 
 !split
 ===== Split the integrals into elementwise integrals =====
@@ -1391,7 +1391,7 @@ Important observations:
  * It is convenient to introduce a *local numbering* of the nodes
    in an element: $0,1,\ldots,d$
 
-FIGURE: [fig-approx/fe_mesh1D_phi_i_im1, width=300 frac=0.4]
+FIGURE: [fig/fe_mesh1D_phi_i_im1, width=300 frac=0.4]
 
 !split
 ===== The element matrix and local vs global node numbers =====
@@ -1424,34 +1424,34 @@ r,s\in\Ifd
 !split
 ===== Illustration of the matrix assembly: regularly numbered P1 elements =====
 
-FIGURE: [mov-approx/fe_assembly_regular_2x2/fe_assembly_regular_2x2, width=400 frac=0.7]
+FIGURE: [mov/fe_assembly_regular_2x2/fe_assembly_regular_2x2, width=400 frac=0.7]
 
 # #if FORMAT == "html"
-"Animation": "mov-approx/fe_assembly.html"
+"Animation": "mov/fe_assembly.html"
 # #else
-"Animation": "${doc_notes}/mov-approx/fe_assembly.html"
+"Animation": "${doc_notes}/mov/fe_assembly.html"
 # #endif
 
 !split
 ===== Illustration of the matrix assembly: regularly numbered P3 elements =====
 
-FIGURE: [mov-approx/fe_assembly_regular_4x4/fe_assembly_regular_4x4, width=400 frac=0.7]
+FIGURE: [mov/fe_assembly_regular_4x4/fe_assembly_regular_4x4, width=400 frac=0.7]
 
 # #if FORMAT == "html"
-"Animation": "mov-approx/fe_assembly.html"
+"Animation": "mov/fe_assembly.html"
 # #else
-"Animation": "${doc_notes}/mov-approx/fe_assembly.html"
+"Animation": "${doc_notes}/mov/fe_assembly.html"
 # #endif
 
 !split
 ===== Illustration of the matrix assembly: irregularly numbered P1 elements =====
 
-FIGURE: [mov-approx/fe_assembly_irregular/fe_assembly_irregular, width=400 frac=0.7]
+FIGURE: [mov/fe_assembly_irregular/fe_assembly_irregular, width=400 frac=0.7]
 
 # #if FORMAT == "html"
-"Animation": "mov-approx/fe_assembly.html"
+"Animation": "mov/fe_assembly.html"
 # #else
-"Animation": "${doc_notes}/mov-approx/fe_assembly.html"
+"Animation": "${doc_notes}/mov/fe_assembly.html"
 # #endif
 
 !split
@@ -1465,7 +1465,7 @@ b^{(e)}_{i}=\int_{\Omega^{(e)}} f(x)\basphi_i(x)dx
 \]
 !et
 
-FIGURE: [fig-approx/fe_mesh1D_phi_i_f, width=300 frac=0.4]
+FIGURE: [fig/fe_mesh1D_phi_i_f, width=300 frac=0.4]
 
 Important observations:
 
@@ -1949,7 +1949,7 @@ A = \frac{h}{30}
  * Left: number nodes and elements from left to right
  * Right: number nodes and elements arbitrarily
 
-FIGURE: [fig-approx/sparsity_pattern_1D_30, width=800]
+FIGURE: [fig/sparsity_pattern_1D_30, width=800]
 
 !split
 ===== Matrix sparsity pattern for regular/random numbering of P3 elements =====
@@ -1957,7 +1957,7 @@ FIGURE: [fig-approx/sparsity_pattern_1D_30, width=800]
  * Left: number nodes and elements from left to right
  * Right: number nodes and elements arbitrarily
 
-FIGURE: [fig-approx/sparsity_pattern_1DP3_30, width=800]
+FIGURE: [fig/sparsity_pattern_1DP3_30, width=800]
 
 !split
 ===== Sparse matrix storage and solution =====
@@ -1994,7 +1994,7 @@ approximate(f=x*(1-x)**8, symbolic=False, d=2, N_e=4)
 !split
 ===== Approximate $f\sim x^9$ by various elements; plot =====
 
-FIGURE: [fig-approx/fe_p1_p2_x9_248e, width=800 frac=1.2]
+FIGURE: [fig/fe_p1_p2_x9_248e, width=800 frac=1.2]
 
 !split
 ======= Comparison of finite element and finite difference approximation =======
@@ -2245,7 +2245,7 @@ b[dof_map[e][r]] += b_e[r]
 !split
 ===== Example: data structures for P2 elements =====
 
-FIGURE: [fig-approx/fe_mesh1D_P2, width=500 frac=0.8]
+FIGURE: [fig/fe_mesh1D_P2, width=500 frac=0.8]
 
 !bc pycod
 vertices = [0, 0.4, 1]
@@ -2299,7 +2299,7 @@ plot(x_u, u)
 !split
 ===== Approximating a parabola by P0 elements =====
 
-FIGURE: [fig-approx/fe_p0_x2_4e_8e, width=800]
+FIGURE: [fig/fe_p0_x2_4e_8e, width=800]
 
 The `approximate` function automates the steps in the previous slide:
 
@@ -2644,7 +2644,7 @@ See notes for details of a hand-calculation.
 
 Quadratic $f(x,y) = (1+x^2)(1+2y^2)$ (left), bilinear $u$ (right):
 
-FIGURE: [fig-approx/approx2D_bilinear, width=800]
+FIGURE: [fig/approx2D_bilinear, width=800]
 
 !split
 ===== Implementation; principal changes to the 1D code =====
@@ -2786,18 +2786,18 @@ Finite elements in 1D: mostly for learning, insight, debugging
 !split
 ===== Rectangular domain with 2D P1 elements =====
 
-FIGURE: [fig-approx/mesh2D_rect_P1, width=800]
+FIGURE: [fig/mesh2D_rect_P1, width=800]
 
 
 !split
 ===== Deformed geometry with 2D P1 elements =====
 
-FIGURE: [fig-approx/mesh2D_quarter_circle, width=600 frac=0.8]
+FIGURE: [fig/mesh2D_quarter_circle, width=600 frac=0.8]
 
 !split
 ===== Rectangular domain with 2D Q1 elements =====
 
-FIGURE: [fig-approx/mesh2D_rect_Q1, width=500]
+FIGURE: [fig/mesh2D_rect_Q1, width=500]
 
 !split
 ===== Basis functions over triangles in the physical domain =====
@@ -2805,7 +2805,7 @@ FIGURE: [fig-approx/mesh2D_rect_Q1, width=500]
 The P1 triangular 2D element: $u$ is linear $ax + by + c$ over each
 triangular cell
 
-FIGURE: [fig-approx/demo2D_4x3r, width=400]
+FIGURE: [fig/demo2D_4x3r, width=400]
 
 !split
 ===== Basic features of 2D elements =====
@@ -2824,7 +2824,7 @@ FIGURE: [fig-approx/demo2D_4x3r, width=400]
 !split
 ===== Linear mapping of reference element onto general triangular cell =====
 
-FIGURE: [fig-approx/ElmT3n2D_map, width=400]
+FIGURE: [fig/ElmT3n2D_map, width=400]
 
 !split
 ===== $\basphi_i$: pyramid shape, composed of planes =====
@@ -2832,7 +2832,7 @@ FIGURE: [fig-approx/ElmT3n2D_map, width=400]
  * $\basphi_i(x,y)$ varies linearly over each cell
  * $\basphi_i=1$ at vertex (node) $i$, 0 at all other vertices (nodes)
 
-FIGURE: [fig-approx/demo2D_basisfunc, width=400]
+FIGURE: [fig/demo2D_basisfunc, width=400]
 
 !split
 ===== Element matrices and vectors =====
@@ -2846,7 +2846,7 @@ FIGURE: [fig-approx/demo2D_basisfunc, width=400]
 !split
 ===== Basis functions over triangles in the reference cell =====
 
-FIGURE: [fig-approx/fenics-book/elements/P1_2d, width=100 frac=0.3]
+FIGURE: [fig/fenics-book/elements/P1_2d, width=100 frac=0.3]
 
 !bt
 \begin{align}
@@ -2861,19 +2861,19 @@ Higher-degree $\refphi_r$ introduce more nodes (dof = node values)
 !split
 ===== 2D P1, P2, P3, P4, P5, and P6 elements =====
 
-FIGURE: [fig-approx/fenics-book/elements/P1-6_2d, width=320 frac=0.5]
+FIGURE: [fig/fenics-book/elements/P1-6_2d, width=320 frac=0.5]
 
 !split
 ===== P1 elements in 1D, 2D, and 3D =====
 
-FIGURE: [fig-approx/fenics-book/elements/P1-1d2d3d, width=320 frac=0.5]
+FIGURE: [fig/fenics-book/elements/P1-1d2d3d, width=320 frac=0.5]
 
 !split
 ===== P2 elements in 1D, 2D, and 3D =====
 
 idx{simplex elements} idx{simplices} idx{faces} idx{edges}
 
-FIGURE: [fig-approx/fenics-book/elements/P2-1d2d3d, width=320 frac=0.5]
+FIGURE: [fig/fenics-book/elements/P2-1d2d3d, width=320 frac=0.5]
 
  * Interval, triangle, tetrahedron: *simplex* element
    (plural quick-form: *simplices*)
@@ -2904,7 +2904,7 @@ This mapping preserves the straight/planar faces and edges.
 !split
 ===== Affine mapping of the reference cell; figure =====
 
-FIGURE: [fig-approx/ElmT3n2D_map, width=400]
+FIGURE: [fig/ElmT3n2D_map, width=400]
 
 !split
 ===== Isoparametric mapping of the reference cell =====
@@ -2924,7 +2924,7 @@ to map the element
 Advantage: higher-order polynomial basis functions now map the
 reference cell to a *curved* triangle or tetrahedron.
 
-FIGURE: [fig-approx/ElmT6n2D_map, width=400]
+FIGURE: [fig/ElmT6n2D_map, width=400]
 
 !split
 ===== Computing integrals =====

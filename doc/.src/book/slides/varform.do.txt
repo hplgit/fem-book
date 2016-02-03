@@ -1,3 +1,5 @@
+
+
 !split
 ======= Basic principles for approximating differential equations =======
 label{fem:deq:1D:principles}
@@ -6,7 +8,8 @@ label{fem:deq:1D:principles}
 ===== We shall apply least squares, Galerkin/projection, and collocation to differential equation models =====
 label{fem:deq:1D:models}
 
-Our aim is to extend the ideas for approximating $f$ by $u$, or solving
+Our aim is to extend the ideas for approximating $f$ by $u$, or
+(approximately) solving
 
 !bt
 \[ u = f \]
@@ -213,7 +216,7 @@ delta functions as weights
 !et
 
 
-FIGURE: [fig-varform/delta_func_weight, width=200 frac=0.3]
+FIGURE: [fig/delta_func_weight, width=200 frac=0.3]
 
 !split
 ======= Examples on using the principles =======
@@ -1206,7 +1209,7 @@ b_{i-1}=\int_0^L2\basphi_{i}(x) \dx
 !split
 ===== Computation in the global physical domain; details =====
 
-FIGURE: [fig-varform/fe_mesh1D_dphi_2_3, width=500 frac=0.6]
+FIGURE: [fig/fe_mesh1D_dphi_2_3, width=500 frac=0.6]
 
 !bt
 \[ \basphi_i' \sim \pm h^{-1} \]

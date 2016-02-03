@@ -1,0 +1,110 @@
+# #ifdef LATEX2DOCONCE
+This is the result of the doconce latex2doconce program.
+The translation from LaTeX is just a helper. The text must
+be carefully examined! (Be prepared that some text might also
+be lost in the translation - in seldom cases.)
+
+pageref{stability:examp2} should be rewritten
+pageref{fem1:theory:bestapproxA2} should be rewritten
+pageref{ch:linalg:SORconv} should be rewritten
+pageref{ch:linalg2:relaxed:Jacobi} should be rewritten
+
+## search for CHECK to see if auto editing was correct
+
+## search for PROBLEM: to see need for manual adjustments
+
+# #endif
+
+
+
+idx{linear solvers!iterative}
+idx{linear systems!iterative solvers}
+
+When discretizing PDEs by finite difference or finite element methods,
+we often end up solving systems of linear algebraic equations
+(frequently just called *linear systems*).  For large classes of
+problems, the computational effort spent on solving linear systems
+dominate the overall computing time.  Consequently, it is of vital
+importance to have access to efficient solvers for linear systems
+(often called *linear solvers*).  Since the optimal choice of a
+linear solver is highly problem dependent, this calls for software
+that allows and even encourages you to test several alternative
+methods. The linear algebra tools available in Diffpack provide a
+flexible environment tailored for this purpose.  The current appendix
+aims at introducing the basic concepts of common iterative methods for
+linear solvers and thereby equipping the reader with the required
+theoretical knowledge for efficient utilization of the corresponding
+software tools in Diffpack.  The next appendix is devoted to the
+practical usage of the software tools.
+
+Linear systems can be solved by *direct* or *iterative* methods.  The
+term direct methods normally means some type of Gaussian elimination,
+where the solution is computed by an algorithm with precisely known
+complexity, independent of the underlying PDE and its
+discretization. On the contrary, the performance of an iterative
+method is often strongly problem dependent.
+
+For most large-scale applications arising from PDEs, iterative methods
+are superior to direct solvers with respect to computational
+efficiency.  The main reason for this superiority is that iterative
+methods can take great advantage of the sparse matrices that arise
+from finite difference and finite element discretizations of PDEs.
+The effect is especially pronounced in 3D problems, where the pattern
+of the corresponding coefficient matrices tend to be extremely
+sparse. To exemplify, only 0.004\%{} of the coefficient matrix will be
+occupied by nonzeroes when the 3D Poisson problem is discretized on a
+$60 \times 60 \times 60$ grid by standard finite differences. This
+mesh spacing, leading to $n=216,000$ unknowns, is moderate and further
+refinements would decrease the sparsity factor considerably. In
+general, the fraction of nonzeroes in the coefficient matrix is about
+$7q^{-6}$ on a $q\times q\times q$ grid.  Even such rough estimates
+reveal the potential of iterative methods that compute with the
+nonzeroes only.  In contrast to most direct methods, iterative solvers
+can usually be formulated in terms of a few basic operations on
+matrices and vectors, e.g., matrix-vector products, inner products,
+and vector additions. The way these operations are combined
+distinguish one iterative scheme from another.  Naturally, the
+critical issue for any iterative solver is whether the iterations will
+converge sufficiently fast. For this reason, a major concern in this
+field is the construction of efficient *preconditioners* capable of
+improving the convergence rate.
+
+Bruaset cite{BruBok} presents some exact figures on the efficiency of
+preconditioned iterative methods relative to direct methods for the
+finite difference discretized 3D Poisson equation on the unit cube
+with homogeneous Dirichlet boundary conditions.  The direct solver was
+banded Gaussian elimination, whereas a MILU preconditioned Conjugate
+Gradient method was used as iterative solver.  The ratio $C$ of the
+CPU time of the direct and iterative methods as well as the ratio $M$
+of the memory requirements were computed for various grid
+sizes.( _CHECK: footnote_ at end of sentence placed in parenthesis) (On large grids, banded Gaussian elimination is too slow
+  for practical computations, but the expected CPU time, neglecting
+  the effect of swapping etc., can be estimated from the formula for
+  the work involved in the Gaussian elimination algorithm.)   For a
+small grid with 3 375 unknowns, $C=72$ and $M=20$, which means that
+the MILU preconditioned Conjugate Gradient method is 72 times faster
+than banded Gaussian elimination and reduces the memory requirements
+by a factor of 20.  For 27,000 unknowns, the largest grid where the
+direct method could be run on the particular computer used in
+cite{BruBok}, $C=924$ and $M=95$. As the number of unknowns
+increases, the effect of using iterative methods become even more
+dramatic.  With 8,000,000 unknowns, theoretical estimates give
+$C=10^7$ and $M=4 871$. This means that the iterative method used
+about 2,600 seconds, wheras the direct method would use 832 years, if
+there had been a machine with 2,400 Gb RAM to store the banded matrix!
+
+We begin the presentation of iterative solvers with a compact review
+of the simple classical iterative methods, such as Jacobi and
+Gauss-Seidel iteration.  Then we describe the foundations for
+Conjugate Gradient-like methods and show that we can reuse much of the
+reasoning from Section ref{ch:fem1:theory} on finite element methods
+also for solving *algebraic equations* approximately.  Thereafter we
+treat some fundamental preconditioning techniques.  The fundamental
+ideas of domain decomposition and multigrid methods are described at
+the end of the appendix.
+
+# #include "classical.do.txt"
+
+# #include "cg.do.txt"
+
+# #include "mg.do.txt"
