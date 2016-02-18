@@ -52,7 +52,7 @@ comments=""
 doc=document
 appendix=document
 
-preprocessor_opt="DOCUMENT=$doc APPENDIX=$appendix BOOK=standalone"
+preprocessor_opt="DOCUMENT=$doc APPENDIX=$appendix BOOK=standalone FEM_BOOK=True"
 no_solutions='--without_solutions --without_answers'
 sphinx=0
 publish=0
@@ -218,37 +218,23 @@ cd -
 cp ../index.html $dest
 rm -f ../index.*
 
-# Copy src
+# Copy src to root/src in this repo (all chapter sources go to one src dir)
 if [ $# -ge 3 ]; then
 dest=../../../../src
 if [ ! -d $dest ]; then
   mkdir $dest
-fi
-if [ ! -d $dest/$nickname ]; then
-  mkdir $dest/$nickname
 fi
 if [ -d src-$nickname ]; then
 cd src-$nickname
 if [ -f clean.sh ]; then
 sh clean.sh
 fi
+cp -f *.py *.pyx *.f *.c *.cpp make*.sh README* ../$dest
 cd ..
-files=`find -L src-$nickname \( -name '*.py' -o -name '*.pyx' -o -name '*.f' -o -name '*.c' -o -name '*.cpp' -o -name 'make*.sh' \) -print`
-if [ -f src-${nickname}/README ]; then
-  files="$files src-$name/README"
-fi
-tar cfz tmp.tar.gz $files
-mv -f tmp.tar.gz  $dest
-cd $dest
-rm -rf src-$nickname
-tar xfz tmp.tar.gz
-rm -f tmp.tar.gz
-python ~/1/programs/rsync_git.py src-$nickname $nickname
-rm -rf src-$nickname
-cd -
 fi
 fi
 fi
 
 cd $dest
-git add .
+ls
+#git add .

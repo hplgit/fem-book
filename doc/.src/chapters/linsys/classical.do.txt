@@ -43,7 +43,7 @@ label{linalg2:classic:eq1}
 where $\x^{k}$ is a new approximation to $\x$ in the $k$-th iteration.
 To initiate the iteration, we need a start vector $\x^0$.
 
-An alternative form of \req{linalg2:classic:eq1} is
+An alternative form of (ref{linalg2:classic:eq1}) is
 
 
 idx{residual}
@@ -87,7 +87,7 @@ $\varrho (\G )$ smaller increases the speed of convergence.
 Of special interest is the *asymptotic rate of convergence*
 $R_{\infty} (\G) = -\ln\varrho (\G )$.
 To reduce the initial error by a factor $\epsilon$, that is,
-${ ||\x -\x^{k-1}||}\leq\epsilon  ||\x -\x^0|| $,
+$||\x -\x^{k-1}||\leq\epsilon  ||\x -\x^0|| $,
 one needs $-\ln\epsilon /R_{\infty}(\G )$ iterations cite{BruBok}.
 
 We shall first give examples on popular choices of splittings
@@ -136,7 +136,7 @@ the correct boundary values in each iteration.
 === Simple Iteration ===
 
 The simplest choice is of course to
-let $\M =\Id$ and $\N = \Id -\A$, resulting in the iteration
+let $\M =\I$ and $\N = \I -\A$, resulting in the iteration
 
 !bt
 \begin{equation}
@@ -174,8 +174,7 @@ equation no. $i$ with respect to $x_i$, using old values for all the
 other unknowns:
 
 !bt
-\begin{equation*} x_i^k = {1\over A_{i,i}} \left(b_i - \sum_{j=1}^{i-1}A_{i,j}x_j^{k-1}
-- \sum_{j=i+1}^{n}A_{i,j}x_j^{k-1}\right),\quad i=1,\ldots,n\tp \end{equation*}
+\begin{equation*} x_i^k = {1\over A_{i,i}} \left(b_i - \sum_{j=1}^{i-1}A_{i,j}x_j^{k-1} - \sum_{j=i+1}^{n}A_{i,j}x_j^{k-1}\right),\quad i=1,\ldots,n\tp \end{equation*}
 !et
 Applying this iteration to our model problem (ref{linalg2:classic:umodel})
 yields
@@ -310,8 +309,8 @@ solving a system with lower triangular coefficient matrix yields
 
 !bt
 \begin{equation}
-x_i^{k} = {1\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k}
-- \sum_{j=i+1}^n A_{i,j}x_j^{k-1} \right),\quad
+x_i^{k} = {1\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k} -
+\sum_{j=i+1}^n A_{i,j}x_j^{k-1} \right),\quad
 i=1,\ldots,n \tp
 label{linalg2:classic:GS1}
 \end{equation}
@@ -388,7 +387,7 @@ suggested implementation of the solution algorithm.  In that program,
 the field values $u^{k}_{i,j}$ overwrite $u^{k-1}_{i,j}$.  Moreover,
 the start values are $u_{i,j}^0=0$ or $u_{i,j}^0=(-1)^i$, except for
 $u_{1,j}$ and $u_{m,j}$, which must equal the prescribed boundary
-conditions.  Included in this directory is a little \perl\ script
+conditions.  Included in this directory is a little Perl script
 `play.pl` that takes $m$ and the start-vector type as argument,
 runs the program, and thereafter displays an animation of the error
 along $x$ as the iteration index $k$ increases. There is also a GUI
@@ -406,7 +405,7 @@ very effective in reducing and smoothing the error,
 is a key ingredient in multigrid methods.
 
 
-FIGURE: [figs/GaussSeidel.xfig.eps, width=400] Sketch of a grid for finite difference approximation of   $\nabla^2u=2$ on the unit square, with $u$ prescribed for $i=1,m$   and $\partial u /\partial y=0$ for $j=1,m$.   The difference equations must be modified for points at $j=1,m$ by   using the boundary condition $\partial u/\partial y=0$,   involving the points marked   with bullets. The boundary points marked with circles have   prescribed $u$ values and can remain untouched. label{ch:linalg:figGS}
+#FIGURE: [figs/GaussSeidel.xfig.eps, width=400] Sketch of a grid for finite difference approximation of   $\nabla^2u=2$ on the unit square, with $u$ prescribed for $i=1,m$   and $\partial u /\partial y=0$ for $j=1,m$.   The difference equations must be modified for points at $j=1,m$ by   using the boundary condition $\partial u/\partial y=0$,   involving the points marked   with bullets. The boundary points marked with circles have   prescribed $u$ values and can remain untouched. label{ch:linalg:figGS}
 
 
 
@@ -446,8 +445,8 @@ The algorithm is a trivial combination of
 !bt
 \begin{equation}
 label{linalg2:classic:SOR2}
-x_i^{k} =  {\omega\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k}
-- \sum_{j=i+1}^n A_{i,j}x_j^{k-1}\right) + (1-\omega )x_i^{k-1} ,
+x_i^{k} =  {\omega\over A_{i,i}}\left( b_i -\sum_{j=1}^{i-1}A_{i,j}x_j^{k} -
+\sum_{j=i+1}^n A_{i,j}x_j^{k-1}\right) + (1-\omega )x_i^{k-1} ,
 \end{equation}
 !et
 for $i=1,\ldots,n$.

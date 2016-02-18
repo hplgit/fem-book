@@ -1,0 +1,2 @@
+Show how polynomial chaos fits right into the framework from the second
+and third chapter.

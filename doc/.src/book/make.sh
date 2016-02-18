@@ -47,7 +47,7 @@ doconce replace 'newcommand{\I}' 'renewcommand{\I}' newcommands_keep.tex
 # TASKS: generate book with solutions, also in the html version
 # Make pdfnup with two-pages per sheet
 
-opt1="CHAPTER=$CHAPTER BOOK=$BOOK APPENDIX=$APPENDIX $encoding"
+opt1="CHAPTER=$CHAPTER BOOK=$BOOK APPENDIX=$APPENDIX $encoding FEM_BOOK=True"
 opt2="--without_solutions --without_answers"
 opt2=
 devices="screen paper"
@@ -79,10 +79,9 @@ system pdflatex $name
 # With solutions, password protected
 compile --device=screen
 newname=${topicname}-book-4screen-sol
-password="d!e!cay"
+password="f!e!m"
 pdftk $name.pdf output $newname.pdf owner_pw foo user_pw $password
 cp $name.pdf ${name}-sol.pdf # good to have a copy without password
-exit
 
 compile --device=screen --without_solutions --without_answers
 newname=${topicname}-book-4screen

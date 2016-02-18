@@ -450,7 +450,7 @@ u = u^{-} - \omega \frac{F(u^{-})}{F^{\prime}(u^{-})}
 ===== Implementation; part 1 =====
 label{nonlin:timediscrete:logistic:impl}
 
-Program "`logistic.py`": "${src_nonlin}/logistic.py"
+Program "`logistic.py`": "${fem_src}/logistic.py"
 
 !bc pycod
 def BE_logistic(u0, dt, Nt, choice='Picard',
@@ -1746,6 +1746,7 @@ $b(u)$:
 &=f(u^-_0) -
 \frac{1}{\dfc(u^-_0)\Delta x}(\dfc(u^-_{-1}) + \dfc(u^-_{0}))C,
 \end{align*}
+!et
 
 !bt
 \begin{align*}

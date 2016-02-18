@@ -103,8 +103,8 @@ treat some fundamental preconditioning techniques.  The fundamental
 ideas of domain decomposition and multigrid methods are described at
 the end of the appendix.
 
-# #include "classical.do.txt"
+### #include "classical.do.txt"
 
 # #include "cg.do.txt"
 
-# #include "mg.do.txt"
+### #include "mg.do.txt"

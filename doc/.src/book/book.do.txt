@@ -10,14 +10,14 @@ methods.
 DATE: today
 
 ## Handy mako variables and functions for the preprocessing step
-# #include "../chapters/mako_code.txt"
+# #include "mako_code.txt"
 
 
 !split
 ========= Preface  =========
 label{ch:preface}
 
-# #include "preface.do.txt"
+# #include "dotxt/preface.do.txt"
 
 !split
 TOC: on
@@ -26,26 +26,51 @@ TOC: on
 ========= Quick overview of the finite element method =========
 label{ch:overview}
 
-# #include "approx.do.txt"
+Purpose: Get to the point! The rest of the text is filled with details,
+and it is easy for a newcomer to drown in those details. The first
+chapter runs quickly through the *ideas* and outlines enough math to
+indicate the nature of the method.
 
-# #include "varform.do.txt"
+# #include "dotxt/approx.do.txt"
 
-# #include "femtime.do.txt"
+# #include "dotxt/varform.do.txt"
 
-# #include "femsys.do.txt"
+# #include "dotxt/femtime.do.txt"
 
-### #include "nonlin.do.txt"
+# #include "dotxt/femsys.do.txt"
 
+
+========= Solving nonlinear problems =========
+label{ch:nonlin}
+
+# #include "dotxt/nonlin_ode.do.txt"
+
+# #include "dotxt/nonlin_pde1D.do.txt"
+
+# #include "dotxt/nonlin_pde_gen.do.txt"
+
+# #include "dotxt/nonlin_exer.do.txt"
+
+======= Symbolic nonlinear finite element equations =======
+label{nonlin:app:fem_vs_fdm}
+# #include "dotxt/fem1D_symbolic.do.txt"
 
 
 !split
 ========= Uncertainty quantification and polynomial chaos expansions =========
 label{ch:pce}
 
-### #include "polychaos.do.txt"
+# #include "dotxt/polychaos.do.txt"
+
+
+!split
+========= Variational methods for linear systems =========
+label{ch:cg}
+
+# #include "dotxt/cg.do.txt"
 
 
 !split
 ======= References =======
 
-BIBFILE: ../chapters/papers.pub
+BIBFILE: papers.pub
