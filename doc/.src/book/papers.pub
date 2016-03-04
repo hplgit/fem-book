@@ -49,7 +49,7 @@
 ** Finite Difference Computing with Partial Differential Equations
    key:       Langtangen_Linge
    author:    H. P. Langtangen, S. Linge
-   year:      2015
+   year:      2016
    status:    published
    note:      \url{http://tinyurl.com/nho95qh/web}
    url:       http://tinyurl.com/nho95qh/web
@@ -248,11 +248,11 @@
 ** A Primer on Scientific Programming with {P}ython
    key:       Langtangen_2012
    author:    H. P. Langtangen
-   year:      2014
+   year:      2016
    publisher: Springer
    status:    published
    series:    Texts in Computational Science and Engineering
-   edition:   Fourth
+   edition:   Fifth
    entrytype: book
 ** The Finite Element Method: Theory, Implementation, and Applications
    key:       Larson_2013
