@@ -167,5 +167,5 @@ URL: "http://hplgit.github.io/fem-book/doc/web/".
 \vspace{1cm}
 
 \noindent
-{\it Oslo, February 2016}  \hfill  {\it Hans Petter Langtangen}
+{\it Oslo, March 2016}  \hfill  {\it Hans Petter Langtangen, Kent-Andre Mardal}
 # #endif
