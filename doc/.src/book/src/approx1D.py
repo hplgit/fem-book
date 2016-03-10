@@ -56,7 +56,7 @@ def least_squares(f, psi, Omega, symbolic=True):
     print 'approximation:', u
     return u, c
 
-def numerical_linsys_solve(A, b, floating_point_calc='sumpy'):
+def numerical_linsys_solve(A, b, floating_point_calc='sympy'):
     """
     Given a linear system Au=b as sympy arrays, solve the
     system using different floating-point software.
