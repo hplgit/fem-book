@@ -248,8 +248,8 @@ orthogonal to *any* vector $\v$ in the space $V$. This result is
 visually quite clear from Figure ref{fem:approx:vec:plane:fig} (think of
 other vectors along the line $(a,b)$: all of them will lead to
 a larger distance between the approximation and $\f$).
-The see mathematically that $\e$ is orthogonal to any vector $\v$
-in the space $V$, we
+Then we see mathematically that $\e$ is orthogonal to any vector $\v$
+in the space $V$ and we may
 express any $\v\in V$ as $\v=s\psib_0$ for any scalar parameter $s$
 (recall that two vectors are orthogonal when their inner product vanishes).
 Then we calculate the inner product
@@ -472,7 +472,7 @@ The latter equation can be rewritten as
 !bt
 \begin{equation*} \sum_{i=0}^N c_i (\e,\psib_i) =0\tp  \end{equation*}
 !et
-If this is to hold for arbitrary values of $c_0,\ldots,c_N$
+If this is to hold for arbitrary values of $c_0,\ldots,c_N$,
 we must require that each term in the sum vanishes, which means that
 
 !bt
@@ -535,6 +535,11 @@ u = \sum_{j\in\If} c_j\baspsi_j\tp
 label{fem:approx:ufem}
 \end{equation}
 !et
+[kam: 
+That is, we consider functions as vectors in a vector space, a so-called function space. 
+]
+
+
 The index set $\If$ is defined as $\If =\{0,\ldots,N\}$ and is
 from now on used
 both for compact notation and for flexibility in the numbering of
@@ -749,6 +754,8 @@ def least_squares(f, psi, Omega):
         u += c[i,0]*psi[i]
     return u, c
 !ec
+[kam: ble overrasket over at x blir opprettet her, men det er vel 
+den beste måten å gjøre det på. Litt ugly. ]
 Observe that we exploit the symmetry of the coefficient matrix:
 only the upper triangular part is computed. Symbolic integration, also in
 `sympy`, is often time consuming, and (roughly) halving the
@@ -945,10 +952,12 @@ system $\sum_{j\in\If} A_{i,j}c_j = b_i$ more compactly in matrix form
 as $Ac=b$.  Since we have more equations than unknowns, it is (in
 general) impossible to find a vector $c$ that fulfills $Ac=b$. The
 best we can do is to make the residual $r=b-Ac$ as small as
-possible. That is, we can find $c$ such it minimizes the norm
+possible. That is, we can find $c$ such that it minimizes the norm
 Euclidean norm of $r$: $||r||$.  The algebra simplifies significantly
 by minimizing $||r||^2$ instead.  This principle corresponds to a
 least squares method.
+
+[kam: ordet residual dukker plutselig opp midt i teksten] 
 
 idx{normal equations}
 idx{$A^TA=A^Tb$ (normal equations)}
@@ -960,16 +969,16 @@ implies that
 
 !bt
 \begin{equation}
-\frac{\partial}{\partial k}||r||^2=0,\quad k=0,\ldots,N,
+\frac{\partial}{\partial c_k}||r||^2=0,\quad k=0,\ldots,N,
 label{fem:approx:global:regression:r2min}
 \end{equation}
 !et
 which leads to
 
 !bt
-\[ \frac{\partial}{\partial k}\sum_i r_i^2 =
-\sum_i 2r_i\frac{\partial r_i}{\partial k}
-=\sum_i 2r_i \frac{\partial}{\partial k}(b_i -\sum_jA_{i,j}c_j)
+\[ \frac{\partial}{\partial c_k}\sum_i r_i^2 =
+\sum_i 2r_i\frac{\partial r_i}{\partial c_k}
+=\sum_i 2r_i \frac{\partial}{\partial c_k}(b_i -\sum_jA_{i,j}c_j)
 = 2\sum_i r_i(-A_{i,k}) = 0\tp\]
 !et
 By inserting $r_i = b_i -\sum_jA_{i,j}c_j$ the last expression we
@@ -981,7 +990,7 @@ get
 !et
 Introducing the transpose of $A$, $A^T$, we know that $A^T_{i,j}=A_{j,i}$,
 to the expression $\sum_i A_{i,j}A_{i,k}$ can be written
-as $\sum_i A^T{k,i}A_{i,j}$ and recognized as the formula for the
+as $\sum_i A^T_{k,i}A_{i,j}$ and recognized as the formula for the
 matrix-matrix product $A^TA$. Also, $\sum_i b_i A_{i,k}$ can be written
 $\sum_i A^T_{k,i}b_i$ and recognized as the matrix-vector product
 $A^Tb$. These observations imply that (ref{fem:approx:global:regression:r2min})
@@ -989,7 +998,7 @@ is equivalent to the linear system
 
 !bt
 \begin{equation}
-\sum_j (\underbrace{\sum_i A^T{k,i}A_{i,j}}{=(A^TA)_{k,j}}
+\sum_j (\underbrace{\sum_i A^T_{k,i}A_{i,j}}{=(A^TA)_{k,j}}
 c_j = \sum_i \underbrace{A^T_{k,i}b_i}{=(A^Tb)_k},\quad k=0,\ldots,N,
 label{fem:approx:global:regression:normal1}
 \end{equation}
@@ -1007,14 +1016,14 @@ The equation system (ref{fem:approx:global:regression:normal1}) or
 *normal equations*.
 With $A$ as an $(m+1)\times (N+1)$ matrix, $A^TA$ becomes an $(N+1)\times (N+1)$
 matrix, and $A^Tb$ becomes a vector of length $N+1$. Often, $m\gg N$,
-so $A^TA$ has much smaller size than $A$.
+so $A^TA$ is much smaller than $A$.
 
 Many prefer to write the linear system
 (ref{fem:approx:global:regression:normal1}) on the standard form
 $\sum_j B_{i,j}c_j=d_i$, $i=0,\ldots,N$.  We can easily do so by
 exchanging the $i$ and $k$ index ($i\leftrightarrow k$), $\sum_i
-A^T{k,i}A_{i,j} = \sum_k A^T{i,k}A_{k,j}$, and setting $B_{i,j}=\sum_k
-A^T{i,k}A_{k,j}$. Similarly, we exchange $i$ and $k$ in the right-hand
+A^T_{k,i}A_{i,j} = \sum_k A^T_{i,k}A_{k,j}$, and setting $B_{i,j}=\sum_k
+A^T_{i,k}A_{k,j}$. Similarly, we exchange $i$ and $k$ in the right-hand
 side expression and get $\sum_k A^T_{i,k}b_k = d_i$.  Expressing
 $B_{i,j}$ and $d_i$ in terms of the $\baspsi_i$ and $\xno{i}$, using
 (ref{fem:approx:global:regression:Aij}) and
@@ -1022,8 +1031,8 @@ $B_{i,j}$ and $d_i$ in terms of the $\baspsi_i$ and $\xno{i}$, using
 
 !bt
 \begin{align}
-B_{i,j} &= \sum_k A^T{i,k}A_{k,j} = \sum_k A{k,i}A_{k,j}
-=\sum_{k=0}^m\baspsi_i(\xno{k}\baspsi_j(\xno{k},
+B_{i,j} &= \sum_k A^T_{i,k}A_{k,j} = \sum_k A_{k,i}A_{k,j}
+=\sum_{k=0}^m\baspsi_i(\xno{k})\baspsi_j(\xno{k}),
 label{fem:approx:global:regression:Bij}\\
 d_i &=\sum_k A^T_{i,k}b_k = \sum_k A_{k,i}b_k =\sum_{k=0}^m
 \baspsi_i(\xno{k})f(\xno{k})
@@ -1098,8 +1107,8 @@ for m in m_values:
 Figure ref{fem:approx:global:linear:regression:fig1} shows results for
 $m+1=2$ (left), $m+1=8$ (middle), and $m+1=64$ (right) data points.
 The approximating function is not so sensitive to the number of
-points as long as they cover a significant part of the domain (2 points
-are too much in the middle, but 8 points cover almost the entire
+points as long as they cover a significant part of the domain (the 2 points
+puts too much weight on the center,  but 8 points cover almost the entire
 domain, and 64 points do not improve the results much):
 
 !bt
@@ -1132,6 +1141,8 @@ the fitted parabola and the original parabola without noise become very close.
 
 FIGURE: [fig/noisy_parabola_by_linear_regression, width=800]  Approximation of a parabola with noise by a parabola.  label{fem:approx:global:linear:regression:fig3}
 
+[kam: wrong figure. This is approximation with linear regression as also the above. Did not find the correct
+figure, but will look into the code and generate]
 === Remark ===
 
 The regression method is not much used for approximating differential
@@ -1397,7 +1408,7 @@ def least_squares_orth(f, psi, Omega):
 !ec
 
 As mentioned in Section ref{fem:approx:global:LS:code}, symbolic integration
-may fail or take very long time. It is therefore natural to extend the
+may fail or take a very long time. It is therefore natural to extend the
 implementation above with a version where we can choose between symbolic
 and numerical integration and fall back on the latter if the former
 fails:
@@ -1685,7 +1696,7 @@ property is the *Lagrange interpolating polynomials*, or just
 *Lagrange polynomials*. (Although the functions are named after
 Lagrange, they were first discovered by Waring in 1779, rediscovered
 by Euler in 1783, and published by Lagrange in 1795.)  Lagrange
-polynomials key building blocks in the finite element method, so
+polynomials are key building blocks in the finite element method, so
 familiarity with these polynomials will be required anyway.
 
 A Lagrange polynomial can be written as
@@ -1731,11 +1742,11 @@ and
 
 !bt
 \begin{equation}
-u(x) = \sum_{j\in\If} f(\xno{i})\baspsi_i(x)\tp  \end{equation}
+u(x) = \sum_{j\in\If} c_i \baspsi_i(x) = \sum_{j\in\If} f(\xno{i})\baspsi_i(x)\tp  \end{equation}
 !et
 
 The following function computes the Lagrange interpolating polynomial
-$\baspsi_i(x)$, given the interpolation points $\xno{0},\ldots,\xno{N}$ in
+$\baspsi_i(x)$ on the unit interval (0,1), given the interpolation points $\xno{0},\ldots,\xno{N}$ in
 the list or array `points`:
 
 !bc pycod
@@ -1746,7 +1757,7 @@ def Lagrange_polynomial(x, i, points):
             p *= (x - points[k])/(points[i] - points[k])
     return p
 !ec
-The next function computes a complete basis using equidistant points throughout
+The next function computes a complete basis, $\baspsi_0,\ldots,\baspsi_N$, using equidistant points throughout
 $\Omega$:
 
 !bc pycod
@@ -1809,6 +1820,8 @@ and then round-off errors start to grow, such that
 the coefficients in front of $x^r$ for $r>2$ are
 of size $10^{-5}$ and smaller.
 
+[kam: litt uklart om det er et problem for grad 15 eller ikke.]
+
 === Successful example ===
 
 Trying out the Lagrange polynomial basis for approximating
@@ -1843,13 +1856,13 @@ grows. This numerical artifact is not surprising when looking at the
 individual Lagrange polynomials. Figure
 ref{fem:approx:global:Lagrange:fig:abs:Lag:unif:osc} shows two such
 polynomials, $\psi_2(x)$ and $\psi_7(x)$, both of degree 11 and
-computed from uniformly spaced points $\xno{x_i}=i/11$,
+computed from uniformly spaced points $\xno{i}=i/11$,
 $i=0,\ldots,11$, marked with circles.  We clearly see the property of
 Lagrange polynomials: $\psi_2(\xno{i})=0$ and $\psi_7(\xno{i})=0$ for
 all $i$, except $\psi_2(\xno{2})=1$ and $\psi_7(\xno{7})=1$.  The most
 striking feature, however, is the significant oscillation near the
 boundary. The reason is easy to understand: since we force the
-functions to zero at so many points, a polynomial of high degree is
+functions to be zero at so many points, a polynomial of high degree is
 forced to oscillate between the points.  The phenomenon is named
 *Runge's phenomenon* and you can read a more detailed explanation on
 "Wikipedia": "http://en.wikipedia.org/wiki/Runge%27s_phenomenon".
@@ -1904,6 +1917,8 @@ ref{fem:approx:global:Lagrange:fig:abs:Lag:unif:osc} (equidistant
 points). Note the different scale on the vertical axes in the two
 figures.
 
+[kam:note that the  nodes cluster close to the boundaries]
+
 Another cure for undesired oscillations of higher-degree interpolating
 polynomials is to use lower-degree Lagrange polynomials on many small
 patches of the domain. This is actually the idea pursued in the finite
@@ -1914,6 +1929,8 @@ $\Omega = [0,1]$ since $f$ is piecewise linear.
 FIGURE: [fig/Lagrange_interp_abs_8_15, width=800]  Interpolation of an absolute value function by Lagrange polynomials and uniformly distributed interpolation points: degree 7 (left) and 14 (right).  label{fem:approx:global:Lagrange:fig:abs:Lag:unif:7:14}
 
 FIGURE: [fig/Lagrange_basis_12, width=400]  Illustration of the oscillatory behavior of two Lagrange polynomials based on 12 uniformly spaced points (marked by circles).  label{fem:approx:global:Lagrange:fig:abs:Lag:unif:osc}
+
+[kam: make new figures with lines at x=2/11 and x=7/11 to draw attention to these places]
 
 FIGURE: [fig/Lagrange_interp_abs_Cheb_8_15, width=800]  Interpolation of an absolute value function by Lagrange polynomials and Chebyshev nodes as interpolation points: degree 7 (left) and 14 (right).  label{fem:approx:global:Lagrange:fig:abs:Lag:Cheb:7:14}
 
@@ -1977,6 +1994,8 @@ and modify the code accordingly.
 
 # #endif
 
+[kam: missing conclusion on the least square, Lagrange]
+
 The idea of avoiding oscillatory solutions by
 using lower-order Lagrange polynomials on smaller patches
 throughout the domain, is important in the finite element
@@ -2030,6 +2049,8 @@ label{fem:approx:2D:Vx}
 !et
 A similar space for a function's variation in $y$ can be defined,
 
+[kam: check if vector space is used or function space is used throughout the text and make an initial comment]
+
 !bt
 \begin{equation}
 V_y = \mbox{span}\{ \hat\baspsi_0(y),\ldots,\hat\baspsi_{N_y}(y)\}
@@ -2056,6 +2077,9 @@ corresponding *inner tensor product* is the well-known scalar or dot
 product of two vectors: $p=a\cdot b = \sum_{j=0}^N a_jb_j$. Now,
 $p$ is a rank-0 tensor.
 
+[kam: I have never seen the term outer tensor product or inner tensor product. 
+]
+
 Tensors are typically represented by arrays in computer code.
 In the above example, $a$ and $b$ are represented by
 one-dimensional arrays of length
@@ -2063,7 +2087,7 @@ $M$ and $N$, respectively, while $p=a\otimes b$ must be represented
 by a two-dimensional array of size $M\times N$.
 
 "Tensor products": "http://en.wikipedia.org/wiki/Tensor_product" can
-be used in a variety of context.
+be used in a variety of contexts.
 !enotice
 
 
@@ -2073,11 +2097,11 @@ Given the vector spaces $V_x$ and $V_y$ as defined
 in (ref{fem:approx:2D:Vx}) and (ref{fem:approx:2D:Vy}), the
 tensor product space $V=V_x\otimes V_y$ has a basis formed
 as the tensor product of the basis for $V_x$ and $V_y$.
-That is, if $\left\{ \basphi_i(x) \right\}_{i\in\Ix}$
-and $\left\{ \basphi_i(y) \right\}_{i\in \Iy}$ are basis for
+That is, if $\left\{ \baspsi_i(x) \right\}_{i\in\Ix}$
+and $\left\{ \baspsi_i(y) \right\}_{i\in \Iy}$ are basis for
 $V_x$ and $V_y$, respectively, the elements in the basis for $V$ arise
 from the tensor product:
-$\left\{ \basphi_i(x)\basphi_j(y) \right\}_{i\in \Ix,j\in \Iy}$.
+$\left\{ \baspsi_i(x)\baspsi_j(y) \right\}_{i\in \Ix,j\in \Iy}$.
 The index sets are $I_x=\{0,\ldots,N_x\}$ and $I_y=\{0,\ldots,N_y\}$.
 
 The notation for a basis function in 2D can employ a double index as in
@@ -2105,10 +2129,12 @@ and use the standard form for $u$,
 !bt
 \[ u = \sum_{j\in\If} c_j\baspsi_j(x,y)\tp\]
 !et
-The single index is related to the double index through
+The single index can be expressed in terms of the double index through
 $i=p (N_y+1) + q$ or $i=q (N_x+1) + p$.
 
 ===== Example: Polynomial basis in 2D =====
+
+[kam: mangler inledning. Vet ikke at det er least square før en stund ute i eksempelet]
 
 Suppose we choose $\hat\baspsi_p(x)=x^p$, and try an approximation with
 $N_x=N_y=1$:
@@ -2191,6 +2217,8 @@ where
 are matrix entries for one-dimensional approximations. Moreover,
 $i=q N_y+q$ and $j=s N_y+r$.
 
+[kam: sjekk om dette stemmer]
+
 With $\hat\baspsi_p(x)=x^p$ we have
 
 !bt
@@ -2214,7 +2242,7 @@ Corresponding reasoning for the right-hand side leads to
 b_i &= (\baspsi_i,f) = \int_0^{L_y}\int_{0}^{L_x}\baspsi_i f\,dxdx\\
 &= \int_0^{L_y}\int_{0}^{L_x}\hat\baspsi_p(x)\hat\baspsi_q(y) f\,dxdx\\
 &= \int_0^{L_y}\hat\baspsi_q(y) (1+2y^2)dy
-\int_0^{L_y}\hat\baspsi_p(x) x^p (1+x^2)dx\\
+\int_0^{L_y}\hat\baspsi_p(x) (1+x^2)dx\\
 &= \int_0^{L_y} y^q (1+2y^2)dy
 \int_0^{L_y}x^p (1+x^2)dx\\
 &= (\frac{1}{q+1} L_y^{q+1} + \frac{2}{q+3}L_y^{q+3})
