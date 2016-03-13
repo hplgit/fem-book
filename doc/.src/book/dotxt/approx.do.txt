@@ -2369,7 +2369,7 @@ repeated outer tensor product,
 \[ V = V_x\otimes V_y\otimes V_z\tp\]
 !et
 In general, given vectors (first-order tensors)
-$a^{(q)} = (a^{(q)}_0,\ldots,a^{(q)}_{N_q}$, $q=0,\ldots,m$,
+$a^{(q)} = (a^{(q)}_0,\ldots,a^{(q)}_{N_q})$, $q=0,\ldots,m$,
 the tensor product $p=a^{(0)}\otimes\cdots\otimes a^{m}$ has
 elements
 
@@ -2387,7 +2387,7 @@ with $p\in\Ix$, $q\in\Iy$, $r\in\Iz$. The expansion of $u$ becomes
 \[ u(x,y,z) = \sum_{p\in\Ix}\sum_{q\in\Iy}\sum_{r\in\Iz} c_{p,q,r}
 \baspsi_{p,q,r}(x,y,z)\tp\]
 !et
-A single index can be introduced also here, e.g., $i=N_xN_yr + q_Nx + p$,
+A single index can be introduced also here, e.g., $i=N_xN_yr + q_N_x + p$,
 $u=\sum_i c_i\baspsi_i(x,y,z)$.
 
 !bnotice Use of tensor product spaces
@@ -2412,8 +2412,15 @@ Look up the topic of *vector space* in your favorite linear algebra
 book or search for the term at Wikipedia.
 
 !bsubex
-Prove that vectors in the plane $(a,b)$ form a vector space
+Prove that vectors in the plane spanned by the vector $(a,b)$  form a vector space
 by showing that all the axioms of a vector space are satisfied.
+
+[kam: plane $(a,b)$ unclear. Perhaps expand and say 
+that the plane spanned by the vector is a vector space. 
+Could also note that points in $(a,b)$ do not form a  
+a space. Anyways, we need to say that $(a,b)$ is here a vector. 
+]
+
 
 !bsol
 The axioms of a vector space go as follows (see
@@ -3360,8 +3367,8 @@ FIGURE: [fig/u_example_sin, width=600] A function resulting from a weighted sum 
 
 FIGURE: [fig/u_example_P1, width=600] A function resulting from a weighted sum of three local piecewise linear (hat) functions. label{fem:approx:fe:fig:u:fe}
 
-We first introduce the concepts of elements and nodes in a simplistic fashion,
-as often met in the literature. Later, we shall generalize the concept
+We first introduce the concepts of elements and nodes in a simplistic fashion.
+Later, we shall generalize the concept
 of an element, which is a necessary step before treating a wider class of
 approximations within the family of finite element methods.
 The generalization is also compatible with
@@ -3470,7 +3477,7 @@ FIGURE: [fig/fe_mesh1D_random_numbering, width=500 frac=0.7] Example on irregula
 Finite element basis functions are in this text recognized by
 the notation $\basphi_i(x)$, where the index (now in the beginning)
 corresponds to
-a global node number. Since $\basphi_i$ is the symbol for basis
+a global node number. Since $\baspsi_i$ is the symbol for basis
 functions in general in this text, the particular choice of
 finite element basis functions means that we take
 $\baspsi_i = \basphi_i$.
@@ -3545,8 +3552,8 @@ label{fem:approx:fe:phi:prop1}
 !et
 when $\xno{j}$ is a node in the mesh with global node number $j$.
 The
-result $\basphi_i(\xno{j}) =\delta_{ij}$ arises
-because the Lagrange polynomials are constructed to have
+result $\basphi_i(\xno{j}) =\delta_{ij}$ is obtained as  
+the Lagrange polynomials are constructed to have
 exactly this property.
 The property also implies a convenient interpretation of $c_i$
 as the value of $u$ at node $i$. To show this, we expand $u$
@@ -3598,7 +3605,7 @@ elements = [[0, 1, 2], [2, 3, 4], [4, 5, 6], [6, 7, 8]]
 FIGURE: [fig/fe_mesh1D_P2_4e, width=500 frac=0.7]  Sketch of mesh with 4 elements and 3 nodes per element.  label{fem:approx:fe:fig:P2:mesh}
 
 
-Let us explain in mathematically how the basis functions are constructed
+Let us explain mathematically how the basis functions are constructed
 according to the principles.
 Consider element number 1 in Figure ref{fem:approx:fe:fig:P2:mesh},
 $\Omega^{(1)}=[0.25, 0.5]$, with local nodes
@@ -3635,6 +3642,9 @@ given by the formula (ref{fem:approx:global:Lagrange:poly}):
 
 As mentioned earlier, any global basis function $\basphi_i(x)$ is zero
 on elements that do not contain the node with global node number $i$.
+Clearly,  (\ref{fem:approx:fe:phi:prop1}) is easily verified, see for instance 
+that $\basphi_3(0.375) = 1$ while $\basphi_3(0.25) = 0$ 
+and $\basphi_3(0.5) = 0$.  
 
 The other global functions associated with internal nodes,
 $\basphi_1$, $\basphi_5$, and $\basphi_7$, are all of the same shape
@@ -3730,7 +3740,7 @@ label{fem:approx:fe:phi:1:formula2}
 Piecewise cubic basis functions can be defined by introducing four
 nodes per element. Figure ref{fem:approx:fe:fig:P3} shows
 examples on $\basphi_i(x)$, $i=3,4,5,6$, associated with element number 1.
-Note that $\basphi_4$ and $\basphi_5$ are nonzero on element number 1,
+Note that $\basphi_4$ and $\basphi_5$ are nonzero only on element number 1,
 while
 $\basphi_3$ and $\basphi_6$ are made up of Lagrange polynomials on two
 neighboring elements.
@@ -3785,12 +3795,14 @@ i=0,\ldots,N_e-1
 !et
 We have in this case $N_e$ elements and $N_n=N_e+1$ nodes.
 The parameter $N$ denotes the number of unknowns in the expansion
-for $u$, and with the P1 elements, $N=N_n-1$.
+for $u$, and with the P1 elements, $N=N_n$.
 The domain is $\Omega=[\xno{0},\xno{N}]$.
 The formula for $\basphi_i(x)$ is given by
 (ref{fem:approx:fe:phi:1:formula2}) and a graphical illustration is
 provided in Figures ref{fem:approx:fe:fig:P1} and
 ref{fem:approx:fe:fig:phi:i:im1}.
+
+[kam: $N=N_n$ alltid, ikke sant?]
 
 #We clearly see
 #from the figures the very important property
@@ -3916,6 +3928,9 @@ b_i = \int_\Omega\basphi_i(x)f(x)\dx
 label{fem:approx:fe:bi:formula1}
 \end{equation}
 !et
+
+[kam: formelen over gjelder ikke endepunkt]
+
 We need a specific $f(x)$ function to compute these integrals.
 With $f(x)=x(1-x)$ and
 two equal-sized elements in $\Omega=[0,1]$, one gets
@@ -3997,6 +4012,8 @@ node numbers $i=q(e,r)$ and
 $j=q(e,s)$. With $d$ nodes per element, all the nonzero matrix entries
 in $A^{(e)}_{i,j}$ arise from the integrals involving basis functions with
 indices corresponding to the global node numbers in element number $e$:
+
+[kam: med $d$ nodes per element må det vel være $d$ nonzero contribtions]
 
 !bt
 \begin{equation*}
@@ -4200,7 +4217,7 @@ using the rules from calculus, results in
 
 In 2D and 3D, $\dx$ is transformed to $\hbox{det} J\dX$, where $J$ is
 the Jacobian of the mapping from $x$ to $X$. In 1D,
-$\hbox{det} J\dX = \dx/\dX = h/2$.To obtain a uniform
+$\hbox{det} J\dX = \dx/\dX = h/2$. To obtain a uniform
 notation for 1D, 2D, and 3D problems we therefore replace
 $\dx/\dX$ by $\det J$ already now.
 The integration over the reference element is then written as
@@ -4324,6 +4341,7 @@ label{fem:approx:fe:intg:ref:Ae11}
 !et
 
 The corresponding entries in the element vector becomes
+using (ref{fem:approx:fe:affine:mapping2})) 
 
 !bt
 \begin{align}
@@ -4524,6 +4542,8 @@ integration. The symbolic integration can also spend considerable time
 before reaching an unsuccessful conclusion, so we may also introduce a parameter
 `symbolic` to turn symbolic integration on and off:
 
+[kam: I think this has been said multiple times before]
+
 !bc pycod
 def element_vector(f, phi, Omega_e, symbolic=True):
         ...
@@ -4713,6 +4733,9 @@ each element are stored in separate arrays that are finally
 concatenated to form a global array for $x$ and for $u$.
 The details are found in the `u_glob` function in
 `fe_approx1D.py`.
+
+[kam: u_glob is used frequently later. I think it deserves a more
+extensive explanation here]
 
 ===== The structure of the coefficient matrix =====
 label{fem:approx:fe:A:structure}
@@ -4951,6 +4974,8 @@ number of nonzero elements is unaltered. Figures
 ref{fem:approx:fe:sparsity:P1} and ref{fem:approx:fe:sparsity:P3}
 exemplify sparsity patterns.
 
+[kam: $d$ is here polynomial degree. Is that clear to the reader?]
+
 FIGURE: [fig/sparsity_pattern_1D_30, width=800] Matrix sparsity pattern for left-to-right numbering (left) and random numbering (right) of nodes in P1 elements. label{fem:approx:fe:sparsity:P1}
 
 FIGURE: [fig/sparsity_pattern_1DP3_30, width=800] Matrix sparsity pattern for left-to-right numbering (left) and random numbering (right) of nodes in P3 elements. label{fem:approx:fe:sparsity:P3}
@@ -4973,7 +4998,7 @@ matrix is created by
 import scipy.sparse
 A = scipy.sparse.dok_matrix((N_n, N_n))
 !ec
-When there is any need to add or set some matrix entry `i,j`, just do
+When there is any need to set or add some matrix entry `i,j`, just do
 
 !bc pycod
 A[i,j]  = entry
@@ -5003,7 +5028,7 @@ are of the same type. However, when solving differential equations,
 vectorization is much more difficult. It also appears that the DOK
 sparse matrix format available in the `scipy.sparse` package is fast
 enough even for big 1D problems on today's laptops, so the need for
-improving efficiency occurs in 2D and 3D problems, but then the
+improving efficiency occurs only in 2D and 3D problems, but then the
 complexity of the mesh favors the DOK format.
 
 # 2DO
@@ -5096,6 +5121,8 @@ using finite difference operator notation:
 !et
 which is nothing but the standard discretization of
 
+[kam: where $D_x D_x$ is ...] 
+
 !bt
 \[ h(u + \frac{h^2}{6}u'')\tp\]
 !et
@@ -5175,7 +5202,7 @@ Consequently,
 
 !bt
 \[ \sum_{j=0}^{N-1} f(\xno{j+\half})\basphi_i(\xno{j+\half})
-= \half(f\xno{j-\half} + \xno{j+\half})\tp\]
+= \half(f(\xno{j-\half}) + f(\xno{j+\half})\tp\]
 !et
 When $1\leq i\leq N-1$ we then get
 
@@ -5208,7 +5235,7 @@ expressed with operator notation as
 [u + \frac{h^2}{6} D_x D_x u = f]_i\tp  \end{equation}
 !et
 As $h\rightarrow 0$, the extra term proportional to $u''$ goes to zero,
-and the two methods are then equal.
+and the two methods converge to the same solution.
 
 With the Simpson's rule, we may say that we solve
 
@@ -5349,6 +5376,9 @@ we evaluate $u=\sum_j c_j\basphi_j$ for degree of freedom number $i$,
 we get $u=c_i$. Integrals are performed over cells, usually by
 mapping the cell of interest to a *reference cell*.
 
+[kam: cell boundaries as vertices are only meaningfull in 
+1D]
+
 With the concepts of cells, vertices, and degrees of freedom we
 increase the decoupling of the geometry (cell, vertices) from the
 space of basis functions. We will associate different
@@ -5375,6 +5405,10 @@ The concept of a *finite element* is now
   * a geometric *mapping* of the reference cell onto the cell in the physical
     domain.
 
+[kam: a finite element might be defined in terms of 
+precomputed basis functions or (as here) implicitly defined
+basis functions defined in terms of dofs. I would like to revise this.  ] 
+
 There must be a geometric description of a cell. This is trivial in 1D
 since the cell is an interval and is described by the interval limits,
 here called vertices. If the cell is $\Omega^{(e)}=[x_L,x_R]$,
@@ -5395,7 +5429,8 @@ where the sum is taken over the numbers of the degrees of freedom and
 $c_r$ is the value of $u$ for degree of freedom number $r$.
 
 Our previous P1, P2, etc., elements are defined by introducing $d+1$
-equally spaced nodes in the reference cell and saying that the degrees
+equally spaced nodes in the reference cell, a polynomial space, P$d$, of order
+$d$,   and saying that the degrees
 of freedom are the $d+1$ function values at these nodes.  The basis
 functions must be 1 at one node and 0 at the others, and the Lagrange
 polynomials have exactly this property.  The nodes can be numbered
@@ -5486,6 +5521,9 @@ x_u, u = u_glob(c, vertices, cells, dof_map,
                 resolution_per_element=51)
 plot(x_u, u)
 !ec
+
+[kam: u_glob etc is repeated on the next page]
+
 These steps are offered in the `approximate` function, which we here
 apply to see how well four P0 elements (piecewise constants)
 can approximate a parabola:
@@ -5529,7 +5567,7 @@ x, u = u_glob(c, vertices, cells, dof_map,
 e = f(x) - u
 !ec
 Let us use the Trapezoidal method to approximate the integral. Because
-different elements may have different lengths, the `x` array has
+different elements may have different lengths, the `x` array may have 
 a non-uniformly distributed set of coordinates. Also, the `u_glob`
 function works in an element by element fashion such that coordinates
 at the boundaries between elements appear twice. We therefore need
@@ -5573,6 +5611,7 @@ but not on $h$, and the norm $|f^{(d+1)}|$ is defined through
 
 !enotice
 
+[kam: consider a worked example here here $d$ is found. ]
 
 ===== Example: Cubic Hermite polynomials =====
 label{fem:approx:fe:element:impl:Hermite}
@@ -5642,6 +5681,8 @@ has the function value at vertex $\xno{i}$
 as degree of freedom number $2i$ and the value of the derivative
 at $\xno{i}$ as degree of freedom number $2i+1$, $i=0,\ldots,N_e+1$.
 
+[kam: Fint eksempel, men brå avslutning]
+
 
 !split
 ======= Numerical integration =======
@@ -5651,7 +5692,7 @@ integrals. Since the integrands in the coefficient matrix often
 are (lower-order) polynomials, integration rules that can
 integrate polynomials exactly are popular.
 
-The numerical integration rules can be expressed in a common form,
+Numerical integration rules can be expressed in a common form,
 
 !bt
 \begin{equation}
@@ -5834,6 +5875,8 @@ FIGURE: [fig/mesh2D_quarter_circle, width=400] Examples on 2D P1 elements in a d
 
 FIGURE: [fig/mesh2D_rect_Q1, width=400] Examples on 2D Q1 elements. label{fem:approx:fe:2D:fig:rectQ1}
 
+[kam: not sure if the distinction between P and Q is sufficiently clear. Check]
+
 ===== Basis functions over triangles in the physical domain =====
 
 Cells with triangular shape will be in main focus here.  With the P1
@@ -5841,7 +5884,7 @@ triangular element, $u$ is a linear function over each cell, as
 depicted in Figure ref{fem:approx:fe:2D:fig:femfunc}, with
 discontinuous derivatives at the cell boundaries.
 
-FIGURE: [fig/demo2D_4x3r, width=400] Example on piecewise linear 2D functions defined on triangles. label{fem:approx:fe:2D:fig:femfunc}
+FIGURE: [fig/demo2D_4x3r, width=400] Example on scalar function defined in terms of piecewise linear 2D functions defined on triangles. label{fem:approx:fe:2D:fig:femfunc}
 
 We give the vertices of the cells global and local numbers as in 1D.
 The degrees of freedom in the P1 element are the function values at
@@ -5882,7 +5925,7 @@ All details and code appear below.
 As in 1D, we can define the basis functions and the degrees of freedom
 in a reference cell and then use a mapping from the reference coordinate
 system to the physical coordinate system.
-We also have a mapping of local degrees of freedom numbers to global degrees
+We also need a mapping of local degrees of freedom numbers to global degrees
 of freedom numbers.
 # (`dof_map`).
 
@@ -5993,6 +6036,7 @@ mapping itself always applies the P1 basis functions.
 FIGURE: [fig/ElmT3n2D_map, width=400] Affine mapping of a P1 element. label{fem:approx:fe:map:fig:2DP1}
 
 
+[kam: Worked example here? ]
 
 ===== Isoparametric mapping of the reference cell =====
 
@@ -6409,12 +6453,12 @@ Approximate the step function
 
 !bt
 \begin{equation*} f(x) = \left\lbrace\begin{array}{ll}
-0 & 0\leq x < \halfi,\\
-1 & \halfi \leq x \geq \halfi
+0 & \mbox{ if } 0\leq x < \halfi,\\
+1 & \mbox{ if } \halfi \leq x \geq \halfi
 \end{array}\right.
 \end{equation*}
 !et
-by 2, 4, 8, and 16 P1, P2, P3, and P4. Compare approximations visually.
+by 2, 4, 8, and 16 elements and  P1, P2, P3, and P4. Compare approximations visually.
 
 
 !bhint
@@ -6668,6 +6712,9 @@ $N_P=2,4,8,16,32$. Compute the error $E=||u-f||_{L^2}$.
 Use the `fe_approx1D_numint` module to compute $u$ and use
 the technique from Section ref{fem:approx:fe:error} to
 compute the norm of the error.
+!ehint
+!bhint 
+Read up on the Nyquist–Shannon sampling theorem.
 !ehint
 !esubex
 
