@@ -756,6 +756,7 @@ def least_squares(f, psi, Omega):
 !ec
 [kam: ble overrasket over at x blir opprettet her, men det er vel 
 den beste måten å gjøre det på. Litt ugly. ]
+
 Observe that we exploit the symmetry of the coefficient matrix:
 only the upper triangular part is computed. Symbolic integration, also in
 `sympy`, is often time consuming, and (roughly) halving the
@@ -2031,6 +2032,8 @@ completely analogously to the 1D case (ref{fem:approx:LS:innerprod}):
 \end{equation}
 !et
 
+[kam: sometimes $\dx$ and sometimes $dx$ check for consistency. Might be 2D]. 
+
 ===== 2D basis functions as tensor products of 1D functions =====
 label{fem:approx:2D:global}
 
@@ -2134,7 +2137,7 @@ $i=p (N_y+1) + q$ or $i=q (N_x+1) + p$.
 
 ===== Example: Polynomial basis in 2D =====
 
-[kam: mangler inledning. Vet ikke at det er least square før en stund ute i eksempelet]
+[kam: mangler innledning. Vet ikke at det er least square før en stund ute i eksempelet]
 
 Suppose we choose $\hat\baspsi_p(x)=x^p$, and try an approximation with
 $N_x=N_y=1$:
@@ -2387,7 +2390,7 @@ with $p\in\Ix$, $q\in\Iy$, $r\in\Iz$. The expansion of $u$ becomes
 \[ u(x,y,z) = \sum_{p\in\Ix}\sum_{q\in\Iy}\sum_{r\in\Iz} c_{p,q,r}
 \baspsi_{p,q,r}(x,y,z)\tp\]
 !et
-A single index can be introduced also here, e.g., $i=N_xN_yr + q_N_x + p$,
+A single index can be introduced also here, e.g., $i=N_xN_yr + qN_x + p$,
 $u=\sum_i c_i\baspsi_i(x,y,z)$.
 
 !bnotice Use of tensor product spaces
@@ -4734,7 +4737,7 @@ concatenated to form a global array for $x$ and for $u$.
 The details are found in the `u_glob` function in
 `fe_approx1D.py`.
 
-[kam: u_glob is used frequently later. I think it deserves a more
+[kam: u\_glob is used frequently later. I think it deserves a more
 extensive explanation here]
 
 ===== The structure of the coefficient matrix =====
@@ -5522,7 +5525,7 @@ x_u, u = u_glob(c, vertices, cells, dof_map,
 plot(x_u, u)
 !ec
 
-[kam: u_glob etc is repeated on the next page]
+[kam: u\_glob etc is repeated on the next page]
 
 These steps are offered in the `approximate` function, which we here
 apply to see how well four P0 elements (piecewise constants)

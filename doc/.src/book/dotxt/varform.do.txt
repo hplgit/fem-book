@@ -19,6 +19,7 @@ The finite element method is a very flexible approach for solving partial
 differential equations. Its two most attractive features are the ease
 of handling domains of complex shape in two and three dimensions and
 the ease of using higher-degree polynomials in the approximations.
+[kam: I would say that a rigorous theory is also an attractive feature] 
 The latter feature typically leads to errors proportional to
 $h^{d+1}$, where $h$ is the element length and $d$ is the polynomial
 degree. When the solution is sufficiently smooth, the ability to use
@@ -135,6 +136,8 @@ label{fem:deq:1D:models:simple}
 
 A common model problem used much in the forthcoming examples is
 
+[kam: 'used much' is used several places. I sounds funny to me]
+
 !bt
 \begin{equation}
 -u''(x) = f(x),\quad x\in\Omega=[0,L],\quad u(0)=0,\ u(L)=D
@@ -166,6 +169,7 @@ using `sympy`. Some common code is defined first:
 @@@CODE src/u_xx_f_sympy.py fromto: import sympy@def model1
 The following function computes the solution
 symbolically for the model problem (ref{fem:deq:1D:model1}):
+[kam: include integration formula as well?]
 
 @@@CODE src/u_xx_f_sympy.py fromto: def model1@def model2
 Calling `model1(2, L, D)` results in the solution
@@ -240,6 +244,7 @@ result is not zero, because $u$ is only likely to equal $\uex$.
 The nonzero result,
 
 idx{residual}
+[kam: is only likely ?]
 
 !bt
 \begin{equation}
@@ -317,6 +322,9 @@ label{fem:deq:1D:Galerkin0}
 !et
 This is the Galerkin method for differential equations.
 
+[kam: I would rather say that the abstract formulation can be made concrete 
+for a choosen basis]
+
 #As shown in (ref{fem:approx:vec:Np1dim:Galerkin}) and (ref{fem:approx:vec:Np1dim:Galerkin0}),
 This statement is equivalent to $R$ being orthogonal to the $N+1$
 basis functions only:
@@ -391,6 +399,10 @@ the differential equation, and then the resulting residual is demanded to be
 orthogonal to $V$.
 !enotice
 
+[kam: I consider a form something like an $f(...) \rightarrow R$ while
+'a formulation' is a formulation of a problem. Hence, a PDE problem has 
+a variational formulation in terms of forms.]    
+
 !bnotice Remark on terminology
 The terms weak or variational formulations often refer to a statement like
 (ref{fem:deq:1D:Galerkin0}) or (ref{fem:deq:1D:WRM0})
@@ -456,7 +468,7 @@ label{fem:deq:1D:Dirac}
 \end{equation}
 !et
 Intuitively, we may think of $\delta (x-\xno{i})$ as a very peak-shaped
-function around $x=\xno{i}$ with an integral $\int_{-\infty}^\infty delta(x-\xno{i})dx$ that evaluates to unity. Mathematically, it can be shown that
+function around $x=\xno{i}$ with an integral $\int_{-\infty}^\infty \delta(x-\xno{i})dx$ that evaluates to unity. Mathematically, it can be shown that
 $\delta (x-\xno{i})$ is the limit of a Gaussian function centered at
 $x=\xno{i}$ with a standard deviation that approaches zero.
 Using this latter model, we can roughly visualize delta functions as
@@ -754,6 +766,8 @@ We can quickly use `sympy` to verify that the maximum error
 occurs at the midpoint $x=L/2$ and find what the errors are.
 First we set up the error expressions:
 
+[kam: dette er uklart. Jeg tror vi trenger noen figurer]
+
 !bc pyshell
 >>> import sympy as sym
 >>> # Computing with Dirichlet conditions: -u''=2 and sines
@@ -842,7 +856,7 @@ label{fem:deq:1D:intbyparts0}
 !et
 Integration by parts serves to reduce the order of the derivatives and
 to make the coefficient matrix symmetric since
-$(\baspsi_i',\baspsi_j') = (\baspsi_i',\baspsi_j')$.
+$(\baspsi_i',\baspsi_j') = (\baspsi_j',\baspsi_i')$.
 The symmetry property depends
 on the type of terms that enter the differential equation.
 As will be seen later in Section ref{fem:deq:1D:BC:nat},
@@ -1069,8 +1083,8 @@ label{fem:deq:1D:optimization}
 
 === Example ===
 
-Many physical problems can be modeled as partial differential equation
-and as a minimization problem. For example, the deflection $u(x)$ of an
+Many physical problems can be modeled as  partial differential equations
+and as  minimization problems. For example, the deflection $u(x)$ of an
 elastic string subject to a transversal force $f(x)$
 is governed by the differential equation problem
 
@@ -1123,6 +1137,8 @@ over all functions $v\in V$. That is,
 !et
 
 === Derivation ===
+
+[kam: reformuler første setning. Sjekk resten]
 
 To see this, we write $F(u)\leq F(\eta)$, $\forall\eta\in V$ instead
 and set $\eta=u + \epsilon v$, where $v\in V$ is an
@@ -1188,6 +1204,7 @@ Minimization of $\bar F$ implies
 \[ \frac{\partial\bar F}{\partial c_i}=0,\quad i\in\If\tp\]
 !et
 After quite some algebra one finds
+[kam: this follows directly, right? We don't need quite some algebra]
 
 !bt
 \[ \sum_{j\in\If} a(\baspsi_i,\baspsi_j)c_j = L(\baspsi_i),\quad i\in\If,\]
@@ -1326,18 +1343,20 @@ gives
 
 !bt
 \[ \sum_{j\in\If} (\dfc\baspsi_j', \baspsi_i')c_j  =
-(f,\baspsi_i) + (a(D-C)L^{-1}, \baspsi_i'), \quad i\in\If
+(f,\baspsi_i) + (\alpha (D-C)L^{-1}, \baspsi_i'), \quad i\in\If
 \tp
 \]
 !et
 This is nothing but a linear system $\sum_j A_{i,j}c_j=b_i$
 with
 
+[kam: check for $a$ and $\alpha$ in this example]
+
 !bt
 \begin{align*}
-A_{i,j} &= (a\baspsi_j', \baspsi_i') = \int_{\Omega} \dfc(x)\baspsi_j'(x),
+A_{i,j} &= (\alpha \baspsi_j', \baspsi_i') = \int_{\Omega} \dfc(x)\baspsi_j'(x),
 \baspsi_i'(x)\dx,\\
-b_i &= (f,\baspsi_i) + (a(D-C)L^{-1},\baspsi_i')=
+b_i &= (f,\baspsi_i) + (\alpha (D-C)L^{-1},\baspsi_i')=
 \int_{\Omega} \left(f(x)\baspsi_i(x) + \dfc(x)\frac{D-C}{L}\baspsi_i'(x)\right) \dx
 \tp
 \end{align*}
@@ -1379,6 +1398,7 @@ a test function $v\in V$ and integrating over $\Omega$:
 !et
 We apply integration by parts to the $u''v$ term only. Although we could
 also integrate $u' v$ by parts, this is not common.
+[kam: sometimes used for NS.] 
 The result becomes
 
 !bt
@@ -1603,6 +1623,8 @@ file=cable_sin
 ## Figur! Nice to have for both symmetric and complete problem
 ## See also exer/cable_sin_JDokken.py
 
+[kam: I am confused about the tension]
+
 A hanging cable of length $L$
 with significant tension $T$ has a deflection $w(x)$
 governed by
@@ -1627,6 +1649,8 @@ $w'(L/2)=0$.
 
 The problem can be scaled by introducing dimensionless independent
 and dependent variables,
+
+[kam: don't understand the sentence]
 
 !bt
 \[ \bar x = \frac{x}{L/2},\quad \bar u = \frac{w}{w_c},\]
@@ -2342,6 +2366,8 @@ b_i &= (2,\baspsi_i) - (D,\baspsi_i') -C\baspsi_i(0)\\
 !et
 Relevant `sympy` commands to help calculate these expressions are
 
+[kam: check - according to my hand calculations it is - D]
+
 @@@CODE src/u_xx_2_CD.py fromto: from sympy@N = 1
 The output becomes
 
@@ -2409,7 +2435,7 @@ because if $(\uex - B)\in V$, $u = \uex$, as proved next.
 ===== When the numerical method is exact =====
 
 We have some variational formulation: find $(u-B)\in V$ such that
-$a(u,v)=L(u)\ \forall V$. The exact solution also fulfills
+$a(u,v)=L(u)\ \forall v\in V$. The exact solution also fulfills
 $a(\uex,v)=L(v)$, but normally $(\uex -B)$ lies in a much larger
 (infinite-dimensional) space. Suppose, nevertheless, that
 $\uex - B = E$, where $E\in V$. That is, apart from Dirichlet conditions,
@@ -2435,7 +2461,7 @@ a(E-F),v) &= 0
 If $a(E-F),v) = 0$ for all $v$ in $V$, then $E-F$ must be zero everywhere
 in the domain, i.e., $E=F$. Or in other words: $u=\uex$. This proves
 that the exact solution is recovered if $\uex - B$ lies in $V$., i.e.,
-can expressed as $\sum_{j\in\If}d_j\baspsi_j$ if $\{\baspsi_j\}_{j\in\If}$
+can be expressed as $\sum_{j\in\If}d_j\baspsi_j$ where $\{\baspsi_j\}_{j\in\If}$
 is a basis for $V$. The method will then compute the solution $c_j=d_j$,
 $j\in\If$.
 
@@ -2449,7 +2475,7 @@ finds the exact solution.
 label{fem:deq:1D:fem1}
 
 The purpose of this section is to demonstrate in detail how
-the finite element method can the be applied to the model problem
+the finite element method can then be applied to the model problem
 
 !bt
 \[ -u''(x) = 2,\quad x\in (0,L),\ u(0)=u(L)=0,\]
@@ -2485,6 +2511,7 @@ functions associated with *all* nodes in the mesh. The parameter
 $N$, which counts the unknowns from 0 to $N$, is then equal to
 $N_n-1$ such that the total number of unknowns, $N+1$, is the
 total number of nodes.
+[kam: Need to check this $N_n$ thing]
 However, when solving differential equations we will often have
 $N<N_n-1$ because of Dirichlet boundary conditions. The reason is
 simple: we know what $u$ are at some (here two) nodes, and the number of
@@ -2524,6 +2551,9 @@ the unknowns in the final equation system. These unknowns take on
 the numbers $0,\ldots,N$. Unknown number $j$ in the linear system
 corresponds to degree of freedom number $\nu (j)$, $j\in\If$.
 We can then write
+
+[kam: I think we should say somewhere that this is motivated by 2D, 3D where there is no ordering
+that is natural.] 
 
 !bt
 \[ \baspsi_i=\basphi_{\nu(i)},\quad i=0,\ldots,N\tp\]
@@ -2691,6 +2721,8 @@ label{fem:deq:1D:ex1:Ab:glob}
 \end{equation}
 !et
 
+[kam: no BC - check that it is correct all the way through and with the N_n thing]
+
 ===== Comparison with a finite difference discretization =====
 label{fem:deq:1D:fdm_vs_fem}
 
@@ -2727,7 +2759,7 @@ yields
 -\frac{u_{i-1} - 2u_{i} + u_{i+1}}{h^2} = 2,
 \end{equation}
 !et
-which is, in fact, equivalent to (ref{fem:deq:1D:fem:ex1}) if
+which is, in fact, equal to (ref{fem:deq:1D:fem:ex1}) if
 (ref{fem:deq:1D:fem:ex1}) is divided by $h$.
 Therefore, the finite difference and the finite element method are
 equivalent in this simple test problem.
