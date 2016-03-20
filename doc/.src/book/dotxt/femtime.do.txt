@@ -13,6 +13,9 @@ a discretization in time:
    the resulting system of ordinary differential equations (ODEs) by
    some standard method for ODEs.
 
+[This can be stated more clearly. Sometimes the methods
+are equivalent and sometimes not]
+
 We shall exemplify these strategies using a simple diffusion problem
 
 !bt
@@ -123,6 +126,11 @@ label{fem:deq:diffu:FE:eq:uex:n}
 \tp
 \end{equation}
 !et
+
+[kam: It is not clear what kind of vectors are boldface. Presumably
+vector fields are bf while vectors are not. In particular $\x$ is
+not always consistent. ]
+
 The $\uex^{n+1}$ quantity is then discretized in space and approximated
 by $u^{n+1}$.
 !enotice
@@ -186,7 +194,7 @@ space and time then reads
 \int_{\Omega} u^{n+1}v\dx =
 \int_{\Omega} u^n vdx -
 \Delta t \int_{\Omega}\dfc\nabla u^n\cdot\nabla v\dx +
-\Delta t\int_{\Omega}f^n v\dx,\quad \forall \v\in V\tp
+\Delta t\int_{\Omega}f^n v\dx,\quad \forall v\in V\tp
 label{fem:deq:diffu:FE:vf:u:np1}
 \end{equation}
 !et
@@ -214,7 +222,11 @@ label{fem:deq:diffu:femapprox:np1:B}
 ===== Simplified notation for the solution at recent time levels =====
 
 In a program it is only necessary to store $u^{n+1}$ and $u^n$ at the
-same time. It is therefore unnatural to use the index $n$ in
+same time. 
+[kam: funny sentence - better to discribe time stepping is most
+often a two term recursion ? ]
+
+It is therefore unnatural to use the index $n$ in
 computer code. Instead a natural variable naming is
 `u` for $u^{n+1}$, the new unknown, and `u_1` for
 $u^n$, the solution at the previous time level.
@@ -259,8 +271,10 @@ we adopt the
 convention that the unknowns $c_j^{n+1}$ are written as
 $c_j$, while the known $c_j^n$ from the previous time level
 are denoted by $c_{1,j}$.
+[kam: just as in the continuous case -- this was just explained in detail ]
 To derive the equations for the new unknown coefficients
 $c_j$, we insert
+
 
 !bt
 \[ u = \sum_{j=0}^{N}c_j\baspsi_j(\x),\quad
@@ -362,6 +376,8 @@ coefficient matrix:
 \[ \sum_j M_{i,j}c_{1,j} = (I,\baspsi_i),\quad i\in\If\tp\]
 !et
 
+[kam: sometimes $\x_j$ sometimes $\xno{j}$].
+
 ===== Example using sinusoidal basis functions =====
 label{fem:deq:diffu:FE:cosex}
 
@@ -380,6 +396,9 @@ label{fem:deq:diffu:pde1D:bcN}
 \tp
 \end{align}
 !et
+
+[kam: sometimes $\x$ sometimes $x$].
+
 We use a Galerkin method with basis functions
 
 !bt
@@ -388,6 +407,8 @@ We use a Galerkin method with basis functions
 These basis functions fulfill (ref{fem:deq:diffu:pde1D:bcN}), which is
 not a requirement (there are no Dirichlet conditions in this problem),
 but helps to make the approximation good.
+
+[kam: don't know what "helps to make the approximation good" means.] 
 
 Since the initial condition (ref{fem:deq:diffu:pde1D:ic}) lies in the
 space $V$ where we seek the approximation, we know that a Galerkin or
@@ -416,6 +437,8 @@ which means $L$ if $i=0$ and $L/2$ otherwise. Similarly,
 pi**2*i**2*Piecewise((0, Eq(pi*i/L, 0)), (L/2, True))/L**2
 !ec
 so
+
+[kam: don't get why Piecewise is used.] 
 
 !bt
 \[ M_{0,0}=L,\quad M_{i,i}=L/2,\ i>0,\quad K_{0,0}=0,\quad K_{i,i}=\frac{\pi^2 i^2}{2L},\ i>0\tp\]
@@ -507,7 +530,7 @@ label{fem:deq:diffu:FE:fdinterp:lumped}
 !et
 
 The Trapezoidal integration is not as accurate as exact integration and
-introduces therefore an error. Normally, one thinks of any error as
+introduces an error. Normally, one thinks of any error as
 an overall decrease of the accuracy. Nevertheless, errors may cancel
 each other, and the error introduced by numerical integration may
 in certain problems
@@ -547,6 +570,9 @@ Written out, and collecting the unknown $u^n$ on the left-hand side
 and all the known terms on the right-hand side,
 the time-discrete differential equation becomes
 
+[kam: it is not clear when or if the $D_t^-$ notation ever has
+been introduced properly. ]
+
 !bt
 \begin{equation}
 \u^{n} - \Delta t \left( \dfc\nabla^2 \u^n + f(\x, t_{n})\right) =
@@ -558,6 +584,7 @@ label{fem:deq:diffu:BE:eq:un}
 Equation (ref{fem:deq:diffu:BE:eq:un}) can compute
 $\u^1,\u^2,\dots,\u^{N_t}$,
 if we have a start $\u^0=I$ from the initial condition.
+[kam: wrong reference]
 However, (ref{fem:deq:diffu:BE:eq:un}) is a partial differential
 equation in space and needs a solution method based on discretization
 in space. For this purpose we use an expansion as in
@@ -669,6 +696,8 @@ label{fem:deq:diffu:BE:fdinterp:lumped}
 ======= Dirichlet boundary conditions =======
 label{fem:deq:diffu:Dirichlet}
 
+[kam: all of a sudden we have explicit scheme]
+
 Suppose now that the boundary condition (ref{fem:deq:diffu:bcN}) is
 replaced by a mixed Neumann and Dirichlet condition,
 
@@ -693,6 +722,9 @@ form at a time level becomes
 !et
 
 ===== Boundary function =====
+
+
+[kam: all of a sudden we have explicit scheme]
 
 The Dirichlet condition $u=u_0$ at $\partial\Omega_D$ can be incorporated
 through a boundary function $B(\x)=u_0(\x)$ and demanding that $v=0$
@@ -805,13 +837,15 @@ the $M_{k,k}=1$. Alternatively, a modification that preserves
 the symmetry of $M$ can be applied. At each time level one forms
 $b = Mc_1 - \Delta t Kc_1 + \Delta t f$ and sets $b_k=U^{n+1}_k$,
 $k\in\Ifb$, and solves the system $Mc=b$.
+[kam: should it be $b$ or $f$ in the first sentence ]
 
 In case of a Backward Euler method, the system becomes
 (ref{fem:deq:diffu:BE:vf:linsys}). We can write the system
 as $Ac=b$, with $A=M + \Delta t K$ and $b = Mc_1 + f$.
 Both $M$ and $K$ needs to be modified because of Dirichlet
 boundary conditions, but the diagonal entries in $K$ should be
-set to zero and those in $M$ to unity. In this way, $A_{k,k}=1$.
+set to zero and those in $M$ to unity. In this way, for $k\in\Ifb$ we
+have  $A_{k,k}=1$.
 The right-hand side must read $b_k=U^n_k$ for $k\in\Ifb$ (assuming
 the unknown is sought at time level $t_n$).
 
@@ -836,6 +870,8 @@ A physical interpretation may be that $u$ is the temperature
 deviation from a constant mean temperature in a body $\Omega$
 that is subject to an oscillating temperature (e.g., day and
 night, or seasonal, variations) at $x=0$.
+
+[kam:sometimes $x$ and sometimes $\x$.]
 
 We use a Backward Euler scheme in time and P1 elements of
 constant length $h$ in space.

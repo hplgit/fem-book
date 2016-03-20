@@ -2721,7 +2721,7 @@ label{fem:deq:1D:ex1:Ab:glob}
 \end{equation}
 !et
 
-[kam: no BC - check that it is correct all the way through and with the N_n thing]
+[kam: no BC - check that it is correct all the way through and with the $N_n$ thing]
 
 ===== Comparison with a finite difference discretization =====
 label{fem:deq:1D:fdm_vs_fem}
@@ -3505,7 +3505,7 @@ subtracting column number $k$ in the coefficient matrix, i.e., $A_{i,k}$
 for $i\in\If$, times the boundary value $U_k$, from the
 right-hand side: $b_i \leftarrow b_i - A_{i,k}U_k$,
 $i=0,\ldots,N$. Then we put
-zeroes in row number $k$ *and* column number $k$ in the coefficient matrix,
+zeroes in both row number $k$ *and* column number $k$ in the coefficient matrix,
 and finally set $b_k=U_k$. The steps in algorithmic form becomes
 
   o $b_i \leftarrow b_i - A_{i,k}U_k$ for $i\in\If$
@@ -3625,6 +3625,8 @@ label{fem:deq:1D:ex1:Ab:elm:bc:N}
 We can also perform the symmetric modification. This operation affects
 only the last cell with a nonzero Dirichlet condition. The algorithm
 is the same as for the global linear system, resulting in
+
+[kam: both cells have Dirichlet]
 
 !bt
 \begin{equation}
@@ -4422,6 +4424,9 @@ entry $(i,j)$.  The `psi` variable is a Python dictionary holding the
 basis functions and their derivatives in symbolic form. More
 precisely, `psi[q]` is a list of
 
+[kam: lhs and rhs should be spelled out when first used, not sure
+if they are]
+
 !bt
 \begin{equation*}
 \{\frac{d^q\baspsi_0}{dx^q},\ldots,\frac{d^q\baspsi_{N_n-1}}{dx^q}\}
@@ -4494,6 +4499,8 @@ file has error checking and meaningful error messages in such cases.
 The `solver` code below is a condensed version of the real one, with
 the purpose of showing how to automate the Galerkin or least squares
 method for solving differential equations in 1D with global basis functions:
+
+[kam: this point has been made many times already]
 
 !bc pycod
 def solver(integrand_lhs, integrand_rhs, psi, Omega,
@@ -4676,7 +4683,7 @@ arguments in the above functions correspond to the index in the
 integrand contribution from an integration point to $\tilde
 A^{(e)}_{r,s}$ and $\tilde b^{(e)}_r$. The variables `e` and `h` are
 the current element number and the length of the cell, respectively.
-Specific examples below will make it clear how to construction these
+Specific examples below will make it clear how to construct these
 Python functions.
 
 Given a mesh represented by `vertices`, `cells`, and `dof_map` as
@@ -4734,6 +4741,8 @@ for e in range(len(cells)):
 
 <solve linear system>
 !ec
+
+[kam:show irhs and ilhs]
 
 A complete function `finite_element1D_naive`
 for the 1D finite algorithm above, is found in the file
@@ -4897,6 +4906,8 @@ must contain the integrand, but without the $\det J\dX$ term, and
 the derivatives $d\refphi_r(X)/dx$
 with respect to the physical $x$ coordinates are
 contained in `phi[1][r](X)`, computed by the function `basis`.
+
+[kam: why " but without the $\det J\dX$ term"]
 
 !bc pycod
 def ilhs(e, phi, r, s, X, x, h):
@@ -5286,6 +5297,10 @@ we have the relation
 !et
 which we can solve with respect to $\nabla_{\x}\basphi_i$:
 
+[kam: I understand that $\cdot$ is intentional, but we
+need to say something about why we use $\cdot$ for some
+matrix vector products and not for others]
+
 !bt
 \begin{equation}
 \nabla_{\x}\basphi_i = J^{-1}\cdot\nabla_{\X}\refphi_r\tp
@@ -5305,7 +5320,7 @@ integral in the physical domain to its counterpart over the reference cell:
 
 !bt
 \begin{equation}
-\int_{\Omega}^{(e)} \dfc(\x)\nabla_{\x}\basphi_i\cdot\nabla_{\x}\basphi_j\dx
+\int_{\Omega^{(e)}} \dfc(\x)\nabla_{\x}\basphi_i\cdot\nabla_{\x}\basphi_j\dx =
 \int_{\tilde\Omega^r} \dfc(\x(\X))(J^{-1}\cdot\nabla_{\X}\refphi_r)\cdot
 (J^{-1}\cdot\nabla\refphi_s)\det J\dX
 \end{equation}
@@ -5347,6 +5362,9 @@ Rules with 1, 3, 4, and 7 points over the triangle will exactly integrate
 polynomials of degree 1, 2, 3, and 4, respectively.
 In 3D, rules with 1, 4, 5, and 11 points over the tetrahedron will
 exactly integrate polynomials of degree 1, 2, 3, and 4, respectively.
+
+[kam: name the quadrature families]
+
 
 ## See http://www.mems.rice.edu/~akin/Elsevier/Chap_10.pdf
 ## for order of polynomials
@@ -5480,6 +5498,9 @@ tools for the analysis. These tools are based on converting finite
 element equations to finite difference form and studying Fourier wave
 components.
 
+[kam: This is really two remarks in one and we can split
+and put them in more appropriate place]
+
 === Abstract variational forms ===
 
 To list the main results from the mathematical theory of finite elements,
@@ -5532,6 +5553,8 @@ The requirements of square-integrable zeroth- and first-order derivatives
 are motivated from the formula for $a(u,v)$ where products of the
 first-order derivatives are to be integrated on $\Omega$.
 
+[kam: remark on the usage of the symbol $H^1_0$ and bc]
+
 The Sobolev space $H^1_0(\Omega)$ has an inner product
 
 !bt
@@ -5553,7 +5576,7 @@ such that $\uex\in\Vex$. The space has an associated norm $||v||$
  o $L(v)$ is linear in its argument.
  o $a(u,v)$ is a bilinear in its arguments.
  o $L(v)$ is bounded (also called continuous) if there exists a positive
-   constant $c_0$ such that $|L(v)|\leq c_0||v||$ $\forall v\in Vex$.
+   constant $c_0$ such that $|L(v)|\leq c_0||v||$ $\forall v\in \Vex$.
  o $a(u,v)$ is bounded (or continuous) if there exists a positive constant
    $c_1$ such that $|a(u,v)|\leq c_1||u|| ||v||\ \forall u,v\in\Vex$.
  o $a(u,v$) is elliptic (or coercive) if there exists a positive
@@ -5562,6 +5585,8 @@ such that $\uex\in\Vex$. The space has an associated norm $||v||$
 
 Based on the above assumptions, which must be verified in each specific
 problem, one can derive some general results that are listed below.
+
+[kam: remark that symmetry is not needed for Lax-M but convenient here]
 
 === Existence and uniqueness ===
 
@@ -5572,6 +5597,9 @@ such that
 \[ a(\uex,v)=L(v)\quad\forall v\in\Vex\tp\]
 !et
 (This result is known as the Lax-Milgram Theorem.)
+
+[kam: why the *find* we use "There exists a unique solution of the
+problem: find ... elsewhere] 
 
 === Stability ===
 
@@ -5603,6 +5631,7 @@ The discrete solution $u\in V$ is the best approximation in energy norm,
 !et
 This is quite remarkable: once we have $V$ (i.e., a mesh), the Galerkin
 method finds the best approximation in this space.
+[kam: i.e., a mesh + a fe]
 In the example above, we have $||v||_a=\int_0^1 (v')^2dx$, so
 the derivative $u'$ is closer to $\uex'$ than any other possible
 function in $V$:
@@ -5654,6 +5683,7 @@ cell length.
 The estimate shows that choosing
 elements with higher-degree polynomials (large $s$) requires more
 smoothness in $\uex$ since higher-order derivatives need to be square-integrable.
+[kam: remove L2 part here. Decide on how to write norms]
 
 A consequence of the error estimate is that $u'\rightarrow \uex'$
 as $h\rightarrow 0$, i.e., the approximate solution converges to
@@ -5663,6 +5693,8 @@ The constant $C$ in this and the next estimate depends on the shape
 of triangles in 2D and tetrahedra in 3D: squeezed elements with a
 small angle lead to a large $C$, and such deformed elements are
 not favorable for the accuracy.
+
+[kam: The constant may depend on the shape]
 
 One can generalize the above estimate to the general problem class
 $a(u,v)=L(v)$: the error in the derivative is proportional
@@ -5693,6 +5725,9 @@ In general, the convergence is $h^{s+1}$ for elements with polynomials
 of degree $s$. Note that the estimate for $u'$ is proportional to
 $h$ raised to one power less.
 
+[kam: no reason to let the L2 estimate come after the H1 estimate
+unless we want to prove something]
+
 # #ifdef UNFINISHED
 === A posteriori error estimate ===
 
@@ -5709,6 +5744,13 @@ is cite{Larson_2013}
 # #endif
 
 !split
+
+[kam: summary is place at a random place. I suggest
+to conclude each chap with a summary. In fact every 
+chap may also begin with a outline that highlights
+the story]
+
+ 
 ======= Summary =======
 
  * When approximating $f$ by $u = \sum_j c_j\basphi_j$, the least squares
@@ -5778,6 +5820,10 @@ is cite{Larson_2013}
    no Dirichlet condition is set.
 
 !split
+
+[kam: I'd like to also use the word "localized" and not only
+the term "almost orthogonal"]
+
 ======= Exercises =======
 
 ===== Exercise: Compute the deflection of a cable with 2 P1 elements =====
@@ -6354,6 +6400,8 @@ h_{N_e}
 !esol
 !esubex
 
+[kam: no details about the non-uniformity of the mesh]
+
 !bsubex
 It is of interest to compare the discrete equations for the finite
 element method in a non-uniform mesh with the corresponding discrete
@@ -6475,6 +6523,8 @@ $\Omega^{(0)}=[3,4]$.
 Plot the exact solution and the finite element solution for
 $d=1,2,3,4$ and $m=0, 1, 2, 3, 4$. Find values of $d$ and $m$
 that make the finite element solution exact at the nodes in the mesh.
+
+[kam: presume that $d$ is polynomial degree. Is that clear?]
 
 !bhint
 Use the `mesh_uniform`, `finite_element1D`, and `u_glob2` functions
