@@ -36,6 +36,8 @@ are linear in the unknown function or its derivatives. Linear here means that
 the unknown function, or a derivative of it, is multiplied by a number or
 a known function. All other differential equations are non-linear.
 
+[kam: nonlinear / linear has been described earlier - refer to proper section]
+
 The easiest way to see if an equation is nonlinear, is to spot nonlinear terms
 where the unknown function or its derivatives are multiplied by
 each other. For example, in
@@ -89,8 +91,8 @@ For example, the term $T(u) = (\sin^2 t)u'(t)$ is linear because
 
 !bt
 \begin{align*}
-T(au_1 + bu_2) &= (\sin^2 t)(au_1(t) + b u_2(t))\\
-& = a(\sin^2 t)u_1(t) + b(\sin^2 t)u_2(t)\\
+T(au_1 + bu_2) &= (\sin^2 t)(au_1(t) + b u_2(t))'\\
+& = a(\sin^2 t)u_1'(t) + b(\sin^2 t)u_2'(t)\\
 & =aT(u_1) + bT(u_2)\tp
 \end{align*}
 !et
@@ -161,7 +163,7 @@ methods. Explicit methods lead to a closed-form formula for
 finding new values of the unknowns, while implicit methods give
 a linear or nonlinear system of equations that couples (all) the
 unknowns at a new time level. Here we shall demonstrate that
-explicit methods constitute an efficient way to deal with nonlinear
+explicit methods may constitute an efficient way to deal with nonlinear
 differential equations.
 
 The Forward Euler
@@ -229,6 +231,8 @@ sections. What is meant by $u$ should be evident from the context: $u$
 may be 1) the exact solution of the ODE/PDE problem,
 2) the numerical approximation to the exact solution, or 3) the unknown
 solution at a certain time level.
+
+[kam: said earlier]
 
 The quadratic equation for the unknown $u^n$ in
 (ref{nonlin:timediscrete:logistic:eq:BE}) can, with the new
@@ -333,6 +337,7 @@ more compact form
 !et
 with $a=\Delta t$, $b=1-\Delta t$, and $c=-u^{(1)}$.
 Let $u^{-}$ be an available approximation of the unknown $u$.
+[kam: Perhaps say something about notation $u^{-}$] 
 Then we can linearize the term $u^2$ simply by writing
 $u^{-}u$. The resulting equation, $\hat F(u)=0$, is now linear
 and hence easy to solve:
@@ -369,6 +374,8 @@ the value of $u$).
 The iteration is started with the value of the unknown at the
 previous time level: $u^{-}=u^{(1)}$.
 
+[kam: do we need the $\leftarrow$?]
+
 Some prefer an explicit iteration counter as superscript
 in the mathematical notation. Let $u^k$ be the computed approximation
 to the solution in iteration $k$. In iteration $k+1$ we want
@@ -383,7 +390,7 @@ time level counter is often also included:
 
 !bt
 \[ au^{n,k} u^{n,k+1} + bu^{n,k+1} - u^{n-1} = 0\quad\Rightarrow\quad u^{n,k+1}
-= \frac{u^n}{au^{n,k} + b},\quad k=0,1,\ldots,\]
+= \frac{u^{n-1}}{au^{n,k} + b},\quad k=0,1,\ldots,\]
 !et
 with the start value $u^{n,0}=u^{n-1}$ and the final converged value
 $u^{n}=u^{n,k}$ for sufficiently large $k$.
@@ -439,6 +446,8 @@ equivalently, linearizing terms with use of the solution at the
 previous time step, as the *Picard1* method. It is a widely used
 approach in science and technology, but with some limitations if
 $\Delta t$ is not sufficiently small (as will be illustrated later).
+
+[kam: the *Picard1* notation is ugly. ]
 
 !bnotice
 
