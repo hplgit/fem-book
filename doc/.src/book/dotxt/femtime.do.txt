@@ -927,7 +927,8 @@ there is no source term ($f$) and no boundary term from the
 integration by parts ($u_x=0$ at $x=L$ and we compute as if $u_x=0$ at
 $x=0$ too). We must incorporate the Dirichlet boundary
 condition $c_0=a\sin\omega t_n$ by ensuring that this is the
-first equation in the linear system. To this end,
+first equation in the linear system. 
+To this end,
 the first row in $K$ and $M$ is set to zero, but the diagonal
 entry $M_{0,0}$ is set to 1. The right-hand side is $b=Mc_1$,
 and we set $b_0 = a\sin\omega t_n$.
@@ -935,11 +936,13 @@ Note that in this
 approach, $N=N_n-1$, and $c$ equals the unknown $u$ at each node
 in the mesh. We can write the complete linear system as
 
+[kam: ensuring that it is the first equation in the system?]
+
 !bt
 \begin{align}
 c_0 &= a\sin\omega t_n,\\
 \frac{h}{6}(c_{i-1} + 4c_i + c_{i+1}) + \Delta t\frac{\dfc}{h}(-c_{i-1}
-+2c_i + c_{i+1}) &= \frac{h}{6}(c_{1,i-1} + 4c_{1,i} + c_{1,i+1}),\\
++2c_i - c_{i+1}) &= \frac{h}{6}(c_{1,i-1} + 4c_{1,i} + c_{1,i+1}),\\
 &\qquad i=1,\ldots,N_n-2,\nonumber\\
 \frac{h}{6}(c_{i-1} + 2c_i) + \Delta t\frac{\dfc}{h}(-c_{i-1}
 +c_i) &= \frac{h}{6}(c_{1,i-1} + 2c_{1,i}),\\
@@ -1030,6 +1033,10 @@ in the same way as for finite difference methods. Expressing the
 discrete finite element equations as finite difference operators turns
 out to be very convenient for the calculations.
 
+[kam: uklar motivasjon og inngang til dette tema. Også uklart hva $q$ er.
+Tror referansen også er feil.
+] 
+
 We introduce $x_q=qh$, or $x_q=q\Delta x$, for the node coordinates,
 to align the notation with
 that frequently used in finite difference methods.
@@ -1056,6 +1063,9 @@ are listed below.
 [D_xD_x A^ne^{ikq\Delta x}]_q &= -A^n \frac{4}{\Delta x^2}\sin^2\left(\frac{k\Delta x}{2}\right)\tp
 \end{align}
 !et
+
+[kam: usikker på hvor opplagt dette er. Ta resten av kap nøye etter
+å diskutere med HPL]
 
 ===== Forward Euler discretization =====
 

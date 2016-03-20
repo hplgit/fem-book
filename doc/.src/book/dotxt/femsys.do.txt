@@ -57,7 +57,7 @@ such that
 \]
 !et
 where $B^{(i)}$ is a boundary function to handle nonzero Dirichlet conditions.
-Observe that different unknowns live in different spaces with different
+Observe that different unknowns may live in different spaces with different
 basis functions and numbers of degrees of freedom.
 
 From the $m$ equations in the variational forms we can derive
@@ -76,7 +76,7 @@ differential equations introduces a vector of unknown functions
 a vector of test functions
 
 !bt
-\[ \v = (u^{(0)},\ldots,u^{(m)}),\]
+\[ \v = (v^{(0)},\ldots,v^{(m)}),\]
 !et
 with
 
@@ -357,6 +357,8 @@ computed in the previous iteration. Then the term
 $\nabla w_{-}\cdot\nabla w$ is linear in $w$ since $w_{-}$ is
 known. The total linear system becomes
 
+[kam: tidligere har underscore sett anderledes ut]
+
 !bt
 \begin{align}
 \sum_{j=0}^N A^{(w,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^N A^{(w,T)}_{i,j} c^{(T)}_j
@@ -364,11 +366,11 @@ known. The total linear system becomes
 label{fem:sys:wT:ex:linsys:w2}\\
 \sum_{j=0}^N A^{(T,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^N A^{(T,T)}_{i,j} c^{(T)}_j &= b_i^{(T)},\quad i=0,\ldots,N,
 label{fem:sys:wT:ex:linsys:T2}\\
-A^{(w,w)}_{i,j} &= \mu(\nabla \baspsi_j,\baspsi_i),\\
+A^{(w,w)}_{i,j} &= \mu(\nabla \baspsi_j,\nabla \baspsi_i),\\
 A^{(w,T)}_{i,j} &= 0,\\
 b_i^{(w)} &= (\beta, \baspsi_i),\\
-A^{(w,T)}_{i,j} &= \mu((\nabla\baspsi w_{-})\cdot\nabla\baspsi_j), \baspsi_i),\\
-A^{(T,T)}_{i,j} &= \kappa(\nabla \baspsi_j,\baspsi_i),\\
+A^{(w,T)}_{i,j} &= \mu((\nabla w_{-})\cdot\nabla\baspsi_j), \baspsi_i),\\
+A^{(T,T)}_{i,j} &= \kappa(\nabla \baspsi_j,\nabla \baspsi_i),\\
 b_i^{(T)} &= 0
 \tp
 \end{align}
@@ -383,6 +385,8 @@ L c^{(w)} + \kappa K c^{(T)} & =0,
 !et
 with $L$ as the matrix from the $\nabla w_{-}\cdot\nabla$ operator:
 $L_{i,j} = A^{(w,T)}_{i,j}$.
+
+[kam: and $K$ ..]
 
 The matrix-vector equations are often conveniently written in block form:
 
@@ -414,8 +418,8 @@ When the viscosity depends on the temperature, the
 $\mu\nabla^2w$ term must be replaced by $\nabla\cdot (\mu(T)\nabla w)$,
 and then $T$ enters the equation for $w$. Now we have a two-way coupling
 since both equations contain $w$ and $T$ and therefore
-must be solved simultaneously
-Th equation $\nabla\cdot (\mu(T)\nabla w)=-\beta$ is nonlinear,
+must be solved simultaneously.
+The equation $\nabla\cdot (\mu(T)\nabla w)=-\beta$ is nonlinear,
 and if some iteration procedure is invoked, where we use a previously
 computed $T_{-}$ in the viscosity ($\mu(T_{-})$), the coefficient is known,
 and the equation involves only one unknown, $w$. In that case we are
@@ -500,13 +504,14 @@ and $V^{(T)}$. The formulas become
 label{fem:sys:wT:ex:linsys:w1:mixed}\\
 \sum_{j=0}^{N_T} A^{(T)}_{i,j} c^{(T)}_j &= b_i^{(T)},\quad i=0,\ldots,N_T,
 label{fem:sys:wT:ex:linsys:T1:mixed}\\
-A^{(w)}_{i,j} &= \mu(\nabla \baspsi_j^{(w)},\baspsi_i^{(w)}),\\
+A^{(w)}_{i,j} &= \mu(\nabla \baspsi_j^{(w)},\nabla \baspsi_i^{(w)}),\\
 b_i^{(w)} &= (\beta, \baspsi_i^{(w)}),\\
-A^{(T)}_{i,j} &= \kappa(\nabla \baspsi_j^{(T)},\baspsi_i^{(T)}),\\
+A^{(T)}_{i,j} &= \kappa(\nabla \baspsi_j^{(T)},\nabla \baspsi_i^{(T)}),\\
 b_i^{(T)} &= \mu(\nabla w_{-}, \baspsi_i^{(T)})
 \tp
 \end{align}
 !et
+[kam: $b$ er vel ikke riktig.] 
 
 In the case we formulate one compound linear system involving
 both $c^{(w)}_j$, $j=0,\ldots,N_w$, and $c^{(T)}_j$, $j=0,\ldots,N_T$,
@@ -520,15 +525,16 @@ becomes
 label{fem:sys:wT:ex:linsys:w2b}\\
 \sum_{j=0}^{N_w} A^{(T,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^{N_T} A^{(T,T)}_{i,j} c^{(T)}_j &= b_i^{(T)},\quad i=0,\ldots,N_T,
 label{fem:sys:wT:ex:linsys:T2b}\\
-A^{(w,w)}_{i,j} &= \mu(\nabla \baspsi_j^{(w)},\baspsi_i^{(w)}),\\
+A^{(w,w)}_{i,j} &= \mu(\nabla \baspsi_j^{(w)},\nabla \baspsi_i^{(w)}),\\
 A^{(w,T)}_{i,j} &= 0,\\
 b_i^{(w)} &= (\beta, \baspsi_i^{(w)}),\\
 A^{(w,T)}_{i,j} &= \mu (\nabla w_{-}\cdot\nabla\baspsi_j^{(w)}), \baspsi_i^{(T)}),\\
-A^{(T,T)}_{i,j} &= \kappa(\nabla \baspsi_j^{(T)},\baspsi_i^{(T)}),\\
+A^{(T,T)}_{i,j} &= \kappa(\nabla \baspsi_j^{(T)},\nabla \baspsi_i^{(T)}),\\
 b_i^{(T)} &= 0
 \tp
 \end{align}
 !et
+[kam: $b$ er vel ikke riktig.] 
 The corresponding block form
 
 !bt
@@ -605,6 +611,8 @@ conditions are $du/dr = dT/dr =0$ for $r=0$, $u(R)=0$, and $T(R)=T_0$.
 # 2DO
 
 _Calculations to be continued..._
+
+[kam: ok. ser at det er div ifdef som jeg må sjekke ut.] 
 
 # #ifdef NOTREADY
 ===== Another example in 1D =====

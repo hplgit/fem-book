@@ -32,6 +32,8 @@ and it is easy for a newcomer to drown in those details. The first
 chapter runs quickly through the *ideas* and outlines enough math to
 indicate the nature of the method.
 
+# #include "dotxt/comments.do.txt"
+
 # #include "dotxt/approx.do.txt"
 
 # #include "dotxt/varform.do.txt"
