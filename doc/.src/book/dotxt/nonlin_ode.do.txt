@@ -1018,7 +1018,7 @@ applying the scalar scheme to each component of the system.  For
 example, here is a backward difference scheme applied to each
 component,
 
-[kam: I think we should write f_0(u_0^n, \ldots, u_N,t_n)]
+[kam: I think we should write $f_0(u_0^n, \ldots, u_N,t_n)$]
 
 !bt
 \begin{align*}

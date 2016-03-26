@@ -564,7 +564,7 @@ The simplest possible iterative method for solving $Ax=b$ is
 Applying this method to the preconditioned system
 $M^{-1}Ax =M^{-1}b$ results in the scheme
 
-[kam include a relax parameter?]
+[kam: include a relax parameter?]
 
 !bt
 \begin{equation*} x^{k+1} = x^{k} + M^{-1}\residual^{k} , \end{equation*}
