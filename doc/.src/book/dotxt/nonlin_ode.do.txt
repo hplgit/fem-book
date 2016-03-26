@@ -337,7 +337,7 @@ more compact form
 !et
 with $a=\Delta t$, $b=1-\Delta t$, and $c=-u^{(1)}$.
 Let $u^{-}$ be an available approximation of the unknown $u$.
-[kam: Perhaps say something about notation $u^{-}$] 
+[kam: Perhaps say something about notation $u^{-}$. Sometimes the '-' is like $u^{-}$ and sometimes $u{-}$] 
 Then we can linearize the term $u^2$ simply by writing
 $u^{-}u$. The resulting equation, $\hat F(u)=0$, is now linear
 and hence easy to solve:
@@ -483,7 +483,7 @@ written out as
 label{nonlin:timediscrete:logistic:geometric:mean:scheme}
 \end{equation}
 !et
-The term $u^{n+\half}$ is normally approximated by an arithmetic
+The first term $u^{n+\half}$ is normally approximated by an arithmetic
 mean,
 
 !bt
@@ -491,7 +491,7 @@ mean,
 !et
 such that the scheme involves the unknown function only at the time levels
 where we actually compute it.
-The same arithmetic mean applied to the nonlinear term gives
+The same arithmetic mean applied to the second term gives
 
 !bt
 \[ (u^{n+\half})^2\approx \frac{1}{4}(u^n + u^{n+1})^2,\]
@@ -511,7 +511,7 @@ unknown $u^{n+1}$:
 
 !bt
 \[ \frac{u^{n+1}-u^n}{\Delta t} =
-\half(u^n + u^{n+1}) + u^nu^{n+1},\]
+\half(u^n + u^{n+1}) - u^nu^{n+1},\]
 !et
 which can readily be solved:
 
@@ -555,6 +555,9 @@ a geometric mean (the difference in $u^{n+1}$
 being $\frac{1}{4}\Delta t u^n(u^{n+1}-u^n)\approx \frac{1}{4}\Delta t^2
 u^\prime u$, i.e., a difference of $\Oof{\Delta t^2}$).
 !enotice
+
+[kam: this is the first time I've seen this $\overline{u}$ notation. 
+Also the finite difference notation has been poorly introduced]
 
 ===== Newton's method =====
 label{nonlin:timediscrete:logistic:Newton}
@@ -762,6 +765,10 @@ that the Picard1 method gives significant errors in addition to
 the time discretization unless the time step is as small as in
 the lower right plot.
 
+[kam: don't understand the argument  "larger than the
+time discretization error due to a large $\Delta t$". Seems counterintuitive.  
+Perhaps the point is that $T$.] 
+
 The *BE exact* curve corresponds to using the exact solution of the
 quadratic equation at each time level, so this curve is only affected
 by the Backward Euler time discretization.  The *CN gm* curve
@@ -820,6 +827,10 @@ accuracy in this problem, the time discretization is much more crucial
 than $\epsilon_r$. Ideally, one should estimate the error in the
 time discretization, as the solution progresses, and set $\epsilon_r$
 accordingly.
+
+[kam: the argument here is difficult to follow. For instance, 
+we don't know the difference in CN from 0.9 to 0.09. It also seem natural 
+to discuss BE Picard1 which seems far off and contradicts the conclusion? ]
 
 ===== Generalization to a general nonlinear ODE =====
 label{nonlin:ode:generic}
@@ -996,6 +1007,8 @@ if we interpret $u$ as a vector $u=(u_0(t),u_1(t),\ldots,u_N(t))$
 and $f$ as a vector function with components
 $(f_0(u,t),f_1(u,t),\ldots,f_N(u,t))$.
 
+[kam: Here we don't use bf] 
+
 Most solution methods for scalar ODEs, including
 the Forward and Backward Euler schemes and the
 Crank-Nicolson method, generalize in a
@@ -1004,6 +1017,8 @@ arithmetics instead of scalar arithmetics, which corresponds to
 applying the scalar scheme to each component of the system.  For
 example, here is a backward difference scheme applied to each
 component,
+
+[kam: I think we should write f_0(u_0^n, \ldots, u_N,t_n)]
 
 !bt
 \begin{align*}
@@ -1063,7 +1078,7 @@ A Crank-Nicolson scheme reads
 \begin{align}
 \frac{u_0^{n+1}-u_0^{n}}{\Delta t} &= -\sin u_1^{n+\frac{1}{2}}
 - \beta u_0^{n+\frac{1}{2}}|u_0^{n+\frac{1}{2}}|\nonumber\\
-& \approx -\sin\left(\frac{1}{2}(u_1^{n+1} + u_1n)\right)
+& \approx -\sin\left(\frac{1}{2}(u_1^{n+1} + u_1^n)\right)
 - \beta\frac{1}{4} (u_0^{n+1} + u_0^n)|u_0^{n+1}+u_0^n|,\\
 \frac{u_1^{n+1}-u_1^n}{\Delta t} &= u_0^{n+\frac{1}{2}}\approx
 \frac{1}{2} (u_0^{n+1}+u_0^n)\tp
@@ -1158,6 +1173,8 @@ Given $A(u)u=b(u)$ and an initial guess $u^{-}$, iterate until convergence:
 change in the unknown, $||u - u^{-}||$, or the residual $||A(u)u-b||$,
 is sufficiently small, see Section ref{nonlin:systems:alg:terminate} for
 more details.
+
+[kam: as before check bf notation and $\leftarrow$]
 
 ===== Newton's method =====
 label{nonlin:systems:alg:Newton}

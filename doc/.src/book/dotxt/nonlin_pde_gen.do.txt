@@ -16,7 +16,7 @@ examples below in detail.
 ===== Finite element discretization =====
 label{nonlin:alglevel:dD:fe}
 
-As an example, Backward Euler discretization of the
+As an example, a Backward Euler discretization of the
 PDE
 
 !bt
@@ -30,7 +30,7 @@ gives the nonlinear time-discrete PDEs
 !bt
 \[ u^n - \Delta t\nabla\cdot(\dfc(u^n)\nabla u^n) + f(u^n) = u^{n-1}\tp\]
 !et
-We may alternatively write this equation
+We may alternatively write these equations
 with $u$ for $u^n$ and $u^{(1)}$ for $u^{n-1}$:
 
 !bt
@@ -71,6 +71,8 @@ is the approximation to $\uex(\x,t_n)$ after
 time discretization, and $u$ is the spatial approximation to
 $u^n$ from the most recent iteration in a nonlinear iteration method.
 !enotice
+
+[kam: said before]
 
 Let us assume homogeneous Neumann conditions
 on the entire boundary for simplicity in the boundary term. The
@@ -310,6 +312,9 @@ F_{i,j} &= u_{i,j} - \frac{\Delta t}{h^2}(\\
 \Delta t\, f(u_{i,j}) - u^{(1)}_{i,j} = 0\tp
 \end{align*}
 !et
+
+[kam: have not checked this yet]
+
 It is convenient to work with two indices $i$ and $j$ in 2D
 finite difference discretizations, but it complicates
 the derivation of the Jacobian, which then gets four indices.
