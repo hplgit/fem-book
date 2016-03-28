@@ -1122,20 +1122,21 @@ the $f(\xno{i})$ values are based on a function formula, here $10(x-1)^2-1$,
 Figure ref{fem:approx:global:linear:regression:fig2} shows three sets of
 data points, along with the original $f(x)$ function without noise, and
 the straight line that is a least squares approximation to the data points.
-# python ex_approx1D.py run_noisy_parabola_by_regression
+# python ex_approx1D.py run_noisy_parabola_by_linear_regression
 
 FIGURE: [fig/noisy_parabola_by_linear_regression, width=800]  Approximation of a parabola with noise by a straight line.  label{fem:approx:global:linear:regression:fig2}
 
 We can fit a parabola instead of a straight line, as done in
 Figure ref{fem:approx:global:linear:regression:fig3}. When $m$ becomes large,
 the fitted parabola and the original parabola without noise become very close.
+# python ex_approx1D.py run_noisy_parabola_by_quaddratic_regression
 
-FIGURE: [fig/noisy_parabola_by_linear_regression, width=800]  Approximation of a parabola with noise by a parabola.  label{fem:approx:global:linear:regression:fig3}
+FIGURE: [fig/noisy_parabola_by_quadratic_regression, width=800]  Approximation of a parabola with noise by a parabola.  label{fem:approx:global:linear:regression:fig3}
 
 === Remark ===
 
 The regression method is not much used for approximating differential
-equations or given function, but is central in uncertainty quantification
+equations or a given function, but is central in uncertainty quantification
 methods such as polynomial chaos expansions.
 
 
