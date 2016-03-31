@@ -12,10 +12,6 @@ topicname=fem
 
 encoding="--encoding=utf-8"
 
-CHAPTER=chapter
-BOOK=book
-APPENDIX=appendix
-
 function system {
   "$@"
   if [ $? -ne 0 ]; then
@@ -33,11 +29,10 @@ else
   spellcheck=spell
 fi
 
-
-# No spellchecking of local files here since book.do.txt just includes files.
-# Spellcheck all *.do.txt files in each chapter.
 if [ "$spellcheck" != 'nospell' ]; then
+    cd dotxt
     system doconce spellcheck -d .dict4spell.txt *.do.txt
+    cd ..
 fi
 
 system preprocess -DFORMAT=pdflatex ../chapters/newcommands_keep.p.tex > newcommands_keep.tex
@@ -46,6 +41,10 @@ doconce replace 'newcommand{\I}' 'renewcommand{\I}' newcommands_keep.tex
 
 # TASKS: generate book with solutions, also in the html version
 # Make pdfnup with two-pages per sheet
+
+CHAPTER=chapter
+BOOK=book
+APPENDIX=appendix
 
 opt1="CHAPTER=$CHAPTER BOOK=$BOOK APPENDIX=$APPENDIX $encoding FEM_BOOK=True"
 opt2="--without_solutions --without_answers"
@@ -117,4 +116,5 @@ if [ ! -d $dest/pdf ]; then mkdir $dest/pdf; fi
 cp ${topicname}-book*.pdf $dest/pdf
 cd $dest; git add .; cd -
 
-# What about slides? They are published chapter wise!
+# What about slides? They are published by make_slides.sh!
+# The FDM book shows how to publish them chapter-wise.
