@@ -990,7 +990,7 @@ u(\xno{i}) = \sum_{j\in\If} c_j \baspsi_j(\xno{i}) = f(\xno{i}),
 The fundamental problem here is that we have more equations than
 unknowns since there are $N+1$ unknowns and $m+1>N+1$ equations.
 Such a system of equations is called an *overdetermined system*.
-We can write it matrix form as
+We can write it in matrix form as
 
 !bt
 \begin{equation}
@@ -1899,11 +1899,12 @@ functions and points:
 [-0.0, 1.0, 0.0]
 !ec
 
-That is, when used symbolically, the `Lagrange_polynomials_01` function returns
-the symbolic expression for the Lagrange functions while when `x` is a numerical
-value the function returns the value of the basis function evaluate in `x`.
-In the present example only the second basis function should be 1 in the mid-point
-while the others are zero according to (ref{fem:inter:prop}).
+That is, when used symbolically, the `Lagrange_polynomials_01`
+function returns the symbolic expression for the Lagrange functions
+while when `x` is a numerical valued the function returns the value of
+the basis function evaluate in `x`.  In the present example only the
+second basis function should be 1 in the mid-point while the others
+are zero according to (ref{fem:inter:prop}).
 
 
 === Approximation of a polynomial ===
@@ -1911,8 +1912,8 @@ while the others are zero according to (ref{fem:inter:prop}).
 The Galerkin or least squares methods lead to an exact approximation
 if $f$ lies in the space spanned by the basis functions. It could be
 of interest to see how the interpolation method with Lagrange
-polynomials as basis is able to approximate a polynomial, e.g.,
-a parabola. Running
+polynomials as basis is able to approximate a polynomial, e.g., a
+parabola. Running
 
 !bc pycod
 for N in 2, 4, 5, 6, 8, 10, 12:
@@ -6642,7 +6643,7 @@ Fortunately, we can easily integrate SymPy and `Expression` objects,
 because SymPy can take a formula amd translate it to C/C++ code, and
 then we can require a Python code to numerically evaluate the formula.
 
-!bc pycod
+!bc pyshell
 >>> import sympy as sym
 >>> x, y = sym.symbols('x y')
 >>> f = 2*x*y - x**2
