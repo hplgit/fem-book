@@ -3781,76 +3781,70 @@ element software.
 ===== Elements and nodes =====
 label{fem:approx:fe:def:elements:nodes}
 
-Let $u$ and $f$ be defined on an interval $\Omega$. We
-divide $\Omega$
-into $N_e$ non-overlapping subintervals $\Omega^{(e)}$, $e=0,\ldots,N_e-1$:
+Let $u$ and $f$ be defined on an interval $\Omega$. We divide $\Omega$
+into $N_e$ non-overlapping subintervals $\Omega^{(e)}$,
+$e=0,\ldots,N_e-1$:
 
 !bt
 \begin{equation}
 \Omega = \Omega^{(0)}\cup \cdots \cup \Omega^{(N_e)}\tp  \end{equation}
 !et
-We shall for now
-refer to $\Omega^{(e)}$ as an *element*, identified by the unique number $e$.
-On each element we introduce a set of points called *nodes*.
-For now we assume that the nodes are uniformly spaced throughout the
-element and that the boundary points of the elements are also nodes.
-The nodes are given numbers both within an element and in the global
-domain. These are
-referred to as *local* and *global* node numbers, respectively.
-Local nodes are numbered with an index $r=0,\ldots,d$, while the
-$N_n$ global nodes are numbered as $i=0,\ldots,N_n-1$.
-Figure ref{fem:approx:fe:def:elements:nodes:fig:P1} shows
-nodes as small circular
-disks and element boundaries as small vertical lines.
-Global node numbers appear under the nodes, but local node numbers
-are not shown. Since there are two nodes in each elements, the local
-nodes are numbered 0 (left) and 1 (right) in each element.
+We shall for now refer to $\Omega^{(e)}$ as an *element*, identified
+by the unique number $e$.  On each element we introduce a set of
+points called *nodes*.  For now we assume that the nodes are uniformly
+spaced throughout the element and that the boundary points of the
+elements are also nodes.  The nodes are given numbers both within an
+element and in the global domain. These are referred to as *local* and
+*global* node numbers, respectively.  Local nodes are numbered with an
+index $r=0,\ldots,d$, while the $N_n$ global nodes are numbered as
+$i=0,\ldots,N_n-1$.  Figure
+ref{fem:approx:fe:def:elements:nodes:fig:P1} shows nodes as small
+circular disks and element boundaries as small vertical lines.  Global
+node numbers appear under the nodes, but local node numbers are not
+shown. Since there are two nodes in each elements, the local nodes are
+numbered 0 (left) and 1 (right) in each element.
 
 FIGURE: [fig/fe_mesh1D_P1, width=500 frac=0.7] Finite element mesh with 5 elements and 6 nodes. label{fem:approx:fe:def:elements:nodes:fig:P1}
 
 idx{finite element mesh}idx{mesh!finite elements}
 
-Nodes and elements uniquely define a *finite element mesh*, which is our
-discrete representation of the domain in the computations.
-A common special case is that of a *uniformly partitioned mesh* where
-each element has the same length and the distance between nodes is constant.
-Figure ref{fem:approx:fe:def:elements:nodes:fig:P1} shows
+Nodes and elements uniquely define a *finite element mesh*, which is
+our discrete representation of the domain in the computations.  A
+common special case is that of a *uniformly partitioned mesh* where
+each element has the same length and the distance between nodes is
+constant.  Figure ref{fem:approx:fe:def:elements:nodes:fig:P1} shows
 an example on a uniformly partitioned mesh. The strength of the finite
-element method (in contrast to the
-finite difference method)
-is that it is equally easy to work with a non-uniformly
-partitioned mesh as a uniformly partitioned one.
+element method (in contrast to the finite difference method) is that
+it is equally easy to work with a non-uniformly partitioned mesh as a
+uniformly partitioned one.
 
 === Example ===
 
 On $\Omega =[0,1]$ we may introduce two elements,
-$\Omega^{(0)}=[0,0.4]$ and $\Omega^{(1)}=[0.4,1]$. Furthermore,
-let us introduce three nodes
-per element, equally spaced within each element.
-Figure ref{fem:approx:fe:def:elements:nodes:fig:P2} shows the
-mesh with $N_e=2$ elements and $N_n=2N_e+1=5$ nodes.
-A node's coordinate is denoted by $x_i$, where $i$ is either a global
-node number or a local one. In the latter case we also need to know
-the element number to uniquely define the node.
+$\Omega^{(0)}=[0,0.4]$ and $\Omega^{(1)}=[0.4,1]$. Furthermore, let us
+introduce three nodes per element, equally spaced within each element.
+Figure ref{fem:approx:fe:def:elements:nodes:fig:P2} shows the mesh
+with $N_e=2$ elements and $N_n=2N_e+1=5$ nodes.  A node's coordinate
+is denoted by $x_i$, where $i$ is either a global node number or a
+local one. In the latter case we also need to know the element number
+to uniquely define the node.
 
-The three nodes in element number 0 are
-$x_0=0$, $x_1=0.2$, and $x_2=0.4$.
-The local and global node numbers are here equal.
-In element number 1, we have the local nodes $x_0=0.4$, $x_1=0.7$, and $x_2=1$
-and the corresponding
-global nodes $x_2=0.4$, $x_3=0.7$, and $x_4=1$. Note that
-the global node $x_2=0.4$ is shared by the two elements.
+The three nodes in element number 0 are $x_0=0$, $x_1=0.2$, and
+$x_2=0.4$.  The local and global node numbers are here equal.  In
+element number 1, we have the local nodes $x_0=0.4$, $x_1=0.7$, and
+$x_2=1$ and the corresponding global nodes $x_2=0.4$, $x_3=0.7$, and
+$x_4=1$. Note that the global node $x_2=0.4$ is shared by the two
+elements.
 
 FIGURE: [fig/fe_mesh1D_P2, width=500 frac=0.7] Finite element mesh with 2 elements and 5 nodes. label{fem:approx:fe:def:elements:nodes:fig:P2}
 
 For the purpose of implementation, we introduce two lists or arrays:
-`nodes` for storing the coordinates of the nodes, with the
-global node numbers as indices, and `elements` for holding
-the global node numbers in each element. By defining `elements` as a
-list of lists, where each sublist contains the global node numbers of
-one particular element, the indices of each sublist will correspond to
-local node numbers for that element.
-The `nodes` and `elements` lists for the sample mesh
+`nodes` for storing the coordinates of the nodes, with the global node
+numbers as indices, and `elements` for holding the global node numbers
+in each element. By defining `elements` as a list of lists, where each
+sublist contains the global node numbers of one particular element,
+the indices of each sublist will correspond to local node numbers for
+that element.  The `nodes` and `elements` lists for the sample mesh
 above take the form
 
 !bc pycod
@@ -4800,15 +4794,14 @@ expressions in LaTeX format:
 ======= Implementation =======
 label{fem:approx:fe:impl}
 
-Based on the experience from the previous example, it makes
-sense to write some code to automate the analytical integration process
-for any choice of finite element basis functions. In addition,
-we can automate the assembly process and the solution of the linear system.
-Another advantage is that the
-code for these purposes document all details of all
-steps in the finite element computational machinery.
-The complete code can be found in the module file
-"`fe_approx1D.py`": "${fem_src}/fe_approx1D.py".
+Based on the experience from the previous example, it makes sense to
+write some code to automate the analytical integration process for any
+choice of finite element basis functions. In addition, we can automate
+the assembly process and the solution of the linear system.  Another
+advantage is that the code for these purposes document all details of
+all steps in the finite element computational machinery.  The complete
+code can be found in the module file "`fe_approx1D.py`":
+"${fem_src}/fe_approx1D.py".
 
 
 ===== Integration =====
@@ -5853,15 +5846,14 @@ Implementationwise,
   * we replace `elements` by `dof_map` (the contents are the same
     for P$d$ elements).
 
-Consider the example from Section ref{fem:approx:fe:def:elements:nodes}
-where $\Omega =[0,1]$ is divided into two cells,
-$\Omega^{(0)}=[0,0.4]$ and $\Omega^{(1)}=[0.4,1]$, as
-depicted in Figure ref{fem:approx:fe:def:elements:nodes:fig:P2}.
-The vertices are $[0,0.4,1]$. Local vertex 0 and 1 are
-$0$ and $0.4$ in cell 0 and $0.4$ and $1$ in cell 1.
-A P2 element means that the degrees of freedom are
-the value of $u$ at three equally spaced points (nodes) in each
-cell. The data structures become
+Consider the example from Section
+ref{fem:approx:fe:def:elements:nodes} where $\Omega =[0,1]$ is divided
+into two cells, $\Omega^{(0)}=[0,0.4]$ and $\Omega^{(1)}=[0.4,1]$, as
+depicted in Figure ref{fem:approx:fe:def:elements:nodes:fig:P2}.  The
+vertices are $[0,0.4,1]$. Local vertex 0 and 1 are $0$ and $0.4$ in
+cell 0 and $0.4$ and $1$ in cell 1.  A P2 element means that the
+degrees of freedom are the value of $u$ at three equally spaced points
+(nodes) in each cell. The data structures become
 
 !bc pycod
 vertices = [0, 0.4, 1]
@@ -6555,22 +6547,24 @@ so automation by the computer is a must.
 # Need 2D exercises
 
 ======= Implementation =======
+label{approx:fenics}
 
-Our previous programs for doing 1D approximation by finite element basis
-function had a focus on all the
-small details needed to compute the solution. When going to 2D and 3D,
-the basic algorithms are the same, but the amount of computational
-details with basis functions, reference functions, mappings,
-numerical integration and so on, becomes overwhelming because of all
-the flexibility and choices of elements. For this purpose, we *must*,
-except in the simplest cases with P1 elements, use some well-developed,
-existing computer library. Here we shall use
-"FEniCS": "http://fenicsproject.org", which is a free, open finite
-element package for advanced computations. The package can be programmed
-in C++ or Python. How it works is best illustrated by an example.
+Our previous programs for doing 1D approximation by finite element
+basis function had a focus on all the small details needed to compute
+the solution. When going to 2D and 3D, the basic algorithms are the
+same, but the amount of computational details with basis functions,
+reference functions, mappings, numerical integration and so on,
+becomes overwhelming because of all the flexibility and choices of
+elements. For this purpose, we *must*, except in the simplest cases
+with P1 elements, use some well-developed, existing computer
+library. Here we shall use "FEniCS": "http://fenicsproject.org", which
+is a free, open finite element package for advanced computations. The
+package can be programmed in C++ or Python. How it works is best
+illustrated by an example.
 
 ===== Example on approximation in 2D using FEniCS =====
 label{approx:2D:fenics}
+
 === Mathematical problem ===
 
 We want to approximate the function $f(x)=2xy - x^2$ by P1 and P2 elements
@@ -6618,10 +6612,10 @@ if __name__ == __main__:
     problem()
 !ec
 
-Figure ref{fem:approx:fenics:2D} shows the computed `u2`. The plots of 
-`u1` and `f` are visually identical and therefore not shown. 
+Figure ref{fem:approx:fenics:2D} shows the computed `u2`. The plots of
+`u1` and `f` are visually identical and therefore not shown.
 
-FIGURE: [fig/fenics_2D_plot_approx.png, width=400] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D} 
+FIGURE: [fig/fenics_2D_plot_approx.png, width=400] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D}
 
 
 === Dissection of the code ===
@@ -6642,7 +6636,7 @@ in the function  `project`.
 The `problem` function applies `approx` to solve a specific problem.
 This part requires two definitions: one of $f$ and one of $\Omega$,
 or more precisely: the mesh (discrete $\Omega$ divided into cells).
-The definition of $f$ is here expressed in C++ (it will be compiled  
+The definition of $f$ is here expressed in C++ (it will be compiled
 for fast evaluation), where the independent
 coordinates are given by a C/C++ vector `x`. This means that $x$ is
 `x[0]`, $y$ is `x[1]`, and $z$ is `x[2]`. Moreover, `x[0]**2` must
@@ -6660,39 +6654,39 @@ then we can require a Python code to numerically evaluate the formula.
 2*x[0]*x[1] - pow(x[0], 2)
 !ec
 Here, the function `ccode` generates C code and we use
-`x` and `y` as placeholders for 
-`x[0]` and `x[1]`, which represent the coordinate of 
+`x` and `y` as placeholders for
+`x[0]` and `x[1]`, which represent the coordinate of
 a general point `x` in any dimension. The output of  `ccode`
-can then be used directly in  `Expression`. 
+can then be used directly in  `Expression`.
 
 It is often challenging to determine the quality of an
 approximation by visual inspection of 2D and 3D plots.
-Line plots or pointwise evaluation makes quantification 
-easier. The following code shows how to evaluate 
+Line plots or pointwise evaluation makes quantification
+easier. The following code shows how to evaluate
 the approximation using 13 points along the line $y=1-x$.
-Figure ref{fem:approx:fenics:plotalongline} displays 
-$f$ and the approximation using first order Lagrange elements. 
+Figure ref{fem:approx:fenics:plotalongline} displays
+$f$ and the approximation using first order Lagrange elements.
 Clearly, the approximation is very good and the
-maximal error among the 13 points is $\approx 0.01$. 
+maximal error among the 13 points is $\approx 0.01$.
 
 !bc pycod
-  # plot along line y=1-x, sample at 13 points 
+  # plot along line y=1-x, sample at 13 points
     import numpy as np
     point = np.array([0.0, 0.0])
     value = np.array([0.0])
     f_values = []
     u1_values = []
-    for i in range(0, 13): 
+    for i in range(0, 13):
         point[0] = i/13.0
         point[1] = 1-point[0]
         f.eval(value, point)
         f_values.append(value[0])
-        u1.eval(value, point)       
+        u1.eval(value, point)
         u1_values.append(value[0])
 !ec
 
 
-FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline} 
+FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline}
 
 
 

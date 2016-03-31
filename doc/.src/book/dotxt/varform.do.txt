@@ -1989,21 +1989,21 @@ occurs for $u_x$. The sign only determine the direction of the convection.
 For $\epsilon=0$, the solution satisfies
 !bt
 \[
-u(x) - u(1) = \int_1^x (-u_x) (-\dx) = 0 ,  
+u(x) - u(1) = \int_1^x (-u_x) (-\dx) = 0 ,
 \]
 !et
 which means that $u(x) = u(1)$. Clearly only the boundary condition at $x=1$ is required
-and the solution is constant throughout the domain. 
+and the solution is constant throughout the domain.
 
 If $0 < \epsilon \ll 1$ such that
-the term $-u_x$ is dominating,  
-the solution is similar to the solution for $\epsilon=0$ in the interior. 
+the term $-u_x$ is dominating,
+the solution is similar to the solution for $\epsilon=0$ in the interior.
 However,
 the second order term $-\epsilon u_{xx}$
 makes the problem a second order
 problem and two boundary conditions are required, one condition at each side.
 The boundary condition at $x=0$ forces the solution to be zero at that
-point and this creates a sharp gradient close to $x=0$. 
+point and this creates a sharp gradient close to $x=0$.
 For this reason, the problem is called a *singular perturbation problem* as the problem changes
 fundamentally in the sense that different boundary conditions are required in the limiting
 case $\epsilon=0$.
@@ -2021,13 +2021,13 @@ FIGURE: [fig/conv-diff-analytical.png, width=400] Analytical solution to the con
 
 The solution is plotted in Figure ref{convdiff:analytical} for different values of $\epsilon$.
 Clearly, as $\epsilon$ decrease the exponential function represents a sharper and sharper gradient.
-From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem 
+From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem
 involving a common phenomenon of boundary layers.
 Boundary layers are common in all kinds of fluid flow and is a main problem when discretizing such equations.
 Boundary layers have the characteristics of the solution
 (ref{convdiff:1D:analytical}), that is; a sharp local exponential gradient.
 In fluid flow the parameter $\epsilon$ is often related to the inverse of the Reynolds number which frequently
-in engineering is significantly larger than $10^3$ as it was here. 
+in engineering is significantly larger than $10^3$ as it was here.
 In these applications the boundary layer is extremely thin and the gradient extremely sharp.
 
 
@@ -5086,7 +5086,8 @@ A[i,j]  = term
 but only the index pairs `(i,j)` we have used in assignments or
 in-place arithmetics are actually stored.
 A tailored solution algorithm is needed. The most reliable is
-sparse Gaussian elimination:
+sparse Gaussian elimination. SciPy gives access the UMFPACK algorithm
+for this purpose.
 
 !bc pycod
 import scipy.sparse.linalg
@@ -5699,6 +5700,55 @@ functions by $r$, and look up vertex coordinates through $q(e,r)$.
 
 Similar formulas exist for integration of P1 elements in 3D.
 
+======= Implementation in 2D and 3D =======
+label{fem:varform:fenics}
+
+From a principle of view, we have seen that variational forms of the
+type: find $a(u,v)=L\ \forall v\in V$ (and even general nonlinear problems
+$F(u;v)=0$), can apply the computational machinery of introduced for
+the approximation problem $u=f$, we only need two extensions:
+
+ o specifiy Dirichlet boundary conditions as part of $V$
+ o incorporate Neumann flux boundary conditions in the variational form
+
+The algorithms are all the same in any space dimension, we only need to
+choose the element type and associated integration rule. Once we know
+how to compute things in 1D, and made the computer code sufficiently
+flexible, the method and code should work for any variational form in
+any number of space dimensions! This fact is exactly the idea behind
+the "FEniCS": "http://fenicsproject.org" finite element software.
+
+Therefore, if we know how to set up an approximation problem in any
+dimension in FEniCS, and know how to derive variational forms in higher
+dimensions, we are (in principle!) very close to solving a
+PDE problem in FEniCS. Building on the Section ref{approx:fenics},
+we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
+There is very much more FEniCS programming than this example, but it
+illustrates our fact that when we go beyond 1D, there is exists
+software which leverage the full power of the finite element method as
+a method for solving ``any'' problem in any number of
+space dimensions.
+
+===== Mathematical problem =====
+label{fem:varform:fenics:problem}
+
+The following model describes the pressure $u$ in the flow around a
+borehole of radius $a$ in a porous medium:
+
+!bt
+\begin{alignat}
+\nabla\cdot \left( \dfc\nabla u\right) &= 0, & \quad a < ||\x|| < b,
+label{fem:varform:fenics:problem:pde}\\
+u(\x) &= U_a, & \quad ||\x|| = a,\\
+label{fem:varform:fenics:problem:ua}\\
+u(\x) &= U_b  & \quad ||\x|| = b\tp
+label{fem:varform:fenics:problem:ub}
+\end{alignat}
+!et
+That is, we have a hollow circular domain with inner radius $a$ and
+outer radius $b$. The pressure is known on these two boundaries, so
+this is a pure Dirichlet problem.
+
 
 ===== A glimpse of the mathematical theory of the finite element method =====
 
@@ -5969,9 +6019,6 @@ is cite{Larson_2013}
 
 !split
 
-======= A complete Example in FEniCS =======
-[kam: this should probably be a short description 
-of the first example in the tutorial]
 
 ======= Convection-Diffusion and Petrov-Galerkin =======
 
@@ -6121,7 +6168,7 @@ _{\textrm{Artificial diffusion in $v$ direction}}
 \end{eqnarray*}
 !et
 
-The corresponding FEniCS code is 
+The corresponding FEniCS code is
 !bc pycod
 
 from dolfin import *
@@ -6130,7 +6177,7 @@ import matplotlib.pyplot as plt
 def boundary(x):
     return x[0] < DOLFIN_EPS or x[0] > 1.0 - DOLFIN_EPS
 
-u_analytical = Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % (1.0e-2, 0.5)) 
+u_analytical = Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % (1.0e-2, 0.5))
 mesh = UnitIntervalMesh(10)
 V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
@@ -6142,16 +6189,16 @@ f = Constant(0)
 h = mesh.hmin()
 v = v - beta*h*v.dx(0) #Petrov-Galerkin
 
-a = (-u.dx(0)*v + alpha*u.dx(0)*v.dx(0) + beta*h*u.dx(0)*v.dx(0))*dx  
-L = f*v*dx  
+a = (-u.dx(0)*v + alpha*u.dx(0)*v.dx(0) + beta*h*u.dx(0)*v.dx(0))*dx
+L = f*v*dx
 
-bc = DirichletBC(V, u_analytical, boundary) 
+bc = DirichletBC(V, u_analytical, boundary)
 u = Function(V)
-solve(a == L, u, bc) 
+solve(a == L, u, bc)
 !ec
 
-Notice that the Petrov-Galerkin method is here implemented as 
-`v = v - beta*h*v.dx(0)`. 
+Notice that the Petrov-Galerkin method is here implemented as
+`v = v - beta*h*v.dx(0)`.
 ======= Summary =======
 
  * When approximating $f$ by $u = \sum_j c_j\basphi_j$, the least squares
