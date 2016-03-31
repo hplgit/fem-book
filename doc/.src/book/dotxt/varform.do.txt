@@ -344,7 +344,7 @@ label{fem:deq:1D:Galerkin}
 !et
 resulting in $N+1$ equations for determining $\sequencei{c}$.
 
-===== The Method of Weighted Residuals =====
+===== The method of weighted residuals =====
 
 idx{weighted residuals}
 idx{method of weighted residuals}
@@ -422,7 +422,7 @@ formulations which, in contrast to the differential equation $R=0$,
 instead demand that an average of $R$ is zero: $(R,v)=0$ for all $v$ in some space.
 !enotice
 
-===== Test and Trial Functions =====
+===== Test and trial Functions =====
 
 idx{trial function} idx{test function} idx{trial space} idx{test space}
 

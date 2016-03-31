@@ -41,7 +41,7 @@ TOC: on
 # #include "dotxt/nitsche.do.txt"
 
 
-========= Solving nonlinear problems =========
+========= Nonlinear problems =========
 label{ch:nonlin}
 
 # #include "dotxt/nonlin_ode.do.txt"

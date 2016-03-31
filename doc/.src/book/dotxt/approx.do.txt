@@ -2187,19 +2187,20 @@ B_{i,j,k} = \frac{n!}{i! j! k!} x^i y^j (1-x-y)^k, \quad \mbox{ for }  i+j+k = n
 
 ======= Approximation properties and convergence rates =======
 
-We will now compare the different approximation methods in terms
-of accuracy and efficiency.
-We consider four different series for generating approximations:
-Taylor, Lagrange, sinusoidal, and Bernstein. For all families
-we expect that the approximations improve as we increase the
-number of basis functions in our representations. We
-also expect that the computational complexity increases. Let us therefore
-try to quantify the accuracy and efficiency of the different methods
-in terms of the number of basis functions $N$. In the present
-example we consider the least square method.
+We will now compare the different approximation methods in terms of
+accuracy and efficiency.  We consider four different series for
+generating approximations: Taylor, Lagrange, sinusoidal, and
+Bernstein. For all families we expect that the approximations improve
+as we increase the number of basis functions in our
+representations. We also expect that the computational complexity
+increases. Let us therefore try to quantify the accuracy and
+efficiency of the different methods in terms of the number of basis
+functions $N$. In the present example we consider the least square
+method.
 
 Let us consider the approximation of a Gaussian bell function, i.e.,
 that the exact solution is
+
 !bt
 \[
 u_e = \exp(-(x-0.5)^2) - \exp(-0.5^2)
@@ -2213,44 +2214,48 @@ We may therefore study the behavior as $N\rightarrow\infty$.
 To quantify the behavior of the error as well as the
 complexity of the computations we  compute the approximation
 with increasing number of basis functions and time
-the computations by using `time.time`. A code example is as
+the computations by using `time.clock` (returning the CPU time so far
+in the program). A code example is as
 follows:
 
 !bc pycod
 def convergence_rate_analysis(series_type, func):
-  Ns =[2, 4, 8, 16]
-  norms = []
-  cpu_times = []
-  for N in Ns:
+    N_values = [2, 4, 8, 16]
+    norms = []
+    cpu_times = []
+    for N in N_values:
 
-    psi = series(series_type, N)
-    t0 = time.time()
-    u, c = least_squares_non_verbose(gauss_bell, psi, Omega, False)
-    t1 = time.time()
+        psi = series(series_type, N)
+        t0 = time.clock()
+        u, c = least_squares_non_verbose(
+	       gauss_bell, psi, Omega, False)
+        t1 = time.clock()
 
-    error2 = sym.lambdify([x], (func - u)**2)
-    L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])
-    L2_norm = scipy.sqrt(L2_norm)
-    norms.append(L2_norm[0])
-    cpu_times.append(t1-t0)
+        error2 = sym.lambdify([x], (func - u)**2)
+        L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])
+        L2_norm = scipy.sqrt(L2_norm)
+        norms.append(L2_norm[0])
+        cpu_times.append(t1-t0)
 
-  return Ns, norms, cpu_times
+    return N_values, norms, cpu_times
 !ec
 
 We run the analysis as follows
-!bc pycod
 
+!bc pycod
 Omega = [0, 1]
 x = sym.Symbol("x")
 gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
-step = sym.Piecewise( (1, 0.25 < x), (0, True)  )- sym.Piecewise( (1, 0.75 < x), (0, True)  )
+step = sym.Piecewise((1, 0.25 < x), (0, True)) - \
+       sym.Piecewise((1, 0.75 < x), (0, True))
 func = gauss_bell
 
 import pylab
 series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
 for series_type in series_types:
-  Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
-  plt.loglog(Ns, norms)
+    N_values, norms, cpu_times = \
+        convergence_rate_analysis(series_type, func)
+    plt.loglog(N_values, norms)
 plt.show()
 !ec
 
@@ -2265,13 +2270,16 @@ Below we list the numerical error for different $N$  when approximating the Gaus
 |  Bernstein  |  0.0021   |  4.45e-05   |  8.73e-09  |  4.49e-15   |
 |  Lagrange   |  0.0021   |  4.45e-05   |  8.73e-09  |  2.45e-12   |
 |------------------------------------------------------------------|
-It is quite clear that the different methods have different properties.
-For example, the Lagrange basis for $N=16$ is 145 times
-more accurate than the Taylor basis. However, Bernstein is actually more than 500 times more
-accurate than Lagrange. The approximations obtained by sines are far behind the
-polynomial approximations for $N>4$.
+
+It is quite clear that the different methods have different
+properties.  For example, the Lagrange basis for $N=16$ is 145 times
+more accurate than the Taylor basis. However, Bernstein is actually
+more than 500 times more accurate than Lagrange. The approximations
+obtained by sines are far behind the polynomial approximations for
+$N>4$.
 
 The corresponding CPU time of the required computations also vary quite a bit:
+
 |------------------------------------------------------------------|
 |  N          |  2        |  4          |  8         |  16         |
 |--c----------|--c--------|--c----------|--c---------|--c----------|
@@ -2280,16 +2288,28 @@ The corresponding CPU time of the required computations also vary quite a bit:
 |  Bernstein  |  0.0384   |  0.1100    |  0.3368  |  1.187   |
 |  Lagrange   |  0.0807   |  0.3820    |  2.5233  |  26.52   |
 |------------------------------------------------------------------|
-Here, the timings are in seconds.
-The Taylor basis is the most efficient and is in fact more than 60 times faster
-than the Lagrange basis for $N=16$.
 
+<<<<<<< HEAD
+Here, the timings are in seconds.  The Taylor basis is the most
+efficient and is in fact more than 60 times faster than the Lagrange
+basis for $N=16$.
+
+In order to get a more precise idea of how the approximation methods
+behave as $N$ increase we assume a simple model which may be used in
+a regression analysis.  There are two natural models of the accuracy
+(and the computational complexity) in terms of $N$: polynomial and
+exponential.
+
+Let us therefore consider the following models:
+
+=======
 In order to get a more precise idea of how the approximation methods behave as $N$ increase,
  we assume a simple model which may be used in a regression analysis.
 There are two natural models of the accuracy (and the computational complexity) in terms
 of $N$: polynomial and exponential.
 
 Let us therefore consider the following models for the error:
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 !bt
 \begin{align}
 label{sec:approx:pol:model}
@@ -2301,6 +2321,7 @@ E_{2}(N) &= \alpha_{2} \exp(\beta_2 N)
 
 Taking the logarithm of (ref{sec:approx:pol:model}) we
 obtain
+
 !bt
 \[
 \log (E_1(N)) = \beta_1 \log(N) + log(\alpha_1)
@@ -2312,6 +2333,7 @@ Then, we may perform a regression analysis
 as earlier with respect to the basis functions $(1,x)$ and obtain an estimate of
 the order of convergence in terms of $\beta_1$ . For the second model (ref{sec:approx:exp:model}),
 we take the natural logarithm and obtain
+
 !bt
 \[
 \ln (E_2(N)) = \beta_2 N + \ln(\alpha_2)
@@ -2320,14 +2342,17 @@ we take the natural logarithm and obtain
 Again, regression analysis provides the means to estimate the convergence, but here we let $x=N$,
 $y=\ln (E_2(N))$, $a=\beta_2$ and $b= \ln(\alpha_2)$.
 
-Before we perform the regression analysis, a good rule is to inspect the behavior visually
-in log and log-log plots. Figure ref{fem:approx:bell:loglogfig} shows a log-log plot of
-the error with respect to $N$ for the various methods. Clearly, the sinusoidal basis seems to
-have a polynomial convergence rate as the log-log plot is a linear line. The Bernstein, Lagrange, and
-Taylor methods appear to have convergence that is faster than polynomial. It is then interesting to
-consider a log plot and see if the behavior is exponential. Figure ref{fem:approx:bell:semilogfig}
-is a log plot. Here, the Bernstein approximation appears to be a linear line which suggests that
-the convergence is exponential.
+Before we perform the regression analysis, a good rule is to inspect
+the behavior visually in log and log-log plots. Figure
+ref{fem:approx:bell:loglogfig} shows a log-log plot of the error with
+respect to $N$ for the various methods. Clearly, the sinusoidal basis
+seems to have a polynomial convergence rate as the log-log plot is a
+linear line. The Bernstein, Lagrange, and Taylor methods appear to
+have convergence that is faster than polynomial. It is then
+interesting to consider a log plot and see if the behavior is
+exponential. Figure ref{fem:approx:bell:semilogfig} is a log
+plot. Here, the Bernstein approximation appears to be a linear line
+which suggests that the convergence is exponential.
 
 
 FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot.  label{fem:approx:bell:loglogfig}
@@ -2341,9 +2366,8 @@ in terms of model (ref{sec:approx:exp:model}). We avoid to
 compute estimates for the Taylor and Lagrange approximations as neither
 the log-log plot nor the log plot demonstrated linear behavior.
 
-!bc
-
-Ns =[2, 4, 8, 16, 32]
+!bc pycod
+N_values = [2, 4, 8, 16, 32]
 Taylor     = [0.0983, 0.00263,  7.83e-07, 3.57e-10]
 Sinusoidal = [0.0027, 0.00061,  0.00012,  2.17e-05]
 Bernstein  = [0.0021, 4.45e-05, 8.73e-09, 4.49e-15]
@@ -2352,32 +2376,34 @@ Lagrange   = [0.0021, 4.45e-05, 8.73e-09, 2.45e-12]
 x = sym.Symbol('x')
 psi = [1, x]
 
-u, c = regression_with_noise(log2(Sinusoidal), psi, log2(Ns))
+u, c = regression_with_noise(log2(Sinusoidal), psi, log2(N_values))
 print "estimated model for sine: %3.2e*N**(%3.2e)" % (2**(c[0]), c[1])
 
-# check the numbers estimated by the model by manual inspection
-for N in Ns:
-  print 2**c[0] * N **c[1]
+# Check the numbers estimated by the model by manual inspection
+for N in N_values:
+    print 2**c[0] * N **c[1]
 
-u, c = regression_with_noise(log(Bernstein), psi, Ns)
+u, c = regression_with_noise(log(Bernstein), psi, N_values)
 print "estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % (exp(c[0]), c[1])
 
-# check the numbers estimated by the model by manual inspection
-for N in Ns:
-  print exp(c[0]) * exp(N * c[1])
+# Check the numbers estimated by the model by manual inspection
+for N in N_values:
+    print exp(c[0]) * exp(N * c[1])
 !ec
 
-The program estimates the sine approximation convergences as $ 1.43e-02\cdot N^{-2.3}$,
-which means that the convergence is slightly above second order.
-The Bernstein approximation on the other hand is $8.01e-02 \cdot \exp(-1.92e+00 N)$.
+The program estimates the sine approximation convergences as $
+1.43e-02\cdot N^{-2.3}$, which means that the convergence is slightly
+above second order.  The Bernstein approximation on the other hand is
+$8.01e-02 \cdot \exp(-1.92e+00 N)$.
 
 
-The CPU time in this example here would be significantly faster if the algorithms
-were implemented in a compiled language like C/C++ or Fortran and we should not
-be careful in drawing conclusion about the efficiency of the different methods
-based on this example alone. However, for completeness we include a log-log plot
-in Figure ref{fem:comp:bell:loglogfig}
-to illustrate the polynomial increase in CPU time with respect to N.
+The CPU time in this example here would be significantly faster if the
+algorithms were implemented in a compiled language like C/C++ or
+Fortran and we should not be careful in drawing conclusion about the
+efficiency of the different methods based on this example
+alone. However, for completeness we include a log-log plot in Figure
+ref{fem:comp:bell:loglogfig} to illustrate the polynomial increase in
+CPU time with respect to N.
 
 FIGURE: [fig/Bell_computations_loglog.png] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
 
@@ -4040,9 +4066,9 @@ given by the formula (ref{fem:approx:global:Lagrange:poly}):
 
 As mentioned earlier, any global basis function $\basphi_i(x)$ is zero
 on elements that do not contain the node with global node number $i$.
-Clearly (ref{fem:approx:fe:phi:prop1}) is easily verified, see for instance
-that $\basphi_3(0.375) = 1$ while $\basphi_3(0.25) = 0$
-and $\basphi_3(0.5) = 0$.
+Clearly, the property (ref{fem:approx:fe:phi:prop1}) is easily
+verified, see for instance that $\basphi_3(0.375) = 1$ while
+$\basphi_3(0.25) = 0$ and $\basphi_3(0.5) = 0$.
 
 The other global functions associated with internal nodes,
 $\basphi_1$, $\basphi_5$, and $\basphi_7$, are all of the same shape
@@ -4794,6 +4820,7 @@ expressions in LaTeX format:
 ======= Implementation =======
 label{fem:approx:fe:impl}
 
+<<<<<<< HEAD
 Based on the experience from the previous example, it makes sense to
 write some code to automate the analytical integration process for any
 choice of finite element basis functions. In addition, we can automate
@@ -4802,6 +4829,17 @@ advantage is that the code for these purposes document all details of
 all steps in the finite element computational machinery.  The complete
 code can be found in the module file "`fe_approx1D.py`":
 "${fem_src}/fe_approx1D.py".
+=======
+Based on the experience from the previous example, it makes
+sense to write some code to automate the analytical integration process
+for any choice of finite element basis functions. In addition,
+we can automate the assembly process and the solution of the linear system.
+Another advantage is that the
+code for these purposes documents all details of all
+steps in the finite element computational machinery.
+The complete code can be found in the module file
+"`fe_approx1D.py`": "${fem_src}/fe_approx1D.py".
+>>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
 
 
 ===== Integration =====
@@ -6070,7 +6108,7 @@ has the function value at vertex $\xno{i}$
 as degree of freedom number $2i$ and the value of the derivative
 at $\xno{i}$ as degree of freedom number $2i+1$, $i=0,\ldots,N_e+1$.
 
-[
+
 !split
 ======= Numerical integration =======
 
@@ -6259,11 +6297,11 @@ have bilinear functions ($a_0 + a_1x + a_2y + a_3xy$) over rectangular cells.
 Higher-order elements can easily be defined.
 
 
-FIGURE: [fig/mesh2D_rect_P1, width=800] Examples on 2D P1 elements. label{fem:approx:fe:2D:fig:rectP1}
+FIGURE: [fig/mesh2D_rect_P1, width=800] Example on 2D P1 elements. label{fem:approx:fe:2D:fig:rectP1}
 
-FIGURE: [fig/mesh2D_quarter_circle, width=400] Examples on 2D P1 elements in a deformed geometry. label{fem:approx:fe:2D:fig:circP1}
+FIGURE: [fig/mesh2D_quarter_circle, width=400] Example on 2D P1 elements in a deformed geometry. label{fem:approx:fe:2D:fig:circP1}
 
-FIGURE: [fig/mesh2D_rect_Q1, width=400] Examples on 2D Q1 elements. label{fem:approx:fe:2D:fig:rectQ1}
+FIGURE: [fig/mesh2D_rect_Q1, width=400] Example on 2D Q1 elements. label{fem:approx:fe:2D:fig:rectQ1}
 
 
 ===== Basis functions over triangles in the physical domain =====
@@ -6547,7 +6585,12 @@ so automation by the computer is a must.
 # Need 2D exercises
 
 ======= Implementation =======
+<<<<<<< HEAD
 label{approx:fenics}
+=======
+<<<<<<< HEAD
+label{fe:approx:fenics}
+>>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
 
 Our previous programs for doing 1D approximation by finite element
 basis function had a focus on all the small details needed to compute
@@ -6561,15 +6604,44 @@ library. Here we shall use "FEniCS": "http://fenicsproject.org", which
 is a free, open finite element package for advanced computations. The
 package can be programmed in C++ or Python. How it works is best
 illustrated by an example.
+<<<<<<< HEAD
 
 ===== Example on approximation in 2D using FEniCS =====
 label{approx:2D:fenics}
 
+=======
+
+===== Example on approximation in 2D using FEniCS =====
+label{fe:approx:fenics:2D}
+
+=======
+
+Our previous programs for doing 1D approximation by finite element basis
+function had a focus on all the
+small details needed to compute the solution. When going to 2D and 3D,
+the basic algorithms are the same, but the amount of computational
+details with basis functions, reference functions, mappings,
+numerical integration and so on, becomes overwhelming because of all
+the flexibility and choices of elements. For this purpose, we *must*,
+except in the simplest cases with P1 elements, use some well-developed,
+existing computer library. Here we shall use
+"FEniCS": "http://fenicsproject.org", which is a free, open finite
+element package for advanced computations. The package can be programmed
+in C++ or Python. How it works is best illustrated by an example.
+
+===== Example on approximation in 2D using FEniCS =====
+label{approx:2D:fenics}
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
+>>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
 === Mathematical problem ===
 
 We want to approximate the function $f(x)=2xy - x^2$ by P1 and P2 elements
 on $[0,2]\times[-1,1]$ using a division into $8\times 8$ squares, which are
+<<<<<<< HEAD
+then divided into rectangles and then into triangles.
+=======
 then divided into rectangles.
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 
 === The code ===
 
@@ -6591,7 +6663,11 @@ def approx(f, V):
 
 def problem():
     f = Expression('2*x[0]*x[1] - pow(x[0], 2)', degree=2)
+<<<<<<< HEAD
+    mesh = RectangleMesh(Point(0,-1), Point(2,1), nx=8, ny=8)
+=======
     mesh = RectangleMesh(Point(0,-1), Point(2,1), 8, 8)
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 
     V1 = FunctionSpace(mesh, 'Lagrange', 1)
     u1 = approx(f, V1)
@@ -6623,8 +6699,13 @@ FIGURE: [fig/fenics_2D_plot_approx.png, width=400] Plot of the computed approxim
 The function `approx` is a general solver function for any $f$ and
 $V$.  We define the unknown $u$ in the variational form $a=a(u,v) = \int uv\dx$
 as a `TrialFunction` object and the test function $v$ as a
+<<<<<<< HEAD
+`TestFunction` object. Then we define the variational form through
+the integrand `u*v*dx`. The linear form $L$ is similarly defined as
+=======
 `TestFunction` object. Then we define the the variational form through
 the integrand `u*v*dx`. The linear form $L=L(v)=\int fv\dx$ is similarly defined
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 `f*v*dx`. Here, `f` must be an `Expression` object in FEniCS, i.e., a
 formula defined by its implementation in C++. With `a` and `L` defined,
 we re-define `u` to be a finite element function `Function`, which is
@@ -6634,10 +6715,20 @@ is implemented in FEniCS (in a slightly more general fashion)
 in the function  `project`.
 
 The `problem` function applies `approx` to solve a specific problem.
+<<<<<<< HEAD
+This part requires two definitions: one of $f$ and one of $\Omega$.
+Or more precisely: the domain is defined by its discrete counterpart,
+the mesh.
+
+=== Integrating SymPy and FEniCS ===
+
+The definition of $f$ must be expressed in C++, where the independent
+=======
 This part requires two definitions: one of $f$ and one of $\Omega$,
 or more precisely: the mesh (discrete $\Omega$ divided into cells).
 The definition of $f$ is here expressed in C++ (it will be compiled
 for fast evaluation), where the independent
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 coordinates are given by a C/C++ vector `x`. This means that $x$ is
 `x[0]`, $y$ is `x[1]`, and $z$ is `x[2]`. Moreover, `x[0]**2` must
 be written as `pow(x[0], 2)` in C/C++.
@@ -6645,11 +6736,22 @@ be written as `pow(x[0], 2)` in C/C++.
 Fortunately, we can easily integrate SymPy and `Expression` objects,
 because SymPy can take a formula and translate it to C/C++ code, and
 then we can require a Python code to numerically evaluate the formula.
+Here is how we can specify `f` in SymPy and use it in FEniCS as an
+`Expression` object:
 
 !bc pyshell
 >>> import sympy as sym
 >>> x, y = sym.symbols('x[0] x[1]')
 >>> f = 2*x*y - x**2
+<<<<<<< HEAD
+>>> print f
+-x[0]**2 + 2*x[0]*x[1]
+>>> f = sym.printing.ccode(f)   # Translate to C code
+>>> print f
+-pow(x[0], 2) + 2*x[0]*x[1]
+>>> import fenics as fe
+>>> f = fe.Expression(f)
+=======
 >>> print sym.ccode(f)
 2*x[0]*x[1] - pow(x[0], 2)
 !ec
@@ -6683,13 +6785,98 @@ maximal error among the 13 points is $\approx 0.01$.
         f_values.append(value[0])
         u1.eval(value, point)
         u1_values.append(value[0])
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
+!ec
+Note that we must define `x` as `x[0]` and `y` as `x[1]` for the
+C++ syntax to be correct.
+
+===== Refined code with curve plotting =====
+label{fe:approx:fenics:2D:2}
+
+<<<<<<< HEAD
+=== Interpolation and projection ===
+
+<<<<<<< HEAD
+FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline}
+=======
+The operation with defining `a`, `L`, and solving for a `u` is so
+common that it can be done by single FEniCS command `project`:
+
+!bc pycod
+u = project(f, V)
+!ec
+So, there is no need for our `approx` function!
+=======
+FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline} 
+>>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
+
+
+>>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
+
+If we want to do interpolation (or collocation) instead, we simply do
+
+!bc pycod
+u = interpolate(f, V)
 !ec
 
+=== Plotting the solution along a line ===
 
-FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline}
+Having `u` and `f` available as finite element functions (`Function`
+objects), we can easily plot the solution along a line since FEniCS
+has functionality for evaluating a `Function` at arbitrary points
+*inside the domain*. For example, here is the code for plotting $u$ and
+$f$ along a line $x=\hbox{const}$ or $y=\hbox{const}$.
 
+@@@CODE src/approx_fenics.py fromto: import numpy@import fenics
 
+=== Integrating plotting and computations ===
 
+It is now very easy to give some graphical impression of the approximations
+for various kinds of 2D elements.
+Basically, to solve the problem of approximating $f=2xy-x^2$ on $\Omega = [-1,1]\times [0,2]$ by P2 elements on a $2\times 2$ mesh,
+we want to integrate the function above with following type of computations:
+
+!bc pycod
+import fenics as fe
+f = fe.Expression('2*x[0]*x[1] - pow(x[0], 2)')
+mesh = fe.RectangleMesh(fe.Point(1,-1), fe.Point(2,1), 2, 2)
+V = fe.FunctionSpace(mesh, 'P', 2)
+u = fe.project(f, V)
+err = fe.errornorm(f, u, 'L2')
+print err
+!ec
+However, we can now easily compare different type of elements and
+mesh resolutions:
+
+@@@CODE src/approx_fenics.py fromto: import fenics@
+(We note that this code issues a lot of warnings from the `u(point)`
+evaluations.)
+
+We show in Figure ref{fe:approx:fenics:2D:2:fig1}
+how $f$ is approximated by P0, P1, and P2 elements
+on a very coarse $2\times 2$ mesh consisting of 8 cells.
+
+We have also added the result obtained by P2 elements.
+
+FIGURE: [fig/approx_fenics_f1, width=800 frac=1] Comparison of P0, P1, and P2 approximations (left to right) along a line in a 2D mesh. label{fe:approx:fenics:2D:2:fig1}
+
+!bquestion Questions
+There are two striking features in the figure:
+
+ o The P2 solution is exact. Why?
+ o The P1 solution does not seem to be a least squares approximation. Why?
+!equestion
+
+# 1. f is of degree 2 so V covers f and therefore the P2 solution is an exact
+# of f everywhere.
+# 2. P1 solution is along a line and the curve is more over than under
+# f, but in other places it must be the other way around such that over
+# the entire domain $\Omega$ we have a least squares approximation!
+
+With this code, found in the file "`approx_fenics.py`": "$approx_fenics.py",
+we can easily run lots of experiments with the Lagrange element family.
+Just write the
+SymPy expression and choose the mesh resolution.
 
 ======= Exercises =======
 
@@ -7368,3 +7555,7 @@ the system as
 \[ c_i = f(\xno{i})\tp\]
 !et
 !esol
+
+===== Exercise: Make a 3D code for Lagrange elements of arbitrary order =====
+
+Extend the code from Section ref{fe:approx:fenics:2D:2} to 3D.
