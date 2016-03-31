@@ -1,2 +1,48 @@
 Show how polynomial chaos fits right into the framework from the second
 and third chapter.
+
+We shall now look at *uncertainty analysis* of differential equations. We
+assume that we have some function $u(\x,t;\zeta)$, where $\zeta$ is a
+vector of *random variables* $(\zeta_0,\ldots,\zeta_N)$ that introduces
+uncertainty in the problem. Note that the uncertainty is described by
+$N+1$ stochastic parmeters and is therefore *discretized*. If we have
+temporal or spatial stochastic processes or stochastic space-time fields,
+these are continuous, and the mathematical formulations become considerably
+more complicated. Assuming the uncertainty to be described by a set of
+discrete stochastic *variables* represents the same simplification as we
+introduced in earlier chapters where we assumed the solution to be
+discrete, $u(\x)\approx\sum_ic_i\baspsi_i(\x)$, and worked with
+variational forms in finite-dimensional spaces. We could, as briefly shown,
+equally well worked with variational forms in *infinite-dimensional* spaces,
+but the theory would involve Sobelov spaces rather than the far more
+intuitive vector spaces. In the same manner, stochastic processes and fields
+and their mathematical theory are avoided when assuming the uncertainty to
+be already discretized in terms of random variables.
+
+We shall look at two driving examples, the simple ODE
+
+!bt
+\begin{eqution}
+u'(t) = a(t)u(t),\quad u(0)=I,
+\end{equation}
+!et
+where $a$ and $I$ can be uncertain. If $a$ is uncertain, we assume that it
+consists of uncertain piecewise constants: $a=a_i$ is a random variable
+in some time interval $[t_i,t_{t_{i+1}]$. Typically, we can write
+$a(t) = \sum_{i=0}^N a_i\hat\baspsi_i(\x)$, with $\hat\baspsi_i$ being P0
+elements in time, and $a_i$ are the unknown coefficients (in this case we
+count to $i$ from 0 to $N$ and consider $I$ as certain).
+
+We also address stationary PDE
+
+!bt
+\begin{equation}
+-\nabla\cdot(\dfc(x)\nabla u(\x)) = -f(\x)\mbox{ in }\Omega,
+\end{equation}
+!et
+with appropriate Dirichlet, Neumann, or Robin conditions at the boundary,
+The coefficients $\dfc$ and $f$ are assumed to be stochastic quantities
+discretized in terms expansions, e.g., $\dfc = \sum_{i=0}^N\dfc_i\hat\baspsi_i(\x)$,
+where $\hat\baspsi_i(\x)$ is some spatial discretization -- think of,
+for instance, of piecewise constant P0 finite elements or global sine
+functions.
