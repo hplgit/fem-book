@@ -15,16 +15,14 @@ topic of the present chapter.  Such a view may increase the general
 understanding of variational methods and their applicability.
 
 Our exposition focuses on the basic reasoning behind the methods, and
-a natural continuation of the material here is provided by two review
-texts; Bruaset cite{Bruaset_1995} gives an accessible theoretical overview
-of a wide range of Conjugate Gradient-like methods, whereas Barrett et
-al. cite{Templates_LA} present a collection of computational
-algorithms and give valuable information about the practical use of
-the methods.  Every practitioner who needs to access library modules
-for iterative solution of linear systems should spend some time on
-these two references.  For further study of iterative solvers we refer
-the reader to the comprehensive books by Saad cite{Saad_2003} and
-Axelsson cite{Axelsson_1996}.
+a natural continuation of the material here is provided by several
+review texts. Bruaset cite{Bruaset_1995} gives an accessible
+theoretical overview of a wide range of Conjugate Gradient-like
+methods.  Barrett et al. cite{Templates_LA} present a collection of
+computational algorithms and give valuable information about the
+practical use of the methods.  Saad cite{Saad_2003} and Axelsson
+cite{Axelsson_1996} have evolved as modern, classical text books on
+iterative methods in general for linear systems.
 
 Given a linear system
 
@@ -44,7 +42,7 @@ x^{k+1} = x^{k} + u,\quad u = \sum_{j=0}^k c_j\q_j
 label{linalg:xk:update}
 \end{equation}
 !et
-where $\q_j\in\Real^n$ are known vectors 
+where $\q_j\in\Real^n$ are known vectors
 #spanning the space $V_{k+1}$,
 and $c_j$ are constants to be determined.
 To be specific, let $q_0,\ldots,q_k$ be basis vectors for $V_{k+1}$:
@@ -55,7 +53,7 @@ To be specific, let $q_0,\ldots,q_k$ be basis vectors for $V_{k+1}$:
 The associated inner product $(\cdot,\cdot )$ is here
 the standard Euclidean inner product on $\Real^n$.
 
-[kam: above it was stated thre times that the vectors were in $V_{k+1}$. 
+[kam: above it was stated thre times that the vectors were in $V_{k+1}$.
 Removed two. ]
 
 The corresponding error in the equation $Ax =b$, the residual, becomes
@@ -158,8 +156,8 @@ of the associated iterative methods are therefore
 {Krylov subspace iterations}, Krylov projection methods,
 or simply Krylov methods.
 It is a fact that $V_{k} \subset V_{k+1}$ and that $\residual^0
-A\residual^0,\ldots A^{k-1}\residual^0$ are linearly independent 
-vectors.  
+A\residual^0,\ldots A^{k-1}\residual^0$ are linearly independent
+vectors.
 
 ===== Computation of the basis vectors =====
 
@@ -249,37 +247,38 @@ c_i &= { (\residual^{k},A\q_i)\over [ \q_i,\q_i]}
 \quad\hbox{(least squares)} label{linsys:alpha:LS}
 \end{align}
 !et
-In iteration $k$, $(\residual^{k},\q_i)=0$ and $(\residual^{k},A\q_i)=0$, for
-$i=0,\ldots,k-1$, in the Galerkin and least squares case, respectively.
-Hence, $c_i =0$, for $i=0,\ldots, k-1$. In other words,
+In iteration $k$, $(\residual^{k},\q_i)=0$ and
+$(\residual^{k},A\q_i)=0$, for $i=0,\ldots,k-1$, in the Galerkin and
+least squares case, respectively.  Hence, $c_i =0$, for $i=0,\ldots,
+k-1$. In other words,
 
 !bt
 \begin{equation*} x^{k+1} = x^{k} + c_k\q_k \tp\end{equation*}
 !et
-When $A$ is symmetric and positive definite, one can show that
-also $\beta_i=0$, for $0=1,\ldots,k-1$, in both the Galerkin and least squares
-methods cite{Bruaset_1995}.
-This means that $x^k$ and $\q_{k+1}$ can be updated using only
-$\q_k$ and not the previous $\q_0,\ldots,\q_{k-1}$ vectors.
-This property has of course dramatic effects on the storage requirements
-of the algorithms as the number of iterations increases.
+When $A$ is symmetric and positive definite, one can show that also
+$\beta_i=0$, for $0=1,\ldots,k-1$, in both the Galerkin and least
+squares methods cite{Bruaset_1995}.  This means that $x^k$ and
+$\q_{k+1}$ can be updated using only $\q_k$ and not the previous
+$\q_0,\ldots,\q_{k-1}$ vectors.  This property has of course dramatic
+effects on the storage requirements of the algorithms as the number of
+iterations increases.
 
-For the suggested algorithms to work,
-we must require that the denominators in
-(ref{linsys:alpha:G}) and (ref{linsys:alpha:LS}) do not vanish.
-This is always fulfilled for the least-squares method, while a
-(positive or negative) definite matrix $A$ avoids break-down of
-the Galerkin-based iteration (provided $\q_i \neq 0$).
+For the suggested algorithms to work, we must require that the
+denominators in (ref{linsys:alpha:G}) and (ref{linsys:alpha:LS}) do
+not vanish.  This is always fulfilled for the least-squares method,
+while a (positive or negative) definite matrix $A$ avoids break-down
+of the Galerkin-based iteration (provided $\q_i \neq 0$).
 
 The Galerkin solution method for linear systems was originally devised
-as a *direct method* in the 1950s.
-After $n$ iterations the exact solution is
-found in exact arithmetic, but at a higher cost than when using
-Gaussian elimination. Naturally, the method did not receive significant
-popularity before researchers discovered (in the beginning of the 1970s) that
-the method could produce a good approximation to $x$ for $k\ll n$ iterations.
-
-[kam: it is appropriate to introduce the name Conjugate Gradient here]
+as a *direct method* in the 1950s.  After $n$ iterations the exact
+solution is found in exact arithmetic, but at a higher cost than when
+using Gaussian elimination. Naturally, the method did not receive
+significant popularity before researchers discovered (in the beginning
+of the 1970s) that the method could produce a good approximation to
+$x$ for $k\ll n$ iterations.  The method, called the Conjugate
+Gradient method, has from then on caught considerable interest as an
+iterative scheme for solving linear systems arising from PDEs
+discretized such that the coefficient matrix becomes sparse.
 
 Finally, we mention how to terminate the iteration.
 The simplest criterion is $||\residual^{k+1}||\leq\epsilon_r$, where
@@ -315,9 +314,9 @@ expensive matrix-vector product.
 
 === Remark ===
 
-The algorithm above is just a summary of the
-steps in the derivation of the least-squares method and should not be
-directly used for practical computations without further developments.
+The algorithm above is just a summary of the steps in the derivation
+of the least-squares method and should not be directly used for
+practical computations without further developments.
 
 ===== Truncation and restart =====
 
@@ -329,7 +328,7 @@ one aborts the iteration and starts the algorithm again with $x^0=x^K$.
 The other alternative is to truncate the sum $\sum_{j=0}^k\beta_j\q_j$
 and use only the last $K$ vectors:
 
-idx{linear solvers!Orthomin}
+idx{linear solvers!GMRES}
 idx{linear solvers!GCR}
 idx{linear solvers!minimum residuals}
 idx{linear solvers!generalized conjugate residuals}
@@ -342,15 +341,13 @@ Both the restarted and truncated version of the algorithm require
 storage of only $K+1$ basis vectors $\q_{k-K},\ldots,\q_k$.
 The basis vectors are also often called *search direction vectors*.
 The truncated version of the least-squares algorithm above
-is widely known as
-Orthomin, often written as Orthomin$(K)$ to explicitly indicate the
+is widely known as *Generalized Mininum Residuals*, shortended as GMRES,
+or GMRES$(K)$ to explicitly indicate the
 number of search direction vectors.
 In the literature one encounters the name
 *Generalized Conjugate Residual method*, abbreviated CGR, for
 the restarted version of Orthomin. When $A$ is symmetric, the method
 is known under the name *Conjugate Residuals*.
-
-[kam: I never heard anyone else use the name Orthomin. It is always GMRES]
 
 
 ===== Summary of the Galerkin method =====
@@ -386,12 +383,10 @@ one notice that the matrix $A$ is only used in matrix-vector
 products. This means that it is sufficient
 to store only the nonzero entries of $A$.
 The rest of the algorithms consists of vector operations of the
-type $\y \leftarrow ax + \y$,
-the slightly more general variant $\q\leftarrow ax +\y$, as well as
+type $y \leftarrow ax + y$,
+the slightly more general variant $q\leftarrow ax +y$, as well as
 inner products.
 !enotice
-
-[kam: all of a sudden, a few bf vectors]
 
 ===== A framework based on the error =====
 

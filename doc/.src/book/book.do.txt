@@ -59,7 +59,7 @@ label{nonlin:app:fem_vs_fdm}
 
 !split
 ========= Uncertainty quantification and polynomial chaos expansions =========
-label{ch:pce}
+label{ch:pc}
 
 # #include "dotxt/polychaos.do.txt"
 

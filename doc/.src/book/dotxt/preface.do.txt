@@ -15,6 +15,8 @@ Also I find the relation to FEniCS odd here. I would
 rather remove it. The exposition here is significantly
 different in the sense that the hidden part of FEniCS is exposed
 here. I think we should actually say it.]
+[hpl: Yes, we show in detail what you ideallyin FEniCS  don't need to know and
+bother with.]
 
 The original purpose was to provide an intuitive approach to the
 finite element method, using the mathematical language of the FEniCS
@@ -22,10 +24,6 @@ software cite{fenics_book}. FEniCS is a modern, very powerful tool for
 solving partial differential equations by the finite element method,
 and it was designed to make implementations very compact for those who
 are used to the abstract formulation of the method.
-
-
-
-
 
 A standard reference for FEniCS users have been the
 excellent text by Brenner and Scott cite{Brenner_Scott}, but for many
