@@ -2153,20 +2153,20 @@ FIGURE: [fig/Lagrange_basis8.png] The nine functions of a Lagrange basis of orde
 The Figure ref{Bernstein_basis_8} shows the  basis functions of a Bernstein basis of order 8.
 This figure should be compared against Figure ref{Lagrange_basis_8}, which
 shows the corresponding Lagrange basis of order 8.
-The Lagrange basis is convenient because it is a nodal basis, that is; the basis functions are 1 in their nodal points and zero at all other nodal points as described by (ref{fem:inter:prop}). 
+The Lagrange basis is convenient because it is a nodal basis, that is; the basis functions are 1 in their nodal points and zero at all other nodal points as described by (ref{fem:inter:prop}).
 However, looking at Figure ref{Lagrange_basis_8}
 we also notice that the basis function are oscillatory and have absolute
-values that are significantly larger than 1 between the nodal points. 
-Consider for instance the basis function represented by the purple color. 
+values that are significantly larger than 1 between the nodal points.
+Consider for instance the basis function represented by the purple color.
 It is 1 in $x=0.5$ and 0 at all other nodal points
-and hence this basis function represents the value at the mid-point. 
+and hence this basis function represents the value at the mid-point.
 However, this function also has strong
 negative contributions close to the element boundaries where
 it takes negative values less than $-2$.
 For the Bernstein basis, all  functions are positive and
 all functions output values in $[0,1]$. Therefore there is no oscillatory behavior.
 The main disadvantage of the Bernstein basis is that the basis is not
-a nodal basis. In fact, all functions contribute everywhere except $x=0$ and $x=1$. 
+a nodal basis. In fact, all functions contribute everywhere except $x=0$ and $x=1$.
 
 
 Both Lagrange and Bernstein polynomials take larger values towards the element boundaries than in
@@ -2176,13 +2176,13 @@ We  remark that the Bernstein basis is easily extended to polygons in 2D and
 3D in terms of the barycentric coordinates. For example, consider the reference triangle in
 2D consisting of the faces $x=0$, $y=0$, and $x+y=1$. The barycentric coordinates
 are $b_1(x,y)=x$, $b_2(x,y)$, and $b_3(x,y)=1-x-y$ and the Bernstein basis functions
-of order $n$ is of the form 
+of order $n$ is of the form
 
 !bt
 \[
 B_{i,j,k} = \frac{n!}{i! j! k!} x^i y^j (1-x-y)^k, \quad \mbox{ for }  i+j+k = n \tp
 \]
-!et  
+!et
 
 ======= Approximation properties and convergence rates =======
 
@@ -2191,7 +2191,7 @@ of accuracy and efficiency.
 We consider four different series for generating approximations:
 Taylor, Lagrange, sinusoidal, and Bernstein. For all families
 we expect that the approximations improve as we increase the
-number of basis functions in our representations. We 
+number of basis functions in our representations. We
 also expect that the computational complexity increases. Let us therefore
 try to quantify the accuracy and efficiency of the different methods
 in terms of the number of basis functions $N$. In the present
@@ -2243,15 +2243,15 @@ Omega = [0, 1]
 x = sym.Symbol("x")
 gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
 step = sym.Piecewise( (1, 0.25 < x), (0, True)  )- sym.Piecewise( (1, 0.75 < x), (0, True)  )
-func = gauss_bell 
+func = gauss_bell
 
 import pylab
 series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
-for series_type in series_types: 
+for series_type in series_types:
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   plt.loglog(Ns, norms)
 plt.show()
-!ec 
+!ec
 
 
 Below we list the numerical error for different $N$  when approximating the Gaussian bell function.
@@ -2268,7 +2268,7 @@ It is quite clear that the different methods have different properties.
 For example, the Lagrange basis for $N=16$ is 145 times
 more accurate than the Taylor basis. However, Bernstein is actually more than 500 times more
 accurate than Lagrange. The approximations obtained by sines are far behind the
-polynomial approximations for $N>4$. 
+polynomial approximations for $N>4$.
 
 The corresponding CPU time of the required computations also vary quite a bit:
 |------------------------------------------------------------------|
@@ -2283,8 +2283,8 @@ Here, the timings are in seconds.
 The Taylor basis is the most efficient and is in fact more than 60 times faster
 than the Lagrange basis for $N=16$.
 
-In order to get a more precise idea of how the approximation methods behave as $N$ increase 
- we assume a simple model which may be used in a regression analysis. 
+In order to get a more precise idea of how the approximation methods behave as $N$ increase
+ we assume a simple model which may be used in a regression analysis.
 There are two natural models of the accuracy (and the computational complexity) in terms
 of $N$: polynomial and exponential.
 
@@ -2306,7 +2306,7 @@ obtain
 \]
 !et
 Hence, letting $x=\log(N)$ and $y=\log (E_1(N))$,
-we obtain $y = a x + b$ with $a=\beta_1$ and $b= log(\alpha_1)$. 
+we obtain $y = a x + b$ with $a=\beta_1$ and $b= log(\alpha_1)$.
 Then, we may perform a regression analysis
 as earlier with respect to the basis functions $(1,x)$ and obtain an estimate of
 the order of convergence in terms of $\beta_1$ . For the second model (ref{sec:approx:exp:model}),
@@ -2316,8 +2316,8 @@ we take the natural logarithm and obtain
 \ln (E_2(N)) = \beta_2 N + \ln(\alpha_2)
 \]
 !et
-Again, regression analysis provides the means to estimate the convergence, but here we let $x=N$, 
-$y=\ln (E_2(N))$, $a=\beta_2$ and $b= \ln(\alpha_2)$. 
+Again, regression analysis provides the means to estimate the convergence, but here we let $x=N$,
+$y=\ln (E_2(N))$, $a=\beta_2$ and $b= \ln(\alpha_2)$.
 
 Before we perform the regression analysis, a good rule is to inspect the behavior visually
 in log and log-log plots. Figure ref{fem:approx:bell:loglogfig} shows a log-log plot of
@@ -2366,8 +2366,8 @@ for N in Ns:
   print exp(c[0]) * exp(N * c[1])
 !ec
 
-The program estimates the sine approximation convergences as $ 1.43e-02\cdot N^{-2.3}$, 
-which means that the convergence is slightly above second order. 
+The program estimates the sine approximation convergences as $ 1.43e-02\cdot N^{-2.3}$,
+which means that the convergence is slightly above second order.
 The Bernstein approximation on the other hand is $8.01e-02 \cdot \exp(-1.92e+00 N)$.
 
 
@@ -2376,7 +2376,7 @@ were implemented in a compiled language like C/C++ or Fortran and we should not
 be careful in drawing conclusion about the efficiency of the different methods
 based on this example alone. However, for completeness we include a log-log plot
 in Figure ref{fem:comp:bell:loglogfig}
-to illustrate the polynomial increase in CPU time with respect to N. 
+to illustrate the polynomial increase in CPU time with respect to N.
 
 FIGURE: [fig/Bell_computations_loglog.png] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
 
@@ -2678,13 +2678,13 @@ def integral(integrand):
 basis = [1, x, y, x*y]
 A = sym.Matrix(sym.zeros([4,4]))
 
-for i in range(len(basis)): 
+for i in range(len(basis)):
   psi_i = basis[i]
-  for j in range(len(basis)): 
+  for j in range(len(basis)):
     psi_j = basis[j]
     A[i,j] = integral(psi_i*psi_j)
 !ec
-We remark that `sympy` may even write the output in LaTeX or C++ format. 
+We remark that `sympy` may even write the output in LaTeX or C++ format.
 [kam: place this comment somewhere else?]
 
 ===== Implementation =====
@@ -6553,6 +6553,111 @@ so automation by the computer is a must.
 
 # Need 2D exercises
 
+======= Implementation =======
+
+Our previous programs for doing 1D approxmation by finite elemenent basis
+function had a focus on all the
+small details needed to compute the solution. When going to 2D and 3D,
+the basic algorithms are the same, but the amount of computational
+details with basis functions, reference functions, mappings,
+numerical integration and so on, becomes overwhelming because of all
+the flexibility and choices of elements. For this purpose, we *must*,
+except in the simplest cases with P1 elements, use some well-developed,
+existing computer library. Here we shal use
+"FEniCS": "http://fenicsproject.org", which is a free, open finite
+element package for advanced computations. The package can be programmed
+in C++ or Python. How it works is best illustrated by an example.
+
+===== Example on approximation in 2D using FEniCS =====
+
+=== Mathematical problem ===
+
+We want to approximate the function $f(x)=2xy - x^2$ by P1 and P2 elements
+on $[0,2]\times[-1,1]$ using a division into $8\times 8$ squares, which are
+then divded into rectangles.
+
+=== The code ===
+
+Observe that the code employs the basic concepts from 1D, but is capable
+of using any element in FEniCS in any number of space dimensions (!).
+
+!bc pycod
+from fenics import *
+
+def approx(f, V):
+     """Return Galerkin approximation to f in V."""
+     u = TrialFunction(V)
+     v = TestFunction(V)
+     a = u*v*dx
+     L = u*f*dx
+     u = Function(V)
+     solve(a == L, u)
+     return u
+
+def problem():
+    f = Expression('2*x[0]*x[1] - pow(x[0], 2)', degree=2)
+    mesh = RectangleMesh(Point(0,-1), Point(2,1), nx=8, nx=8)
+
+    V1 = FunctionSpace(mesh, 'P', 1)
+    u1 = approx(f, V1)
+    u1.rename('u1', 'u1')
+    u1_error = errornorm(f, u, 'L2')
+
+    V2 = FunctionSpace(mesh, 'P', 2)
+    u2 = approx(f, v2)
+    u2.rename('u2', 'u2')
+    u2_error = errornorm(f, u, 'L2')
+
+    # Simple plotting
+    plot(f, title='f')
+    plot(u1, title='u1')
+    plot(u2, title='u2')
+
+if __name__ == __main__:
+    problem()
+!ec
+
+=== Dissection of the code ===
+
+The function `approx` is a general solver function for any $f$ and
+$V$.  We define the unknown $u$ in the variational form $\int uv\dx$
+as a `TrialFunction` object and the test function $v$ as a
+`TestFunction` object. Then we define the the variational form through
+the integrand `u*v*dx`. The linear form $L$ is similarly defined
+`f*v*dx`. Here, `f` must be an `Expression` object in FEniCS, i.e., a
+formula defined by its implmentation in C++. With `a` and `L` defined,
+we re-define `u` to be a finite element function `Function`, which is
+now the unknown scalar field to be computed by the simple expression
+`solve(a == L, u)`.
+
+The `problem` function applies `approx` to solve a specific problem.
+This part requires two definitions: one of $f$ and one of $\Omega$,
+or more precisely: the mesh (discrete $\Omega$ divided into cells).
+The definition of $f$ must be expressed in C++, where the indpendent
+coordinates are given by a C/C++ vector `x`. This means that $x$ is
+`x[0]`, $y$ is `x[1]`, and $z$ is `x[2]`. Moreover, `x[0]**2` must
+be written as `pow(x[0], 2)` in C/C++.
+
+Fortunately, we can easily integrate SymPy and `Expression` objects,
+because SymPy can take a formula amd translate it to C/C++ code, and
+then we can require a Python code to numerically evaluate the formula.
+
+!bc pycod
+>>> import sympy as sym
+>>> x, y = sym.symbols('x y')
+>>> f = 2*x*y - x**2
+!ec
+
+
+
+Show
+
+ * `project` too
+ * allow SymPy code too
+ * plot solution versus $f$ along a line
+
+
+======= Exercises =======
 
 ===== Problem: Define nodes and elements =====
 label{fem:approx:fe:exer:mesh1}
@@ -6748,10 +6853,6 @@ FIGURE: [fig/tanh_fe_interpol_P3, width=800 frac=1]
 FIGURE: [fig/tanh_fe_interpol_P4, width=800 frac=1]
 !esol
 !esubex
-
-
-
-======= Exercises =======
 
 ===== Exercise: Investigate the approximation error in finite elements =====
 label{fem:approx:fe:exer:Asinwt:interpol:error}
