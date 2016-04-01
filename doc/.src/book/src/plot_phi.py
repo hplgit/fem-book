@@ -31,6 +31,8 @@ def fe_basis_function_figure(d, target_elm=[1], N_e=3,
         target_elm = [target_elm]  # wrap in list
 
     # Draw the basis functions for element 1
+    colors = ['r-2', 'b-2', 'g-2', 'y-2', 'k-2', 'c-2']
+    color_counter = 0
     phi_drawn = []  # list of already drawn phi functions
     ymin = ymax = 0
     for e in target_elm:
@@ -42,23 +44,32 @@ def fe_basis_function_figure(d, target_elm=[1], N_e=3,
                     return  # abort
                 ymax = max(ymax, max(y))
                 ymin = min(ymin, min(y))
-                plt.plot(x, y, '-')
+                plt.plot(x, y, colors[color_counter])
+                color_counter += 1
+                if color_counter > len(colors) - 1:
+                    color_counter = 0  # restart colors
+
                 plt.hold('on')
                 if labels:
                     if plt.backend == 'gnuplot':
                         if derivative == 0:
-                            plt.legend(r'basis func. %d' % i)
+                            plt.legend(r'basis func. %d' % i,
+                                       loc='upper right')
                         else:
-                            plt.legend(r'derivative of basis func. %d' % i)
+                            plt.legend(r'derivative of basis func. %d' % i,
+                                       loc='upper right')
                     elif plt.backend == 'matplotlib':
                         if derivative == 0:
-                            plt.legend(r'\varphi_%d' % i)
+                            plt.legend(r'\varphi_%d' % i, loc='upper right')
                         else:
-                            plt.legend(r"\varphi_%d'(x)" % i)
+                            plt.legend(r"\varphi_%d'(x)" % i, loc='upper right')
                 phi_drawn.append(i)
 
-    plt.axis([nodes[0], nodes[-1], ymin-0.1, ymax+0.1])
+    #plt.axis([nodes[0], nodes[-1], ymin-0.1, ymax+0.1])
     plot_fe_mesh(nodes, elements, element_marker=[ymin-0.1, ymax+0.1])
+    plt.plot([0, 0], [0, 0], '-',
+             axis=[nodes[0], nodes[-1], ymin-0.1, ymax+0.1],
+             daspect=[0.2, 1, 1], daspactmode='manual')
     plt.hold('off')
     plt.savefig(filename)
 
