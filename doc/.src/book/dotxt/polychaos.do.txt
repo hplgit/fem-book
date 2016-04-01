@@ -4,7 +4,7 @@ label{ch:pce}
 Differential equations often contain unknown parameters, but
 mathematically these must be prescribed to run the solution method.
 If some parameters are uncertain, how uncertain is then the answer?
-The simplest *conceptual* approach to this question is let each
+The simplest *conceptual* approach to this question is to let each
 parameter vary in an interval and use *interval arithmetics* to
 compute the interval of solution at the vertices of the
 mesh. Unfortunately, this approach is terribly inaccurate and not
