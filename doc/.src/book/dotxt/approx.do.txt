@@ -3949,9 +3949,9 @@ by the coordinates of the local nodes in the element.
 
 # #define PHI_WLABEL
 # #ifdef PHI_WLABEL
-FIGURE: [fig/phi/mpl_fe_basis_p2_4e_lab, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
+FIGURE: [fig/phi/fe_basis_p2_4e_lab, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
 # #else
-FIGURE: [fig/phi/mpl_fe_basis_p2_4e, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
+FIGURE: [fig/phi/fe_basis_p2_4e, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
 # #endif
 
 === Properties of $\basphi_i$ ===
@@ -4101,9 +4101,9 @@ first, which easily generalize to any $d > 2$, and then look at the
 special case $d=1$.
 
 # #ifdef PHI_WLABEL
-FIGURE: [fig/phi/mpl_fe_basis_p1_4e_lab, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
+FIGURE: [fig/phi/fe_basis_p1_4e_lab, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
 # #else
-FIGURE: [fig/phi/mpl_fe_basis_p1_4e, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
+FIGURE: [fig/phi/fe_basis_p1_4e, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
 # #endif
 
 
@@ -4165,7 +4165,7 @@ while
 $\basphi_3$ and $\basphi_6$ are made up of Lagrange polynomials on two
 neighboring elements.
 
-FIGURE: [fig/phi/mpl_fe_basis_p3_4e, width=600 frac=0.9]  Illustration of the piecewise cubic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P3}
+FIGURE: [fig/phi/fe_basis_p3_4e, width=600 frac=0.9]  Illustration of the piecewise cubic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P3}
 
 idx{chapeau function} idx{hat function} idx{finite element basis function}
 
