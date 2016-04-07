@@ -173,7 +173,7 @@ def run_noisy_parabola_by_linear_regression():
         u, c = regression_with_noise(f_data, psi, points)
         comparison_plot(
             f_formula, u, Omega,
-            filename='parabola_by_regression_%d' % mp1,
+            filename='noisy_parabola_by_linear_regression_%d' % mp1,
             points=points, point_values=f_data,
             points_legend='%d data points' % mp1,
             legend_loc='upper left')
@@ -194,7 +194,7 @@ def run_noisy_parabola_by_quadratic_regression():
         u, c = regression_with_noise(f_data, psi, points)
         comparison_plot(
             f_formula, u, Omega,
-            filename='parabola_by_regression_%d' % mp1,
+            filename='noisy_parabola_by_quadratic_regression_%d' % mp1,
             points=points, point_values=f_data,
             points_legend='%d data points' % mp1,
             legend_loc='upper left')

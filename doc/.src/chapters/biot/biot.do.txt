@@ -1,0 +1,848 @@
+#found reference but no label{eq:13}
+
+## search for PROBLEM: to see need for manual adjustments
+
+TITLE: Poroelasticity
+AUTHOR: Hans Petter Langtangen
+AUTHOR: Karen Støverud
+DATE: today
+
+======= Introduction =======
+
+Soil, rock, and sponges are examples of porous materials where a
+solid skeleton contains pores filled with a fluid like air or water.
+The solid skeleton is often elastic and may deform because of the
+movement of the fluid. We shall refer to such fluid-solid mixtures
+as *porous media*. The physics of porous media is essential in
+numerous application areas. Three primary examples are listed below.
+
+
+  * *Hydrocarbon recovery*: rock is a porous medium where oil, water,
+     and gas flow during oil and gas production.
+
+  * *Buildings on soil*: soil is a porous medium containing air and
+     water, and the weight of a heavy building will cause the soil to
+     deform (consolidate).
+
+  * *Biomedical processes*: the spinal chord and the brain are
+     examples on porous materials that deform due to movement of a
+     fluid (cerebrospinal fluid, often known as CSF). through
+
+
+
+In the following, we shall present the partial differential equations
+(PDEs) modeling flow and deformation in porous media. These equations
+are commonly known as the *Biot equations*.
+
+======= Mathematical Model =======
+
+The Biot equations we work with here are based on a series of physical
+assumptions. The porosity of the material must be small (thus leaving
+out sponges as porous media described by the Biot model).  We also
+assume that there is only one fluid filling *all* the pores inside the
+medium.  The deformation of the solid skeleton is small and elastic
+such that standard linear elasticity theory applies. We shall also
+assume that the fluid is incompressible or at most slightly
+compressible.  Temperature effects are neglected, but can relatively
+easily be incorporated.  Regarding time scales, we leave out wave
+motion and consider slow or stationary processes.
+
+The Biot equations reduce to one vector PDE governing the deformation
+of the solid skeleton and one scalar PDE governing the pressure (and
+hence the flow) of the fluid.
+
+We introduce the following mathematical quantities, which will frequently
+appear in the equations:
+
+TABLE!
+
+
+  * $\u$: displacement of the solid skeleton,
+
+  * $\bm{q}$: relative velocity of the fluid and the solid skeleton,
+
+  * $p$: pressure in the fluid,
+
+  * $\varrho_s$: solid density,
+
+  * $\varrho_f$: fluid density,
+
+  * $\mu$: fluid viscosity (dynamic),
+
+  * $K$: isotropic (scalar) permeability,
+
+  * $\bm{K}$: anisotropic permeability tensor,
+
+  * $\stress $: total stress tensor in the solid skeleton,
+
+  * $\stress '$: effective stress tensor due to deformation,
+
+  * $\strain$: strain tensor corresponding to $\stress$ through Hooke's law,
+
+  * $\Omega$: spatial domain occupied by the porous medium,
+
+  * $[0,T]$: time interval under consideration.
+
+
+===== Solid phase =====
+
+The equations in the solid are based on Newton's second law, which for
+a continuum with stress tensor $\stress$, displacement (or
+deformation) field $\u$, and external body forces $\f$ reads
+
+!bt
+\begin{equation}
+\varrho_s\frac{\partial^2\u}{\partial t^2} = \nabla\cdot\stress + \varrho_s\f
+\thinspace .
+label{biot:solid:momentum}
+\end{equation}
+!et
+The acceleration term on the left-hand side is important for wave
+motion, but for the slow flow and deformation processes considere here
+the term can be neglected. The most common form of $\f$ is the
+gravity force, here denoted by $\bm{g}$.
+
+The concept of *effective stress* is important in porous media.
+The effective stress $\stress '$ represents the stress carried by
+the solid skeleton and is related to the deformations of the solid.
+The total stress $\stress$ is the sum of the effective stress and the stress
+induced by the fluid in the skeleton. The latter is expressed through
+the isotropic stress tensor $-\alpha p\I$. We then have
+
+!bt
+\begin{equation}
+\stress  = \stress' - \alpha p\I,
+label{biot:effective:stress}
+\end{equation}
+!et
+where $\I$ is the identity tensor and $\alpha$ is the Biot-Willis
+parameter, which equals unity for incompressible fluids (see below).
+Hooke's generalized law for
+three-dimensional elasticity in an isotriopic elastic medium is
+
+!bt
+\begin{equation}
+\stress'  = \lambda \mbox{tr}\strain\I + 2\mu\strain,
+label{biot:effstress:strain}
+\end{equation}
+!et
+where $\strain$ is the strain tensor related to the displacements $\u$ by
+
+!bt
+\begin{equation}
+\strain  = \frac{1}{2}\left(\nabla\u + (\nabla \u)^T\right)
+\thinspace .
+label{biot:strain:deform}
+\end{equation}
+!et
+The parameters $\lambda$ and $\mu$ reflect elastic properties of the
+medium and are called the *Lame* parameters. They can be related
+to other widely used elastic parameters such as the Young's modulus,
+Poisson's ratio, the bulk modulus, and the shear modulus. For example,
+
+!bt
+\begin{equation}
+\lambda = \frac{E\nu}{(1+\nu)(1-2\nu)}, \quad\mu = \frac{E}{2(1+\nu)},
+\end{equation}
+!et
+where $E$ is Young's modulus and $\nu$ is Poisson's ratio.
+
+Inserting (ref{biot:strain:deform}) in (ref{biot:effstress:strain})
+and combining with (ref{biot:effective:stress}) gives
+
+!bt
+\begin{equation}
+\stress  = \lambda \nabla\cdot\u\,\I +
+\mu\left(\nabla\u + (\nabla \u)^T\right) - \alpha p\,\I
+label{biot:stress:strain}
+\thinspace .
+\end{equation}
+!et
+This equation together with
+(ref{biot:solid:momentum}), neglecting
+accelerations and restricting body forces to gravity only, are then
+the two governing equations for elastic deformations in the skeleton.
+We can easily substitute (ref{biot:stress:strain}) in
+(ref{biot:solid:momentum}) to get one vector PDE for $\u$, but it
+is coupled to the unknown fluid pressure $p$. Various specific models
+are discussed later.
+
+===== Fluid phase =====
+
+The PDEs governing the fluid motion consists of a mass balance equation
+and an average momentum equation famously known as Darcy's law.
+The mass balance equation is
+
+!bt
+\begin{equation}
+S\frac{\partial p}{\partial t} + \nabla\cdot\left(\bm{q} -
+\alpha\frac{\partial\u}{\partial t}\right) = 0,
+label{biot:fluid:mass:balance}
+\end{equation}
+!et
+where the first term models accumulation of fluid in a small volume,
+while the other models the net outflow of the fluid from this
+volume. In the latter
+term, it is the relative velocity between the fluid ($\bm{q}$) and
+the solid skeleton ($\partial\u/\partial t$) that is essential.
+Darcy's law represents an average of the viscous fluid flow in a
+large number of pores. As the pores are very small, the local Reynolds
+number is small, and one can omit the inertia terms in the Navier-Stokes
+equations.
+# The viscous term ($\mu\varrho_f^{-1}\nabla^2\v$)
+# is averaged to a term proportional to $\v$.
+The resulting Darcy's laws relates the fluid velocity $\bm{q}$ to
+the pressure and gravity forces:
+
+!bt
+\begin{equation}
+\bm{q} = - \frac{K}{\mu}(\nabla p - \varrho_f\bm{g})
+label{biot:fluid:Darcy}
+\thinspace .
+\end{equation}
+!et
+The permeability $K$ models how easily a presure gradient can move
+the fluid through the pores. Very often, especially in geological media,
+the premeability is larger
+in the horizontal directions than in the vertical direction, because
+the medium has through the geological history been severely compacted
+in the vertical direction due to gravity. When the permeability is
+not equal in all space directions, one introduces a permeability tensor
+and writes (ref{biot:fluid:Darcy}) as
+
+!bt
+\begin{equation}
+\bm{q} = \frac{\bm{K}}{\mu}\cdot(\nabla p - \varrho_f\bm{g})
+label{biot:fluid:Darcy2}
+\thinspace .
+\end{equation}
+!et
+For example, a perfectly horizontal geological layer will have
+$\bm{K}$ diagonal with $K_{xx}=K_{yy}$ equal to the horizontal
+permeability and $K_{zz}$ as the vertical permeability (usually much
+smaller than $K_{xx}=K_{yy}$).
+
+We realize that (ref{biot:fluid:Darcy}) or (ref{biot:fluid:Darcy2})
+can be substituted in (ref{biot:fluid:mass:balance}) to yield a
+diffusion-like PDE for $p$, but this PDE is coupled to the displacement
+$\u$ through the term $\alpha(\nabla\cdot\u)_t$. Specific forms of
+the diffusion PDE for $p$ are given later.
+
+The parameter $S$ is known as the *fluid storage coefficient*
+and measures how much more fluid volume that can be stored in the porous
+medium when the pressure increases. The $S$ parameter can be related
+to the porosity
+and the compressibility of the fluid and solid through
+
+!bt
+\begin{equation}
+S = \frac{\phi}{k_f} + \frac{\alpha - \phi}{k_s},
+\end{equation}
+!et
+where $\phi$ is the porosity (the fraction of fluid per unit volume
+of the medium),
+
+!bt
+\begin{equation*}  k_f = \varrho_f\frac{\partial p}{\partial\varrho_f},\end{equation*}
+!et
+is the bulk modulus of the fluid,
+and $k_s=\lambda + \frac{2}{3}\mu$ is the bulk modulus of the solid.
+Frequently, the fluid is considered incompressible and then
+$k_f\rightarrow\infty$.
+The Biot-Willis coefficient $\alpha$ is closely related to the
+bulk moduli,
+
+!bt
+\begin{equation*} \alpha \approx 1 - \frac{k_f}{k_s} \thinspace .\end{equation*}
+!et
+For an incompressible fluid, $S\approx (1-\phi)k_s^{-1}$. If also
+the solid skeleton is incompressible, $S=0$.
+
+
+===== Boundary conditions =====
+
+For the solid, two types of boundary conditions are relevant: either
+prescribed stress vector $\stress\cdot\normalvec$ or prescribed
+displacement vector $\u$. At each point of the boundary, three scalar
+conditions must be applied (two for 2D problems).
+A combination of prescribed stress and deformation state
+at a point is possible, for example, zero normal displacement
+and zero shear stress. We let $\partial\Omega_{D,u}$ denote
+the part of the boundary $\partial\Omega$
+where $\u$ is known (Dirichlet conditions), and $\partial\Omega_{N,\sigma}$
+is the part where the stress is known.
+
+For the fluid, a scalar condition is needed at each point of the boundary.
+Either $p$ has to be
+prescribed or the normal flux $\bm{q}\cdot\normalvec$ must be known.
+We let $\partial\Omega_{D,p}$ be the part of the boundary where
+Dirichlet conditions ($p$ known) applies, and $\partial\Omega_{N,q}$
+the part where the normal flux conditions are set.
+
+
+===== Summary of key equations =====
+
+The four key equations governing the mixture of a porous solid filled with
+a fluid are then the momentum balance for the solid,
+
+!bt
+\begin{equation}
+\nabla\cdot\stress = -\varrho_s\bm{g},
+label{biot:solid:momentum:static}
+\end{equation}
+!et
+the constitutive law for the solid (ref{biot:stress:strain}),
+the mass balance equation (ref{biot:fluid:mass:balance}), and
+Darcy's law. When speak about the *coupled problem*
+when these four equations must be solved simultaneously.
+
+Sometimes the velocity of the solid is small enough to justify dropping
+the term $\alpha\nabla\cdot\u_t$ in (ref{biot:fluid:mass:balance}).
+The result is that (ref{biot:fluid:mass:balance}) becomes independent
+of $\u$, and we get an *uncoupled problem* where we first can
+solve for $p$ and then for $\u$. The equation for $p$ arises from
+eliminating $\bm{q}$ in (ref{biot:fluid:mass:balance}) with the aid of Darcy's
+law:
+
+!bt
+\begin{equation}
+S\frac{\partial p}{\partial t} =
+\nabla\cdot\left(\frac{K}{\mu}(\nabla p - \varrho_f\bm{g})\right)
+label{biot:fluid:mass:balance2}
+\thinspace .
+\end{equation}
+!et
+The governing equation for $\u$ arises by inserting (ref{biot:stress:strain})
+in (ref{biot:solid:momentum:static}):
+
+!bt
+\begin{equation}
+\nabla\cdot \left(\lambda \nabla\cdot\u\,\I +
+\mu \left(\nabla\u + (\nabla \u)^T\right)\right) =
+\alpha\nabla p -\varrho_s\bm{g}
+label{biot:solid:momentum:u2}
+\thinspace .
+\end{equation}
+!et
+
+
+===== Variational formulation of the decoupled problem =====
+
+We now consider discretizing the decoupled problem where
+the $p$ equation (ref{biot:fluid:mass:balance2}) can be solved
+independently of the $\u$ equation (ref{biot:solid:momentum:u2}).
+
+The discretization of (ref{biot:fluid:mass:balance2}) can be done
+either prior to the variational formulation or after.
+Here we perform the variational formulation first. Let $v^{(p)}\in V^{(p)}$
+be a test function in the function space $V^{(p)}$. This is the space where
+we seek $p$, or more precisely, $p-p_0$, where $p_0$ is a function
+to model nonzero Dirichlet conditions on $\partial\Omega_{D,p}$.
+Formally, $v^{(p)}=0$ on $\partial\Omega_{D,p}$, but in practice this condition
+and $p_0$ are dropped and other methods used to enforce Dirichlet
+conditions in finite element impelementations.
+
+The derivation of a variational formulation follows the usual steps
+of multiplying the governing equation by the test function and integrate
+second-order derivatives, or more precisely, all the divergence terms,
+by parts. The result becomes
+
+!bt
+\begin{equation}
+\int_\Omega \left( S\frac{\partial p}{\partial t}v^{(p)} +
+\frac{K}{\mu}\nabla p\cdot\nabla v^{(p)}
+- \varrho_f\bm{g}\cdot\nabla v^{(p)}\right)\dx = 0
+\thinspace .
+label{biot:fluid:mass:balance2:vf}
+\end{equation}
+!et
+
+Introducing a Backward Euler scheme in time, and letting $p$ now denote
+the fluid pressure at the new time level and $p_1$ the pressure at
+the previous time level, we can write (ref{biot:fluid:mass:balance2:vf})
+as
+
+!bt
+\begin{align}
+ & \int_\Omega \left( Spv^{(p)} +
+\Delta t\frac{K}{\mu}\nabla p\cdot\nabla v^{(p)}\right)\dx =
+\int_\Omega \left(Sp_1 - \Delta t\varrho_f\bm{g}\cdot\nabla v^{(p)}\right)\dx
+\nonumber\\
+ & + \int_{\partial\Omega_{N,q}}\bm{q}\cdot\normalvec\,v^{(p)}\ds,
+\ \forall v^{(p)}\in V^{(p)},
+label{biot:fluid:mass:balance2:vf2}
+\end{align}
+!et
+where $\Delta t$ is the time step, and we have placed all unknown terms
+on the left-hand side.
+
+For the variational formulation of the elasticity problem for $\u$, we
+introduce a test vector function $\v^{(u)}\in V^{(u)}$. The space ${V^{(u)}}$ is
+where we seek $\u$ (or more precisely, the part of $\u$ with
+vanishing Dirichlet conditions). We require, formally, $\v^{(u)} =0$ at
+$\partial\Omega_{D,u}$.
+The variational formulation is
+most easily derived by taking the inner product of $\v^{(u)}$ and
+the original equation $\nabla\cdot\stress =-\varrho_s\bm{g}$,
+and integrating by parts:
+
+!bt
+\begin{equation}
+\int_\Omega \stress : \nabla\v^{(u)}\dx = \int_{\Omega_{N,\sigma}}
+\v^{(u)}\cdot\stress\cdot\normalvec \ds
+-\int_\Omega \varrho_s\bm{g}\cdot\v^{(u)}\dx,\quad\forall\v^{(u)}\in{V^{(u)}}
+label{biot:solid:momentum:static:vf0}
+\thinspace .
+\end{equation}
+!et
+The surface integral contains the normal stress
+$\stress\cdot\normalvec$, which is prescribed on $\partial\Omega_{N,\sigma}$
+(mixed stress and displacement conditions at the same boundary point
+makes this a bit more complicated).
+
+Since one can show that
+
+!bt
+\begin{equation*}
+\stress :\nabla\v^{(u)} = \stress : \frac{1}{2}(\nabla\v^{(u)} + (\nabla\v^{(u)})^T),
+\end{equation*}
+!et
+it is common to use the latter inner tensor product instead. That form
+is what naturally arises when
+deriving the variational form from the principle of minimum potential
+elastic energy. Nevertheless, we use the notationally more compact
+for $\stress :\nabla\v^{(u)}$ in the following.
+
+
+Inserting the constitutive law (ref{biot:stress:strain}) in
+(ref{biot:solid:momentum:static:vf0}) yields the final
+variational form for the deformation problem:
+
+!bt
+\begin{align}
+& \int_\Omega \left(
+\lambda \nabla\cdot\u\,\I +
+\mu \left(\nabla\u + (\nabla \u)^T\right)\right) :
+\nabla\v^{(u)}\dx = \int_{\Omega_{N,\sigma}}
+\v^{(u)}\cdot\stress\cdot\normalvec \ds\nonumber\\
+ & -\int_\Omega \left(\varrho_s\bm{g}\cdot\v^{(u)} - \alpha p \nabla\cdot\v^{(u)}\right) \dx,\ \forall\v^{(u)}\in{V^{(u)}}\thinspace .
+label{biot:solid:momentum:static:vf}
+\end{align}
+!et
+
+
+Variational formulations of linear problems are often expressed in an
+abstract form $a(\cdot,\cdot)=L(\cdot)$. Here the abstract notation reads
+
+!bt
+\begin{align*}
+a_p(p, v^{(p)}) &= L(v^{(p)}),\quad\forall v^{(p)}\in V^{(p)},\\
+a_u(\u, \v^{(u)}) &= L(\v^{(u)}), \quad\forall \v^{(u)}\in V^{(u)}
+\end{align*}
+!et
+with
+
+!bt
+\begin{align*}
+a_p(p, v^{(p)}) &=
+\int_\Omega \left( Spv^{(p)} +
+\Delta t\frac{K}{\mu}\nabla p\cdot\nabla v^{(p)}\right)\dx,\\
+L(v^{(p)}) &=\int_\Omega \left(Sp_1 - \Delta t\varrho_f\bm{g}\cdot\nabla v^{(p)}\right)\dx
++ \int_{\partial\Omega_{N,q}}\bm{q}\cdot\normalvec\,v^{(p)}\ds,\\
+a_u(\u, \v^{(u)}) &= \int_\Omega \stress : \nabla\v^{(u)}\dx = \int_\Omega \left(
+\lambda \nabla\cdot\u\,\I +
+\mu \left(\nabla\u + (\nabla \u)^T\right)\right) :
+\nabla\v^{(u)}\dx ,\\
+L(\v^{(u)}) &= \int_{\Omega_{N,\sigma}}
+\v^{(u)}\cdot\stress\cdot\normalvec \ds
+-\int_\Omega \left(\varrho_s\bm{g}\cdot\v^{(u)} - \alpha p \nabla\cdot\v^{(u)}\right) \dx\thinspace .
+\end{align*}
+!et
+
+
+===== Variational formulation of the coupled problem =====
+
+For the coupled problem we introduce the test functions $v^{(p)}\in V^{(p)}$ and
+$\v^{(u)}\in{V^{(u)}}$, which can be collected in a vector $(v^{(p)},\v^{(u)})
+\in V^{(p)}\times V^{(u)}$.
+By introducing ${\cal L}_p=0$ for the flow
+PDE (ref{biot:fluid:mass:balance}) and ${\cal L}_{u}=0$ for
+the deformation PDE
+(ref{biot:solid:momentum:static}), we take the inner product
+of $({\cal L}_p$, ${\cal L}_{u}$ and $(v^{(p)},\v^{(u)})$ and integrate over $\Omega$:
+
+!bt
+\begin{equation}
+\int_\Omega \left( {\cal L}_p v^{(p)} + {\cal L}_{u} \cdot\v^{(u)}\right)\dx = 0
+\thinspace .
+\end{equation}
+!et
+We realize that the various terms involved in the integral equal those
+in the uncoupled problem, modulo the term $\alpha\nabla\cdot\u_t$ that was not
+present in the uncoupled problem. All divergence terms are integrated
+by parts. We can also introduce a Backward Euler scheme to
+discretize $p_t$ and $\nabla\cdot\u_t$ as done in the uncoupled problem.
+The variational form becomes
+
+!bt
+\begin{align}
+&\int_\Omega \left( Spv^{(p)} +
+\Delta t\bm{q}\cdot\nabla v^{(p)}\right)\dx -
+\int_\Omega \alpha \nabla v^{(p)}\cdot\u\dx
+\int_\Omega Sp_1\dx - \nonumber\\
+&\int_\Omega \alpha \nabla v^{(p)}\cdot\u_1 \dx -
+\int_{\partial\Omega_{N,q}}\bm{q}\cdot\normalvec\,v^{(p)}\ds +
+\int_\Omega \stress : \nabla\v^{(u)}\dx - \nonumber\\
+&\int_\Omega \left(\varrho_s\bm{g}\cdot\v^{(u)} - \alpha p \nabla\cdot\v^{(u)}\right) \dx
+- \int_{\Omega_{N,\sigma}}\v^{(u)}\cdot\stress\cdot\normalvec \ds,\nonumber\\
+& \qquad\qquad \forall (v^{(p)},\v^{(u)})\in V^{(p)}\times{V^{(u)}},
+label{biot:coupled:fv}
+\end{align}
+!et
+with
+
+!bt
+\begin{equation}
+\bm{q} = - \frac{K}{\mu}(\nabla p - \varrho_f\bm{g}),
+\end{equation}
+!et
+or
+
+!bt
+\begin{equation}
+\bm{q} = - \frac{\bm{K}}{\mu}(\nabla p - \varrho_f\bm{g}),
+\end{equation}
+!et
+and
+
+!bt
+\begin{equation}
+\stress  = \lambda \nabla\cdot\u\,\I +
+\mu\left(\nabla\u + (\nabla \u)^T\right) - \alpha p\,\I
+\thinspace .
+\end{equation}
+!et
+
+It is easy in FEniCS implementations to work with mathematical relations
+between mathematical quantities entering variational form, so
+(ref{biot:coupled:fv}) is a convenient way to state the variational
+form, with the $p$-$\bm{q}$ and $\stress$-$\u$ relations available for
+substitution into the form. For mathematical writing it is common
+to perform such substitutions directly in the form:
+
+!bt
+\begin{align}
+& \int_\Omega \left( Spv^{(p)} +
+\Delta t\frac{K}{\mu}\nabla p\cdot\nabla v^{(p)}\right)\dx -
+\int_\Omega \alpha \nabla v^{(p)}\cdot\u\dx - \nonumber\\
+&\int_\Omega \left(Sp_1 - \Delta t\varrho_f\bm{g}\cdot\nabla v^{(p)}\right)\dx
+- \int_\Omega \alpha \nabla v^{(p)}\cdot\u_1 \dx - \int_{\partial\Omega_{N,q}}\bm{q}\cdot\normalvec\,v^{(p)}\ds +
+\nonumber\\
+& \int_\Omega
+\lambda \nabla\cdot\u\,\I +
+\mu \left(\nabla\u + (\nabla \u)^T\right) : \nabla\v^{(u)}\dx - \nonumber\\
+&\int_\Omega \left(\varrho_s\bm{g}\cdot\v^{(u)} - \alpha p \nabla\cdot\v^{(u)}\right) \dx
+- \int_{\Omega_{N,\sigma}}
+\v^{(u)}\cdot\stress\cdot\normalvec \ds,\nonumber\\
+& \qquad\qquad \forall (v^{(p)},\v^{(u)})\in V^{(p)}\times{V^{(u)}}
+\thinspace .
+\end{align}
+!et
+
+An abstract variational form of the coupled problem can be written as
+
+!bt
+\begin{equation*} a((p,\u), (v^{(p)}, \v^{(u)})) = L((v^{(p)}, \v^{(u)})),\end{equation*}
+!et
+with
+
+!bt
+\begin{align*}
+a((p,\u), (v^{(p)}, \v^{(u)}))
+&= \int_\Omega \left( Spv^{(p)} +
+\Delta t\bm{q}\cdot\nabla v^{(p)}\right)\dx -
+\int_\Omega \alpha \nabla v^{(p)}\cdot\u\dx +\\
+&\quad \int_\Omega \stress : \nabla\v^{(u)}\dx + \\
+L((v^{(p)}, \v^{(u)})) &=
+\int_\Omega Sp_1\dx - \int_\Omega \alpha \nabla v^{(p)}\cdot\u_1 \dx -
+\int_{\partial\Omega_{N,q}}\bm{q}\cdot\normalvec\,v^{(p)}\ds +\\
+&\quad \int_\Omega \left(\varrho_s\bm{g}\cdot\v^{(u)}
+- \alpha p \nabla\cdot\v^{(u)}\right) \dx
+- \int_{\Omega_{N,\sigma}}\v^{(u)}\cdot\stress\cdot\normalvec \ds
+\thinspace .
+\end{align*}
+!et
+
+
+===== Reductions =====
+
+Familiar equations: diffusion, Laplace, std elasticity, thermo-elasticity.
+
+======= Appendix: Derivations =======
+
+For now this is just a rough copy of the MekIT'13 paper. Note that
+the derivation is for incompressible media while the equations above
+are for compressible too.
+
+===== Poroelasticity versus Porous Media Theory =====
+
+There are two different theories in use today, which both describe
+wave propagation in porous materials. The first is
+\textit{poroelasticity}, also known as Biot's theory, which builds on
+the work by Terzaghi. The second is the \textit{theory of porous
+  media}, which is derived from first principles in mechanics. The
+main difference between these theories lies in the way the solid-fluid
+interaction is handled. However, it turns out that for individually
+incompressible fluid and solid phase, the two approaches are identical
+as long as we assume that all pores are interconnected and that there
+is no exchange of mass (see cite{Schanz2003}).
+
+The fluid phase, consisting of the interstitial fluid, is a water-like
+incompressible fluid. The solid phase also contains a large amount of
+water and is nearly incompressible. The only problem with assuming an
+incompressible solid phase is that in the current approach the
+vasculature is part of the solid. The vasculature is compressible and
+expands during systole. However, since it only accounts for 3\
+# of the
+total volume the errors we make is relatively small. In the following
+we will derive the equations from first principles based on
+cite{Has80} and cite{Schanz2003}.
+
+# \khsnote{Add more or move to different location!}
+# ===== Mathematical Model =====
+===== Momentum balance =====
+
+To set up a balance of forces in a porous medium, both the fluid and
+the solid phase have to be considered.  To distinguish between the
+fluid and solid components the subscript $f$ and $s$ are used
+respectively. For the fluid phase we have the momentum balance
+equation
+
+!bt
+\begin{equation}
+ \int_V \phi\rho_f\frac{D\bm{v}_f}{Dt} \text{d} V = \int_V
+ \phi\rho_f\bm{g}\text{d} V + \int_S \bm{n}\cdot(\phi\bm{T}_f)
+ \text{d}S + \int_V\bm{F}_{fs} \text{d} V label{eq:int_mom_s}
+\end{equation}
+!et
+and for the solid phase
+
+!bt
+\begin{equation}
+ \int_V (1-\phi)\rho_s\frac{D\bm{v}_s}{Dt} \text{d}
+ V = \int_V (1-\phi)\rho_s\bm{g} \text{d} V- \int_S \bm{n}
+\cdot\left((1-\phi)\bm{T}_s\right)\text{d}S + \int_V \bm{F}_{sf}
+ \text{d} V. label{eq:in_mom_f}
+\end{equation}
+!et
+The porosity $\phi$ enters the integrals since we are to integrate
+over the fluid or the solid, and the fluid occupies a fraction $\phi$
+of the volume or surface, while the solid occupies the remaining
+fraction $1-\phi$.
+From the integral balance equations above we apply Gauss' theorem to the
+surface integrals and derive the corresponding partial differential
+equations
+
+!bt
+\begin{align}
+ \phi\rho_f\frac{D\bm{v}_f}{Dt} &= \phi\rho_f\bm{g} +
+ \nabla\cdot(\phi\bm{T}_f) +
+ \bm{F}_{fs} label{eq:mom_s}\\
+(1-\phi)\rho_s\frac{D\bm{v}_s}{Dt}
+&= (1-\phi)\rho_s\bm{g} -
+ \nabla\cdot\left((1-\phi)\bm{T}_s\right) +
+ \bm{F}_{sf} label{eq:mom_f}
+\end{align}
+!et
+with $\bm{v}$ as velocities, $\rho$ partial densities, $\phi$ porosity,
+and $\bm{T}$ the stress tensors.
+The operator $\frac{D}{Dt}$ denotes the material
+time derivative following either a fluid or solid particle (depending on
+the equation).
+The gravity force is given by $\bm{g}$ term, but
+will be neglected in the following. The friction force between
+the fluid and solid phase are represented by $\bm{F}_{sf}$ and $\bm{F_{fs}}$
+and according to Newton's 3rd law these forces cancel each
+other out.
+
+Adding
+equations (ref{eq:mom_f}) and (ref{eq:mom_s}), neglecting
+acceleration of the fluid and gravity forces result in the momentum
+balance for the fluid-solid mixture
+
+!bt
+\begin{equation}
+ (1-\phi)\rho_s\frac{D\bm{v}_s}{Dt} = -
+  \nabla\cdot\left((1-\phi)\bm{T}_s
+  +\phi\bm{T}_f\right). label{eq:mom_mix}
+\end{equation}
+!et
+For the fluid phase the stress tensor is governed by the hydrostatic
+pressure and reduces to $\bm{T}_f = -p\bm{I}$. That is, the extra
+stress $\bm{\sigma}^E_f$ due to viscous forces are negligible in the
+divergence term, but the friction between the fluid and solid because
+of viscous effects is substantial. However, this effect must be
+averaged and is modeled by the exchange terms $\mathbf{F}_{sf}$ and
+$\mathbf{F}_{fs}$. For the solid phase we need to take the internal
+stresses $\bm{\sigma}^E_s$ into account and set $\bm{T}_s =
+\bm{\sigma}_E - p\bm{I}$. Now the total stress tensor is given by
+
+!bt
+\begin{equation}
+ \bm{T}_{T} = (1-\phi)\bm{T}_s + \phi\bm{T}_f =
+ (1-\phi)(\bm{\sigma}^E_s - p\bm{I}) - \phi p \mathbf{I} \approx
+ \bm{\sigma} - p\mathbf{I}.
+\end{equation}
+!et
+
+For linear elasticity the displacement vector
+$\bm{u}$ can be related to strain tensor field,
+
+!bt
+\begin{equation}
+\bm{e} = \frac{1}{2}(\nabla\bm{u} + \nabla^T\bm{u}).
+label{eq:strain}
+\end{equation}
+!et
+Assuming an isotropic, linear elastic medium, it can be shown that the
+following linear stress-strain relation holds:
+
+!bt
+\begin{equation}
+	\bm{\sigma} = 2\mu\bm{e} + \lambda (\mbox{tr} \bm{e}) \bm{I}
+        label{eq:stress}
+\end{equation}
+!et
+where $\mu$ and $\lambda$ represent Lam\'e parameters.
+
+For small deformations,
+
+!bt
+\begin{equation*} \frac{D\bm{v}_s}{Dt} \approx \frac{\partial^2\bm{u}}{\partial^2 t}. \end{equation*}
+!et
+Substituting (ref{eq:stress}) and (ref{eq:strain})
+into (ref{eq:mom_mix}) and rearranging yields:
+
+!bt
+\begin{equation}
+	 (1-\phi)\rho_s\frac{\partial^2\bm{u}}{\partial^2 t} =
+          \nabla\cdot\left(\mu(\nabla\bm{u} + \nabla^T\bm{u})
+        +\lambda(\nabla\cdot\bm{u})\bm{I}\right) -\nabla p
+         label{eq:momentum2}
+\end{equation}
+!et
+It is common to neglect the acceleration term on the left-hand side when
+we do not want to include fast sound waves in the model. From now on
+we therefore omit this term.
+
+# Note that $\mathbf{u}$ and $p$ are time-dependent due to Eq. (_PROBLEM: EXTERNAL REF_) ref{eq:13}.
+The Lam\'e parameters are used to characterize the elasticity of a
+medium and are related to the Poisson ratio $\nu$ and Young's
+modulus $E$ as follows:
+
+!bt
+\begin{equation}
+	\qquad\lambda = \frac{E\nu}{(1+\nu)(1-2\nu)},\qquad\mu =
+        \frac{E}{2(1+\nu)} label{eq:lambdamu}
+\end{equation}
+!et
+High values of $\mu$ and $\lambda$ implies a stiff material.
+
+===== Volume balance =====
+
+Assuming the density of the solid and the fluid phase to be constant
+the mass balance can be transformed to a volume balance:
+# (see e.g. \citet{Hel97}):
+For the solid phase we have
+
+!bt
+\begin{equation}
+	\frac {\partial(1-\phi)}{\partial t} label{eq:volSol} +
+        \nabla\cdot\left((1-\phi)\cdot\bm{v}_s\right) = 0
+\end{equation}
+!et
+and for the fluid phase we have
+
+!bt
+\begin{equation}
+	\frac {\partial\phi}{\partial t} + \nabla\cdot(\phi\bm{v}_f)
+        label{eq:volFluid} \pm \Omega_F(\bm{x}, t) = 0.
+\end{equation}
+!et
+# Here $\mathbf v_s$ and $\mathbf v_f$ represent the velocities of the solid and fluid phases, respectively. $\phi$ is porosity and $\mathit \Omega_F(\mathbf x, t)$ denotes source/sink terms of the fluid phase.
+Adding (ref{eq:volSol}) and (ref{eq:volFluid}) yields:
+
+!bt
+\begin{equation}
+	\nabla\cdot\left(\phi\bm{v}_f+(1-\phi)\bm{v}_s\right)
+        label{eq:volMix} \pm \mathit \Omega_F(\bm{x}, t) = 0
+\end{equation}
+!et
+In the case of infinitesimal deformation,
+
+!bt
+\begin{equation}
+	\mathbf v_s = \frac {\partial\bm{u}}{\partial t} label{eq:velSol}
+\end{equation}
+!et
+The fluid velocity $\bm{v}_f$ can be
+derived from the momentum balance of the fluid
+(ref{eq:mom_f}), and again by neglecting acceleration of
+the fluid we obtain
+
+!bt
+\begin{equation}
+ -\nabla\cdot(\phi p \bm{I}) + \bm{F}_{fs} = 0 label{eq:mom_f2}
+\end{equation}
+!et
+#  KHS: This is the explanation I found: "In a heterogeneous medium
+#    the forces exerted on the solid from the fluid are smaller in the
+#    areas with low porosity than in areas with high porosity, to balance
+#    the forces there has to be a force in the direction from lower to
+#    higher porosity. This force prevents the fluid from flowing due to
+#    porosity gradients. Further, we assume that the average drag of the
+#    solid on the fluid is dependent on the difference between the solid
+#    and the fluid phase velocity $T(v_f - v_s)$"}
+As mentioned, $\bm{F}_{sf}$ represents the friction forces between
+the solid and fluid
+phases, which is modeled by the linear relation:
+
+!bt
+\begin{equation}
+ \bm{F}_{sf} = p\nabla \phi - \bm{R}(\bm{v}_f - \bm{v}_s) label{eq:F_sf}
+\end{equation}
+!et
+where $\bm{R}$ is a second order tensor arising in the linearization
+of $\bm{F}_{sf}$.  Replacing $\bm{F}_{sf}$ in (ref{eq:mom_f2})
+yields
+
+!bt
+\begin{align}
+ -\nabla\cdot(\phi p \bm{I}) + p\nabla \phi - \bm{R} (\bm{v}_f -
+\bm{v}_s) &= 0 \\ \bm{v}_f &= -\phi \bm{R}^{-1} \nabla p + \bm{v}_s label{eq:vel_f}
+\end{align}
+!et
+Finally, $\bm{R}$ can be related to the conductivity of the porous
+medium cite{Has80}
+
+!bt
+\begin{equation}
+ \bm{R}^{-1} := \frac{\bm{K}}{\mu_w\phi}.
+\end{equation}
+!et
+
+Substituting (ref{eq:velSol}) and (ref{eq:vel_f}) in
+(ref{eq:volMix}) and rearranging yields the final form of
+the fluid-solid mixture volume balance:
+
+!bt
+\begin{equation}
+\nabla \cdot \left( \frac {\partial \bm{u}} {\partial t} -\frac
+       {\bm{K}}{\mu_w} \nabla p\right) = \mathit \Omega_F(\bm{x},
+       t) label{eq:volBal}
+\end{equation}
+!et
+
+
+BIBFILE: papers.pub
+
