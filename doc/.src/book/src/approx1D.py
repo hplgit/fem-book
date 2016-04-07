@@ -49,7 +49,7 @@ def least_squares(f, psi, Omega, symbolic=True):
         c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
     else:
         c = sym.mpmath.lu_solve(A, b)  # numerical solve
-        c = [c[i,0] for i in range(c.shape[0])]
+        c = [c[i,0] for i in range(c.rows)]
     print 'coeff:', c
 
     u = sum(c[i]*psi[i] for i in range(len(psi)))
