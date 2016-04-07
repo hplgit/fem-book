@@ -12,3 +12,5 @@ var for vanskelige, bare man kunne programmere]
 lærer: symbolisk verktøy, transformasjon av funksjoner, approksimasjon, 
 nummerisk integrasjon,  linear algebra, linjær/ikke-linjær optimering ] 
 ]
+
+[kam: approksimasjonsegenskaper og stabilitet]

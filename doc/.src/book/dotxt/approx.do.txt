@@ -222,7 +222,7 @@ the terms lead to
 
 !bt
 \[
-(\f-c0\psib_0,\psib_0) = 0,
+(\f-c_0\psib_0,\psib_0) = 0,
 \]
 !et
 or
@@ -999,7 +999,7 @@ is equivalent to the linear system
 
 !bt
 \begin{equation}
-\sum_j (\underbrace{\sum_i A^T_{k,i}A_{i,j}}{=(A^TA)_{k,j}}
+\sum_j (\underbrace{\sum_i A^T_{k,i}A_{i,j}c_j)}{=\sum_j(A^TA)_{k,j}}
 c_j = \sum_i \underbrace{A^T_{k,i}b_i}{=(A^Tb)_k},\quad k=0,\ldots,N,
 label{fem:approx:global:regression:normal1}
 \end{equation}
@@ -1048,7 +1048,7 @@ to (ref{fem:approx:global:regression:Bij}) and the right-hand side
 entries $d_i$ according
 (ref{fem:approx:global:regression:di}). Thereafter, it solves the
 linear system $\sum_jB_{i,j}c_j=d_i$.  The input data `f` and `psi`
-hold $f(x)$ and $\xno{i}$, $i=0,\ldots,N$, as symbolic expression, but
+hold $f(x)$ and $\baspsi_i$, $i=0,\ldots,N$, as symbolic expression, but
 since $m$ is thought to be much larger than $N$, and there are loops
 from $0$ to $m$, we use numerical computing to speed up the
 computations.
@@ -1265,6 +1265,9 @@ Almost orthogonal is helpful, but not enough when it comes to
 partial differential equations, and ill-conditioning
 of the coefficient matrix is a theme when solving large-scale matrix
 systems arising from finite element discretizations.
+
+[kam: almost linear dependence results in many possible solution
+giving nearly the same answer. Do not like the last sentence above. ] 
 
 ===== Fourier series =====
 label{fem:approx:global:Fourier}
