@@ -2004,7 +2004,16 @@ and modify the code accordingly.
 
 # #endif
 
-[kam: missing conclusion on the least square, Lagrange]
+[kam: missing conclusion on the least square, Lagrange.
+sympy is actually amazingly slow compared to swiginac. Anyway, 
+there is no problem in generating the least square example with quadrature 
+as can be seen in the figure below. Don't really understand most of the comments
+in the 2DO ifdef above 
+]
+
+FIGURE: [fig/Lagrange_ls_abs_12, width=400]  Illustration of an approximation of the absolute value function using the least square method .  label{fem:approx:global:Lagrange:fig:abs:Lag:unif:ls}
+
+
 
 The idea of avoiding oscillatory solutions by
 using lower-order Lagrange polynomials on smaller patches
@@ -3488,6 +3497,8 @@ functions in general in this text, the particular choice of
 finite element basis functions means that we take
 $\baspsi_i = \basphi_i$.
 
+[kam: check that this is true]
+
 idx{internal node}
 idx{shared node}
 
@@ -3648,7 +3659,7 @@ given by the formula (ref{fem:approx:global:Lagrange:poly}):
 
 As mentioned earlier, any global basis function $\basphi_i(x)$ is zero
 on elements that do not contain the node with global node number $i$.
-Clearly,  (\ref{fem:approx:fe:phi:prop1}) is easily verified, see for instance 
+Clearly  (\ref{fem:approx:fe:phi:prop1}) is easily verified, see for instance 
 that $\basphi_3(0.375) = 1$ while $\basphi_3(0.25) = 0$ 
 and $\basphi_3(0.5) = 0$.  
 
@@ -4731,7 +4742,7 @@ degree `d`, and approximates a given symbolic expression
 When `symbolic` is `False`, $u(x) = \sum_jc_j\basphi_j(x)$
 can be computed at a (large)
 number of points and plotted together with $f(x)$. The construction
-of $u$ points from the solution vector `c` is done
+of the pointwise function $u$ from the solution vector `c` is done
 elementwise by evaluating $\sum_rc_r\refphi_r(X)$ at a (large)
 number of points in each element in the local coordinate system,
 and the discrete $(x,u)$ values on
