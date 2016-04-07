@@ -536,7 +536,7 @@ label{fem:approx:ufem}
 \end{equation}
 !et
 [kam: 
-That is, we consider functions as vectors in a vector space, a so-called function space. 
+That is, we consider functions as vectors in a vector space - a so-called function space. 
 ]
 
 
@@ -848,6 +848,8 @@ the file "`approx1D.py`": "${fem_src}/approx1D.py".  The
 than the simplistic version shown above.  The file `ex_approx1D.py`
 applies the `approx1D` module to accomplish the forthcoming examples.
 
+[kam: the comment on where to find the code is somewhat hidden]
+
 
 ===== Perfect approximation =====
 label{fem:approx:global:exact}
@@ -999,8 +1001,8 @@ is equivalent to the linear system
 
 !bt
 \begin{equation}
-\sum_j (\underbrace{\sum_i A^T_{k,i}A_{i,j}c_j)}{=\sum_j(A^TA)_{k,j}}
-c_j = \sum_i \underbrace{A^T_{k,i}b_i}{=(A^Tb)_k},\quad k=0,\ldots,N,
+\sum_j (\sum_i A^T_{k,i}A_{i,j}c_j)=\sum_j(A^TA)_{k,j}
+c_j = \sum_i  A^T_{k,i}b_i=(A^Tb)_k,\quad k=0,\ldots,N,
 label{fem:approx:global:regression:normal1}
 \end{equation}
 !et
@@ -1008,7 +1010,7 @@ or in matrix form,
 
 !bt
 \begin{equation}
- A^TA = A^Tb\tp
+ A^TA c = A^Tb\tp
 label{fem:approx:global:regression:normal2}
 \end{equation}
 !et
@@ -1108,9 +1110,9 @@ for m in m_values:
 Figure ref{fem:approx:global:linear:regression:fig1} shows results for
 $m+1=2$ (left), $m+1=8$ (middle), and $m+1=64$ (right) data points.
 The approximating function is not so sensitive to the number of
-points as long as they cover a significant part of the domain (the 2 points
-puts too much weight on the center,  but 8 points cover almost the entire
-domain, and 64 points do not improve the results much):
+points as long as they cover a significant part of the domain (the first 2 point approximation puts too much weight on the center,  
+while the 8 point approximation cover almost the entire
+domain and produces a good approximation which is barely improved with 64 points):
 
 !bt
 \begin{align*}
@@ -1143,8 +1145,6 @@ the fitted parabola and the original parabola without noise become very close.
 
 FIGURE: [fig/noisy_parabola_by_quadratic_regression, width=800]  Approximation of a parabola with noise by a parabola.  label{fem:approx:global:linear:regression:fig3}
 
-[kam: wrong figure. This is approximation with linear regression as also the above. Did not find the correct
-figure, but will look into the code and generate]
 === Remark ===
 
 The regression method is not much used for approximating differential
@@ -1267,7 +1267,7 @@ partial differential equations, and ill-conditioning
 of the coefficient matrix is a theme when solving large-scale matrix
 systems arising from finite element discretizations.
 
-[kam: almost linear dependence results in many possible solution
+[kam: almost linear dependence results in many possible solutions
 giving nearly the same answer. Do not like the last sentence above. ] 
 
 ===== Fourier series =====
@@ -1610,6 +1610,8 @@ def interpolation(f, psi, points):
 The `interpolation` function is a part of the `approx1D`
 module.
 
+[kam: comment on the symbol factory in sympy]
+
 We found it convenient in the above function to turn the expressions `f` and
 `psi` into ordinary Python functions of `x`, which can be called with
 `float` values in the list `points` when building the matrix and
@@ -1641,7 +1643,7 @@ float
 A nice feature of the interpolation or collocation method is that it
 avoids computing integrals. However, one has to decide on the location
 of the $\xno{i}$ points.  A simple, yet common choice, is to
-distribute them uniformly throughout $\Omega$.
+distribute them uniformly throughout the unit interval.
 
 === Example ===
 
@@ -1825,7 +1827,10 @@ and then round-off errors start to grow, such that
 the coefficients in front of $x^r$ for $r>2$ are
 of size $10^{-5}$ and smaller.
 
-[kam: litt uklart om det er et problem for grad 15 eller ikke.]
+[kam: litt uklart om det er et problem for grad 15 eller ikke.
+Igjen er løsningen lik, det er flere muligheter for like løsninger da
+systemet er nært singulært
+]
 
 === Successful example ===
 
@@ -1865,8 +1870,8 @@ computed from uniformly spaced points $\xno{i}=i/11$,
 $i=0,\ldots,11$, marked with circles.  We clearly see the property of
 Lagrange polynomials: $\psi_2(\xno{i})=0$ and $\psi_7(\xno{i})=0$ for
 all $i$, except $\psi_2(\xno{2})=1$ and $\psi_7(\xno{7})=1$.  The most
-striking feature, however, is the significant oscillation near the
-boundary. The reason is easy to understand: since we force the
+striking feature, however, is the dominating oscillation near the
+boundary where $\psi_2>5$ and $\psi_7=-10$ in some points. The reason is easy to understand: since we force the
 functions to be zero at so many points, a polynomial of high degree is
 forced to oscillate between the points.  The phenomenon is named
 *Runge's phenomenon* and you can read a more detailed explanation on
@@ -1922,7 +1927,7 @@ ref{fem:approx:global:Lagrange:fig:abs:Lag:unif:osc} (equidistant
 points). Note the different scale on the vertical axes in the two
 figures.
 
-[kam:note that the  nodes cluster close to the boundaries]
+[kam: note that the  nodes cluster close to the boundaries]
 
 Another cure for undesired oscillations of higher-degree interpolating
 polynomials is to use lower-degree Lagrange polynomials on many small
@@ -2189,7 +2194,7 @@ b_{1} &= (\baspsi_1,f) = \int_0^{L_y}\int_{0}^{L_x} x(1+x^2)(1+2y^2) dxdy\\
 = (L_y + \frac{2}{3}L_y^3)({\half}L_x^2 + \frac{1}{4}L_x^4)\\
 b_{2} &= (\baspsi_2,f) = \int_0^{L_y}\int_{0}^{L_x} y(1+x^2)(1+2y^2) dxdy\\
 &= \int_0^{L_y}y(1+2y^2)dy \int_{0}^{L_x} (1+x^2)dx
-= ({\half}L_y + {\half}L_y^4)(L_x + \frac{1}{3}L_x^3)\\
+= ({\half}L_y^2 + {\half}L_y^4)(L_x + \frac{1}{3}L_x^3)\\
 b_{3} &= (\baspsi_2,f) = \int_0^{L_y}\int_{0}^{L_x} xy(1+x^2)(1+2y^2) dxdy\\
 &= \int_0^{L_y}y(1+2y^2)dy \int_{0}^{L_x} x(1+x^2)dx
 = ({\half}L_y^2 + {\half}L_y^4)({\half}L_x^2 + \frac{1}{4}L_x^4)
@@ -2222,9 +2227,8 @@ where
 \]
 !et
 are matrix entries for one-dimensional approximations. Moreover,
-$i=q N_y+q$ and $j=s N_y+r$.
+$i=p N_y+q$ and $j=s N_y+r$.
 
-[kam: sjekk om dette stemmer]
 
 With $\hat\baspsi_p(x)=x^p$ we have
 
@@ -2394,7 +2398,7 @@ with $p\in\Ix$, $q\in\Iy$, $r\in\Iz$. The expansion of $u$ becomes
 \[ u(x,y,z) = \sum_{p\in\Ix}\sum_{q\in\Iy}\sum_{r\in\Iz} c_{p,q,r}
 \baspsi_{p,q,r}(x,y,z)\tp\]
 !et
-A single index can be introduced also here, e.g., $i=N_xN_yr + qN_x + p$,
+A single index can be introduced also here, e.g., $i=rN_xN_y + qN_x + p$,
 $u=\sum_i c_i\baspsi_i(x,y,z)$.
 
 !bnotice Use of tensor product spaces
@@ -2421,12 +2425,6 @@ book or search for the term at Wikipedia.
 !bsubex
 Prove that vectors in the plane spanned by the vector $(a,b)$  form a vector space
 by showing that all the axioms of a vector space are satisfied.
-
-[kam: plane $(a,b)$ unclear. Perhaps expand and say 
-that the plane spanned by the vector is a vector space. 
-Could also note that points in $(a,b)$ do not form a  
-a space. Anyways, we need to say that $(a,b)$ is here a vector. 
-]
 
 
 !bsol
@@ -2916,6 +2914,7 @@ FIGURE: [fig/sin_taylor7, width=500 frac=0.8]
 ===== Problem: Approximate a steep function by sines =====
 label{fem:approx:exer:tanh:sine1}
 file=tanh_sines
+[kam: jeg skjønner ikke hvorfor filnavnet står her]
 
 Find the best approximation of $f(x) = \tanh (s(x-\pi))$ on
 $[0, 2\pi]$ in the space $V$ with basis
