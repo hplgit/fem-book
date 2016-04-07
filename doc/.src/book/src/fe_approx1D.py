@@ -24,7 +24,7 @@ def mesh_uniform(N_e, d, Omega=[0,1], symbolic=False):
 from Lagrange import Lagrange_polynomial, Chebyshev_nodes, Lagrange_polynomials
 
 
-def basis(d, point_distribution='uniform', symbolic=False):
+def basis(d, point_distribution='uniform', symbolic=True):
     """
     Return all local basis function phi as functions of the
     local point X in a 1D element with d+1 nodes.

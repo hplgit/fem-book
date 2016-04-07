@@ -50,6 +50,7 @@ def element_matrix(phi, Omega_e, symbolic=True, numint=None):
     if numint is None:
         for r in range(n):
             for s in range(r, n):
+                print phi[r]
                 A_e[r,s] = sym.integrate(phi[r]*phi[s]*detJ, (X, -1, 1))
                 A_e[s,r] = A_e[r,s]
     else:
@@ -82,7 +83,7 @@ def element_vector(f, phi, Omega_e, symbolic=True, numint=None):
                 # Ensure h is numerical
                 h = Omega_e[1] - Omega_e[0]
                 detJ = h/2
-                f_func = lambdify([X], f)
+                f_func = sym.lambdify([X], f)
                 # phi is function
                 integrand = lambda X: f_func(X)*phi[r](X)*detJ
                 #integrand = integrand.subs(sym.pi, np.pi)
@@ -215,8 +216,7 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
     # and the degree of the polynomial is len(dof_map[e])-1
     phi = [basis(len(dof_map[e])-1) for e in range(N_e)]
 
-    A, b = assemble(vertices, cells, dof_map, phi, f,
-                    symbolic=symbolic, numint=numint)
+    A, b = assemble(vertices, cells, dof_map, phi, f, symbolic=symbolic, numint=numint)
 
     print 'cells:', cells
     print 'vertices:', vertices

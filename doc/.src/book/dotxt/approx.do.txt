@@ -4752,7 +4752,7 @@ The details are found in the `u_glob` function in
 `fe_approx1D.py`.
 
 [kam: u\_glob is used frequently later. I think it deserves a more
-extensive explanation here]
+extensive explanation here. Perhaps use index also for code. ]
 
 ===== The structure of the coefficient matrix =====
 label{fem:approx:fe:A:structure}
@@ -4939,7 +4939,7 @@ approximate(f=x*(1-x)**8, symbolic=False, d=2, N_e=4)
 The quadratic functions are seen to be better than the linear ones for the same
 value of $N$, as we increase $N$. This observation has some generality:
 higher degree is not necessarily better on a coarse mesh, but it is as
-we refine the mesh.
+we refine the mesh and the function is properly resolved. 
 
 
 FIGURE: [fig/fe_p1_p2_x9_248e, width=800 frac=1.0]  Comparison of the finite element approximations: 4 P1 elements with 5 nodes (upper left), 2 P2 elements with 5 nodes (upper right), 8 P1 elements with 9 nodes (lower left), and 4 P2 elements with 9 nodes (lower right).  label{fem:approx:fe:x9:sin}
@@ -4985,13 +4985,12 @@ typically met in integrals, is mostly zero.
 Using a numbering of nodes and elements from left to right over a 1D
 domain, the assembled coefficient matrix has only a few diagonals
 different from zero. More precisely, $2d+1$ diagonals around the main
-diagonal are different from zero. With a different numbering of global
+diagonal are different from zero, where $d$ is the order of the polynomial. With a different numbering of global
 nodes, say a random ordering, the diagonal structure is lost, but the
 number of nonzero elements is unaltered. Figures
 ref{fem:approx:fe:sparsity:P1} and ref{fem:approx:fe:sparsity:P3}
 exemplify sparsity patterns.
 
-[kam: $d$ is here polynomial degree. Is that clear to the reader?]
 
 FIGURE: [fig/sparsity_pattern_1D_30, width=800] Matrix sparsity pattern for left-to-right numbering (left) and random numbering (right) of nodes in P1 elements. label{fem:approx:fe:sparsity:P1}
 
@@ -5042,8 +5041,8 @@ An advantage of the `scipy.sparse.diags` matrix over the DOK format is
 that the former allows vectorized assignment to the matrix.
 Vectorization is possible for approximation problems when all elements
 are of the same type. However, when solving differential equations,
-vectorization is much more difficult. It also appears that the DOK
-sparse matrix format available in the `scipy.sparse` package is fast
+vectorization may be more difficult in particular because of boundary conditions. 
+It also appears that the DOK sparse matrix format available in the `scipy.sparse` package is fast
 enough even for big 1D problems on today's laptops, so the need for
 improving efficiency occurs only in 2D and 3D problems, but then the
 complexity of the mesh favors the DOK format.
@@ -5219,7 +5218,7 @@ Consequently,
 
 !bt
 \[ \sum_{j=0}^{N-1} f(\xno{j+\half})\basphi_i(\xno{j+\half})
-= \half(f(\xno{j-\half}) + f(\xno{j+\half})\tp\]
+= \half(f(\xno{j-\half}) + f(\xno{j+\half}))\tp\]
 !et
 When $1\leq i\leq N-1$ we then get
 
@@ -5446,7 +5445,8 @@ where the sum is taken over the numbers of the degrees of freedom and
 $c_r$ is the value of $u$ for degree of freedom number $r$.
 
 Our previous P1, P2, etc., elements are defined by introducing $d+1$
-equally spaced nodes in the reference cell, a polynomial space, P$d$, of order
+equally spaced nodes in the reference cell, a polynomial space (P$d$) containing
+a complete set of polynomials of order
 $d$,   and saying that the degrees
 of freedom are the $d+1$ function values at these nodes.  The basis
 functions must be 1 at one node and 0 at the others, and the Lagrange
@@ -5552,6 +5552,8 @@ for N_e in 4, 8:
     approximate(x*(1-x), d=0, N_e=N_e, Omega=[0,1])
 !ec
 Figure ref{fem:approx:fe:element:impl:fig:P0:x2} shows the result.
+
+[kam: does not seem to work]
 
 FIGURE: [fig/fe_p0_x2_4e_8e, width=600] Approximation of a parabola by 4 (left) and 8 (right) P0 elements. label{fem:approx:fe:element:impl:fig:P0:x2}
 
