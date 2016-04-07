@@ -215,7 +215,8 @@ def interpolation(f, psi, points):
     # c is a sympy Matrix object, turn to list
     c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
     print 'coeff:', c
-    u = sym.simplify(sum(c[i,0]*psi_sym[i] for i in range(N+1)))
+#    u = sym.simplify(sum(c[i,0]*psi_sym[i] for i in range(N+1)))
+    u = sym.simplify(sum(c[i]*psi_sym[i] for i in range(N+1)))
     print 'approximation:', u
     return u, c
 
