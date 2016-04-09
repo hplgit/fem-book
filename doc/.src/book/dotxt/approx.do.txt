@@ -5208,6 +5208,7 @@ can be written as
 + 4\sum_{j=0}^{N-1} g(\xno{j+\half}) + f(\xno{2N})\right),
 \]
 !et
+[kam: don't follow]
 where $\tilde h= h/2$ is the spacing between the sample points.
 Our integrand is $g=f\basphi_i$. For all the node points,
 $\basphi_i(\xno{j})=\delta_{ij}$, and therefore
@@ -5540,6 +5541,9 @@ plot(x_u, u)
 !ec
 
 [kam: u\_glob etc is repeated on the next page]
+[kam: I have a problem with the the way code is introduced. 
+It should be refered somehow. Perhaps in the index. How
+are students working with this code?] 
 
 These steps are offered in the `approximate` function, which we here
 apply to see how well four P0 elements (piecewise constants)
@@ -5701,6 +5705,7 @@ as degree of freedom number $2i$ and the value of the derivative
 at $\xno{i}$ as degree of freedom number $2i+1$, $i=0,\ldots,N_e+1$.
 
 [kam: Fint eksempel, men brå avslutning]
+[kam: explain unisolvence]
 
 
 !split

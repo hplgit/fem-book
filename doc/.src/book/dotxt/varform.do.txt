@@ -1623,7 +1623,6 @@ file=cable_sin
 ## Figur! Nice to have for both symmetric and complete problem
 ## See also exer/cable_sin_JDokken.py
 
-[kam: I am confused about the tension]
 
 A hanging cable of length $L$
 with significant tension $T$ has a deflection $w(x)$
@@ -2996,8 +2995,8 @@ label{fem:deq:1D:fem:essBC:Bfunc}
 In Section ref{fem:deq:1D:essBC:Bfunc} we introduced a boundary function $B(x)$
 to deal with nonzero Dirichlet boundary conditions for $u$. The
 construction of such a function is not always trivial, especially not
-in multiple dimensions. However, a simple and general construction
-idea exists when the
+in multiple dimensions. However, a simple and general constructive idea 
+exists when the
 basis functions have the property
 
 !bt
@@ -3027,6 +3026,9 @@ B(x) = \sum_{j\in\Ifb} U_j\basphi_j(x)\tp
 !et
 It is easy to verify that
 $B(\xno{i})= \sum_{j\in\Ifb} U_j\basphi_j(\xno{i})=U_i$.
+
+[kam: so dofs in the interior are $c_j$ whereas on
+the boundary it is $U_j$.]  
 
 The unknown function can then be written as
 
@@ -3156,7 +3158,8 @@ $B'=C\basphi_0' + D\basphi_{N_n-1}'$.
 
 Most of the terms in the linear system have already been computed
 so we concentrate on the new contribution from the boundary function.
-The integral $C\int_0^L \basphi_{0}'(x))\basphi_i'(x) \dx$ can only get
+The integral $C\int_0^L \basphi_{0}'(x))\basphi_i'(x) \dx$, associated
+with the Dirichlet condition in $x=0$,  can only get
 a nonzero contribution from the first cell,
 $\Omega^{(0)}=[\xno{0},\xno{1}]$
 since $\basphi_{0}'(x)=0$ on all other cells. Moreover,
@@ -3794,7 +3797,7 @@ condition $u'(0)=C$.
 
 Consider first the approach where Dirichlet conditions are incorporated
 by a $B(x)$ function and the known degree of freedom
-$C_{N_n-1}$ is left out from the linear system
+$C_{N_n-1}$ is left out of the linear system
 (see Section ref{fem:deq:1D:BC:nat:uLtest}).
 The relevant formula for the linear
 system is given by (ref{fem:deq:1D:natBC}).
@@ -3866,6 +3869,8 @@ h - C \\
 label{fem:deq:1D:BC:nat:Aub:system}
 \end{equation}
 !et
+
+[kam: noe rart her, skal være derivert i 0 eller?]
 
 Next we consider the technique where we modify the linear system to
 incorporate Dirichlet conditions
@@ -5469,6 +5474,9 @@ functions by $r$, and look up vertex coordinates through $q(e,r)$.
 
 Similar formulas exist for integration of P1 elements in 3D.
 
+[kam: tempting to show some code, barycentric coord or 
+Bernstein - but try not to make it overly abstract]
+
 ===== A glimpse of the mathematical theory of the finite element method =====
 
 Almost all books on the finite element method that introduces the
@@ -5499,7 +5507,7 @@ element equations to finite difference form and studying Fourier wave
 components.
 
 [kam: This is really two remarks in one and we can split
-and put them in more appropriate place]
+and put them in more appropriate place. Time is dealt with later. ]
 
 === Abstract variational forms ===
 
@@ -5590,7 +5598,7 @@ problem, one can derive some general results that are listed below.
 
 === Existence and uniqueness ===
 
-There exists a unique solution of the problem *find* $\uex\in\Vex$
+There exists a unique solution of the problem: find $\uex\in\Vex$
 such that
 
 !bt
@@ -5745,7 +5753,7 @@ is cite{Larson_2013}
 
 !split
 
-[kam: summary is place at a random place. I suggest
+[kam: summary is placed at a random place. I suggest
 to conclude each chap with a summary. In fact every 
 chap may also begin with a outline that highlights
 the story]
@@ -5823,6 +5831,8 @@ the story]
 
 [kam: I'd like to also use the word "localized" and not only
 the term "almost orthogonal"]
+
+[kam: advare om Dirichlet bonazaen på forhånd]
 
 ======= Exercises =======
 
