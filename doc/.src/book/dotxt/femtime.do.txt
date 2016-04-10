@@ -13,7 +13,7 @@ a discretization in time:
    the resulting system of ordinary differential equations (ODEs) by
    some standard method for ODEs.
 
-[This can be stated more clearly. Sometimes the methods
+[kam: This can be stated more clearly. Sometimes the methods
 are equivalent and sometimes not]
 
 We shall exemplify these strategies using a simple diffusion problem
@@ -45,7 +45,7 @@ label{fem:deq:diffu:FE}
 ===== Time discretization =====
 
 We can apply a finite difference method in time to (ref{fem:deq:diffu:eq}).
-First we need a mesh in time, here taken as uniform with
+First we need 'a mesh' in time, here taken as uniform with
 mesh points $t_n = n\Delta t$, $n=0,1,\ldots,N_t$.
 A Forward Euler scheme consists of sampling (ref{fem:deq:diffu:eq})
 at $t_n$ and approximating the time derivative by a forward
@@ -376,7 +376,8 @@ coefficient matrix:
 \[ \sum_j M_{i,j}c_{1,j} = (I,\baspsi_i),\quad i\in\If\tp\]
 !et
 
-[kam: sometimes $\x_j$ sometimes $\xno{j}$].
+[kam: sometimes $\x_j$ sometimes $\xno{j}$. $\x$ is almost the
+only vector that is boldface].
 
 ===== Example using sinusoidal basis functions =====
 label{fem:deq:diffu:FE:cosex}
@@ -584,7 +585,7 @@ label{fem:deq:diffu:BE:eq:un}
 Equation (ref{fem:deq:diffu:BE:eq:un}) can compute
 $\u^1,\u^2,\dots,\u^{N_t}$,
 if we have a start $\u^0=I$ from the initial condition.
-[kam: wrong reference]
+[kam: bold face. Bold face not used in e.g. 6.1.6]
 However, (ref{fem:deq:diffu:BE:eq:un}) is a partial differential
 equation in space and needs a solution method based on discretization
 in space. For this purpose we use an expansion as in
@@ -769,6 +770,8 @@ functions for $V$ are chosen as $\baspsi_i = \basphi_{\nu(i)}$, $i\in\If$,
 and all of these vanish at the boundary nodes as they should.
 The expansion for $u^{n+1}$ and $u^n$ become
 
+[kam: $\x$ and $x$ for no apparant reason]
+
 !bt
 \begin{align*}
 u^n &= \sum_{j\in\Ifb} U_j^n\basphi_j + \sum_{j\in\If}c_{1,j}\basphi_{\nu(j)},\\
@@ -871,7 +874,7 @@ deviation from a constant mean temperature in a body $\Omega$
 that is subject to an oscillating temperature (e.g., day and
 night, or seasonal, variations) at $x=0$.
 
-[kam:sometimes $x$ and sometimes $\x$.]
+[kam: sometimes $x$ and sometimes $\x$.]
 
 We use a Backward Euler scheme in time and P1 elements of
 constant length $h$ in space.
@@ -1203,6 +1206,7 @@ FIGURE: [fig/diffu_A_factors_fine_FE, width=600 frac=0.8] Comparison of fine-mes
 FIGURE: [fig/diffu_A_factors_fine_BE, width=600 frac=0.8] Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:BE2}
 
 
+[hpl: remaining tasks]
 Remaining tasks:
 
  * Taylor expansion of the error in the amplification factor $\Aex - A$

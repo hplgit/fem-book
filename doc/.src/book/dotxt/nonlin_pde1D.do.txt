@@ -401,6 +401,7 @@ this question, and the answer is that the approximation is
 $\Oof{\Delta t^2}$ in both cases.
 
 [kam: this has depend on the smoothness? Or? ]
+[kam: mean value notation]
 
 
 !split

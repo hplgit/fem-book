@@ -337,7 +337,9 @@ more compact form
 !et
 with $a=\Delta t$, $b=1-\Delta t$, and $c=-u^{(1)}$.
 Let $u^{-}$ be an available approximation of the unknown $u$.
-[kam: Perhaps say something about notation $u^{-}$. Sometimes the '-' is like $u^{-}$ and sometimes $u{-}$] 
+
+[kam: Perhaps say something about notation $u^{-}$. Sometimes $u^{-}$, sometimes $u{-}$ and sometimes $u\_$ ] 
+
 Then we can linearize the term $u^2$ simply by writing
 $u^{-}u$. The resulting equation, $\hat F(u)=0$, is now linear
 and hence easy to solve:

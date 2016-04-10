@@ -269,6 +269,8 @@ label{nonlin:exer:Newton:problems1}
 The program "`Newton_demo.py`": "${fem_src}/Newton_demo.py" illustrates
 graphically each step in Newton's method and is run like
 
+[kam: where is this program?]
+
 !bc sys
 Terminal> python Newton_demo.py f dfdx x0 xmin xmax
 !ec

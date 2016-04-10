@@ -182,6 +182,8 @@ the same size as our original system $Ax =b$!
 A diagonal matrix, however, ensures an efficient closed form solution for
 $c_0,\ldots,c_k$.
 
+[kam: må sies klarere]
+
 To obtain a diagonal coefficient matrix, we require in Galerkin's method
 that
 

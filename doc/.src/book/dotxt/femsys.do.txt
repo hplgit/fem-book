@@ -80,6 +80,8 @@ a vector of test functions
 !et
 with
 
+[kam: boldface again]
+
 !bt
 \[ \u, \v \in  \V = V^{(0)}\times \cdots \times V^{(m)}
 \tp \]
@@ -610,7 +612,8 @@ conditions are $du/dr = dT/dr =0$ for $r=0$, $u(R)=0$, and $T(R)=T_0$.
 
 # 2DO
 
-_Calculations to be continued..._
+
+[hpl: Calculations to be continued...]
 
 [kam: ok. ser at det er div ifdef som jeg må sjekke ut.] 
 
