@@ -72,6 +72,12 @@ label{ch:cg}
 
 
 !split
+========= Appendix: Useful formulas =========
+label{ch:formulas}
+
+# #include "dotxt/formulas.do.txt"
+
+!split
 ======= References =======
 
 BIBFILE: papers.pub
