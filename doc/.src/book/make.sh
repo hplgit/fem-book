@@ -25,7 +25,7 @@ function system {
   fi
 }
 
-rm -f tmp_*
+rm -f tmp_* *.dolog
 
 if [ $# -ge 1 ]; then
   spellcheck=$1
@@ -64,6 +64,7 @@ doconce replace '\setlength{\lstboxwidth}{\linewidth+2mm}' '\setlength{\lstboxwi
 system doconce replace 'linecolor=black,' 'linecolor=darkblue,' $name.tex
 system doconce subst 'frametitlebackgroundcolor=.*?,' 'frametitlebackgroundcolor=blue!5,' $name.tex
 system doconce replace '\maketitle' '\subtitle{Modeling, Algorithms, Analysis, Programming, and Verification}\maketitle' $name.tex
+doconce replace 'Released under CC Attr' '\\ Released under CC Attr' $name.tex
 
 rm -rf $name.aux $name.ind $name.idx $name.bbl $name.toc $name.loe
 

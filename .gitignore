@@ -1,10 +1,23 @@
-syntax: glob
+# doconce files:
+*.rst
+*.ipynb
+*.gwiki
+*.cwiki
+*.mwiki
+*.tex
+automake_sphinx.py
+.*_html_file_collection
+.*.exerinfo
+.*.copyright
+sphinx-rootdir
+Trash
+papers.bib
 # compiled files:
 *.o
 *.so
 *.a
 # temporary files:
-build
+*.pyc
 *.bak
 *.swp
 *~
@@ -15,11 +28,11 @@ temp*
 .#*
 \#*
 # tex files:
+*.aux
+*.bbl
+*.blg
 *.log
 *.dvi
-*.aux
-*.blg
-*.bbl
 *.idx
 *.ilg
 *.ind
@@ -29,17 +42,13 @@ temp*
 *.toc
 *.snm
 *.vrb
+#
 # eclipse files:
 *.cproject
 *.project
 # misc:
 .DS_Store
-.idea
-__pycache__
-_minted-*
-# doconce:
-.*_html_file_collection
-.*.exerinfo
-.*.copyright
-sphinx-rootdir
 Trash
+*.pvd
+*.vtu
+*.tar.gz
