@@ -6384,6 +6384,22 @@ FIGURE: [fig/tanh_fe_interpol_P4, width=800 frac=1]
 !esubex
 
 !split
+
+
+======= Approximation properties and error rates =======
+
+* Do approximation of a Gaussian bell function with global functions 
+  composed of both sin series and polynomials.  
+* Do a least square to check error rates in terms of number of functions 
+* Discuss problems with doing least square / regression to estimate error
+  rates 
+
+FIGURE: [fig/error_rates_global, width=800 frac=1] Log-log plot of error when approximating Gaussian bell function 
+with Fourier and Taylor series.  
+
+[kam: todo]
+
+
 ======= Exercises =======
 
 ===== Exercise: Investigate the approximation error in finite elements =====
