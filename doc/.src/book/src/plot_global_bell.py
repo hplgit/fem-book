@@ -35,14 +35,29 @@ def plot_solution(series_type, N):
   U = [u(xi) for xi in X]
   pylab.plot(X, U)
 
+def plot_u(u): 
+
+  u = sym.lambdify([x], u)
+  U = [u(xi) for xi in X]
+  pylab.plot(X, U)
+
+
+
 Omega = [0, 1]
 x = sym.Symbol("x")
-gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-1)
+gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
 
-Ns =[2, 4, 8, 16, 32]
+#Ns =[5, 10, 15, 20, 25]
+Ns =[2, 3, 4, 5]
 for N in Ns: 
-  plot_solution("sin", N)
+#  plot_solution("sin", N)
+  plot_solution("Taylor", N)
+legend = ["N=%d" % N for N in Ns]
+plot_u(gauss_bell)
+legend.append("gauss")
+pylab.legend(legend)
 pylab.show()
+pylab.savefig("bell_sin.png", title="sin approximation")
 
 
 

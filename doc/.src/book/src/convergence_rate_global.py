@@ -31,7 +31,8 @@ def series(series_type, N):
   else: print "series type unknown " # sys.exit(0)
 
 def convergence_rate_analysis(series_type): 
-  Ns =[2, 4, 8, 16, 32, 64]
+  Ns =[5, 10, 15, 20, 25]
+#  Ns =[2, 4, 8, 16, 32, 64]
   norms = []
   for N in Ns: 
 
@@ -52,7 +53,7 @@ def convergence_rate_analysis(series_type):
 
 Omega = [0, 1]
 x = sym.Symbol("x")
-gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-1)
+gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
 
 
 import pylab
