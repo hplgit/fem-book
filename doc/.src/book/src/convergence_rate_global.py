@@ -30,7 +30,7 @@ def series(series_type, N):
   elif series_type=="sin"  : return sin_series(N)
   else: print "series type unknown " # sys.exit(0)
 
-def convergence_rate_analysis(series_type): 
+def convergence_rate_analysis(series_type, func): 
   Ns =[5, 10, 15, 20, 25]
 #  Ns =[2, 4, 8, 16, 32, 64]
   norms = []
@@ -39,7 +39,7 @@ def convergence_rate_analysis(series_type):
     psi = series(series_type, N)
     u, c = least_squares(gauss_bell, psi, Omega, False) 
 
-    error2 = sym.lambdify([x], (gauss_bell - u)**2)
+    error2 = sym.lambdify([x], (func - u)**2)
     L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])  
     L2_norm = scipy.sqrt(L2_norm)
 
@@ -54,12 +54,13 @@ def convergence_rate_analysis(series_type):
 Omega = [0, 1]
 x = sym.Symbol("x")
 gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
-
+step = sym.Piecewise( (1, 0.25 < x), (0, True)  )- sym.Piecewise( (1, 0.75 < x), (0, True)  )
+func = step
 
 import pylab
 series_types = ["Taylor", "sin"]
 for series_type in series_types: 
-  Ns, norms = convergence_rate_analysis(series_type)
+  Ns, norms = convergence_rate_analysis(series_type, func)
   pylab.loglog(Ns, norms)
 
 pylab.legend(series_types)
