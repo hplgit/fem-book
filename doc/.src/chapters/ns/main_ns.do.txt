@@ -6,4 +6,4 @@ Note: _PRELIMINARY VERSION_ (expect lots of typos!)
 
 TOC: on
 
-# #include "ns.do.txt"
+# #include "ns1.do.txt"

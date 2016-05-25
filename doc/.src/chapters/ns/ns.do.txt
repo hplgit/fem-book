@@ -54,7 +54,7 @@ and a mass balance equation
 \begin{equation}
 \nabla\cdot\u = 0
 label{ns:NS:mass}
-\tp 
+\tp
 \end{equation}
 !et
 Equations (ref{ns:NS:mom}) and (ref{ns:NS:mass}) are known as
@@ -156,7 +156,7 @@ or
  \u_t + (\u\cdot\nabla) \u = -\frac{1}{\varrho}\nabla p +
 \nu\nabla\cdot (\nabla\u + (\nabla\u)^T) + \f
 label{ns:NS:mom:stress}
-\tp 
+\tp
 \end{equation}
 !et
 
@@ -197,7 +197,7 @@ boundary. The boundary conditions can be classified as follows.
     * Outflow or symmetry condition: $\partial\u/\partial n=0$ (or
       components of this vector are zero).
 
-We have here introduce the notion of Dirichlet and Neumann conditions
+We have here introduced the notion of Dirichlet and Neumann conditions
 using similarities with Laplace and Poisson problems (i.e., whether
 the condition regards the unknown itself or its derivative).
 
@@ -247,7 +247,7 @@ which yields an explicit formula for $\u^{n+1}$:
 \u^{n+1} = \u^n - \Delta t(\u^n\cdot\nabla)\u^n -\frac{\Delta t}{\varrho}
 \nabla p^n + \Delta t\,\nu\nabla^2\u^n + \Delta t\f^n
 label{ns:split:FE0}
-\tp 
+\tp
 \end{equation}
 !et
 There are two fundamental problems with this method:
@@ -275,7 +275,7 @@ pressure term at the new time level $n+1$:
 \u^{n+1} = \u^n - \Delta t(\u^n\cdot\nabla)\u^n -\frac{\Delta t}{\varrho}
 \nabla p^{n+1} + \Delta t\,\nu\nabla^2\u^n + \Delta t\f^n
 label{ns:split:FE}
-\tp 
+\tp
 \end{equation}
 !et
 We must also require
@@ -283,7 +283,7 @@ We must also require
 !bt
 \begin{equation}
 \nabla\cdot\u^{n+1} = 0
-\tp 
+\tp
 label{ns:split:cont}
 \end{equation}
 !et
@@ -325,7 +325,7 @@ find $\delta\u$.
 \begin{equation}
 \delta\u = \u^{n+1} - \u^* = -\frac{\Delta t}{\varrho}\nabla\Phi
 label{ns:split:du}
-\tp 
+\tp
 \end{equation}
 !et
 The quantity $\Phi$ is introduced as a kind of pressure change:
@@ -334,7 +334,7 @@ The quantity $\Phi$ is introduced as a kind of pressure change:
 \begin{equation}
 \Phi = p^{n+1} - \beta p^n
 label{ns:split:Phi}
-\tp 
+\tp
 \end{equation}
 !et
 
@@ -372,7 +372,7 @@ and
 \begin{equation}
 p^{n+1} = \Phi + \beta p^n
 label{ns:split:p:np1}
-\tp 
+\tp
 \end{equation}
 !et
 
@@ -449,7 +449,7 @@ equation and $\v^{(u)}$. The Laplace term is integrated by parts, as usual, but
 this time vectors are involved. The relevant rule takes the form
 
 !bt
-\[ \int_\Omega (\nabla^2\u )\cdot\v\dx = -\int_\Omega \nabla\u :\nabla v\dx
+\[ \int_\Omega (\nabla^2\u )\cdot\v\dx = -\int_\Omega \nabla\u :\nabla\v\dx
 + \int_{\partial\Omega}\frac{\partial\u}{\partial n}\cdot\v \ds,\]
 !et
 where $\nabla\u :\nabla\v$ means the *inner tensor product*:
@@ -469,8 +469,8 @@ desired. The relevant rule reads
 \[ \int_\Omega \nabla p\cdot\v \dx = -\int_\Omega p\nabla\cdot\v\dx
 + \int_{\partial\Omega} p\normalvec\cdot\v\ds\tp \]
 !et
-We use such an integration by parts below.
-The advantage is that we get a
+We use such integration by parts below.
+Then we get a
 boundary integral involving $p\normalvec$, which is advantageous if
 we want to set a condition on $p$, especially at an outflow boundary, but
 also on an inflow boundary.
@@ -500,7 +500,7 @@ The variational form corresponding to the Poisson equation becomes
 \frac{\varrho}{\Delta t}\int_\Omega \nabla\cdot\u^*\, v^{(\Phi)}\dx
 + \int_{\partial\Omega_{N,p}} \frac{\partial\Phi}{\partial n}v^{(\Phi)}\ds,
 \quad\forall v^{(\Phi)}\in V^{(\Phi)}
-\tp 
+\tp
 label{ns:split:Poisson:vf}
 \end{equation}
 !et
@@ -513,7 +513,7 @@ is based on taking the inner product of $\v^{(u)}$ and
 \begin{equation}
 \int_\Omega \u\cdot\v^{(u)}\dx = \int_{\Omega} (\u^* -\frac{\Delta t}{\varrho}
 \nabla\Phi)\cdot\v^{(u)}\dx,\quad\forall\v^{(u)}\in V^{(u)}
-\tp 
+\tp
 label{ns:split:u:np1:vf}
 \end{equation}
 !et
@@ -530,7 +530,7 @@ The pressure update has the variational form
 \begin{equation}
 \int_\Omega p v^{(\Phi)}\dx = \int_{\Omega} (\Phi + \beta p_1)v^{(\Phi)}\dx,
 \quad\forall v^{(\Phi)}\in V^{(\Phi)}
-\tp 
+\tp
 label{ns:split:p:np1:vf}
 \end{equation}
 !et
@@ -621,7 +621,7 @@ We may, for example, apply a Backward Euler scheme. Instead of
 \nabla p^{n+1} + \Delta t\,\nu\nabla^2\u^{n+1} + \Delta t\f^{n+1},
 label{ns:split:BE}\\
 \nabla\cdot\u^{n+1} &= 0
-\tp 
+\tp
 \end{align}
 !et
 An intermediate velocity can be computed from the first equation if
@@ -642,7 +642,7 @@ use an old value in the convective velocity:
 !bt
 \begin{equation}
 (\u^{*}\cdot\nabla)\u^{*} \approx (\u^{n}\cdot\nabla)\u^{*}
-\tp 
+\tp
 \end{equation}
 !et
 This approximation is essentially one Picard iteration using $u^n$ as
@@ -728,7 +728,7 @@ two evolution equations for $\u$ and $p$:
 \begin{align}
 \u_t &= -(\u\cdot\nabla) \u -\frac{1}{\varrho}\nabla p + \nu\nabla^2\u + \f,\\
 p_t  &= - c^2\nabla\cdot\u
-\tp 
+\tp
 \end{align}
 !et
 The simplest method is a Forward Euler scheme:
@@ -737,7 +737,7 @@ The simplest method is a Forward Euler scheme:
 \begin{align}
 \u^{n+1} &= \u^n - \Delta t (\u^n\cdot\nabla) \u^n -\frac{\Delta t}{\varrho}\nabla p^n + \Delta t\,\nu\nabla^2\u^n + \Delta t\f^n,\\
 p^{n+1}  &= p^n - \Delta t c^2\nabla\cdot\u^n
-\tp 
+\tp
 \end{align}
 !et
 The major problem with this scheme is the stability constraint, which is
@@ -781,7 +781,7 @@ We may write the system of PDEs as
 !bt
 \begin{align*}
 {\cal L}_u (\u^{n}, p^{n}, \u^{n-1}) &= 0,\\
-\nabla\cdot\u^n &= 0\tp 
+\nabla\cdot\u^n &= 0\tp
 \end{align*}
 !et
 A variational formulation can be based on treating the two equations
@@ -799,7 +799,7 @@ or we may use an inner product of the two equations $({\cal L}_u,
 !bt
 \[ \int_\Omega \left(
 {\cal L}_u (\u^{n}, p^{n}, \u^{n-1})\cdot\v^{(u)}
-+ \nabla\cdot\u^n v^{(p)}\right)\dx = 0\tp 
++ \nabla\cdot\u^n v^{(p)}\right)\dx = 0\tp
 \]
 !et
 To minimize the distance between code and mathematics, we introduce
@@ -816,7 +816,7 @@ Integrating the pressure and viscous terms by parts yields
 \nu\frac{\partial\u}{\partial n} - p\normalvec\right)\cdot\v^{(u)}\ds +
 \nonumber \\
 & \int_{\Omega} \nabla\cdot\u\, v^{(p)}\dx = 0
-\tp 
+\tp
 label{ns:fullyimpl:BE:vf}
 \end{align}
 !et
@@ -926,7 +926,7 @@ respect to the line $y=0$, which means that
 !bt
 \begin{equation}
 u(h) = u(-h),\quad h>0
-\tp 
+\tp
 \end{equation}
 !et
 Show that symmetry implies the property
