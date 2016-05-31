@@ -16,24 +16,24 @@ def A_exact(p, C):
     return exp(-C*p**2)
 
 methods = {'FE': A_FE, 'BE': A_BE, 'CN': A_CN}
-C_values_coarse = {'2': 2, '1/2': 0.5}       # coarse mesh
-C_values_fine = {'1/6': 1./6, '1/12': 1./12}  # fine mesh
+F_values_coarse = {'2': 2, '1/2': 0.5}       # coarse mesh
+F_values_fine = {'1/6': 1./6, '1/12': 1./12}  # fine mesh
 from scitools.std import *
 
 n = 16
 p = linspace(0, pi/2, n)
 for method in methods:
-    for C_values in [C_values_coarse, C_values_fine]:
+    for F_values in [F_values_coarse, F_values_fine]:
         figure()
         legends = []
-        for C_name in C_values:
-            C = C_values[C_name]
+        for F_name in F_values:
+            C = F_values[F_name]
             A_e = A_exact(p, C)
             func = eval('A_' + method)
             A_FEM = func(p, C, False)
             A_FDM = func(p, C, True)
-            legends.append('C=%s, FEM' % C_name)
-            legends.append('C=%s, FDM' % C_name)
+            legends.append('F=%s, FEM' % F_name)
+            legends.append('F=%s, FDM' % F_name)
             plot(p, A_FEM, p, A_FDM)
             hold('on')
         plot(p, A_e)
@@ -44,7 +44,7 @@ for method in methods:
         title('Method: %s' % method)
         xlabel('$p$'); ylabel(r'$A/A_{\rm e}$')
         filestem = 'diffu_A_factors_%s_%s' % \
-                   ('coarse' if C_values == C_values_coarse else 'fine', method)
+                   ('coarse' if F_values == F_values_coarse else 'fine', method)
         savefig(filestem + '.png')
         savefig(filestem + '.pdf')
 raw_input()

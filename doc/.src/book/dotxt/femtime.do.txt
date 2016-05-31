@@ -1055,18 +1055,18 @@ or
 \[ \frac{A-1}{\Delta t} \left(1 - \frac{2}{3}\sin^2 (k\Delta x/2)\right)
 \tp  \]
 !et
-Introducing $p=k\Delta x/2$ and $C=\dfc\Delta t/\Delta x^2$,
+Introducing $p=k\Delta x/2$ and $F=\dfc\Delta t/\Delta x^2$,
 the complete scheme becomes
 
 !bt
 \[
 (A-1) \left(1 - \frac{2}{3}\sin^2 p\right)
-= -4C\sin^2 p,\]
+= -4F\sin^2 p,\]
 !et
 from which we find $A$ to be
 
 !bt
-\[ A = 1 - 4C\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
+\[ A = 1 - 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
 \tp \]
 !et
 
@@ -1078,7 +1078,7 @@ the latter leads to
 
 !bt
 \[
-4C\frac{\sin^2 p}{1 + \frac{2}{3}\sin^2 p} \leq 2\tp
+4F\frac{\sin^2 p}{1 + \frac{2}{3}\sin^2 p} \leq 2\tp
 \]
 !et
 The factor $\sin^2 p/(1 - \frac{2}{3}\sin^2 p)$
@@ -1088,14 +1088,14 @@ the shortest possible wave, $p=\pi/2$, and the stability criterion becomes
 
 !bt
 \begin{equation}
-C\leq \frac{1}{6}\quad\Rightarrow\quad \Delta t\leq \frac{\Delta x^2}{6\dfc},
+F\leq \frac{1}{6}\quad\Rightarrow\quad \Delta t\leq \frac{\Delta x^2}{6\dfc},
 \end{equation}
 !et
 which is a factor 1/3 worse than for the standard Forward Euler
 finite difference method for the diffusion equation, which demands
-$C\leq 1/2$.
+$F\leq 1/2$.
 Lumping the mass matrix will, however, recover the finite difference
-method and therefore imply $C\leq 1/2$ for stability.
+method and therefore imply $F\leq 1/2$ for stability.
 In other words, introducing an error in the integration improves the
 stability by a factor of 3.
 
@@ -1118,35 +1118,35 @@ Similar calculations as in the Forward Euler case lead to
 !bt
 \[
 (1-A^{-1}) \left(1 - \frac{2}{3}\sin^2 p\right)
-= -4C\sin^2 p,\]
+= -4F\sin^2 p,\]
 !et
 and hence
 
 !bt
 \[
-A = \left( 1 + 4C\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}\right)^{-1}
+A = \left( 1 + 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}\right)^{-1}
 \tp
 \]
 !et
 The quantity in the parentheses is always greater than unity, so
-$|A|\leq 1$ regardless of the size of $C$ and $p$.
+$|A|\leq 1$ regardless of the size of $F$ and $p$.
 As expected, the Backward Euler scheme is unconditionally stable.
 
 ===== Comparing amplification factors =====
 
 It is of interest to compare $A$ and $\Aex$ as functions of $p$
-for some $C$ values. Figure
+for some $F$ values. Figure
 ref{fem:deq:diffu:fig:A:BE} displays the amplification factors
 for the Backward Euler scheme corresponding to
-a coarse mesh with $C=2$ and a mesh at the stability limit
+a coarse mesh with $F=2$ and a mesh at the stability limit
 of the Forward Euler scheme in the finite difference method,
-$C=1/2$. Figures
+$F=1/2$. Figures
 ref{fem:deq:diffu:fig:A:FE2} and ref{fem:deq:diffu:fig:A:BE2} shows how
-the accuracy increases with lower $C$ values for both the
+the accuracy increases with lower $F$ values for both the
 Forward and Backward Euler schemes, respectively.
 The striking fact, however, is that the accuracy of the finite element
 method is significantly less than the finite difference method for
-the same value of $C$. Lumping the mass matrix to recover the
+the same value of $F$. Lumping the mass matrix to recover the
 numerical amplification factor $A$ of the finite difference method
 is therefore a good idea in this problem.
 
@@ -1192,5 +1192,4 @@ and $u^{n+1}$ in these
 equations should be replaced by $\uex^n$ and $\uex^{n+1}$ to
 indicate that the unknown is the exact solution of the PDE
 discretized in time, but not yet in space, see
-Section ref{fem:deq:diffu:FE}.) Make plots similar to those
-in Section ref{fem:deq:diffu:anal}.
+Section ref{fem:deq:diffu:FE}.)
