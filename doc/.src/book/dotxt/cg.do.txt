@@ -144,7 +144,8 @@ label{linalg2:cg:Basis}
 \end{equation}
 !et
 is a basis for the space $V_{k+2}$ that is used in the next iteration.
-The present family of methods applies the *Krylov subspace*
+The present family of methods applies the *Krylov space*, where $V_k$
+is defined as
 
 !bt
 \begin{equation}
@@ -162,16 +163,18 @@ vectors.
 
 ===== Computation of the basis vectors =====
 
-A possible formula for updating $\q_{k+1}$, such that
+A potential formula for updating $\q_{k+1}$, such that
 $\q_{k+1}\in V_{k+2}$, is
 
 !bt
 \begin{equation}
-\q_{k+1} =  \residual^{k+1} + \sum_{j=0}^k\beta_j\q_j,
+\q_{k+1} =  \residual^{k+1} + \sum_{j=0}^k\beta_j\q_j\tp
 label{linalg:q:update1}
 \end{equation}
 !et
-where the free parameters $\beta_j$ can be used to enforce desirable
+(Since $r^{k+1}$ involves $Aq_k$, and $q_k\in V_{k+1}$, multiplying
+by $A$ raises the dimension of the Krylov space by 1, so $Aq_k\in V_{k+2}$.)
+The free parameters $\beta_j$ can be used to enforce desirable
 orthogonality properties of $\q_0,\ldots,\q_{k+1}$. For example,
 it is convenient to require that the coefficient matrices in the linear
 systems for $c_0,\ldots,c_k$ are diagonal.

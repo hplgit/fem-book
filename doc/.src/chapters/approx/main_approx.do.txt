@@ -16,13 +16,7 @@ higher-order approximations of the solution.  Below is a
 two-dimensional domain with a
 non-trivial geometry.
 
-<linebreak>
-<linebreak>
-
 FIGURE: [fig-approx/dolfin_mesh, width=400 frac=0.6]
-
-<linebreak>
-<linebreak>
 
 The idea of the finite element method is to divide the domain into triangles
 (elements) and seek a polynomial approximations to the unknown

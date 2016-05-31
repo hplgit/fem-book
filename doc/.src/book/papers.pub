@@ -314,7 +314,7 @@
    entrytype: book
 ** Automated Solution of Differential Equations by the Finite Element Method
    key:       fenics_book
-   author:    Anders Logg, Kent-Andre Mardal, Garth N. Wells
+   author:    A. Logg, K.-A. Mardal, G. N. Wells
    year:      2012
    publisher: Springer
    doi:       10.1007/978-3-642-23099-8

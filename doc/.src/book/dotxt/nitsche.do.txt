@@ -1,0 +1,579 @@
+TITLE: Lagrange Multiplier and Penalty Methods
+AUTHOR: hpl
+DATE: today
+
+
+======= Optimization with constraint =======
+label{nitsche:fxy:opt}
+
+Suppose we have a function
+
+!bt
+\[ f(x,y) = x^2 + y^2 \tp\]
+!et
+and want to optimize its values, i.e., find minima and maxima.
+The condition for an optimum is that the derivatives vanish in all
+directions, which implies
+
+!bt
+\[ \bm{n}\cdot\nabla f = 0\quad\forall\bm{n} \in \Real^2,\]
+!et
+which further implies
+!bt
+\[
+\frac{\partial f}{\partial x} = 0,\quad \frac{\partial f}{\partial x} = 0\tp
+\]
+!et
+These two equations are in general nonlinear and can have many solutions,
+one unique solution, or none.
+In our specific example, there is only one solution: $x=0$, $y=0$.
+
+Now we want to optimize $f(x,y)$ under the constraint $y=2-x$.
+This means that only $f$ values along the line $y=2-x$ are relevant,
+and we can imagine we view $f(x,y)$ along this line and want to find
+the the optimum value.
+
+===== Elimination of variables =====
+
+Our $f$ is obviously a function one variable along the line.
+Inserting $y=2-x$ in $f(x,y)$ eliminates $y$ and leads to $f$ as
+function of $x$ alone:
+
+!bt
+\[ f(x,y=2-x) = 4 - 4x + 2x^2\tp\]
+!et
+The condition for an optimum is
+
+!bt
+\[ \frac{d}{dx}(4 - 4x + 2x^2) = -4 + 4x = 0,\]
+!et
+so $x=1$ and $y=2-x=1$.
+
+In the general case we have a scalar function $f(\x)$,
+$\x=(x_0,\ldots,x_m)$ with $n+1$ constraints $g_i(\x)=0$,
+$i=0,\ldots,n$. In theory, we could use the constraints to
+express $n+1$ variables in terms of the remaining $m-n$ variables,
+but this very seldom possible, because it requires us to solve
+the $g_i=0$ symbolically with respect to $n+1$ different variables.
+
+===== Lagrange multiplier method =====
+label{nitsche:fxy:opt:Lagrange}
+
+When we cannot easily eliminate variables using the constraint(s),
+the Lagrange multiplier method come to aid. Optimization of $f(x,y)$
+under the constraint $g(x,y)=0$ then consists in formulating
+the *Lagrangian*
+
+!bt
+\[ \ell(x,y,\lambda) = f(x,y) + \lambda g(x,y),\]
+!et
+where $\lambda$ is the Lagrange multiplier, which is unknown.
+The conditions for an optimum is that
+
+!bt
+\[ \frac{\partial\ell}{\partial x}=0,\quad
+\frac{\partial\ell}{\partial y}=0,\quad
+\frac{\partial\ell}{\partial \lambda}=0\tp\]
+!et
+In our example, we have
+
+!bt
+\[ \ell(x,y,\lambda) = x^2 + y^2 + \lambda(y - 2 + x),\]
+!et
+leading to the conditions
+
+!bt
+\[ 2x + \lambda = 0,\quad 2y + \lambda = 0,\quad y - 2+ x = 0\tp\]
+!et
+This is a system of three linear equations in three unknowns with
+the solution
+
+!bt
+\[ x = 1,\quad y = 1,\quad \lambda =2\tp\]
+!et
+
+In the general case with optimizing $f(\x)$ subject to
+the constraints $g_i(\x)=0$, $i=0,\ldots,n$, the Lagrangian becomes
+
+!bt
+\[ \ell(\x,\bm{\lambda}) = f(\x) + \sum_{j=0}^n\lambda_jg_j(\x),\]
+!et
+with $\x=(x_0,\ldots,x_m)$ and $\bm{\lambda}=(\lambda_0,\ldots,\lambda_n)$.
+The conditions for an optimum are
+
+!bt
+\[ \frac{\partial f}{\partial\x}=0,\quad
+\frac{\partial f}{\partial\bm{\lambda}}=0\tp,\]
+!et
+where
+!bt
+\[ \frac{\partial f}{\partial\x}=0\Rightarrow
+\frac{\partial f}{\partial x_i}=0,\ i=0,\ldots,m\tp\]
+!et
+Similarly, $\partial f/\partial\bm{\lambda}=0$ leads to
+$n+1$ equations $\partial f/\partial\lambda_i=0$, $i=0,\ldots,n$.
+
+===== Penalty method =====
+label{nitsche:fxy:opt:penalty}
+
+Instead of incorporating the constraint exactly, as in the
+Lagrange multiplier method, the penalty method employs an approximation
+at the benefit of avoiding the extra Lagrange multiplier as unknown.
+The idea is to add the constraint squared, multiplied by a large
+prescribed number $\lambda$, called the penalty parameter,
+
+!bt
+\[ \ell_\lambda (x,y) = f(x,y) + \frac{1}{2}\lambda(y-2+x)^2\tp\]
+!et
+Note that $\lambda$ is now a given (chosen) number.
+The $\ell_\lambda$ function is just a function of two variables,
+so the optimum is found
+by solving
+
+!bt
+\[ \frac{\partial \ell_\lambda}{\partial x} =0,\quad
+\frac{\partial \ell_\lambda}{\partial y} =0\tp\]
+!et
+Here we get
+
+!bt
+\[ 2x +\lambda (y-2+x)=0,\quad
+2y + \lambda (y-2+x)=0\tp\]
+!et
+The solution becomes
+
+!bt
+\[ x = y = \frac{1}{1-\frac{1}{2}\lambda^{-1}},\]
+!et
+which we see approaches the correct solution $x=y=1$
+as $\lambda\rightarrow\infty$.
+
+The penalty method for optimization of a multi-variate function
+$f(\x)$ with constraints $g_i(\x)=0$, $i=0,\ldots,n$,
+can be formulated as optimization of the unconstrained function
+
+!bt
+\[ \ell_\lambda(\x) = f(\x) + \frac{1}{2}\lambda\sum_{j=0}^n (g_i(\x))^2\tp\]
+!et
+Sometimes the symbol $\epsilon^{-1}$ is used for $\lambda$ in the
+penalty method.
+
+======= Optimization of functionals =======
+label{nitsche:pde:opt}
+
+The methods above for optimization of scalar functions of a finite
+number of variables can be generalized to optimization of
+functionals (functions of functions).
+We start with the specific example of optimizing
+
+!bt
+\begin{equation} F(u) =
+\int\limits_\Omega ||\nabla u||^2 \dx -
+\int\limits_\Omega fu \dx -
+\int\limits_{\partial\Omega_N}gu \ds,\quad
+u\in V,
+label{nitsche:Fu:functional1}
+\end{equation}
+!et
+where $\Omega\subset \Real^2$, and $u$ and $f$ are functions of $x$
+and $y$ in $\Omega$. The norm $||\nabla u||^2$ is defined as $u_{x}^2
++ u_{y}^2$, with $u_x$ denoting the derivative with respect to $x$.
+The vector space $V$ contains the relevant functions for this problem,
+and more specifically, $V$ is the Hilbert space $H^1_0$ consisting of
+all functions for which $\int\limits_\Omega (u^2 + ||\nabla u||^2)\dx$
+is finite and $u=0$ on $\partial\Omega_D$, which is some part of the
+boundary $\partial\Omega$ of $\Omega$.  The remaining part of the
+boundary is denoted by $\partial\Omega_N$
+($\partial\Omega_N\cup\partial\Omega_D=\partial\Omega$,
+$\partial\Omega_N\cap\partial\Omega_D=\emptyset$), over which $F(u)$
+involves a line integral.  Note that $F$ is a mapping from any $u\in
+V$ to a real number in $\Real$.
+
+===== Classical calculus of variations =====
+label{nitsche:pde:opt:varcalculus}
+
+Optimization of the functional
+$F$ makes use of the machinery from "variational calculus": "http://en.wikipedia.org/wiki/Variational_calculus". The essence is to demand that the
+functional derivative of $F$ with respect to $u$ is zero.
+Technically, this is carried out by writing a general function $\tilde u\in V$
+as $\tilde u=u+\epsilon v$, where $u$ is the exact solution of the optimization
+problem, $v$ is an arbitrary function in $V$,
+and $\epsilon$ is a scalar parameter. The
+functional derivative in the direction of $v$ (also known as the
+"Gateaux derivative": "http://en.wikipedia.org/wiki/G%C3%A2teaux_derivative")
+is defined as
+
+!bt
+\begin{equation}
+\frac{\delta F}{\delta u} = \lim_{\epsilon\rightarrow 0}\frac{d}{d\epsilon}
+F(u+\epsilon v)
+\tp
+label{nitcshe:functional:derivative}
+\end{equation}
+!et
+
+As an example,
+the functional derivative to the term
+$\int\limits_\Omega fu\dx$ in $F(u)$
+is computed by finding
+
+!bt
+\begin{equation}
+\frac{d}{d\epsilon} \int\limits_\Omega f\cdot(u+\epsilon v)\dx
+= \int\limits_\Omega fv \dx,
+label{nitcshe:varform:Poisson1}
+\end{equation}
+!et
+and then let $\epsilon$ go to zero, which just results in $\int\limits_\Omega fv\dx$.
+The functional derivative of the other area integral becomes
+
+!bt
+\[
+\frac{d}{d\epsilon} \int\limits_\Omega ((u_x + \epsilon v_x)^2 +
+(u_y + \epsilon v_y)^2)\dx = \int\limits_\Omega (2(u_x + \epsilon v_x)v_x
++ 2(u_v+\epsilon v_y)v_y)\dx,
+\]
+!et
+which leads to
+
+!bt
+\begin{equation}
+\int\limits_\Omega (u_xv_x + u_yv_y)\dx = \int\limits_\Omega \nabla u\cdot\nabla v \dx,
+label{nitcshe:varform:Poisson2}
+\end{equation}
+!et
+as $\epsilon\rightarrow 0$.
+
+The functional derivative of the boundary term
+becomes
+
+!bt
+\begin{equation}
+\frac{d}{d\epsilon} \int\limits_{\partial\Omega_N}\uN \cdot (u+\epsilon v) \ds
+= \int\limits_{\partial\Omega_N}\uN v \ds,
+label{nitcshe:varform:Poisson3}
+\end{equation}
+!et
+for any $\epsilon$. From (ref{nitcshe:varform:Poisson1})-(ref{nitcshe:varform:Poisson3}) we then get the result
+
+!bt
+\begin{equation}
+\frac{\delta F}{\delta u} =
+\int\limits_\Omega \nabla u\cdot\nabla v \dx -
+\int\limits_\Omega fv \dx -
+\int\limits_{\partial\Omega_N}\uN v \ds =0\tp
+label{nitcshe:varform:Poisson}
+\end{equation}
+!et
+Since $v$ is arbitrary, this equation must hold $\forall v\in V$. Many
+will recognize (ref{nitcshe:varform:Poisson}) as the variational
+formulation of a Poisson problem, which can be directly discretized
+and solved by a finite element method.
+
+Variational calculus goes one more step and derives a partial differential
+equation problem from (ref{nitcshe:varform:Poisson}), known as the
+"Euler-Lagrange equation": "http://en.wikipedia.org/wiki/Euler-Lagrange_equation" corresponding to optimization of $F(u)$. To find the differential
+equation, one manipulates the variational form
+(ref{nitcshe:varform:Poisson}) such that no derivatives of $v$
+appear and the equation (ref{nitcshe:varform:Poisson}) can be
+written as $\int\limits_\Omega \mathcal{L}v\dx =0$, $\forall v\in$, from which
+it follows that $\mathcal{L}=0$ is the differential equation.
+
+Performing integration by parts of the term
+$\int\limits_\Omega\nabla u\cdot\nabla v \dx$ in (ref{nitcshe:varform:Poisson})
+moves the derivatives of $v$ over to $u$:
+
+!bt
+\begin{align*}
+ \int\limits_\Omega\nabla u\cdot\nabla v \dx &=
+-\int\limits_\Omega (\nabla^2 u)v\dx + \int\limits_{\partial\Omega}\frac{\partial u}{\partial n}v \ds\\
+& = -\int\limits_\Omega (\nabla^2 u)v\dx +
+\int\limits_{\partial\Omega_D}\frac{\partial u}{\partial n}v \ds +
+\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds\\
+& = -\int\limits_\Omega (\nabla^2 u)v\dx +
+\int\limits_{\partial\Omega_D}\frac{\partial u}{\partial n}0 \ds +
+\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds\\
+& = -\int\limits_\Omega (\nabla^2 u)v\dx +
+\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds\tp
+\end{align*}
+!et
+Using this rewrite in (ref{nitcshe:varform:Poisson}) gives
+
+!bt
+\[
+-\int\limits_\Omega (\nabla^2 u)v\dx +
+\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
+-\int\limits_\Omega fv\dx
+-\int\limits_{\partial\Omega_N}\uN v, \ds
+\]
+!et
+which equals
+
+!bt
+\[\int\limits_\Omega (\nabla^2 u + f)v\dx +
+\int\limits_{\partial\Omega_N}\left(\frac{\partial u}{\partial n}-g\right)vds
+=0\tp
+\]
+!et
+This is to hold for any $v\in V$, which means that the integrands
+must vanish, and we get the famous Poisson problem
+
+!bt
+\begin{align*}
+-\nabla^2u &= f,\quad (x,y)\in\Omega,\\
+u &=0,\quad (x,y)\in\partial\Omega_D,\\
+\frac{\partial u}{\partial n} &=g,\quad (x,y)\in\partial\Omega_N\tp
+\end{align*}
+!et
+
+!bnotice Some remarks.
+ * Specifying $u$ on some part of the boundary ($\partial\Omega_D$)
+   implies a specification of $\partial u/\partial n$ on the rest
+   of the boundary. In particular, if such a specification is not
+   explicitly done, the mathematics above implies $\partial u/\partial n=0$
+   on $\partial\Omega_N$.
+ * If a non-zero condition on $u=u_0$ on $\partial\Omega_D$ is wanted, one
+   can write $u = u_0 + \bar u$ and express the functional
+   $F$ in terms of $\bar u$, which obviously must vanish on
+   $\partial\Omega_D$ since $u$ is the exact solution that is $u_0$
+   on $\partial\Omega_D$.
+ * The boundary conditions on $u$ must be implemented in the space $V$,
+   i.e., we can only work with functions that *must* be zero on
+   $\partial\Omega_D$ (so-called *essential boundary condition*).
+   The condition involving $\partial u/\partial n$ is easier to
+   implement since it is just a matter of computing a line integral.
+ * The solution is not unique if $\partial\Omega_E = \emptyset$
+   (any solution $u+\hbox{const}$ is also a solution).
+!enotice
+
+===== Penalty method for optimization with constraints =====
+label{nitsche:pde:opt:penalty}
+
+The attention is now on optimization of a functional $F(u)$
+with a given constraint that $u=\uN$ on $\partial\Omega_N$.
+We could, of course, just extend the condition on $u$ in the
+previous set-up by saying that $\partial\Omega_D$ is the
+complete boundary $\partial\Omega$ and that $u$ takes on
+the values of $0$ and $\uN$ at the different parts of the
+boundary. However, this also implies that all the functions
+in $V$ must vanish on the entire boundary. We want to relax
+this condition (and by relaxing it, we will derive a method
+that can be used for many other types of boundary conditions!).
+The goal is, therefore, to incorporate $u=\uN$ on
+$\partial\Omega_N$ without demanding anything from the functions
+in $V$. We can achieve this by enforcing the constraint
+
+!bt
+\begin{equation}
+\int\limits_{\partial\Omega_N} (u-\uN)\ds = 0\tp
+label{nitsche:essbc:constraint}
+\end{equation}
+!et
+
+__A penalty method.__
+The idea is to add a penalization term $\frac{1}{2}\lambda(u-\uN)^2$,
+integrated over the boundary $\partial\Omega_N$, to
+the functional $F(u)$, just as we do in the penalty method (the
+factor $\frac{1}{2}$ can be incorporated in $\lambda$, but makes the
+final result look nicer).
+The condition $\partial u/\partial n=g$
+on $\partial\Omega_N$ is no longer relevant, so we replace
+the $g$ by the unknown $\partial u/\partial n$ in the
+boundary integral term in (ref{nitsche:Fu:functional1}).
+The new functional becomes
+
+!bt
+\begin{equation} F(u) =
+\int\limits_\Omega ||\nabla u||^2 \dx -
+\int\limits_\Omega fu \dx -
+\int\limits_{\partial\Omega_N}gu \ds +
+\frac{1}{2}\lambda\int\limits_{\partial\Omega_N}(u-\uN)^2 \ds,\quad
+u\in V,
+label{nitsche:Fu:functional2}
+\end{equation}
+!et
+In $F(\tilde u)$, insert $\tilde u=u+\epsilon v$,
+differentiate with respect
+to $\epsilon$, and let $\epsilon\rightarrow 0$.
+The result becomes
+
+!bt
+\begin{equation} \frac{\delta F}{\delta u} =
+\int\limits_\Omega \nabla u\cdot\nabla v \dx -
+\int\limits_\Omega fv \dx -
+\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds +
+\int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds
+=0\tp
+label{nitcshe:varform:Poisson2s}
+\end{equation}
+!et
+
+!bnotice Remark.
+We can drop the essential condition $u=0$ on $\partial\Omega_E$ and
+just use the method above to enforce $u=\uN$ on the entire boundary
+$\partial\Omega$.
+!enotice
+
+#The formulation (ref{nitcshe:varform:Poisson2s}) for incorporating
+#boundary conditions weakly is due to Nitsche
+
+__Symmetrization.__
+Using the formulation (ref{nitcshe:varform:Poisson2s}) for finite
+element computations has one disadvantage: the variational form
+is no longer symmetric, and the coefficient matrix in the associated
+linear system becomes non-symmetric. We see this if we
+rewrite (ref{nitcshe:varform:Poisson2s}) as
+
+!bt
+\[ a(u,v) = L(v),\quad\forall v\in V,\]
+!et
+with
+
+!bt
+\begin{align*}
+a(u,v) &=
+\int\limits_\Omega \nabla u\cdot\nabla v \dx
+-\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
++ \int\limits_{\partial\Omega_N}\lambda uv \ds,\\
+L(v) &= \int\limits_\Omega fv \dx +
+\int\limits_{\partial\Omega_N}\lambda \uN v \ds
+\tp
+\end{align*}
+!et
+The lack of symmetry is
+evident in that we cannot interchange $u$ and $v$ in $a(u,v)$.
+The standard finite element method has the symmetry property
+in Poisson problems. The problematic non-symmetric term
+is the line integral of $v\partial u/\partial n$.
+If we had another term $u\partial v/\partial n$, the sum would be
+symmetric. The idea is therefore to subtract $\int_{\partial\Omega_N}
+u\partial v/\partial n\ds$ from both $a(u,v)$ and $L(v)$.
+Since $u=\uN$ on $\partial\Omega_N$ we subtract
+$\int_{\partial\Omega_N}
+u\partial v/\partial n\ds = \int_{\partial\Omega_N}
+\uN\partial v/\partial n\ds$ in $L(v)$:
+
+!bt
+\begin{align*}
+a(u,v) &=
+\int\limits_\Omega \nabla u\cdot\nabla v \dx
+-\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
+- \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}u \ds
++ \int\limits_{\partial\Omega_N}\lambda uv \ds,\\
+L(v) &= \int\limits_\Omega fv \dx
+- \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}\uN \ds
++ \int\limits_{\partial\Omega_N}\lambda \uN v \ds
+\tp
+\end{align*}
+!et
+This formulation is known as Nitsche's method, but it is actually
+a standard penalty method.
+
+We can also easily derive this formulation from the partial differential
+equation problem. We multiply $-\nabla^2 u=f$ by $v$ and integrate over
+$\Omega$. Integration by parts leads to
+
+!bt
+\[ \int\limits_\Omega (\nabla^2 u)v\dx =
+-\int\limits_\Omega \nabla u\cdot \nabla v\dx
++ \int\limits_{\partial\Omega} \frac{\partial u}{\partial n}v\ds\tp
+\]
+!et
+Now, $u=0$ and therefore $v=0$ on $\partial\Omega_D$ so the
+line integral reduces to an integral over $\partial\Omega_N$, where
+we have no condition and hence no value for $\partial u/\partial n$,
+so we leave the integral as is.
+Then we add the boundary penalization term $\lambda\int_{\partial\Omega_N}
+(u-\uN)v\ds$. The result becomes identical to (ref{nitcshe:varform:Poisson2s}).
+We can thereafter add the symmetrization terms if desired.
+
+===== Lagrange multiplier method for optimization with constraints =====
+label{nitsche:pde:opt:Lagrange}
+
+We consider the same problem as in Section ref{nitsche:pde:opt:penalty},
+but this time we want to apply a Lagrange multiplier method so we can
+solve for a multiplier function* rather than specifying a large number for a
+penalty parameter and getting an approximate result.
+
+The functional to be optimized reads
+
+!bt
+\[
+F(u) =
+\int\limits_\Omega ||\nabla u||^2 \dx -
+\int\limits_\Omega fu \dx -
+\int\limits_{\partial\Omega_N}\uN \ds +
+\int\limits_{\partial\Omega_N}\lambda(u-\uN)\ds,\quad
+u\in V\tp
+\]
+!et
+Here we have two unknown functions: $u\in V$ in $\Omega$ and $\lambda\in Q$ on
+$\partial\Omega_N$. The optimization criteria are
+
+!bt
+\[ \frac{\delta F}{\delta u} = 0,\quad\frac{\delta F}{\delta\lambda} = 0\tp\]
+!et
+We write $\tilde u = u + \epsilon_u v$ and $\tilde\lambda = \lambda +
+\epsilon_\lambda p$, where $v$ is an arbitrary function in $V$ and $p$ is an
+arbitrary function in $Q$. We insert the expressions for $\tilde u$ and
+$\tilde\lambda$ for $u$ and $\lambda$ and compute
+
+!bt
+\begin{align*}
+\frac{\delta F}{\delta u} &=
+\lim_{\epsilon_u\rightarrow 0}\frac{dF}{d\epsilon_u} =
+\int\limits_{\Omega}\nabla u\cdot\nabla v\dx -
+\int\limits_\Omega fv \dx -
+\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v\ds  +
+\int\limits_{\partial\Omega_N}\lambda(u-\uN)\ds = 0,\\
+\frac{\delta F}{\delta \lambda} &=
+\lim_{\epsilon_\lambda\rightarrow 0}\frac{dF}{d\epsilon_\lambda} =
+\int\limits_{\partial\Omega_N} \lambda(u-\uN) p\ds = 0
+\end{align*}
+!et
+
+
+===== Example: 1D problem =====
+label{nitsche:pde:opt:1Dex}
+
+Let us do hand calculations to demonstrate weakly enforced boundary
+conditions via a penalty method and via the Lagrange multiplier method.
+
+We study the simple problem $-u'' = 2$ on $[0,1]$ with boundary
+conditions $u(0)=0$ and $u(1)=1$. A uniform mesh with nodes
+$x_i=i\Delta x$ is introduced, numbered from left to right:
+$i=0,\ldots,N_x$. The approximate value of $u$ at $x_i$ is denoted
+by $u_i$, and in general the approximation to $u$ is $\sum_{i=0}^{N_x}
+\varphi_i(x)u_i$.
+
+A standard finite element method
+with linear Lagrange (P1) elements leads to the coupled linear equations
+
+!bt
+\[ \frac{1}{h}\left(-u_{i-1} + 2u_i - u_{i+1}\right) = 2,\]
+!et
+for $i=1,\ldots,N_x-1$, with $u_0=0$ and $u_{N_x}=1$. We may set
+up a matrix system with all the parameters $u_0,\ldots,u_{N_x}$:
+
+ * Set up matrix system explicitly.
+
+Let us enforce both boundary
+conditions weakly.
+
+__Penalty method.__
+
+__Lagrange multiplier method.__
+Now, set
+
+!bt
+\[ \lambda(x) = \lambda_0 \varphi_0(x) + \lambda_{N_x}\varphi_{N_x}(x)\tp
+\]
+!et
+
+
+
+===== Example: adding a constraint in a Neumann problem =====
+
+ * Neumann problem: add $\int_\Omega u\dx =0$ as constraint.
+ * Set up Nitsche and Lagrange multiplier method and the simple
+   trick $u$ fixed at a point. Compare in 1D.
