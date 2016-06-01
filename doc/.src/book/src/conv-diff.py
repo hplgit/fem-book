@@ -4,7 +4,8 @@ def bernstein_series(N):
   # FIXME: check if a normalization constant is common in the definition 
   # advantage is that the basis is always positive 
   psi = []
-  for k in range(0,N+1): 
+#  for k in range(0,N+1): 
+  for k in range(1,N):  # bc elsewhere  
     psi_k = x**k*(1-x)**(N-k)  
     psi.append(psi_k)
   return psi
@@ -33,41 +34,42 @@ def series(series_type, N):
   else: print "series type unknown " # sys.exit(0)
 
 
-N = 10 
+N = 20 
 series_type = "bernstein"
 Omega = [0, 1]
 x = Symbol("x")
 
 psi = series(series_type, N)
 
-A = zeros((N+1), (N+1))
-b = zeros((N+1))
-f = 0 
-eps = 0.1 
-for i in range(0, N+1):  
+A = zeros((N-1), (N-1))
+b = zeros((N-1))
+f = -1 
+eps = 1.0 
+for i in range(0, N-1):  
   integrand = f*psi[i]
   print integrand
   b[i,0] = integrate(integrand, (x, Omega[0], Omega[1])) 
-  for j in range(0, N+1): 
+  for j in range(0, N-1): 
     integrand = eps*diff(psi[i], x)* diff(psi[j], x) +  diff(psi[i], x)*psi[j] 
     A[i,j] = integrate(integrand, (x,Omega[0], Omega[1])) 
    
 
 # bc 
-A[0,:] = zeros((1,N+1)) 
-A[0,0] = 1 
-b[0] = 1 
+#A[0,:] = zeros((1,N+1)) 
+#A[0,0] = 1 
+#b[0] = 1 
 
-A[N,:] = zeros((1,N+1)) 
-A[N,N] = 1 
-b[N] = 0 
+#A[N,:] = zeros((1,N+1)) 
+#A[N,N] = 1 
+#b[N] = 0 
 
 
 print A
 
 c = A.LUsolve(b)
 print c 
-u = sum(c[r,0]*psi[r] for r in range(N+1))
+#u = sum(c[r,0]*psi[r] for r in range(N-1)) + 1-x
+u = sum(c[r,0]*psi[r] for r in range(N-1)) 
 
 print u 
 
