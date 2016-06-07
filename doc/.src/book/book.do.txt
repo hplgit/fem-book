@@ -42,7 +42,7 @@ indicate the nature of the method.
 
 # #include "dotxt/femsys.do.txt"
 
-# #include "dotxt/nitsche.do.txt"
+#include "dotxt/nitsche.do.txt"
 
 # #include "dotxt/convdiff.do.txt"
 

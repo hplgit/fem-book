@@ -18,9 +18,9 @@ Consider the equation
 !bt
 \begin{align*}
 \label{convdiff:1D}
-- \epsilon u_{xx} + u_x &=& 0, \quad \in  (0,1), \\      
-u(0) &=& 1, \\ 
-u(1) &=& 0 . 
+- \epsilon u_{xx} - u_x &= 0, \quad \in  (0,1), \\      
+u(0) &= 1, \\ 
+u(1) &= 0 . 
 \end{align*}
 !et
 
@@ -51,8 +51,22 @@ From a physical or engineering point of view, the equation (ref{convdiff:1D}) an
 (ref{convdiff:1D:analytical}) represent the simplest problem representing the common
 phenomen of boundary layers that is common in all kinds of fluid-flow problems in nature.   
 Here, $\epsilon$ is related to the inverse of the Reynolds number which frequently
-in engineering is of the order of 10^6 to 10^9. In these applications, the boundary
+in engineering is of the order of $10^6$ to $10^9$. In these applications, the boundary
 layer representing the gradient is extremely thin.   
+
+The case $epsilon=0$ is qualitatively different from the case when $epsilon\rightarrow 0$. 
+This case corresponds to the equation
+!bt
+\begin{align*}
+\label{convdiff:1D:0}
+- u_x &= 0, \quad \in  (0,1), \\      
+u(0) &= 1, \\ 
+\end{align*}
+!et
+The solution to this problem is $u=1$. Hence, in the limiting case the solution lack the
+sharp boundary layer and becomes smoother than for small $epsilon$. 
+
+
 
 In this chapter we will not embark on the facinating and complex issue of boundary layer
 theory but only consider the numerical issues related to this phenomen. 
@@ -70,19 +84,19 @@ and $x=1$ and the boundary conditions are accounted for by the function $B(x)$.
 Let 
 !bt
 \begin{equation}
-B(x) = c_0 (1-x) + c_n x . 
+B(x) = c_0 (1-x) + c_N x . 
 \end{equation}
 !et 
 
-Then we fixate $c_0=1$ and $c_1=0$.     
-To determine $\{c_i\}_{i=1}^{N-1}\}$  we consider the homogenous Dirichlet problem 
+Then we fixate $c_0=0$ and $c_N=1$ which makes $B(x) = x$.     
+To determine $\{c_i\}1{i=1}^{N-1}\}$  we consider the homogenous Dirichlet problem 
 where we solve for $\hat{u} = u - B$. The homogenous Dirichlet problem reads     
 !bt
 \begin{align*}
 \label{convdiff:1D:homo}
-- \epsilon \hat{u}_{xx} + \hat{u}_x &=& -c_0 + c_1, \quad \in  (0,1), \\      
-\hat{u}(0) &=& 0, \\ 
-\hat{u}(1) &=& 0 . 
+- \epsilon \hat{u}_{xx} + \hat{u}_x &= 1, \quad \in  (0,1), \\      
+\hat{u}(0) &= 0, \\ 
+\hat{u}(1) &= 0 . 
 \end{align*}
 !et
 
@@ -100,6 +114,10 @@ Integration by parts ....
 ... global functions before fem? 
 
 
+FIGURE: [fig/conv-diff-osc.png, width=400] Solution obtained with Galerkin approximation for various $epsilon$. label{convdiff:osc} 
 
 
 
+
+[kam: Petrov-Galerkin does not really work for these global function as the test functions would not then 
+be zero at the boundary. I've tested.] 

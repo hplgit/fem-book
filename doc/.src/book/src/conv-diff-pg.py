@@ -48,6 +48,7 @@ psi = series(series_type, N)
 
 eps = 0.3 
 f = 1 
+beta = 1.0
 
 
 eps_vals =[1.0, 0.1, 0.01, 0.001]
@@ -55,7 +56,9 @@ for eps in eps_vals:
   A = zeros((N-1), (N-1))
   b = zeros((N-1))
 
+  psi = series(series_type, N)
   for i in range(0, N-1):  
+    psi[i] = psi[i] + beta*diff(psi[i]) 
     integrand = f*psi[i]
     print integrand
     b[i,0] = integrate(integrand, (x, Omega[0], Omega[1])) 
