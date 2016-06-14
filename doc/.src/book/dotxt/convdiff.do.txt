@@ -1,6 +1,6 @@
 
 
-========= Convection-diffusion equation - non-physical oscillations  =========
+======= Convection-diffusion equation - non-physical oscillations  =======
 label{ch:convdiff}
 
 In the previous examples we have obtained reasonable approximations 
@@ -114,10 +114,28 @@ Integration by parts ....
 ... global functions before fem? 
 
 
-FIGURE: [fig/conv-diff-osc.png, width=400] Solution obtained with Galerkin approximation for various $epsilon$. label{convdiff:osc} 
-
-
 
 
 [kam: Petrov-Galerkin does not really work for these global function as the test functions would not then 
-be zero at the boundary. I've tested.] 
+be zero at the boundary. I've tested. Perhaps conclude this part of conv-diff that
+the different methods give exactly the same solution as they are just different representation 
+of the same polynomal space. CPU time is however enormously different. ] 
+
+In the previous chapter we saw that there was a difference between ... 
+
+FIGURE: [fig/Lagrange8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomals of order up to 8 for various $epsilon$. label{convdiff:osc:Lagrange8} 
+
+FIGURE: [fig/Bernstein8.png, width=400] Solution obtained with Galerkin approximation using Bernstein polynomals of order up to 8 for various $epsilon$. label{convdiff:osc:Bernstein8} 
+
+FIGURE: [fig/Lagrange16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomals of order up to 16 for various $epsilon$. label{convdiff:osc:Lagrange16} 
+
+
+FIGURE: [fig/Bernstein16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomals of order up to 16 for various $epsilon$. label{convdiff:osc:Bernstein16} 
+
+
+
+
+
+
+
+

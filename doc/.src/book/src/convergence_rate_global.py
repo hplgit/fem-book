@@ -10,6 +10,30 @@ from approx1D import least_squares
 import scipy
 import scipy.integrate
 
+def lagrange_series(N): 
+  psi = []
+#  h = Rational(1, N)
+  h = 1.0/N
+  points = [i*h for i in range(N+1)]
+  for i in range(len(points)): 
+    p = 1 
+    for k in range(len(points)): 
+      if k != i:
+        p *= (x - points[k])/(points[i] - points[k])
+    psi.append(p)
+  return psi
+
+
+def bernstein_series(N): 
+  # FIXME: check if a normalization constant is common in the definition 
+  # advantage is that the basis is always positive 
+  psi = []
+  for k in range(0,N+1): 
+    psi_k = x**k*(1-x)**(N-k)  
+    psi.append(psi_k)
+  return psi
+
+
 
 def sin_series(N): 
   psi = []
@@ -28,11 +52,12 @@ def taylor_series(N):
 def series(series_type, N): 
   if series_type=="Taylor" : return taylor_series(N)
   elif series_type=="sin"  : return sin_series(N)
+  elif series_type=="Bernstein"  : return bernstein_series(N)
+  elif series_type=="Lagrange"  : return lagrange_series(N)
   else: print "series type unknown " # sys.exit(0)
 
 def convergence_rate_analysis(series_type, func): 
-  Ns =[5, 10, 15, 20, 25]
-#  Ns =[2, 4, 8, 16, 32, 64]
+  Ns =[2, 4, 8, 16]
   norms = []
   for N in Ns: 
 
@@ -42,8 +67,6 @@ def convergence_rate_analysis(series_type, func):
     error2 = sym.lambdify([x], (func - u)**2)
     L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])  
     L2_norm = scipy.sqrt(L2_norm)
-
-    print "L2_norm ", L2_norm  
     norms.append(L2_norm[0])
 
   print "Ns ", Ns
@@ -55,13 +78,14 @@ Omega = [0, 1]
 x = sym.Symbol("x")
 gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
 step = sym.Piecewise( (1, 0.25 < x), (0, True)  )- sym.Piecewise( (1, 0.75 < x), (0, True)  )
-func = step
+func = gauss_bell 
 
 import pylab
-series_types = ["Taylor", "sin"]
+series_types = ["Taylor", "sin", "Bernstein", "Lagrange"]
 for series_type in series_types: 
   Ns, norms = convergence_rate_analysis(series_type, func)
-  pylab.loglog(Ns, norms)
+#  pylab.loglog(Ns, norms)
+  pylab.semilogy(Ns, norms)
 
 pylab.legend(series_types)
 pylab.show()

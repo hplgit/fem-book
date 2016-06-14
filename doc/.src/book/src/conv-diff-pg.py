@@ -1,6 +1,19 @@
 from sympy import * 
 import numpy, pylab 
 
+def lagrange_series(N): 
+  psi = []
+#  h = Rational(1, N)
+  h = 1.0/N
+  points = [i*h for i in range(N+1)]
+  for i in range(len(points)): 
+    p = 1 
+    for k in range(len(points)): 
+      if k != i:
+        p *= (x - points[k])/(points[i] - points[k])
+    psi.append(p)
+  return psi
+
 def bernstein_series(N): 
   # FIXME: check if a normalization constant is common in the definition 
   # advantage is that the basis is always positive 
@@ -34,18 +47,20 @@ def series(series_type, N):
   if series_type=="Taylor" : return taylor_series(N) # cannot do with current implementation of bc
   elif series_type=="sin"  : return sin_series(N)
   elif series_type=="Bernstein"  : return bernstein_series(N)
+  elif series_type=="Lagrange"  : return lagrange_series(N)
   else: print "series type unknown " # sys.exit(0)
 
 
 N = 15 
 #series_type = "Bernstein"
 #series_type = "sin"
-series_type = "Bernstein"
+series_type = "Lagrange"
 Omega = [0, 1]
 x = Symbol("x")
 
 psi = series(series_type, N)
 
+print psi 
 eps = 0.3 
 f = 1 
 beta = 1.0

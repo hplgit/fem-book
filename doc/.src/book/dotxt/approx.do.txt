@@ -2021,6 +2021,32 @@ throughout the domain, is important in the finite element
 method, and the next section introduces finite element basis
 functions based on Lagrange polynomials.
 
+===== Bernstein polynomials =====
+label{fem:approx:global:Bernstein}
+idx{Bernstein(interpolating) polynomial}
+
+======= Approximation Properties and Convergence rates =======
+
+FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function
+in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
+
+FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function
+in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
+
+
+|------------------------------------------------------------------------------------------------------------------------|
+|  N          |  2                      |  4                       |  8                       |  16                      |
+|--c----------|--c----------------------|--c-----------------------|--c-----------------------|--c-----------------------|
+|  Taylor     |  0.098338940295605456   |  0.0026365495198570031   |  7.8308472693030405e-07  |  3.5761786201094212e-10  |
+|  sin        |  0.0027171077732842785  |  0.00061860119289018926  |  0.00011973410883625029  |  2.1735285579352844e-05  |
+|  Bernstein  |  0.002128192258704093   |  4.4564352309826328e-05  |  8.7393355622010712e-09  |  4.4955566291096638e-15  |
+|  Lagrange   |  0.0021281922587041003  |  4.4564352309852179e-05  |  8.7393355595603748e-09  |  2.4560511714792771e-12  |
+|------------------------------------------------------------------------------------------------------------------------|
+Error of the different methods 
+
+
+
+
 !split
 ======= Approximation of functions in higher dimensions =======
 label{fem:approx:2D}

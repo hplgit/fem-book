@@ -1545,6 +1545,8 @@ be solved by constructing a sequence of linear systems whose solutions
 hopefully converge to the solution of the nonlinear system. Frequently applied
 methods are Picard iteration and Newton's method.
 
+
+
 !split
 ======= Exercises =======
 
@@ -6770,3 +6772,5 @@ reduction in size is important, so maybe wait until a program for P1
 elements is available...?
 
 # #endif
+
+

@@ -1,5 +1,20 @@
-from sympy import * 
+import sympy as sym 
 import numpy, pylab 
+
+def lagrange_series(N): 
+  psi = []
+#  h = Rational(1, N)
+  h = 1.0/N
+  points = [i*h for i in range(N+1)]
+  for i in range(len(points)): 
+    p = 1 
+    for k in range(len(points)): 
+      if k != i:
+        p *= (x - points[k])/(points[i] - points[k])
+    psi.append(p)
+  psi = psi[1:-1]
+  return psi
+
 
 def bernstein_series(N): 
   # FIXME: check if a normalization constant is common in the definition 
@@ -34,15 +49,16 @@ def series(series_type, N):
   if series_type=="Taylor" : return taylor_series(N) # cannot do with current implementation of bc
   elif series_type=="sin"  : return sin_series(N)
   elif series_type=="Bernstein"  : return bernstein_series(N)
+  elif series_type=="Lagrange"  : return lagrange_series(N)
   else: print "series type unknown " # sys.exit(0)
 
 
-N = 15 
+N = 16 
 #series_type = "Bernstein"
 #series_type = "sin"
-series_type = "Bernstein"
+series_type = "Lagrange"
 Omega = [0, 1]
-x = Symbol("x")
+x = sym.Symbol("x")
 
 psi = series(series_type, N)
 
@@ -52,40 +68,25 @@ f = 1
 
 eps_vals =[1.0, 0.1, 0.01, 0.001]
 for eps in eps_vals: 
-  A = zeros((N-1), (N-1))
-  b = zeros((N-1))
+  A = sym.zeros((N-1), (N-1))
+  b = sym.zeros((N-1))
 
   for i in range(0, N-1):  
     integrand = f*psi[i]
-    print integrand
-    b[i,0] = integrate(integrand, (x, Omega[0], Omega[1])) 
+    integrand = sym.lambdify([x], integrand)
+    b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
     for j in range(0, N-1): 
-      integrand = eps*diff(psi[i], x)* diff(psi[j], x) -  diff(psi[i], x)*psi[j] 
-      A[i,j] = integrate(integrand, (x,Omega[0], Omega[1])) 
-   
-# bc 
-#A[0,:] = zeros((1,N+1)) 
-#A[0,0] = 1 
-#b[0] = 1 
-
-#A[N,:] = zeros((1,N+1)) 
-#A[N,N] = 1 
-#b[N] = 0 
-
-
-#print A
+      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) -  sym.diff(psi[i], x)*psi[j] 
+      integrand = sym.lambdify([x], integrand)
+      A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
 
   c = A.LUsolve(b)
-  print c 
   u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
 
-
-
-  U = lambdify([x], u)
+  U = sym.lambdify([x], u)
   xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0)) 
   UU = U(xx)
   pylab.plot(xx, UU)
-  print UU[-1], UU[-2]
 
 pylab.legend(["eps=%e" %eps for eps in eps_vals], loc="lower right")
 pylab.show()
