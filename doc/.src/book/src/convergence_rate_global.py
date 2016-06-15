@@ -10,7 +10,7 @@ from approx1D import least_squares
 import scipy
 import scipy.integrate
 
-def lagrange_series(N): 
+def Lagrange_series(N): 
   psi = []
 #  h = Rational(1, N)
   h = 1.0/N
@@ -24,7 +24,7 @@ def lagrange_series(N):
   return psi
 
 
-def bernstein_series(N): 
+def Bernstein_series(N): 
   # FIXME: check if a normalization constant is common in the definition 
   # advantage is that the basis is always positive 
   psi = []
@@ -35,14 +35,14 @@ def bernstein_series(N):
 
 
 
-def sin_series(N): 
+def Sinusoidal_series(N): 
   psi = []
   for k in range(1,N): 
     psi_k = sym.sin(sym.pi*k*x)
     psi.append(psi_k)
   return psi
 
-def taylor_series(N): 
+def Taylor_series(N): 
   psi = []
   for k in range(1,N): 
     psi_k = x**k 
@@ -50,10 +50,10 @@ def taylor_series(N):
   return psi
 
 def series(series_type, N): 
-  if series_type=="Taylor" : return taylor_series(N)
-  elif series_type=="sin"  : return sin_series(N)
-  elif series_type=="Bernstein"  : return bernstein_series(N)
-  elif series_type=="Lagrange"  : return lagrange_series(N)
+  if   series_type== "Taylor"     : return Taylor_series(N)
+  elif series_type== "Sinusoidal" : return Sinusoidal_series(N)
+  elif series_type== "Bernstein"  : return Bernstein_series(N)
+  elif series_type== "Lagrange"   : return Lagrange_series(N)
   else: print "series type unknown " # sys.exit(0)
 
 def convergence_rate_analysis(series_type, func): 
@@ -81,11 +81,12 @@ step = sym.Piecewise( (1, 0.25 < x), (0, True)  )- sym.Piecewise( (1, 0.75 < x),
 func = gauss_bell 
 
 import pylab
-series_types = ["Taylor", "sin", "Bernstein", "Lagrange"]
+series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
 for series_type in series_types: 
   Ns, norms = convergence_rate_analysis(series_type, func)
-#  pylab.loglog(Ns, norms)
-  pylab.semilogy(Ns, norms)
+  pylab.loglog(Ns, norms)
+#  pylab.semilogy(Ns, norms)
+#  pylab.plot(Ns, norms)
 
 pylab.legend(series_types)
 pylab.show()
