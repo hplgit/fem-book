@@ -9,6 +9,7 @@ import sympy as sym
 from approx1D import least_squares 
 import scipy
 import scipy.integrate
+import time
 
 def Lagrange_series(N): 
   psi = []
@@ -29,7 +30,7 @@ def Bernstein_series(N):
   # advantage is that the basis is always positive 
   psi = []
   for k in range(0,N+1): 
-    psi_k = x**k*(1-x)**(N-k)  
+    psi_k = sym.binomial(N, k)*x**k*(1-x)**(N-k)  
     psi.append(psi_k)
   return psi
 
@@ -59,19 +60,23 @@ def series(series_type, N):
 def convergence_rate_analysis(series_type, func): 
   Ns =[2, 4, 8, 16]
   norms = []
+  cpu_times = [] 
   for N in Ns: 
 
     psi = series(series_type, N)
+    t0 = time.time()
     u, c = least_squares(gauss_bell, psi, Omega, False) 
+    t1 = time.time()
 
     error2 = sym.lambdify([x], (func - u)**2)
     L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])  
     L2_norm = scipy.sqrt(L2_norm)
     norms.append(L2_norm[0])
+    cpu_times.append(t1-t0)
 
   print "Ns ", Ns
   print "norms ", norms 
-  return Ns, norms 
+  return Ns, norms, cpu_times 
 
 
 Omega = [0, 1]
@@ -83,10 +88,11 @@ func = gauss_bell
 import pylab
 series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
 for series_type in series_types: 
-  Ns, norms = convergence_rate_analysis(series_type, func)
+  Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   pylab.loglog(Ns, norms)
 #  pylab.semilogy(Ns, norms)
 #  pylab.plot(Ns, norms)
+  print "cpu_time ", series_type, " ", cpu_times 
 
 pylab.legend(series_types)
 pylab.show()

@@ -2025,26 +2025,100 @@ functions based on Lagrange polynomials.
 label{fem:approx:global:Bernstein}
 idx{Bernstein(interpolating) polynomial}
 
+An alternative to the Taylor and Lagrange families of polynomials
+are the Bernstein polynomials. On the unit interval, these
+polynomials are defined in terms of powers of $x$ and $1-x$
+(the barycentric coordinates of the unit interval) as
+!bt
+\begin{equation}
+B_{i,n} = \binom{n}{i} x^i (1-x)^{n-i}, \quad i=0, \ldots, n . 
+label{bernstein:basis}
+\end{equation}
+!et
+
+
+FIGURE: [fig/Lagrange_basis8.png] The nine functions of a Lagrange basis of order 8. label{Lagrange_basis_8} 
+
+FIGURE: [fig/Bernstein_basis8.png] The nince functions of a Bernstein basis of order 8. label{Bernstein_basis_8} 
+
+The Figure ref{Lagrange_basis_8} shows the basis functions of a Lagrange basis of order 8. 
+The basis is convenient because a basis function is either 1 or 0 in the nodal points. However, 
+we also notice that the basis function are oscillatory and have values that are both larger than 1. 
+Considering for instance the basis function represented by the purple color, it clearly is 1 in $x=0.5$ 
+and hence the basis function represents the value at the mid-point. However, the function has strong 
+negative contributions close to the element boundaries.    
+
+The Figure ref{Bernstein_basis_8} illustrate the corresponding basis functions of a Bernstein basis of order
+8. Here, it is clear that all basis functions are positive and there is no oscillatory behavior, a 
+property that sometimes that sometimes result in improved stability. 
+A disadvantage is however that there is no nodal basis and all functions contributes everywhere.  
+We also remark that the Bernstein basis has an explicit simple expressions that
+can be extended to polygons in 2D and 3D in terms of the barycentric coordinates.  
+
+
+
 ======= Approximation Properties and Convergence rates =======
 
-FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function
-in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
+We have considered four different series for generating approximations: 
+Taylor, Lagrange, sinusoidal, and Bernstein. For all for families 
+we expect that the approximation improve as we increase the 
+number of basis functions in our representations, but also
+that the computational complexity increases. Let us therefore 
+try to quantify the accuracy and efficiency of the different methods
+in terms of the number of basis functions $N$.   
 
-FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function
-in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
+There are two natural models of accurate and computational complexity in terms
+of $N$: polynomial and exponential. 
+Let us therefore consider the following models: 
+!bt
+\begin{align*}
+E_{pol}(N) = \alpha_{pol} N^\beta_{pol}, \\ 
+E_{exp}(N) = \alpha_{exp} \exp(\beta_{exp} N) 
+\end{align*}
+!et
 
 
-|------------------------------------------------------------------------------------------------------------------------|
-|  N          |  2                      |  4                       |  8                       |  16                      |
-|--c----------|--c----------------------|--c-----------------------|--c-----------------------|--c-----------------------|
-|  Taylor     |  0.098338940295605456   |  0.0026365495198570031   |  7.8308472693030405e-07  |  3.5761786201094212e-10  |
-|  sin        |  0.0027171077732842785  |  0.00061860119289018926  |  0.00011973410883625029  |  2.1735285579352844e-05  |
-|  Bernstein  |  0.002128192258704093   |  4.4564352309826328e-05  |  8.7393355622010712e-09  |  4.4955566291096638e-15  |
-|  Lagrange   |  0.0021281922587041003  |  4.4564352309852179e-05  |  8.7393355595603748e-09  |  2.4560511714792771e-12  |
-|------------------------------------------------------------------------------------------------------------------------|
+FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
+
+FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot. 
+
+
+|------------------------------------------------------------------|
+|  N          |  2        |  4          |  8         |  16         |
+|--c----------|--c--------|--c----------|--c---------|--c----------|
+|  Taylor     |  0.0983   |  0.00263    |  7.83e-07  |  3.57e-10   |
+|  sin        |  0.0027   |  0.00061    |  0.00012   |  2.17e-05   |
+|  Bernstein  |  0.0021   |  4.45e-05   |  8.73e-09  |  4.49e-15   |
+|  Lagrange   |  0.0021   |  4.45e-05   |  8.73e-09  |  2.45e-12   |
+|------------------------------------------------------------------|
 Error of the different methods 
 
 
+!bc
+Ns =[2, 4, 8, 16]
+Taylor     = [0.0983, 0.00263,  7.83e-07, 3.57e-10]
+Sinusoidal = [0.0027, 0.00061,  0.00012,  2.17e-05]
+Bernstein  = [0.0021, 4.45e-05, 8.73e-09, 4.49e-15]
+Lagrange   = [0.0021, 4.45e-05, 8.73e-09, 2.45e-12]
+
+x = sym.Symbol('x')
+psi = [1, x]
+
+u, c = regression_with_noise(log2(Sinusoidal), psi, log2(Ns))
+print u, c 
+
+X = log2(Ns)
+U = sym.lambdify([x], u)
+UU = U(X) 
+
+pylab.plot(X, log2(Sinusoidal))
+pylab.plot(X, UU)
+pylab.legend(["data", "model"])
+pylab.show()
+!ec
+
+The complete code can be found in  
+"`conv_rate_estimates.py`": "${fem_src}/conv_rate_estimates.py".
 
 
 !split
@@ -6420,8 +6494,7 @@ FIGURE: [fig/tanh_fe_interpol_P4, width=800 frac=1]
 * Discuss problems with doing least square / regression to estimate error
   rates 
 
-FIGURE: [fig/error_rates_global, width=800 frac=1] Log-log plot of error when approximating Gaussian bell function 
-with Fourier and Taylor series.  
+FIGURE: [fig/error_rates_global, width=800 frac=1] Log-log plot of error when approximating Gaussian bell function with Fourier and Taylor series.  
 
 [kam: todo]
 

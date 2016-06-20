@@ -13,15 +13,15 @@ def lagrange_series(N):
       if k != i:
         p *= (x - points[k])/(points[i] - points[k])
     psi.append(p)
-  psi = psi[1:-1]
+#  psi = psi[1:-1]
   return psi
 
 def bernstein_series(N): 
   # FIXME: check if a normalization constant is common in the definition 
   # advantage is that the basis is always positive 
   psi = []
-#  for k in range(0,N+1): 
-  for k in range(1,N):  # bc elsewhere  
+  for k in range(0,N+1): 
+#  for k in range(1,N):  # bc elsewhere  
     psi_k = sym.binomial(N, k)*x**k*(1-x)**(N-k)  
     psi.append(psi_k)
   return psi
