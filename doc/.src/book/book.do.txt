@@ -23,16 +23,24 @@ label{ch:preface}
 !split
 TOC: on
 
-!split
-========= Quick overview of the finite element method =========
-label{ch:overview}
+[kam: 
+I don´t know how to do this quick overview!  To me 
+we should in the preface make clear that fem is used
+far outside the theory of numerical analysis, the implementational
+details is almost never dealt with in std. text and 
+that we bring forward what e.g. is automatic/hidden in FEniCS
+because we believe in proper debugging and verification. 
+]
+##!split
+##========= Quick overview of the finite element method =========
+##label{ch:overview}
 
-Purpose: Get to the point! The rest of the text is filled with details,
-and it is easy for a newcomer to drown in those details. The first
-chapter runs quickly through the *ideas* and outlines enough math to
-indicate the nature of the method.
+##Purpose: Get to the point! The rest of the text is filled with details,
+##and it is easy for a newcomer to drown in those details. The first
+##chapter runs quickly through the *ideas* and outlines enough math to
+##indicate the nature of the method.
 
-# #include "dotxt/comments.do.txt"
+## #include "dotxt/comments.do.txt"
 
 # #include "dotxt/approx.do.txt"
 

@@ -45,8 +45,12 @@ and the same notation.  We present examples on approximating functions
 by global basis functions with support throughout the entire
 domain. That is, the functions are in general nonzero on the entire
 domain.  Third, we introduce the finite element type of basis
-functions with local support, meaning that each function is nonzero
-except in a small part of the domain. We explain all details of the
+functions globally.  These basis functions will later, 
+in ref {ch:approx:fe}, 
+be used with local support  
+(meaning that each function is nonzero except in a small part of the domain)
+to enhance stability and efficiency.  
+We explain all details of the
 computational algorithms involving such functions.  Four types of
 approximation principles are covered: 1) the least squares method, 2)
 the $L_2$ projection or Galerkin method, 3) interpolation or
