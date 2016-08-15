@@ -2067,13 +2067,39 @@ that the computational complexity increases. Let us therefore
 try to quantify the accuracy and efficiency of the different methods
 in terms of the number of basis functions $N$.   
 
-There are two natural models of accurate and computational complexity in terms
+There are two natural models of accuracy and computational complexity in terms
 of $N$: polynomial and exponential. 
+To investigate the difference between the different series as 
+follows:  
+
+!bc
+def convergence_rate_analysis(series_type, func): 
+  Ns =[2, 4, 8, 16]
+  norms = []
+  cpu_times = [] 
+  for N in Ns: 
+
+    psi = series(series_type, N)
+    t0 = time.time()
+    u, c = least_squares(gauss_bell, psi, Omega, False) 
+    t1 = time.time()
+
+    error2 = sym.lambdify([x], (func - u)**2)
+    L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])  
+    L2_norm = scipy.sqrt(L2_norm)
+    norms.append(L2_norm[0])
+    cpu_times.append(t1-t0)
+
+  return Ns, norms, cpu_times 
+!ec 
+
+
+
 Let us therefore consider the following models: 
 !bt
 \begin{align*}
-E_{pol}(N) = \alpha_{pol} N^\beta_{pol}, \\ 
-E_{exp}(N) = \alpha_{exp} \exp(\beta_{exp} N) 
+E_{pol}(N) &= \alpha_{pol} N^\beta_{pol}, \\ 
+E_{exp}(N) &= \alpha_{exp} \exp(\beta_{exp} N) 
 \end{align*}
 !et
 

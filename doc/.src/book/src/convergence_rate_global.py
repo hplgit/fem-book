@@ -6,7 +6,7 @@
 
 
 import sympy as sym
-from approx1D import least_squares 
+from approx1D import least_squares_non_verbose 
 import scipy
 import scipy.integrate
 import time
@@ -65,7 +65,7 @@ def convergence_rate_analysis(series_type, func):
 
     psi = series(series_type, N)
     t0 = time.time()
-    u, c = least_squares(gauss_bell, psi, Omega, False) 
+    u, c = least_squares_non_verbose(gauss_bell, psi, Omega, False) 
     t1 = time.time()
 
     error2 = sym.lambdify([x], (func - u)**2)
@@ -74,8 +74,6 @@ def convergence_rate_analysis(series_type, func):
     norms.append(L2_norm[0])
     cpu_times.append(t1-t0)
 
-  print "Ns ", Ns
-  print "norms ", norms 
   return Ns, norms, cpu_times 
 
 
@@ -91,9 +89,20 @@ for series_type in series_types:
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   pylab.loglog(Ns, norms)
 #  pylab.semilogy(Ns, norms)
-#  pylab.plot(Ns, norms)
-  print "cpu_time ", series_type, " ", cpu_times 
 
+  print series_type,  "Ns ", Ns,  
+  print " norms ", norms,  
+  print " cpu_time ", cpu_times 
+  print ""
+
+pylab.legend(series_types)
+pylab.show()
+
+for series_type in series_types: 
+#  pylab.loglog(Ns, cpu_times)
+  Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
+  pylab.loglog(Ns, cpu_times)
+  
 pylab.legend(series_types)
 pylab.show()
 
