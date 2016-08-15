@@ -90,8 +90,8 @@ for series_type in series_types:
   pylab.loglog(Ns, norms)
 #  pylab.semilogy(Ns, norms)
 
-  print series_type,  "Ns ", Ns,  
-  print " norms ", norms,  
+  print series_type,  "Ns ", Ns  
+  print " norms ", norms  
   print " cpu_time ", cpu_times 
   print ""
 

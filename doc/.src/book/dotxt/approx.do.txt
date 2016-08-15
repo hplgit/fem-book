@@ -777,8 +777,7 @@ def least_squares(f, psi, Omega):
         u += c[i,0]*psi[i]
     return u, c
 !ec
-[kam: ble overrasket over at x blir opprettet her, men det er vel 
-den beste måten å gjøre det på. Litt ugly. ]
+
 
 Observe that we exploit the symmetry of the coefficient matrix:
 only the upper triangular part is computed. Symbolic integration, also in
@@ -792,17 +791,17 @@ a symbol factory that is indexed by the expression used in the construction
 and that repeated constructions from the same expression will not create
 new objects. The following code illustrates the behavior of the 
 symbol factory:   
-!bc
-In [1]: from sympy import *
-In [2]: x0 = Symbol("x")
-In [3]: x1 = Symbol("x")
-In [5]: id(x0) ==id(x1)
-Out[5]: True
-In [2]: a0 = 3.0  
-In [3]: a1 = 3.0 
-In [5]: id(a0) ==id(a1)
-Out[5]: False 
-!ec 
+!bc ipy
+>>> from sympy import *
+>>> x0 = Symbol("x")
+>>> x1 = Symbol("x")
+>>> id(x0) ==id(x1)
+True
+>>> a0 = 3.0  
+>>> a1 = 3.0 
+>>> id(a0) ==id(a1)
+False 
+!ec ipy 
 !eremarks
 
 
@@ -897,7 +896,7 @@ URL: "http://hplgit.github.io/fem-book/doc/web/" where
 a tarball can be found. 
 The following commands shows a useful way to search for code
 !bc
-bash-4.2$ find . -name '*.py' -exec grep least_squares {} \; -print 
+bash $ find . -name '*.py' -exec grep least_squares {} \; -print 
 !ec
 Here `'.'` specifies the directory for the search, `-name '*.py'` that
 files with suffix `*.py` should be searched through while
@@ -1241,7 +1240,10 @@ functions that are ``almost orthogonal''.
 ===== Ill-conditioning =====
 label{fem:approx:global:illconditioning}
 
-The computational example in Section ref{fem:approx:global:exact}
+For basis functions that are not orthogonal the condition number
+of the matrix may create problems during the solution process 
+due to for example round-off errors as will be illustrated in the
+following.   The computational example in Section ref{fem:approx:global:exact}
 applies the `least_squares` function which invokes symbolic
 methods to calculate and solve the linear system. The correct
 solution $c_0=9, c_1=-20, c_2=10, c_i=0$ for $i\geq 3$ is perfectly
@@ -1344,16 +1346,14 @@ partial differential equations, and ill-conditioning
 of the coefficient matrix is a theme when solving large-scale matrix
 systems arising from finite element discretizations.
 
-[kam: almost linear dependence results in many possible solutions
-giving nearly the same answer. Do not like the last sentence above. ] 
 
 ===== Fourier series =====
 label{fem:approx:global:Fourier}
 idx{approximation!by sines}
 
 A set of sine functions is widely used for approximating functions
-(the sines are also orthogonal as explained more in Section
-ref{fem:approx:global:illconditioning}).  Let us take
+(note that the sines are orthogonal with respect to the $L_2$ inner product as can be easily 
+verified using `sympy`).  Let us take
 
 !bt
 \begin{equation*}
@@ -1436,6 +1436,8 @@ well, at least visually.
 
 FIGURE: [fig/parabola_ls_sines4_12_wfterm, width=800]  Best approximation of a parabola by a sum of 3 (left) and 11 (right) sine functions with a boundary term.  label{fem:approx:global:fig:parabola:sine2}
 
+[kam: this is a clear link to the Dirchlet conditions used later on. 
+Check that the link is there]
 
 ===== Orthogonal basis functions =====
 label{fem:approx:global:orth}
@@ -1532,7 +1534,7 @@ numerical integration also for the `A[i,i]` term.
 Sometimes the basis functions $\baspsi_i$ and/or the function $f$
 have a nature that makes symbolic integration CPU-time
 consuming or impossible.
-Even though we implemented a fall back on numerical integration
+Even though we implemented a fallback on numerical integration
 of $\int f\basphi_i \dx$, considerable time might still be required
 by `sympy` just by *attempting* to integrate symbolically.
 Therefore, it will be handy to have function for fast
@@ -1687,7 +1689,6 @@ def interpolation(f, psi, points):
 The `interpolation` function is a part of the `approx1D`
 module.
 
-[kam: comment on the symbol factory in sympy]
 
 We found it convenient in the above function to turn the expressions `f` and
 `psi` into ordinary Python functions of `x`, which can be called with
@@ -1772,7 +1773,7 @@ label{fem:approx:global:Lagrange}
 idx{Lagrange (interpolating) polynomial}
 
 In Section ref{fem:approx:global:Fourier} we explained the advantage
-with having a diagonal matrix: formulas for the coefficients
+of having a diagonal matrix: formulas for the coefficients
 $\sequencei{c}$ can then be derived by hand. For an interpolation (or
 collocation) method a diagonal matrix implies that $\baspsi_j(\xno{i})
 = 0$ if $i\neq j$. One set of basis functions $\baspsi_i(x)$ with this
@@ -1813,7 +1814,8 @@ label{fem:inter:prop}
 !et
 when $x_s$ is an interpolation (collocation) point.
 Here we have used the *Kronecker delta* symbol $\delta_{is}$.
-This property implies that $A_{i,j}=0$ for $i\neq j$ and
+This property implies that $A$ is a diagonal matrix, that is
+that  $A_{i,j}=0$ for $i\neq j$ and
 $A_{i,j}=1$ when $i=j$. The solution of the linear system is
 then simply
 
@@ -1828,6 +1830,9 @@ and
 \begin{equation}
 u(x) = \sum_{j\in\If} c_i \baspsi_i(x) = \sum_{j\in\If} f(\xno{i})\baspsi_i(x)\tp  \end{equation}
 !et
+We remark however that ref{fem:inter:prop} does not necessary imply that the matrix 
+obtained by the least squares or project methods are diagonal.  
+
 
 The following function computes the Lagrange interpolating polynomial
 $\baspsi_i(x)$ on the unit interval (0,1), given the interpolation points $\xno{0},\ldots,\xno{N}$ in
@@ -1868,25 +1873,30 @@ functions and points:
 !bc ipy
 >>> import sympy as sym
 >>> x = sym.Symbol('x')
->>> psi, points = Lagrange_polynomials_01(x, N=3)
+>>> psi, points = Lagrange_polynomials_01(x, N=2)
 >>> points
 [0, 1/2, 1]
 >>> psi
 [(1 - x)*(1 - 2*x), 2*x*(2 - 2*x), -x*(1 - 2*x)]
 
 >>> x = 0.5  # numerical computing
->>> psi, points = Lagrange_polynomials_01(x, N=3)
+>>> psi, points = Lagrange_polynomials_01(x, N=2)
 >>> points
 [0.0, 0.5, 1.0]
 >>> psi
 [-0.0, 1.0, 0.0]
 !ec
-The Lagrange polynomials are very much used in finite element methods
-because of their property (ref{fem:inter:prop}).
+
+That is, when used symbolically, the `Lagrange_polynomials_01` function returns
+the symbolic expression for the Lagrange functions while when `x` is a numerical
+value the function returns the value of the basis function evaluate in `x`. 
+In the present example only the second basis function should be 1 in the mid-point
+while the others are zero according to ref{fem:inter:prop}.  
+
 
 === Approximation of a polynomial ===
 
-The Galerkin or least squares method lead to an exact approximation
+The Galerkin or least squares methods lead to an exact approximation
 if $f$ lies in the space spanned by the basis functions. It could be
 of interest to see how the interpolation method with Lagrange
 polynomials as basis is able to approximate a polynomial, e.g.,
@@ -1926,8 +1936,8 @@ u, c = interpolation(f, psi, points)
 comparison_plot(f, u, Omega)
 !ec
 Figure ref{fem:approx:global:Lagrange:fig:sine:ls:colloc} shows the results.
-There is little difference between the least squares and the interpolation
-technique. Increasing $N$ gives visually better approximations.
+There is a difference between the least squares and the interpolation
+technique but the difference decreases rapidly with  Increasing $N$.
 
 FIGURE: [fig/Lagrange_ls_interp_sin_4, width=800]  Approximation via least squares (left) and interpolation (right) of a sine function by Lagrange interpolating polynomials of degree 3. label{fem:approx:global:Lagrange:fig:sine:ls:colloc}
 
@@ -2002,9 +2012,9 @@ ref{fem:approx:global:Lagrange:fig:abs:Lag:Cheb:osc} (Chebyshev
 points) with Figure
 ref{fem:approx:global:Lagrange:fig:abs:Lag:unif:osc} (equidistant
 points). Note the different scale on the vertical axes in the two
-figures.
+figures and also that the Chebyshev points tend to cluster 
+more around the element boundaries.
 
-[kam: note that the  nodes cluster close to the boundaries]
 
 Another cure for undesired oscillations of higher-degree interpolating
 polynomials is to use lower-degree Lagrange polynomials on many small
@@ -2017,7 +2027,6 @@ FIGURE: [fig/Lagrange_interp_abs_8_15, width=800]  Interpolation of an absolute 
 
 FIGURE: [fig/Lagrange_basis_12, width=400]  Illustration of the oscillatory behavior of two Lagrange polynomials based on 12 uniformly spaced points (marked by circles).  label{fem:approx:global:Lagrange:fig:abs:Lag:unif:osc}
 
-[kam: make new figures with lines at x=2/11 and x=7/11 to draw attention to these places]
 
 FIGURE: [fig/Lagrange_interp_abs_Cheb_8_15, width=800]  Interpolation of an absolute value function by Lagrange polynomials and Chebyshev nodes as interpolation points: degree 7 (left) and 14 (right).  label{fem:approx:global:Lagrange:fig:abs:Lag:Cheb:7:14}
 
@@ -2081,29 +2090,25 @@ and modify the code accordingly.
 
 # #endif
 
-[kam: missing conclusion on the least square, Lagrange.
-sympy is actually amazingly slow compared to swiginac. Anyway, 
-there is no problem in generating the least square example with quadrature 
-as can be seen in the figure below. Don't really understand most of the comments
-in the 2DO ifdef above 
-]
+
 
 FIGURE: [fig/Lagrange_ls_abs_12, width=400]  Illustration of an approximation of the absolute value function using the least square method .  label{fem:approx:global:Lagrange:fig:abs:Lag:unif:ls}
 
 
 
-The idea of avoiding oscillatory solutions by
-using lower-order Lagrange polynomials on smaller patches
-throughout the domain, is important in the finite element
-method, and the next section introduces finite element basis
-functions based on Lagrange polynomials.
 
 ===== Bernstein polynomials =====
 label{fem:approx:global:Bernstein}
 idx{Bernstein(interpolating) polynomial}
 
 An alternative to the Taylor and Lagrange families of polynomials
-are the Bernstein polynomials. On the unit interval, these
+are the Bernstein polynomials. 
+These polynomials are much used in visualization and we include a
+presentation of them for completeness and to show that the choice of
+basis functions may matter. In fact, in finite element methods,
+one of the main challenges is to determine appropriate bases
+with the desired stability properties.  
+On the unit interval, these
 polynomials are defined in terms of powers of $x$ and $1-x$
 (the barycentric coordinates of the unit interval) as
 !bt
@@ -2116,7 +2121,7 @@ label{bernstein:basis}
 
 FIGURE: [fig/Lagrange_basis8.png] The nine functions of a Lagrange basis of order 8. label{Lagrange_basis_8} 
 
-FIGURE: [fig/Bernstein_basis8.png] The nince functions of a Bernstein basis of order 8. label{Bernstein_basis_8} 
+FIGURE: [fig/Bernstein_basis8.png] The nine functions of a Bernstein basis of order 8. label{Bernstein_basis_8} 
 
 The Figure ref{Lagrange_basis_8} shows the basis functions of a Lagrange basis of order 8. 
 The basis is convenient because a basis function is either 1 or 0 in the nodal points. However, 
@@ -2131,18 +2136,54 @@ property that sometimes that sometimes result in improved stability.
 A disadvantage is however that there is no nodal basis and all functions contributes everywhere.  
 We also remark that the Bernstein basis has an explicit simple expressions that
 can be extended to polygons in 2D and 3D in terms of the barycentric coordinates.  
+Both Lagrange and Bernstein polynomials are larger towards the element boundaries than in 
+the middle of the element, but the Bernstein polynomials always remain less or equal to 1.  
 
 
 
 ======= Approximation Properties and Convergence rates =======
 
 We have considered four different series for generating approximations: 
-Taylor, Lagrange, sinusoidal, and Bernstein. For all for families 
-we expect that the approximation improve as we increase the 
+Taylor, Lagrange, sinusoidal, and Bernstein. For all families 
+we should expect that the approximations improve as we increase the 
 number of basis functions in our representations, but also
 that the computational complexity increases. Let us therefore 
 try to quantify the accuracy and efficiency of the different methods
 in terms of the number of basis functions $N$.   
+
+Let us consider the approximation of a Gaussian bell function, i.e., 
+that 
+!bt
+\[
+u_e = \exp(-(x-0.5)**2) - \exp(-0.5**2)
+\]
+!et
+We remark that `u_e` is zero in $x=0$ and $x=1$. 
+To quantify the behavior of the error as well as the 
+complexity of the computations we  compute the approximation 
+with increasing number of basis functions. A code example is as
+follows:  
+
+!bc
+def convergence_rate_analysis(series_type, func): 
+  Ns =[2, 4, 8, 16]
+  norms = []
+  cpu_times = [] 
+  for N in Ns: 
+
+    psi = series(series_type, N)
+    t0 = time.time()
+    u, c = least_squares_non_verbose(gauss_bell, psi, Omega, False) 
+    t1 = time.time()
+
+    error2 = sym.lambdify([x], (func - u)**2)
+    L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])  
+    L2_norm = scipy.sqrt(L2_norm)
+    norms.append(L2_norm[0])
+    cpu_times.append(t1-t0)
+
+  return Ns, norms, cpu_times 
+!ec 
 
 There are two natural models of accuracy and computational complexity in terms
 of $N$: polynomial and exponential. 
@@ -2175,8 +2216,8 @@ def convergence_rate_analysis(series_type, func):
 Let us therefore consider the following models: 
 !bt
 \begin{align*}
-E_{pol}(N) &= \alpha_{pol} N^\beta_{pol}, \\ 
-E_{exp}(N) &= \alpha_{exp} \exp(\beta_{exp} N) 
+E_{1}(N) &= \alpha_{1} N^\beta_{1}, \\ 
+E_{2}(N) &= \alpha_{2} \exp(\beta_2 N) 
 \end{align*}
 !et
 
