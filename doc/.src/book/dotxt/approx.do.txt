@@ -114,7 +114,14 @@ spanned by the vector $\psib_0=(a,b)$:
 V = \mbox{span}\,\{ \psib_0\}\tp  \end{equation}
 !et
 We say that $\psib_0$ is a *basis vector* in the space $V$.
-Our aim is to find the vector $\u = c_0\psib_0\in V$ which best approximates
+Our aim is to find the vector 
+!bt
+\begin{equation}
+\label{uc0}
+\u = c_0\psib_0\in V$ 
+\end{equation}
+!et
+which best approximates
 the given vector $\f = (3,5)$. A reasonable criterion for a best
 approximation could be to minimize the length of the difference between
 the approximate $\u$ and the given $\f$. The difference, or error
@@ -139,13 +146,18 @@ ending in the point $(a,b)$, while $(\u,\v)$ with vectors $\u$ and
 $\v$ means the inner product of these vectors.  Since vectors are here
 written in boldface font there should be no confusion.  We may add
 that the norm associated with this inner product is the usual
-Euclidean length of a vector.
-
+Euclidean length of a vector, i.e., 
+!bt
+\[
+\|\u\| = \sqrt{(\u,\u)} = \sqrt{u_0^2 + u_1^2}
+\]
+!et
 idx{least squreas method!vectors}
 
 === The least squares method ===
 
-We now want to find $c_0$ such that it minimizes $||\e||$. The algebra
+We now want to determine the $\u$ that minimizes  $||\e||$, that is
+we want to compute the optimal $c_0$ in (ref{uc0}). The algebra
 is simplified if we minimize the square of the norm, $||\e||^2 = (\e, \e)$,
 instead of the norm itself.
 Define the function
@@ -184,8 +196,9 @@ label{fem:vec:rule:sum}
 
 !bt
 \begin{equation}
-(\u, \v) = (\v, \u)\tp  \end{equation}
 label{fem:vec:rule:symmetry}
+(\u, \v) = (\v, \u)\tp  
+\end{equation}
 !et
 
 Minimizing $E(c_0)$ implies finding $c_0$ such that
@@ -443,6 +456,8 @@ b_i &= (\psib_i, \f)\tp  \end{align}
 We have changed the order of the two vectors in the inner
 product according to (ref{fem:vec:rule:symmetry}):
 
+[kam: wrong ref for some reason. Ref outside env?]
+
 !bt
 \[ A_{i,j} = (\psib_j,\psib_i) = (\psib_i,\psib_j),\]
 !et
@@ -539,10 +554,9 @@ u = \sum_{j\in\If} c_j\baspsi_j\tp
 label{fem:approx:ufem}
 \end{equation}
 !et
-[kam: 
-That is, we consider functions as vectors in a vector space - a so-called function space. 
-]
-
+That is, we consider functions as vectors in a vector space - a so-called function space 
+- and we have a finite set of basis functions that span the space 
+just as basis vectors or unit vectors span a vector space. 
 
 The index set $\If$ is defined as $\If =\{0,\ldots,N\}$ and is
 from now on used
@@ -629,6 +643,11 @@ b_i &= (f,\baspsi_i)\tp
 label{fem:approx:bi}
 \end{align}
 !et
+
+The only difference from 
+(ref{fem:approx:vec:Np1dim:eqsys})
+is that the inner product is defined in terms
+of integration rather than summation. 
 
 ===== The projection (or Galerkin) method =====
 
@@ -767,6 +786,26 @@ only the upper triangular part is computed. Symbolic integration, also in
 work has noticeable effect on the waiting time for the computations to
 finish.
 
+!bremarks
+We remark that the symbols in `sympy` are created and stored in 
+a symbol factory that is indexed by the expression used in the construction
+and that repeated constructions from the same expression will not create
+new objects. The following code illustrates the behavior of the 
+symbol factory:   
+!bc
+In [1]: from sympy import *
+In [2]: x0 = Symbol("x")
+In [3]: x1 = Symbol("x")
+In [5]: id(x0) ==id(x1)
+Out[5]: True
+In [2]: a0 = 3.0  
+In [3]: a1 = 3.0 
+In [5]: id(a0) ==id(a1)
+Out[5]: False 
+!ec 
+!eremarks
+
+
 === Fall back on numerical integration ===
 
 Obviously, `sympy` may fail to successfully integrate
@@ -852,7 +891,20 @@ the file "`approx1D.py`": "${fem_src}/approx1D.py".  The
 than the simplistic version shown above.  The file `ex_approx1D.py`
 applies the `approx1D` module to accomplish the forthcoming examples.
 
-[kam: the comment on where to find the code is somewhat hidden]
+!bremarks
+We remind the reader that the code examples can be found in 
+URL: "http://hplgit.github.io/fem-book/doc/web/" where
+a tarball can be found. 
+The following commands shows a useful way to search for code
+!bc
+bash-4.2$ find . -name '*.py' -exec grep least_squares {} \; -print 
+!ec
+Here `'.'` specifies the directory for the search, `-name '*.py'` that
+files with suffix `*.py` should be searched through while
+`-exec grep least_squares {} \; -print` means that all lines
+containing the text `least_squares` should be printed to the screen.  
+!eremarks
+
 
 
 ===== Perfect approximation =====
@@ -964,7 +1016,6 @@ Euclidean norm of $r$: $||r||$.  The algebra simplifies significantly
 by minimizing $||r||^2$ instead.  This principle corresponds to a
 least squares method.
 
-[kam: ordet residual dukker plutselig opp midt i teksten] 
 
 idx{normal equations}
 idx{$A^TA=A^Tb$ (normal equations)}
@@ -988,16 +1039,16 @@ which leads to
 =\sum_i 2r_i \frac{\partial}{\partial c_k}(b_i -\sum_jA_{i,j}c_j)
 = 2\sum_i r_i(-A_{i,k}) = 0\tp\]
 !et
-By inserting $r_i = b_i -\sum_jA_{i,j}c_j$ the last expression we
+By inserting $r_i = b_i -\sum_jA_{i,j}c_j$ in the last expression we
 get
 
 !bt
 \[ \sum_i\left(b_i -\sum_jA_{i,j}c_j\right)\left(-A_{i,k}\right)
 = -\sum_i b_iA_{i,k} + \sum_j (\sum_i A_{i,j}A_{i,k})c_j = 0\tp\]
 !et
-Introducing the transpose of $A$, $A^T$, we know that $A^T_{i,j}=A_{j,i}$,
-to the expression $\sum_i A_{i,j}A_{i,k}$ can be written
-as $\sum_i A^T_{k,i}A_{i,j}$ and recognized as the formula for the
+Introducing the transpose of $A$, $A^T$, we know that $A^T_{i,j}=A_{j,i}$.
+Therefore, the expression $\sum_i A_{i,j}A_{i,k}$ can be written
+as $\sum_i A^T_{k,i}A_{i,j}$ and be recognized as the formula for the
 matrix-matrix product $A^TA$. Also, $\sum_i b_i A_{i,k}$ can be written
 $\sum_i A^T_{k,i}b_i$ and recognized as the matrix-vector product
 $A^Tb$. These observations imply that (ref{fem:approx:global:regression:r2min})
@@ -1005,7 +1056,7 @@ is equivalent to the linear system
 
 !bt
 \begin{equation}
-\sum_j (\sum_i A^T_{k,i}A_{i,j}c_j)=\sum_j(A^TA)_{k,j}
+\sum_j (\sum_i A^T_{k,i}A_{i,j})c_j=\sum_j(A^TA)_{k,j}
 c_j = \sum_i  A^T_{k,i}b_i=(A^Tb)_k,\quad k=0,\ldots,N,
 label{fem:approx:global:regression:normal1}
 \end{equation}
@@ -1128,6 +1179,8 @@ u(x) &= 10x - 12.7,\quad 64\hbox{ points}
 
 FIGURE: [fig/parabola_by_regression, width=800]  Approximation of a parabola by a regression method with varying number of points.  label{fem:approx:global:linear:regression:fig1}
 
+[kam: very small figures.] 
+
 To explicitly make the link to classical regression in statistics, we
 consider $f=10(x-1)^2 - 1 + \epsilon$, where $\epsilon$ is a random,
 normally distributed variable. The goal in classical regression is
@@ -1154,6 +1207,26 @@ FIGURE: [fig/noisy_parabola_by_quadratic_regression, width=800]  Approximation o
 The regression method is not much used for approximating differential
 equations or a given function, but is central in uncertainty quantification
 methods such as polynomial chaos expansions.
+
+!bremark 
+The residual vector is an important and much used vector
+in scientific computing. When attempting to  solve
+a system $A c = b$, we may question how far of a vector $c_0$ is.  
+The error is $e=c-c_0$ and the residual 
+is defined
+\[
+r = b - A c_0 .  
+\]
+The error and the residual are related by 
+\[
+A e = r . 
+\]
+While the computation of the error requires inversion of $A$, 
+which may be computationally expensive, the residual 
+is easily computed as a matrix-vector product combined with vector-vector additions.    
+the residual is directly computable simply 
+!eremark 
+
 
 
 !split
