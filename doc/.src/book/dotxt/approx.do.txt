@@ -2149,19 +2149,25 @@ we should expect that the approximations improve as we increase the
 number of basis functions in our representations, but also
 that the computational complexity increases. Let us therefore 
 try to quantify the accuracy and efficiency of the different methods
-in terms of the number of basis functions $N$.   
+in terms of the number of basis functions $N$. In the present
+example we consider the least square method.    
 
 Let us consider the approximation of a Gaussian bell function, i.e., 
-that 
+that the exact solution is 
 !bt
 \[
 u_e = \exp(-(x-0.5)**2) - \exp(-0.5**2)
 \]
 !et
-We remark that `u_e` is zero in $x=0$ and $x=1$. 
+We remark that `u_e` is zero in $x=0$ and $x=1$ and that
+we have choosen the bell function as it can not be expressed 
+as a finite sum of either polynomials or sines and that
+we therefore may study the behavior as $N\rightarrow\infty$. 
+
 To quantify the behavior of the error as well as the 
 complexity of the computations we  compute the approximation 
-with increasing number of basis functions. A code example is as
+with increasing number of basis functions and also time
+the computations by using `time.time`. A code example is as
 follows:  
 
 !bc
@@ -2185,47 +2191,7 @@ def convergence_rate_analysis(series_type, func):
   return Ns, norms, cpu_times 
 !ec 
 
-There are two natural models of accuracy and computational complexity in terms
-of $N$: polynomial and exponential. 
-To investigate the difference between the different series as 
-follows:  
-
-!bc
-def convergence_rate_analysis(series_type, func): 
-  Ns =[2, 4, 8, 16]
-  norms = []
-  cpu_times = [] 
-  for N in Ns: 
-
-    psi = series(series_type, N)
-    t0 = time.time()
-    u, c = least_squares(gauss_bell, psi, Omega, False) 
-    t1 = time.time()
-
-    error2 = sym.lambdify([x], (func - u)**2)
-    L2_norm = scipy.integrate.quad(error2, Omega[0], Omega[1])  
-    L2_norm = scipy.sqrt(L2_norm)
-    norms.append(L2_norm[0])
-    cpu_times.append(t1-t0)
-
-  return Ns, norms, cpu_times 
-!ec 
-
-
-
-Let us therefore consider the following models: 
-!bt
-\begin{align*}
-E_{1}(N) &= \alpha_{1} N^\beta_{1}, \\ 
-E_{2}(N) &= \alpha_{2} \exp(\beta_2 N) 
-\end{align*}
-!et
-
-
-FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
-
-FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot. 
-
+The following Tables show the error reduction and CPU time as N increase.  
 
 |------------------------------------------------------------------|
 |  N          |  2        |  4          |  8         |  16         |
@@ -2235,17 +2201,49 @@ FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approxim
 |  Bernstein  |  0.0021   |  4.45e-05   |  8.73e-09  |  4.49e-15   |
 |  Lagrange   |  0.0021   |  4.45e-05   |  8.73e-09  |  2.45e-12   |
 |------------------------------------------------------------------|
-Error of the different methods 
+Error when approximating the Gaussian bell function with 
+Taylor, sine, Bernstein and Lagrange function as the number of basis functions, $N$, increase. 
 
 |------------------------------------------------------------------|
 |  N          |  2        |  4          |  8         |  16         |
 |--c----------|--c--------|--c----------|--c---------|--c----------|
-|  Taylor     |  0.0123   |  0.0325    |  0.108  |  0.441   |
-|  sine       |  0.0113   |  0.0383    |  0.229  |  1.107   |
-|  Bernstein  |  0.0384   |  0.1100   |  0.3368  |  1.187   |
-|  Lagrange   |  0.0807   |  0.3820   |  2.5233  |  26.52   |
+|  Taylor     |  0.0123   |  0.0325    |  0.108   |  0.441   |
+|  sine       |  0.0113   |  0.0383    |  0.229   |  1.107   |
+|  Bernstein  |  0.0384   |  0.1100    |  0.3368  |  1.187   |
+|  Lagrange   |  0.0807   |  0.3820    |  2.5233  |  26.52   |
 |------------------------------------------------------------------|
-CPU time  
+CPU time of the required computations  when approximating the Gaussian bell function with 
+Taylor, sine, Bernstein and Lagrange function as the number of basis functions, $N$, increase. 
+
+
+Clearly, the behavior of both the error and CPU time vary among the different methods.  
+The Taylor basis appears efficient and is in fact more than 60 times faster 
+than Lagrange for $N=16$. On the other hand, the Lagrange basis for $N=16$ is 145 times
+more accurate than the Taylor basis. However, Bernstein is actually more than 500 times more
+accurate than Lagrange.  
+
+In order to get a more precise idea of how the methods behave as $N$ increase we 
+model the behavior we perform a simple regression analysis.  
+There are two natural models of accuracy and computational complexity in terms
+of $N$: polynomial and exponential. 
+Unless we know which 
+to choose, it is a good idea to visualize both and look for lines that are close
+to linear.  
+
+FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
+label{fem:approx:bell:loglogfig}
+
+FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot. 
+label{fem:approx:bell:semilogfig}
+
+Let us therefore consider the following models: 
+!bt
+\begin{align*}
+E_{1}(N) &= \alpha_{1} N^\beta_{1}, \\ 
+E_{2}(N) &= \alpha_{2} \exp(\beta_2 N) 
+\end{align*}
+!et
+
 
 
 
