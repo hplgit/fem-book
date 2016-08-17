@@ -19,7 +19,6 @@ The finite element method is a very flexible approach for solving partial
 differential equations. Its two most attractive features are the ease
 of handling domains of complex shape in two and three dimensions and
 the ease of using higher-degree polynomials in the approximations.
-[kam: I would say that a rigorous theory is also an attractive feature] 
 The latter feature typically leads to errors proportional to
 $h^{d+1}$, where $h$ is the element length and $d$ is the polynomial
 degree. When the solution is sufficiently smooth, the ability to use
@@ -136,7 +135,6 @@ label{fem:deq:1D:models:simple}
 
 A common model problem used much in the forthcoming examples is
 
-[kam: 'used much' is used several places. I sounds funny to me]
 
 !bt
 \begin{equation}
@@ -240,11 +238,10 @@ the approximation error in our case is $e=\uex - u$ and $\uex$ is
 unknown. The only general indicator we have on the quality of the approximate
 solution is to what degree $u$ fulfills the differential equation.
 Inserting $u=\sum_j c_j \baspsi_j$ into $\mathcal{L}(u)$ reveals that the
-result is not zero, because $u$ is only likely to equal $\uex$.
+result is not zero, because $u$ in general is an approximation and not identical to $\uex$.
 The nonzero result,
 
 idx{residual}
-[kam: is only likely ?]
 
 !bt
 \begin{equation}
@@ -326,8 +323,10 @@ This is the Galerkin method for differential equations.
 for a choosen basis]
 
 #As shown in (ref{fem:approx:vec:Np1dim:Galerkin}) and (ref{fem:approx:vec:Np1dim:Galerkin0}),
-This statement is equivalent to $R$ being orthogonal to the $N+1$
-basis functions only:
+The above abstract statment can be made concrete by choosing a concrete basis. 
+For example, the statement is equivalent to $R$ being orthogonal to the $N+1$
+basis functions $\{\basispsi_i\}$ spanning $V$ (and this is 
+the most convenient way to express ref{fem:deq:1D:Galerkin0}):
 
 !bt
 \begin{equation}
@@ -376,7 +375,7 @@ Statements like (ref{fem:deq:1D:Galerkin0}), (ref{fem:deq:1D:Galerkin}),
 (ref{fem:deq:1D:WRM}))
 are known as
 "weak formulations": "https://en.wikipedia.org/wiki/Weak_formulation"
-or *variational formulations*. (Other terms are weak and variational forms.)
+or *variational formulations*. 
 These equations are in this text primarily used for a numerical approximation
 $u\in V$, where $V$ is a *finite-dimensional* space with dimension
 $N+1$. However, we may also let the exact solution $\uex$ fulfill a
@@ -386,7 +385,7 @@ dimensions (because an infinite number of parameters are needed to
 specify the solution). The variational formulation for $\uex$
 in an infinite-dimensional space $V$ is
 a mathematical way of stating the problem and acts as an
-alternative to the usual formulation of a differential equation with
+alternative to the usual (strong) formulation of a differential equation with
 initial and/or boundary conditions.
 
 Much of the literature on finite
@@ -1138,7 +1137,9 @@ over all functions $v\in V$. That is,
 
 === Derivation ===
 
-[kam: reformuler første setning. Sjekk resten]
+[kam: reformuler første setning. Sjekk resten. 
+Skal si tidlig at: Find u such that .. droppes
+]
 
 To see this, we write $F(u)\leq F(\eta)$, $\forall\eta\in V$ instead
 and set $\eta=u + \epsilon v$, where $v\in V$ is an
@@ -1203,8 +1204,7 @@ Minimization of $\bar F$ implies
 !bt
 \[ \frac{\partial\bar F}{\partial c_i}=0,\quad i\in\If\tp\]
 !et
-After quite some algebra one finds
-[kam: this follows directly, right? We don't need quite some algebra]
+After some algebra one finds
 
 !bt
 \[ \sum_{j\in\If} a(\baspsi_i,\baspsi_j)c_j = L(\baspsi_i),\quad i\in\If,\]
