@@ -550,12 +550,13 @@ combination of the basis functions:
 
 !bt
 \begin{equation}
+\label{fem:approx:ufem}
 u = \sum_{j\in\If} c_j\baspsi_j\tp
-label{fem:approx:ufem}
 \end{equation}
 !et
-That is, we consider functions as vectors in a vector space - a so-called function space 
-- and we have a finite set of basis functions that span the space 
+
+That is, we consider functions as vectors in a vector space -- a so-called function space 
+-- and we have a finite set of basis functions that span the space 
 just as basis vectors or unit vectors span a vector space. 
 
 The index set $\If$ is defined as $\If =\{0,\ldots,N\}$ and is
@@ -1808,7 +1809,7 @@ idx{Kronecker delta}
 1, & i=s,\\
 0, & i\neq s,
 \end{array}\right.
-label{fem:inter:prop}
+\label{fem:inter:prop}
 \end{equation}
 !et
 when $x_s$ is an interpolation (collocation) point.
@@ -1829,7 +1830,7 @@ and
 \begin{equation}
 u(x) = \sum_{j\in\If} c_i \baspsi_i(x) = \sum_{j\in\If} f(\xno{i})\baspsi_i(x)\tp  \end{equation}
 !et
-We remark however that ref{fem:inter:prop} does not necessary imply that the matrix 
+We remark however that (ref{fem:inter:prop}) does not necessary imply that the matrix 
 obtained by the least squares or project methods are diagonal.  
 
 
@@ -1890,7 +1891,7 @@ That is, when used symbolically, the `Lagrange_polynomials_01` function returns
 the symbolic expression for the Lagrange functions while when `x` is a numerical
 value the function returns the value of the basis function evaluate in `x`. 
 In the present example only the second basis function should be 1 in the mid-point
-while the others are zero according to ref{fem:inter:prop}.  
+while the others are zero according to (ref{fem:inter:prop}).  
 
 
 === Approximation of a polynomial ===
@@ -2229,11 +2230,9 @@ Unless we know which
 to choose, it is a good idea to visualize both and look for lines that are close
 to linear.  
 
-FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot. 
-label{fem:approx:bell:loglogfig}
+FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot.  label{fem:approx:bell:loglogfig}
 
-FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot. 
-label{fem:approx:bell:semilogfig}
+FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot.  label{fem:approx:bell:semilogfig}
 
 Let us therefore consider the following models: 
 !bt
