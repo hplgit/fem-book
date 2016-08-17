@@ -878,7 +878,7 @@ def comparison_plot(f, u, Omega, filename='tmp.pdf'):
     plot(xcoor, exact)
     legend(['approximation', 'exact'])
     savefig(filename)
-!ec
+!ec pycode
 The `modules='numpy'` argument to `lambdify` is important
 if there are mathematical functions, such as `sin` or `exp`
 in the symbolic expressions in `f` or `u`, and these
@@ -896,9 +896,9 @@ We remind the reader that the code examples can be found in
 URL: "http://hplgit.github.io/fem-book/doc/web/" where
 a tarball can be found. 
 The following commands shows a useful way to search for code
-!bc
+!bc pycode
 bash $ find . -name '*.py' -exec grep least_squares {} \; -print 
-!ec
+!ec pycode
 Here `'.'` specifies the directory for the search, `-name '*.py'` that
 files with suffix `*.py` should be searched through while
 `-exec grep least_squares {} \; -print` means that all lines
@@ -907,7 +907,7 @@ containing the text `least_squares` should be printed to the screen.
 
 
 
-===== Perfect approximation =====
+===== Perfect approximation ===== 
 label{fem:approx:global:exact}
 
 Let us use the code above to recompute the problem from
@@ -2624,11 +2624,11 @@ We may continue with adding higher powers to the basis:
 0
 !ec
 For $N_x\geq 2$ and $N_y\geq 2$ we recover the exact function $f$, as
-expected, since in that case $f\in V$ (see
-Section ref{fem:approx:global:exact}).
+expected, since in that case $f\in V$, see
+section ref{fem:approx:global:exact}.
 
-===== Extension to 3D =====
-label{fem:approx:3D:global}
+===== extension to 3d =====
+label{fem:approx:3d:global}
 
 Extension to 3D is in principle straightforward once the 2D extension
 is understood. The only major difference is that we need the
