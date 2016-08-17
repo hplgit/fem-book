@@ -1178,7 +1178,6 @@ u(x) &= 10x - 12.7,\quad 64\hbox{ points}
 
 FIGURE: [fig/parabola_by_regression, width=800]  Approximation of a parabola by a regression method with varying number of points.  label{fem:approx:global:linear:regression:fig1}
 
-[kam: very small figures.] 
 
 To explicitly make the link to classical regression in statistics, we
 consider $f=10(x-1)^2 - 1 + \epsilon$, where $\epsilon$ is a random,
@@ -2324,7 +2323,6 @@ label{fem:approx:2D:Vx}
 !et
 A similar space for a function's variation in $y$ can be defined,
 
-[kam: check if vector space is used or function space is used throughout the text and make an initial comment]
 
 !bt
 \begin{equation}
@@ -2352,8 +2350,6 @@ corresponding *inner tensor product* is the well-known scalar or dot
 product of two vectors: $p=a\cdot b = \sum_{j=0}^N a_jb_j$. Now,
 $p$ is a rank-0 tensor.
 
-[kam: I have never seen the term outer tensor product or inner tensor product. 
-]
 
 Tensors are typically represented by arrays in computer code.
 In the above example, $a$ and $b$ are represented by
@@ -2409,8 +2405,8 @@ $i=p (N_y+1) + q$ or $i=q (N_x+1) + p$.
 
 ===== Example: Polynomial basis in 2D =====
 
-[kam: mangler innledning. Vet ikke at det er least square før en stund ute i eksempelet]
-
+Let us again consider approximation with the least squares method, but now
+with basis functions in 2D.  
 Suppose we choose $\hat\baspsi_p(x)=x^p$, and try an approximation with
 $N_x=N_y=1$:
 
@@ -3177,7 +3173,6 @@ FIGURE: [fig/sin_taylor7, width=500 frac=0.8]
 ===== Problem: Approximate a steep function by sines =====
 label{fem:approx:exer:tanh:sine1}
 file=tanh_sines
-[kam: jeg skjønner ikke hvorfor filnavnet står her]
 
 Find the best approximation of $f(x) = \tanh (s(x-\pi))$ on
 $[0, 2\pi]$ in the space $V$ with basis
@@ -3751,7 +3746,6 @@ functions in general in this text, the particular choice of
 finite element basis functions means that we take
 $\baspsi_i = \basphi_i$.
 
-[kam: check that this is true]
 
 idx{internal node}
 idx{shared node}
@@ -4199,8 +4193,8 @@ b_i = \int_\Omega\basphi_i(x)f(x)\dx
 label{fem:approx:fe:bi:formula1}
 \end{equation}
 !et
-
-[kam: formelen over gjelder ikke endepunkt]
+We remark that the above formula applies to internal nodes (living at the interface between two elements) 
+and that for the nodes on the boundaries only one integral needs to be computed.   
 
 We need a specific $f(x)$ function to compute these integrals.
 With $f(x)=x(1-x)$ and
@@ -4280,11 +4274,10 @@ $e$ to the global node number $i$. This is just a short mathematical notation
 for the expression `i=elements[e][r]` in a program.
 Let $r$ and $s$ be the local node numbers corresponding to the global
 node numbers $i=q(e,r)$ and
-$j=q(e,s)$. With $d$ nodes per element, all the nonzero matrix entries
+$j=q(e,s)$. With $d+1$ nodes per element, all the nonzero matrix entries
 in $A^{(e)}_{i,j}$ arise from the integrals involving basis functions with
 indices corresponding to the global node numbers in element number $e$:
 
-[kam: med $d$ nodes per element må det vel være $d$ nonzero contribtions]
 
 !bt
 \begin{equation*}
@@ -4303,7 +4296,7 @@ We introduce the notation
 r,s\in\Ifd,
 \end{equation*}
 !et
-for the element matrix. For P1 elements ($d=1$) we have
+for the element matrix. For P1 elements ($d=2$) we have
 
 !bt
 \begin{equation*}
@@ -5005,8 +4998,7 @@ concatenated to form a global array for $x$ and for $u$.
 The details are found in the `u_glob` function in
 `fe_approx1D.py`.
 
-[kam: u\_glob is used frequently later. I think it deserves a more
-extensive explanation here. Perhaps use index also for code. ]
+
 
 ===== The structure of the coefficient matrix =====
 label{fem:approx:fe:A:structure}
@@ -5390,12 +5382,12 @@ using finite difference operator notation:
 \[ [h(u + \frac{h^2}{6}D_x D_x u)]_i,\]
 !et
 which is nothing but the standard discretization of
-
-[kam: where $D_x D_x$ is ...] 
+(see also Appendix ref{sec:form:fdop})
 
 !bt
 \[ h(u + \frac{h^2}{6}u'')\tp\]
 !et
+
 
 Before interpreting the approximation procedure as solving a
 differential equation, we need to work out what the right-hand side is
@@ -5462,7 +5454,6 @@ can be written as
 + 4\sum_{j=0}^{N-1} g(\xno{j+\half}) + f(\xno{2N})\right),
 \]
 !et
-[kam: don't follow]
 where $\tilde h= h/2$ is the spacing between the sample points.
 Our integrand is $g=f\basphi_i$. For all the node points,
 $\basphi_i(\xno{j})=\delta_{ij}$, and therefore
@@ -5634,9 +5625,9 @@ label{fem:approx:fe:element:terminology}
 idx{cell} idx{vertex} idx{degree of freedom} idx{reference cell}
 
 We now introduce *cells* as the subdomains $\Omega^{(e)}$ previously
-referred to as elements. The cell boundaries are denoted as *vertices*.
-The reason for this name is that cells are recognized by their vertices
-in 2D and 3D. We also define a set of *degrees of freedom* (dof), which are
+referred to as elements. The cell boundaries are uniquely defined in terms of *vertices*.
+This applies to cells in both 1D and higher dimensions. 
+We also define a set of *degrees of freedom* (dof), which are
 the quantities we aim to compute. The most common type of degree
 of freedom is the value of the unknown function $u$ at some point.
 (For example, we can introduce nodes as before and say the degrees of
@@ -5647,8 +5638,6 @@ we evaluate $u=\sum_j c_j\basphi_j$ for degree of freedom number $i$,
 we get $u=c_i$. Integrals are performed over cells, usually by
 mapping the cell of interest to a *reference cell*.
 
-[kam: cell boundaries as vertices are only meaningfull in 
-1D]
 
 With the concepts of cells, vertices, and degrees of freedom we
 increase the decoupling of the geometry (cell, vertices) from the
@@ -5794,10 +5783,6 @@ x_u, u = u_glob(c, vertices, cells, dof_map,
 plot(x_u, u)
 !ec
 
-[kam: u\_glob etc is repeated on the next page]
-[kam: I have a problem with the the way code is introduced. 
-It should be refered somehow. Perhaps in the index. How
-are students working with this code?] 
 
 These steps are offered in the `approximate` function, which we here
 apply to see how well four P0 elements (piecewise constants)
@@ -5888,7 +5873,6 @@ but not on $h$, and the norm $|f^{(d+1)}|$ is defined through
 
 !enotice
 
-[kam: consider a worked example here here $d$ is found. ]
 
 ===== Example: Cubic Hermite polynomials =====
 label{fem:approx:fe:element:impl:Hermite}
@@ -6141,11 +6125,14 @@ the method can handle a geometrically complex domain $\Omega$ with ease.
 The principal idea is, as in 1D, to divide the domain into cells
 and use polynomials for approximating a function over a cell.
 Two popular cell shapes are triangles and quadrilaterals.
+It is common to denote finite elements on triangles and tetrahedrons as P while
+elements defined in terms of quadrilaterals and boxes are denoted by Q. 
 Figures ref{fem:approx:fe:2D:fig:rectP1}, ref{fem:approx:fe:2D:fig:circP1},
 and ref{fem:approx:fe:2D:fig:rectQ1} provide examples. P1 elements
 means linear functions ($a_0 + a_1x + a_2y$) over triangles, while Q1 elements
 have bilinear functions ($a_0 + a_1x + a_2y + a_3xy$) over rectangular cells.
 Higher-order elements can easily be defined.
+ 
 
 FIGURE: [fig/mesh2D_rect_P1, width=800] Examples on 2D P1 elements. label{fem:approx:fe:2D:fig:rectP1}
 
@@ -6153,7 +6140,6 @@ FIGURE: [fig/mesh2D_quarter_circle, width=400] Examples on 2D P1 elements in a d
 
 FIGURE: [fig/mesh2D_rect_Q1, width=400] Examples on 2D Q1 elements. label{fem:approx:fe:2D:fig:rectQ1}
 
-[kam: not sure if the distinction between P and Q is sufficiently clear. Check]
 
 ===== Basis functions over triangles in the physical domain =====
 
