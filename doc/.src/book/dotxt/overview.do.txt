@@ -1,0 +1,134 @@
+!split
+========= Quick overview of the finite element method =========
+label{ch:overview}
+
+The finite element method is a versatile approach to 
+construct computational schemes to solve any 
+partial differential equation on
+any domain in any dimension. The method may 
+at first glance appear cumbersome and even
+unnatural as it relies on variational formulations
+and polynomial spaces. However, the study 
+of these somewhat abstract concepts pays off 
+as the finite element method provides a
+general recipe for efficient and accurate
+simulations. 
+
+Let us start by outlining the concepts briefly. 
+Consider the PDE in 2D: 
+
+!bt
+\[
+-\Delta u = -u_{xx} - u_{yy} = f 
+\]
+!et
+
+equipped with suitable boundary conditions. 
+A finite difference scheme to solve the current PDE
+would in the simplest case be described by the stencil
+
+!bt
+\begin{equation}
+label{overview:2d:fdm}
+-u_{i-1,j} -u_{i,j-1} + 4 u_{i,j} - u_{i+1,j} -u_{i,j+1}  = f_{i}  
+\end{equation}
+!et
+
+On a structured mesh, the stencil is convenient to implement 
+and appears natural. However, for a unstructured "complicated" domain
+as shown in Figure X we would need to be careful when placing
+points and evaluting stencils and functions,  and accuracy and efficiency
+may easily be sacrificed by a reckless implementation.   
+
+In general a domain like the one represented in Fig X will be
+representation by a triangulation. The finite element method
+(and the finite volume method which often is a special
+case of the finite element method) is a methodology for 
+creating stencils like (ref{overview:2d:fdm})
+in a structured manner that adapt to the underlying triangulation. 
+
+The triangulation in Fig X is a mesh that consists of cells that
+are connected and defined in terms of vertices. The fundamental
+idea of the finite element method is construct a procedure
+to compute a stencil on a general element and then apply this
+procedure to each element of the mesh. 
+
+This is exactly the point where the challenges of the finite 
+element method starts and where we need some new concepts. 
+The basic question is: How should we create a stencil (ref{overview:2d:fdm})
+for a general element and a general PDE that has the maximal accuracy
+and minimal computational complexity at the current triangulation? 
+The two basic building blocks are 1)  the solution is represented
+in terms of a polynomial expansion on the given general element 
+and 2) a variational formulation of the PDE where element-wise integration
+ enables the PDE to be transformed to 
+a stencil. 
+
+Step 1) is as will be explained later conveniently represented 
+both implementation-wise and mathematically as a solution
+
+!bt
+\begin{equation}
+label{overview:u:fem}
+u = \sum_{i=0}^N u_i N_i(x,y),  
+\end{equation}
+!et 
+
+where $u_i$ are the coefficients to be determined 
+(often called the degrees of freedom) 
+and $N_i(x,y)$ are a  prescribed polynomial basis.  
+The next step is the variational formulation, which 
+may seem like a trick of magic or a cumbersome 
+mathematical exercise at first glance. 
+We take the PDE and multiply by a test function $v$ 
+and integrate over the element and obtain the expression 
+
+!bt
+\begin{equation}
+label{overview:fem:a}
+\int_\Omega -\Delta u \, v \dx   
+\end{equation}
+!et
+
+A perfectly natural question at this point is: Why multiply 
+with a test function $v$? The simple answer is that 
+there are $N+1$ uknowns that needs to be determined in $u$ 
+in (ref{overview:u:fem}) 
+and for this we need $N+1$ equations. That is, we
+need $N+1$ test functions that when used in (ref{overview:fem:a})  
+give rise to $N+1$ linearly independent equations. 
+
+We remark that for mathematical reasons (ref{overview:fem:a})
+is most easily handled when it appears on weak form, that 
+is when Gauss-Green's lemma is invoked as follows: 
+!bt
+\begin{equation}
+label{overview:fem:a:weak}
+\int_\Omega -\Delta u \, v \dx  =  
+\int_\Omega \nabla u \cdot \nabla v \dx   - \int_{\partial \Omega} \frac{\partial u}{\partial n} \,  v \,  dS   
+\end{equation}
+!et
+
+The reasons behind this alternative formulation is rather mathematical and will
+not be the subject of this book as it is well described elsewhere. 
+With the above Gauss-Green's lemma and assuming now that the boundary conditions vannish the
+stencil is represented by  
+
+!bt
+\[
+\int_\Omega \nabla u \cdot \nabla v \dx 
+\]
+!et
+where $u$ is the trial function, $v$ is a test function and $\Omega$ is an element of
+a triangulated mesh. The corresponding FEniCS code looks  
+
+!bc pycod
+mesh = Mesh("some_file")
+V = FunctionSpace(mesh, "some polynomial")
+u = TrialFunction(V)
+v = TestFunction(V)
+a = dot(grad(u), grad(v))*dx  
+!ec
+
+
+
