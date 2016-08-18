@@ -1,3 +1,8 @@
+
+[kam: this chap is on a very different abstraction level then the others]
+
+[kam: start with Richardson briefly?]
+
 A successful family of methods, usually referred to as Conjugate
 Gradient-like algorithms, or Krylov subspace methods, can be viewed as
 Galerkin or least-squares methods applied to a linear system $Ax =b$.
@@ -35,13 +40,14 @@ In iteration no. $k$ we seek an approximation
 
 !bt
 \begin{equation}
-x^{k+1} = x^{k} + u,\quad u = \sum_{j=0}^k c_j\q_j\in V_{k+1}
+x^{k+1} = x^{k} + u,\quad u = \sum_{j=0}^k c_j\q_j
 label{linalg:xk:update}
 \end{equation}
 !et
-where $\q_j\in\Real^n$ are known vectors spanning the space $V_{k+1}$,
+where $\q_j\in\Real^n$ are known vectors 
+#spanning the space $V_{k+1}$,
 and $c_j$ are constants to be determined.
-Let $q_0,\ldots,q_k$ be basis vectors for $V_{k+1}$:
+To be specific, let $q_0,\ldots,q_k$ be basis vectors for $V_{k+1}$:
 
 !bt
 \[ V_{k+1} = \hbox{span}\{q_0,\ldots,q_k\}\tp\]
@@ -49,6 +55,8 @@ Let $q_0,\ldots,q_k$ be basis vectors for $V_{k+1}$:
 The associated inner product $(\cdot,\cdot )$ is here
 the standard Euclidean inner product on $\Real^n$.
 
+[kam: above it was stated thre times that the vectors were in $V_{k+1}$. 
+Removed two. ]
 
 The corresponding error in the equation $Ax =b$, the residual, becomes
 
@@ -147,8 +155,11 @@ A^{k-1}\residual^0 \right\rbrace \tp
 !et
 Some frequent names
 of the associated iterative methods are therefore
-{Krylov subspace iteration}, Krylov projection methods,
+{Krylov subspace iterations}, Krylov projection methods,
 or simply Krylov methods.
+It is a fact that $V_{k} \subset V_{k+1}$ and that $\residual^0
+A\residual^0,\ldots A^{k-1}\residual^0$ are linearly independent 
+vectors.  
 
 ===== Computation of the basis vectors =====
 
@@ -173,6 +184,8 @@ $n$, the systems for the coefficients $c_i$ are of
 the same size as our original system $Ax =b$!
 A diagonal matrix, however, ensures an efficient closed form solution for
 $c_0,\ldots,c_k$.
+
+[kam: må sies klarere]
 
 To obtain a diagonal coefficient matrix, we require in Galerkin's method
 that
@@ -266,6 +279,8 @@ Gaussian elimination. Naturally, the method did not receive significant
 popularity before researchers discovered (in the beginning of the 1970s) that
 the method could produce a good approximation to $x$ for $k\ll n$ iterations.
 
+[kam: it is appropriate to introduce the name Conjugate Gradient here]
+
 Finally, we mention how to terminate the iteration.
 The simplest criterion is $||\residual^{k+1}||\leq\epsilon_r$, where
 $\epsilon_r$ is a small prescribed tolerance.
@@ -273,6 +288,7 @@ Sometimes it is more appropriate to use a relative residual,
 $||\residual^{k+1}||/||\residual^0||\leq\epsilon_r$.
 Termination criteria for Conjugate Gradient-like methods is a subject
 on its own cite{Bruaset_1995}.
+[kam: link convergence criteria to criteria for non-linear iterations]
 
 
 ===== Summary of the least squares method =====
@@ -334,6 +350,8 @@ In the literature one encounters the name
 the restarted version of Orthomin. When $A$ is symmetric, the method
 is known under the name *Conjugate Residuals*.
 
+[kam: I never heard anyone else use the name Orthomin. It is always GMRES]
+
 
 ===== Summary of the Galerkin method =====
 
@@ -372,6 +390,8 @@ type $\y \leftarrow ax + \y$,
 the slightly more general variant $\q\leftarrow ax +\y$, as well as
 inner products.
 !enotice
+
+[kam: all of a sudden, a few bf vectors]
 
 ===== A framework based on the error =====
 
@@ -481,6 +501,8 @@ The aim now is to construct a nonsingular *preconditioning matrix*
 $M$  such that $M^{-1}A$
 has a more favorable condition number than $A$.
 
+[kam: comment on the use of the notation $M^{-1}$]
+
 For increased flexibility we can write
 $M^{-1} = C_LC_R$ and transform the system according to
 
@@ -517,6 +539,9 @@ is a problem of the same complexity as our original system $Ax =b$.
 The strategy must hence be to compute an $M\approx A$ such that the
 algorithmic operations involving $M$ are cheap.
 
+[kam: reword: Optimal convergence is achieved when similar to indentity. So lets start by
+assuming ..  ]
+
 The preceding discussion motivates the following
 demands on the preconditioning matrix $M$:
 
@@ -543,6 +568,8 @@ The simplest possible iterative method for solving $Ax=b$ is
 !et
 Applying this method to the preconditioned system
 $M^{-1}Ax =M^{-1}b$ results in the scheme
+
+[kam: include a relax parameter?]
 
 !bt
 \begin{equation*} x^{k+1} = x^{k} + M^{-1}\residual^{k} , \end{equation*}
@@ -580,6 +607,8 @@ Conjugate Gradient method is not very sensitive to the choice of
 $\omega$. [hpl: Claim! Does TCSE1 have experiments?]
 We refer to cite{Templates_LA,Bruaset_1995} for more information about
 classical iterative methods as preconditioners.
+
+[kam: I would like some references here. ]
 
 ===== Incomplete factorization preconditioners =====
 label{linalg:ILU}

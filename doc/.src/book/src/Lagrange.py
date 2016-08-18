@@ -29,7 +29,7 @@ def Lagrange_polynomials_01(x, N):
     if isinstance(x, sym.Symbol):
         h = sym.Rational(1, N)
     else:
-        h = 1.0/(N-1)
+        h = 1.0/N
     points = [i*h for i in range(N+1)]
     psi = [Lagrange_polynomial(x, i, points) for i in range(N+1)]
     return psi, points

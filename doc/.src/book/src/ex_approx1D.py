@@ -95,16 +95,19 @@ def run_sin_by_Lagrange_leastsq(N, ymin=-1.2, ymax=1.2):
                     'Lagrange polynomials of degree %d' % N,
                     ymin=ymin, ymax=ymax)
 
+
+
 def run_abs_by_Lagrange_leastsq(N):
     """Least-squares with of Lagrange polynomials for |1-2x|."""
-    f = sym.abs(1-2*x)
+    f = abs(1-2*x)
     # This f will lead to failure of sympy integrate, fallback on numerical int.
     psi, points = Lagrange_polynomials_01(x, N)
     Omega=[0, 1]
-    u, c = least_squares(f, psi, Omega)
+    u, c = least_squares(f, psi, Omega, False)
     comparison_plot(f, u, Omega, filename='Lagrange_ls_abs_%d' % (N+1),
                     plot_title='Least squares approximation by '\
                     'Lagrange polynomials of degree %d' % N)
+
 
 def run_parabola_by_linear_interp1():
     f = 10*(x-1)**2 - 1

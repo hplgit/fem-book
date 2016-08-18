@@ -36,6 +36,8 @@ are linear in the unknown function or its derivatives. Linear here means that
 the unknown function, or a derivative of it, is multiplied by a number or
 a known function. All other differential equations are non-linear.
 
+[kam: nonlinear / linear has been described earlier - refer to proper section]
+
 The easiest way to see if an equation is nonlinear, is to spot nonlinear terms
 where the unknown function or its derivatives are multiplied by
 each other. For example, in
@@ -89,8 +91,8 @@ For example, the term $T(u) = (\sin^2 t)u'(t)$ is linear because
 
 !bt
 \begin{align*}
-T(au_1 + bu_2) &= (\sin^2 t)(au_1(t) + b u_2(t))\\
-& = a(\sin^2 t)u_1(t) + b(\sin^2 t)u_2(t)\\
+T(au_1 + bu_2) &= (\sin^2 t)(au_1(t) + b u_2(t))'\\
+& = a(\sin^2 t)u_1'(t) + b(\sin^2 t)u_2'(t)\\
 & =aT(u_1) + bT(u_2)\tp
 \end{align*}
 !et
@@ -161,7 +163,7 @@ methods. Explicit methods lead to a closed-form formula for
 finding new values of the unknowns, while implicit methods give
 a linear or nonlinear system of equations that couples (all) the
 unknowns at a new time level. Here we shall demonstrate that
-explicit methods constitute an efficient way to deal with nonlinear
+explicit methods may constitute an efficient way to deal with nonlinear
 differential equations.
 
 The Forward Euler
@@ -229,6 +231,8 @@ sections. What is meant by $u$ should be evident from the context: $u$
 may be 1) the exact solution of the ODE/PDE problem,
 2) the numerical approximation to the exact solution, or 3) the unknown
 solution at a certain time level.
+
+[kam: said earlier]
 
 The quadratic equation for the unknown $u^n$ in
 (ref{nonlin:timediscrete:logistic:eq:BE}) can, with the new
@@ -333,6 +337,9 @@ more compact form
 !et
 with $a=\Delta t$, $b=1-\Delta t$, and $c=-u^{(1)}$.
 Let $u^{-}$ be an available approximation of the unknown $u$.
+
+[kam: Perhaps say something about notation $u^{-}$. Sometimes $u^{-}$, sometimes $u{-}$ and sometimes $u\_$ ] 
+
 Then we can linearize the term $u^2$ simply by writing
 $u^{-}u$. The resulting equation, $\hat F(u)=0$, is now linear
 and hence easy to solve:
@@ -369,6 +376,8 @@ the value of $u$).
 The iteration is started with the value of the unknown at the
 previous time level: $u^{-}=u^{(1)}$.
 
+[kam: do we need the $\leftarrow$?]
+
 Some prefer an explicit iteration counter as superscript
 in the mathematical notation. Let $u^k$ be the computed approximation
 to the solution in iteration $k$. In iteration $k+1$ we want
@@ -383,7 +392,7 @@ time level counter is often also included:
 
 !bt
 \[ au^{n,k} u^{n,k+1} + bu^{n,k+1} - u^{n-1} = 0\quad\Rightarrow\quad u^{n,k+1}
-= \frac{u^n}{au^{n,k} + b},\quad k=0,1,\ldots,\]
+= \frac{u^{n-1}}{au^{n,k} + b},\quad k=0,1,\ldots,\]
 !et
 with the start value $u^{n,0}=u^{n-1}$ and the final converged value
 $u^{n}=u^{n,k}$ for sufficiently large $k$.
@@ -439,6 +448,8 @@ previous time step, as the *Picard1* method. It is a widely used
 approach in science and technology, but with some limitations if
 $\Delta t$ is not sufficiently small (as will be illustrated later).
 
+[kam: the *Picard1* notation is ugly. ]
+
 !bnotice
 
 Equation (ref{nonlin:timediscrete:logistic:BE:Picard:1it}) does not
@@ -473,7 +484,7 @@ written out as
 label{nonlin:timediscrete:logistic:geometric:mean:scheme}
 \end{equation}
 !et
-The term $u^{n+\half}$ is normally approximated by an arithmetic
+The first term $u^{n+\half}$ is normally approximated by an arithmetic
 mean,
 
 !bt
@@ -481,7 +492,7 @@ mean,
 !et
 such that the scheme involves the unknown function only at the time levels
 where we actually compute it.
-The same arithmetic mean applied to the nonlinear term gives
+The same arithmetic mean applied to the second term gives
 
 !bt
 \[ (u^{n+\half})^2\approx \frac{1}{4}(u^n + u^{n+1})^2,\]
@@ -501,7 +512,7 @@ unknown $u^{n+1}$:
 
 !bt
 \[ \frac{u^{n+1}-u^n}{\Delta t} =
-\half(u^n + u^{n+1}) + u^nu^{n+1},\]
+\half(u^n + u^{n+1}) - u^nu^{n+1},\]
 !et
 which can readily be solved:
 
@@ -545,6 +556,9 @@ a geometric mean (the difference in $u^{n+1}$
 being $\frac{1}{4}\Delta t u^n(u^{n+1}-u^n)\approx \frac{1}{4}\Delta t^2
 u^\prime u$, i.e., a difference of size $\Delta t^2$).
 !enotice
+
+[kam: this is the first time I've seen this $\overline{u}$ notation. 
+Also the finite difference notation has been poorly introduced]
 
 ===== Newton's method =====
 label{nonlin:timediscrete:logistic:Newton}
@@ -753,6 +767,10 @@ that the Picard1 method gives significant errors in addition to
 the time discretization unless the time step is as small as in
 the lower right plot.
 
+[kam: don't understand the argument  "larger than the
+time discretization error due to a large $\Delta t$". Seems counterintuitive.  
+Perhaps the point is that $T$.] 
+
 The *BE exact* curve corresponds to using the exact solution of the
 quadratic equation at each time level, so this curve is only affected
 by the Backward Euler time discretization.  The *CN gm* curve
@@ -811,6 +829,10 @@ accuracy in this problem, the time discretization is much more crucial
 than $\epsilon_r$. Ideally, one should estimate the error in the
 time discretization, as the solution progresses, and set $\epsilon_r$
 accordingly.
+
+[kam: the argument here is difficult to follow. For instance, 
+we don't know the difference in CN from 0.9 to 0.09. It also seem natural 
+to discuss BE Picard1 which seems far off and contradicts the conclusion? ]
 
 ===== Generalization to a general nonlinear ODE =====
 label{nonlin:ode:generic}
@@ -987,6 +1009,8 @@ if we interpret $u$ as a vector $u=(u_0(t),u_1(t),\ldots,u_N(t))$
 and $f$ as a vector function with components
 $(f_0(u,t),f_1(u,t),\ldots,f_N(u,t))$.
 
+[kam: Here we don't use bf] 
+
 Most solution methods for scalar ODEs, including
 the Forward and Backward Euler schemes and the
 Crank-Nicolson method, generalize in a
@@ -995,6 +1019,8 @@ arithmetics instead of scalar arithmetics, which corresponds to
 applying the scalar scheme to each component of the system.  For
 example, here is a backward difference scheme applied to each
 component,
+
+[kam: I think we should write $f_0(u_0^n, \ldots, u_N,t_n)$]
 
 !bt
 \begin{align*}
@@ -1054,7 +1080,7 @@ A Crank-Nicolson scheme reads
 \begin{align}
 \frac{u_0^{n+1}-u_0^{n}}{\Delta t} &= -\sin u_1^{n+\frac{1}{2}}
 - \beta u_0^{n+\frac{1}{2}}|u_0^{n+\frac{1}{2}}|\nonumber\\
-& \approx -\sin\left(\frac{1}{2}(u_1^{n+1} + u_1n)\right)
+& \approx -\sin\left(\frac{1}{2}(u_1^{n+1} + u_1^n)\right)
 - \beta\frac{1}{4} (u_0^{n+1} + u_0^n)|u_0^{n+1}+u_0^n|,\\
 \frac{u_1^{n+1}-u_1^n}{\Delta t} &= u_0^{n+\frac{1}{2}}\approx
 \frac{1}{2} (u_0^{n+1}+u_0^n)\tp
@@ -1149,6 +1175,8 @@ Given $A(u)u=b(u)$ and an initial guess $u^{-}$, iterate until convergence:
 change in the unknown, $||u - u^{-}||$, or the residual $||A(u)u-b||$,
 is sufficiently small, see Section ref{nonlin:systems:alg:terminate} for
 more details.
+
+[kam: as before check bf notation and $\leftarrow$]
 
 ===== Newton's method =====
 label{nonlin:systems:alg:Newton}

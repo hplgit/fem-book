@@ -1,6 +1,6 @@
 ## fem-book
 
-Resources for the book *Introduction to Numerical Methods for Variational Problems* by Hans Petter Langtangen.
+Resources for the book *Introduction to Numerical Methods for Variational Problems* by Hans Petter Langtangen and Kent-Andre Mardal.
 
 ## Directory structure
 

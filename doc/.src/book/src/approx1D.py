@@ -8,6 +8,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 #import scitools.std as plt
 
+def least_squares_non_verbose(f, psi, Omega, symbolic=True):
+    """
+    Given a function f(x) on an interval Omega (2-list)
+    return the best approximation to f(x) in the space V
+    spanned by the functions in the list psi.
+    """
+    N = len(psi) - 1
+    A = sym.zeros((N+1, N+1))
+    b = sym.zeros((N+1, 1))
+    x = sym.Symbol('x')
+    for i in range(N+1):
+        for j in range(i, N+1):
+            integrand = psi[i]*psi[j]
+            integrand = sym.lambdify([x], integrand)
+            I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            A[i,j] = A[j,i] = I
+        integrand = psi[i]*f
+        integrand = sym.lambdify([x], integrand)
+        I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+        b[i,0] = I
+    c = sym.mpmath.lu_solve(A, b)  # numerical solve
+    c = [c[i,0] for i in range(c.rows)]
+
+    u = sum(c[i]*psi[i] for i in range(len(psi)))
+    return u, c
+
+
+
 def least_squares(f, psi, Omega, symbolic=True):
     """
     Given a function f(x) on an interval Omega (2-list)
@@ -49,7 +77,7 @@ def least_squares(f, psi, Omega, symbolic=True):
         c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
     else:
         c = sym.mpmath.lu_solve(A, b)  # numerical solve
-        c = [c[i,0] for i in range(c.shape[0])]
+        c = [c[i,0] for i in range(c.rows)]
     print 'coeff:', c
 
     u = sum(c[i]*psi[i] for i in range(len(psi)))
@@ -215,7 +243,8 @@ def interpolation(f, psi, points):
     # c is a sympy Matrix object, turn to list
     c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
     print 'coeff:', c
-    u = sym.simplify(sum(c[i,0]*psi_sym[i] for i in range(N+1)))
+#    u = sym.simplify(sum(c[i,0]*psi_sym[i] for i in range(N+1)))
+    u = sym.simplify(sum(c[i]*psi_sym[i] for i in range(N+1)))
     print 'approximation:', u
     return u, c
 

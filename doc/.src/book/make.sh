@@ -63,8 +63,9 @@ system doconce format pdflatex $name $opt1 --device=$device --exercise_numbering
 doconce replace '\setlength{\lstboxwidth}{\linewidth+2mm}' '\setlength{\lstboxwidth}{120mm}' $name.tex  # lst
 system doconce replace 'linecolor=black,' 'linecolor=darkblue,' $name.tex
 system doconce subst 'frametitlebackgroundcolor=.*?,' 'frametitlebackgroundcolor=blue!5,' $name.tex
-system doconce replace '\maketitle' '\subtitle{Modeling, Algorithms, Analysis, Programming, and Verification}\maketitle' $name.tex
 doconce replace 'Released under CC Attr' '\\ Released under CC Attr' $name.tex
+
+
 
 rm -rf $name.aux $name.ind $name.idx $name.bbl $name.toc $name.loe
 

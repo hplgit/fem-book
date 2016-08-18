@@ -264,8 +264,12 @@ Appropriate code is
 ===== Problem: Experience the behavior of Newton's method =====
 label{nonlin:exer:Newton:problems1}
 
+[kam: where do we find this demo]
+
 The program "`Newton_demo.py`": "${fem_src}/Newton_demo.py" illustrates
 graphically each step in Newton's method and is run like
+
+[kam: where is this program?]
 
 !bc sys
 Terminal> python Newton_demo.py f dfdx x0 xmin xmax
@@ -415,7 +419,9 @@ than an arbitrary $n$ - the main point is the product and addition
 of Taylor series.)
 !ehint
 
+[kam: don't understand. E.g. what is cls]
 
+[kam: have not read these exercises]
 
 ===== Problem: Newton's method for linear problems =====
 label{nonlin:exer:Newton:linear}

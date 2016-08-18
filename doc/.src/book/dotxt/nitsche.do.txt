@@ -1,11 +1,7 @@
-TITLE: Lagrange Multiplier and Penalty Methods
-AUTHOR: hpl
-DATE: today
-
-
 ======= Optimization with constraint =======
 label{nitsche:fxy:opt}
 
+\newcommand{\uN}{u_N}
 Suppose we have a function
 
 !bt
@@ -21,7 +17,7 @@ directions, which implies
 which further implies
 !bt
 \[
-\frac{\partial f}{\partial x} = 0,\quad \frac{\partial f}{\partial x} = 0\tp
+\frac{\partial f}{\partial x} = 0,\quad \frac{\partial f}{\partial y} = 0\tp
 \]
 !et
 These two equations are in general nonlinear and can have many solutions,
@@ -33,9 +29,11 @@ This means that only $f$ values along the line $y=2-x$ are relevant,
 and we can imagine we view $f(x,y)$ along this line and want to find
 the the optimum value.
 
+[kam: need a plot]
+
 ===== Elimination of variables =====
 
-Our $f$ is obviously a function one variable along the line.
+Our $f$ is obviously a function of one variable along the line.
 Inserting $y=2-x$ in $f(x,y)$ eliminates $y$ and leads to $f$ as
 function of $x$ alone:
 
@@ -249,7 +247,7 @@ becomes
 
 !bt
 \begin{equation}
-\frac{d}{d\epsilon} \int\limits_{\partial\Omega_N}\uN \cdot (u+\epsilon v) \ds
+\frac{d}{d\epsilon} \int\limits_{\partial\Omega_N} \uN \cdot (u+\epsilon v) \ds
 = \int\limits_{\partial\Omega_N}\uN v \ds,
 label{nitcshe:varform:Poisson3}
 \end{equation}

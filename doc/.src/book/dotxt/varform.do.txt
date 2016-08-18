@@ -135,6 +135,7 @@ label{fem:deq:1D:models:simple}
 
 A common model problem used much in the forthcoming examples is
 
+
 !bt
 \begin{equation}
 -u''(x) = f(x),\quad x\in\Omega=[0,L],\quad u(0)=0,\ u(L)=D
@@ -166,6 +167,7 @@ using `sympy`. Some common code is defined first:
 @@@CODE src/u_xx_f_sympy.py fromto: import sympy@def model1
 The following function computes the solution
 symbolically for the model problem (ref{fem:deq:1D:model1}):
+[kam: include integration formula as well?]
 
 @@@CODE src/u_xx_f_sympy.py fromto: def model1@def model2
 Calling `model1(2, L, D)` results in the solution
@@ -236,7 +238,7 @@ the approximation error in our case is $e=\uex - u$ and $\uex$ is
 unknown. The only general indicator we have on the quality of the approximate
 solution is to what degree $u$ fulfills the differential equation.
 Inserting $u=\sum_j c_j \baspsi_j$ into $\mathcal{L}(u)$ reveals that the
-result is not zero, because $u$ is only likely to equal $\uex$.
+result is not zero, because $u$ in general is an approximation and not identical to $\uex$.
 The nonzero result,
 
 idx{residual}
@@ -317,9 +319,14 @@ label{fem:deq:1D:Galerkin0}
 !et
 This is the Galerkin method for differential equations.
 
+[kam: I would rather say that the abstract formulation can be made concrete
+for a choosen basis]
+
 #As shown in (ref{fem:approx:vec:Np1dim:Galerkin}) and (ref{fem:approx:vec:Np1dim:Galerkin0}),
-This statement is equivalent to $R$ being orthogonal to the $N+1$
-basis functions only:
+The above abstract statment can be made concrete by choosing a concrete basis.
+For example, the statement is equivalent to $R$ being orthogonal to the $N+1$
+basis functions $\{\baspsi_i\}$ spanning $V$ (and this is
+the most convenient way to express (ref{fem:deq:1D:Galerkin0}):
 
 !bt
 \begin{equation}
@@ -368,7 +375,7 @@ Statements like (ref{fem:deq:1D:Galerkin0}), (ref{fem:deq:1D:Galerkin}),
 (ref{fem:deq:1D:WRM}))
 are known as
 "weak formulations": "https://en.wikipedia.org/wiki/Weak_formulation"
-or *variational formulations*. (Other terms are weak and variational forms.)
+or *variational formulations*.
 These equations are in this text primarily used for a numerical approximation
 $u\in V$, where $V$ is a *finite-dimensional* space with dimension
 $N+1$. However, we may also let the exact solution $\uex$ fulfill a
@@ -378,7 +385,7 @@ dimensions (because an infinite number of parameters are needed to
 specify the solution). The variational formulation for $\uex$
 in an infinite-dimensional space $V$ is
 a mathematical way of stating the problem and acts as an
-alternative to the usual formulation of a differential equation with
+alternative to the usual (strong) formulation of a differential equation with
 initial and/or boundary conditions.
 
 Much of the literature on finite
@@ -390,6 +397,10 @@ approximate solution $u$ in a finite-dimensional space $V$ inserted in
 the differential equation, and then the resulting residual is demanded to be
 orthogonal to $V$.
 !enotice
+
+[kam: I consider a form something like an $f(...) \rightarrow R$ while
+'a formulation' is a formulation of a problem. Hence, a PDE problem has
+a variational formulation in terms of forms.]
 
 !bnotice Remark on terminology
 The terms weak or variational formulations often refer to a statement like
@@ -456,7 +467,7 @@ label{fem:deq:1D:Dirac}
 \end{equation}
 !et
 Intuitively, we may think of $\delta (x-\xno{i})$ as a very peak-shaped
-function around $x=\xno{i}$ with an integral $\int_{-\infty}^\infty delta(x-\xno{i})dx$ that evaluates to unity. Mathematically, it can be shown that
+function around $x=\xno{i}$ with an integral $\int_{-\infty}^\infty \delta(x-\xno{i})dx$ that evaluates to unity. Mathematically, it can be shown that
 $\delta (x-\xno{i})$ is the limit of a Gaussian function centered at
 $x=\xno{i}$ with a standard deviation that approaches zero.
 Using this latter model, we can roughly visualize delta functions as
@@ -754,6 +765,8 @@ We can quickly use `sympy` to verify that the maximum error
 occurs at the midpoint $x=L/2$ and find what the errors are.
 First we set up the error expressions:
 
+[kam: dette er uklart. Jeg tror vi trenger noen figurer]
+
 !bc pyshell
 >>> import sympy as sym
 >>> # Computing with Dirichlet conditions: -u''=2 and sines
@@ -842,7 +855,7 @@ label{fem:deq:1D:intbyparts0}
 !et
 Integration by parts serves to reduce the order of the derivatives and
 to make the coefficient matrix symmetric since
-$(\baspsi_i',\baspsi_j') = (\baspsi_i',\baspsi_j')$.
+$(\baspsi_i',\baspsi_j') = (\baspsi_j',\baspsi_i')$.
 The symmetry property depends
 on the type of terms that enter the differential equation.
 As will be seen later in Section ref{fem:deq:1D:BC:nat},
@@ -1069,8 +1082,8 @@ label{fem:deq:1D:optimization}
 
 === Example ===
 
-Many physical problems can be modeled as partial differential equation
-and as a minimization problem. For example, the deflection $u(x)$ of an
+Many physical problems can be modeled as  partial differential equations
+and as  minimization problems. For example, the deflection $u(x)$ of an
 elastic string subject to a transversal force $f(x)$
 is governed by the differential equation problem
 
@@ -1123,6 +1136,10 @@ over all functions $v\in V$. That is,
 !et
 
 === Derivation ===
+
+[kam: reformuler første setning. Sjekk resten.
+Skal si tidlig at: Find u such that .. droppes
+]
 
 To see this, we write $F(u)\leq F(\eta)$, $\forall\eta\in V$ instead
 and set $\eta=u + \epsilon v$, where $v\in V$ is an
@@ -1187,7 +1204,7 @@ Minimization of $\bar F$ implies
 !bt
 \[ \frac{\partial\bar F}{\partial c_i}=0,\quad i\in\If\tp\]
 !et
-After quite some algebra one finds
+After some algebra one finds
 
 !bt
 \[ \sum_{j\in\If} a(\baspsi_i,\baspsi_j)c_j = L(\baspsi_i),\quad i\in\If,\]
@@ -1326,18 +1343,20 @@ gives
 
 !bt
 \[ \sum_{j\in\If} (\dfc\baspsi_j', \baspsi_i')c_j  =
-(f,\baspsi_i) + (a(D-C)L^{-1}, \baspsi_i'), \quad i\in\If
+(f,\baspsi_i) + (\alpha (D-C)L^{-1}, \baspsi_i'), \quad i\in\If
 \tp
 \]
 !et
 This is nothing but a linear system $\sum_j A_{i,j}c_j=b_i$
 with
 
+[kam: check for $a$ and $\alpha$ in this example]
+
 !bt
 \begin{align*}
-A_{i,j} &= (a\baspsi_j', \baspsi_i') = \int_{\Omega} \dfc(x)\baspsi_j'(x),
+A_{i,j} &= (\alpha \baspsi_j', \baspsi_i') = \int_{\Omega} \dfc(x)\baspsi_j'(x),
 \baspsi_i'(x)\dx,\\
-b_i &= (f,\baspsi_i) + (a(D-C)L^{-1},\baspsi_i')=
+b_i &= (f,\baspsi_i) + (\alpha (D-C)L^{-1},\baspsi_i')=
 \int_{\Omega} \left(f(x)\baspsi_i(x) + \dfc(x)\frac{D-C}{L}\baspsi_i'(x)\right) \dx
 \tp
 \end{align*}
@@ -1379,6 +1398,7 @@ a test function $v\in V$ and integrating over $\Omega$:
 !et
 We apply integration by parts to the $u''v$ term only. Although we could
 also integrate $u' v$ by parts, this is not common.
+[kam: sometimes used for NS.]
 The result becomes
 
 !bt
@@ -1525,6 +1545,8 @@ be solved by constructing a sequence of linear systems whose solutions
 hopefully converge to the solution of the nonlinear system. Frequently applied
 methods are Picard iteration and Newton's method.
 
+
+
 !split
 ======= Exercises =======
 
@@ -1603,6 +1625,7 @@ file=cable_sin
 ## Figur! Nice to have for both symmetric and complete problem
 ## See also exer/cable_sin_JDokken.py
 
+
 A hanging cable of length $L$
 with significant tension $T$ has a deflection $w(x)$
 governed by
@@ -1627,6 +1650,8 @@ $w'(L/2)=0$.
 
 The problem can be scaled by introducing dimensionless independent
 and dependent variables,
+
+[kam: don't understand the sentence]
 
 !bt
 \[ \bar x = \frac{x}{L/2},\quad \bar u = \frac{w}{w_c},\]
@@ -2342,6 +2367,8 @@ b_i &= (2,\baspsi_i) - (D,\baspsi_i') -C\baspsi_i(0)\\
 !et
 Relevant `sympy` commands to help calculate these expressions are
 
+[kam: check - according to my hand calculations it is - D]
+
 @@@CODE src/u_xx_2_CD.py fromto: from sympy@N = 1
 The output becomes
 
@@ -2409,7 +2436,7 @@ because if $(\uex - B)\in V$, $u = \uex$, as proved next.
 ===== When the numerical method is exact =====
 
 We have some variational formulation: find $(u-B)\in V$ such that
-$a(u,v)=L(u)\ \forall V$. The exact solution also fulfills
+$a(u,v)=L(u)\ \forall v\in V$. The exact solution also fulfills
 $a(\uex,v)=L(v)$, but normally $(\uex -B)$ lies in a much larger
 (infinite-dimensional) space. Suppose, nevertheless, that
 $\uex - B = E$, where $E\in V$. That is, apart from Dirichlet conditions,
@@ -2435,7 +2462,7 @@ a(E-F),v) &= 0
 If $a(E-F),v) = 0$ for all $v$ in $V$, then $E-F$ must be zero everywhere
 in the domain, i.e., $E=F$. Or in other words: $u=\uex$. This proves
 that the exact solution is recovered if $\uex - B$ lies in $V$., i.e.,
-can expressed as $\sum_{j\in\If}d_j\baspsi_j$ if $\{\baspsi_j\}_{j\in\If}$
+can be expressed as $\sum_{j\in\If}d_j\baspsi_j$ where $\{\baspsi_j\}_{j\in\If}$
 is a basis for $V$. The method will then compute the solution $c_j=d_j$,
 $j\in\If$.
 
@@ -2449,7 +2476,7 @@ finds the exact solution.
 label{fem:deq:1D:fem1}
 
 The purpose of this section is to demonstrate in detail how
-the finite element method can the be applied to the model problem
+the finite element method can then be applied to the model problem
 
 !bt
 \[ -u''(x) = 2,\quad x\in (0,L),\ u(0)=u(L)=0,\]
@@ -2485,6 +2512,7 @@ functions associated with *all* nodes in the mesh. The parameter
 $N$, which counts the unknowns from 0 to $N$, is then equal to
 $N_n-1$ such that the total number of unknowns, $N+1$, is the
 total number of nodes.
+[kam: Need to check this $N_n$ thing]
 However, when solving differential equations we will often have
 $N<N_n-1$ because of Dirichlet boundary conditions. The reason is
 simple: we know what $u$ are at some (here two) nodes, and the number of
@@ -2524,6 +2552,9 @@ the unknowns in the final equation system. These unknowns take on
 the numbers $0,\ldots,N$. Unknown number $j$ in the linear system
 corresponds to degree of freedom number $\nu (j)$, $j\in\If$.
 We can then write
+
+[kam: I think we should say somewhere that this is motivated by 2D, 3D where there is no ordering
+that is natural.]
 
 !bt
 \[ \baspsi_i=\basphi_{\nu(i)},\quad i=0,\ldots,N\tp\]
@@ -2691,6 +2722,8 @@ label{fem:deq:1D:ex1:Ab:glob}
 \end{equation}
 !et
 
+[kam: no BC - check that it is correct all the way through and with the $N_n$ thing]
+
 ===== Comparison with a finite difference discretization =====
 label{fem:deq:1D:fdm_vs_fem}
 
@@ -2727,7 +2760,7 @@ yields
 -\frac{u_{i-1} - 2u_{i} + u_{i+1}}{h^2} = 2,
 \end{equation}
 !et
-which is, in fact, equivalent to (ref{fem:deq:1D:fem:ex1}) if
+which is, in fact, equal to (ref{fem:deq:1D:fem:ex1}) if
 (ref{fem:deq:1D:fem:ex1}) is divided by $h$.
 Therefore, the finite difference and the finite element method are
 equivalent in this simple test problem.
@@ -2964,8 +2997,8 @@ label{fem:deq:1D:fem:essBC:Bfunc}
 In Section ref{fem:deq:1D:essBC:Bfunc} we introduced a boundary function $B(x)$
 to deal with nonzero Dirichlet boundary conditions for $u$. The
 construction of such a function is not always trivial, especially not
-in multiple dimensions. However, a simple and general construction
-idea exists when the
+in multiple dimensions. However, a simple and general constructive idea
+exists when the
 basis functions have the property
 
 !bt
@@ -2995,6 +3028,9 @@ B(x) = \sum_{j\in\Ifb} U_j\basphi_j(x)\tp
 !et
 It is easy to verify that
 $B(\xno{i})= \sum_{j\in\Ifb} U_j\basphi_j(\xno{i})=U_i$.
+
+[kam: so dofs in the interior are $c_j$ whereas on
+the boundary it is $U_j$.]
 
 The unknown function can then be written as
 
@@ -3124,7 +3160,8 @@ $B'=C\basphi_0' + D\basphi_{N_n-1}'$.
 
 Most of the terms in the linear system have already been computed
 so we concentrate on the new contribution from the boundary function.
-The integral $C\int_0^L \basphi_{0}'(x))\basphi_i'(x) \dx$ can only get
+The integral $C\int_0^L \basphi_{0}'(x))\basphi_i'(x) \dx$, associated
+with the Dirichlet condition in $x=0$,  can only get
 a nonzero contribution from the first cell,
 $\Omega^{(0)}=[\xno{0},\xno{1}]$
 since $\basphi_{0}'(x)=0$ on all other cells. Moreover,
@@ -3473,7 +3510,7 @@ subtracting column number $k$ in the coefficient matrix, i.e., $A_{i,k}$
 for $i\in\If$, times the boundary value $U_k$, from the
 right-hand side: $b_i \leftarrow b_i - A_{i,k}U_k$,
 $i=0,\ldots,N$. Then we put
-zeroes in row number $k$ *and* column number $k$ in the coefficient matrix,
+zeroes in both row number $k$ *and* column number $k$ in the coefficient matrix,
 and finally set $b_k=U_k$. The steps in algorithmic form becomes
 
   o $b_i \leftarrow b_i - A_{i,k}U_k$ for $i\in\If$
@@ -3593,6 +3630,8 @@ label{fem:deq:1D:ex1:Ab:elm:bc:N}
 We can also perform the symmetric modification. This operation affects
 only the last cell with a nonzero Dirichlet condition. The algorithm
 is the same as for the global linear system, resulting in
+
+[kam: both cells have Dirichlet]
 
 !bt
 \begin{equation}
@@ -3760,7 +3799,7 @@ condition $u'(0)=C$.
 
 Consider first the approach where Dirichlet conditions are incorporated
 by a $B(x)$ function and the known degree of freedom
-$C_{N_n-1}$ is left out from the linear system
+$C_{N_n-1}$ is left out of the linear system
 (see Section ref{fem:deq:1D:BC:nat:uLtest}).
 The relevant formula for the linear
 system is given by (ref{fem:deq:1D:natBC}).
@@ -3832,6 +3871,8 @@ h - C \\
 label{fem:deq:1D:BC:nat:Aub:system}
 \end{equation}
 !et
+
+[kam: noe rart her, skal være derivert i 0 eller?]
 
 Next we consider the technique where we modify the linear system to
 incorporate Dirichlet conditions
@@ -4390,6 +4431,9 @@ entry $(i,j)$.  The `psi` variable is a Python dictionary holding the
 basis functions and their derivatives in symbolic form. More
 precisely, `psi[q]` is a list of
 
+[kam: lhs and rhs should be spelled out when first used, not sure
+if they are]
+
 !bt
 \begin{equation*}
 \{\frac{d^q\baspsi_0}{dx^q},\ldots,\frac{d^q\baspsi_{N_n-1}}{dx^q}\}
@@ -4462,6 +4506,8 @@ file has error checking and meaningful error messages in such cases.
 The `solver` code below is a condensed version of the real one, with
 the purpose of showing how to automate the Galerkin or least squares
 method for solving differential equations in 1D with global basis functions:
+
+[kam: this point has been made many times already]
 
 !bc pycod
 def solver(integrand_lhs, integrand_rhs, psi, Omega,
@@ -4644,7 +4690,7 @@ arguments in the above functions correspond to the index in the
 integrand contribution from an integration point to $\tilde
 A^{(e)}_{r,s}$ and $\tilde b^{(e)}_r$. The variables `e` and `h` are
 the current element number and the length of the cell, respectively.
-Specific examples below will make it clear how to construction these
+Specific examples below will make it clear how to construct these
 Python functions.
 
 Given a mesh represented by `vertices`, `cells`, and `dof_map` as
@@ -4702,6 +4748,8 @@ for e in range(len(cells)):
 
 <solve linear system>
 !ec
+
+[kam:show irhs and ilhs]
 
 A complete function `finite_element1D_naive`
 for the 1D finite algorithm above, is found in the file
@@ -4865,6 +4913,8 @@ must contain the integrand, but without the $\det J\dX$ term, and
 the derivatives $d\refphi_r(X)/dx$
 with respect to the physical $x$ coordinates are
 contained in `phi[1][r](X)`, computed by the function `basis`.
+
+[kam: why " but without the $\det J\dX$ term"]
 
 !bc pycod
 def ilhs(e, phi, r, s, X, x, h):
@@ -5254,6 +5304,10 @@ we have the relation
 !et
 which we can solve with respect to $\nabla_{\x}\basphi_i$:
 
+[kam: I understand that $\cdot$ is intentional, but we
+need to say something about why we use $\cdot$ for some
+matrix vector products and not for others]
+
 !bt
 \begin{equation}
 \nabla_{\x}\basphi_i = J^{-1}\cdot\nabla_{\X}\refphi_r\tp
@@ -5273,7 +5327,7 @@ integral in the physical domain to its counterpart over the reference cell:
 
 !bt
 \begin{equation}
-\int_{\Omega}^{(e)} \dfc(\x)\nabla_{\x}\basphi_i\cdot\nabla_{\x}\basphi_j\dx
+\int_{\Omega^{(e)}} \dfc(\x)\nabla_{\x}\basphi_i\cdot\nabla_{\x}\basphi_j\dx =
 \int_{\tilde\Omega^r} \dfc(\x(\X))(J^{-1}\cdot\nabla_{\X}\refphi_r)\cdot
 (J^{-1}\cdot\nabla\refphi_s)\det J\dX
 \end{equation}
@@ -5315,6 +5369,9 @@ Rules with 1, 3, 4, and 7 points over the triangle will exactly integrate
 polynomials of degree 1, 2, 3, and 4, respectively.
 In 3D, rules with 1, 4, 5, and 11 points over the tetrahedron will
 exactly integrate polynomials of degree 1, 2, 3, and 4, respectively.
+
+[kam: name the quadrature families]
+
 
 ## See http://www.mems.rice.edu/~akin/Elsevier/Chap_10.pdf
 ## for order of polynomials
@@ -5419,6 +5476,9 @@ functions by $r$, and look up vertex coordinates through $q(e,r)$.
 
 Similar formulas exist for integration of P1 elements in 3D.
 
+[kam: tempting to show some code, barycentric coord or
+Bernstein - but try not to make it overly abstract]
+
 ===== A glimpse of the mathematical theory of the finite element method =====
 
 Almost all books on the finite element method that introduces the
@@ -5447,6 +5507,9 @@ around time-dependent problems, but then we need a different set of
 tools for the analysis. These tools are based on converting finite
 element equations to finite difference form and studying Fourier wave
 components.
+
+[kam: This is really two remarks in one and we can split
+and put them in more appropriate place. Time is dealt with later. ]
 
 === Abstract variational forms ===
 
@@ -5500,6 +5563,8 @@ The requirements of square-integrable zeroth- and first-order derivatives
 are motivated from the formula for $a(u,v)$ where products of the
 first-order derivatives are to be integrated on $\Omega$.
 
+[kam: remark on the usage of the symbol $H^1_0$ and bc]
+
 The Sobolev space $H^1_0(\Omega)$ has an inner product
 
 !bt
@@ -5521,7 +5586,7 @@ such that $\uex\in\Vex$. The space has an associated norm $||v||$
  o $L(v)$ is linear in its argument.
  o $a(u,v)$ is a bilinear in its arguments.
  o $L(v)$ is bounded (also called continuous) if there exists a positive
-   constant $c_0$ such that $|L(v)|\leq c_0||v||$ $\forall v\in Vex$.
+   constant $c_0$ such that $|L(v)|\leq c_0||v||$ $\forall v\in \Vex$.
  o $a(u,v)$ is bounded (or continuous) if there exists a positive constant
    $c_1$ such that $|a(u,v)|\leq c_1||u|| ||v||\ \forall u,v\in\Vex$.
  o $a(u,v$) is elliptic (or coercive) if there exists a positive
@@ -5531,15 +5596,20 @@ such that $\uex\in\Vex$. The space has an associated norm $||v||$
 Based on the above assumptions, which must be verified in each specific
 problem, one can derive some general results that are listed below.
 
+[kam: remark that symmetry is not needed for Lax-M but convenient here]
+
 === Existence and uniqueness ===
 
-There exists a unique solution of the problem *find* $\uex\in\Vex$
+There exists a unique solution of the problem: find $\uex\in\Vex$
 such that
 
 !bt
 \[ a(\uex,v)=L(v)\quad\forall v\in\Vex\tp\]
 !et
 (This result is known as the Lax-Milgram Theorem.)
+
+[kam: why the *find* we use "There exists a unique solution of the
+problem: find ... elsewhere]
 
 === Stability ===
 
@@ -5571,6 +5641,7 @@ The discrete solution $u\in V$ is the best approximation in energy norm,
 !et
 This is quite remarkable: once we have $V$ (i.e., a mesh), the Galerkin
 method finds the best approximation in this space.
+[kam: i.e., a mesh + a fe]
 In the example above, we have $||v||_a=\int_0^1 (v')^2dx$, so
 the derivative $u'$ is closer to $\uex'$ than any other possible
 function in $V$:
@@ -5622,6 +5693,7 @@ cell length.
 The estimate shows that choosing
 elements with higher-degree polynomials (large $s$) requires more
 smoothness in $\uex$ since higher-order derivatives need to be square-integrable.
+[kam: remove L2 part here. Decide on how to write norms]
 
 A consequence of the error estimate is that $u'\rightarrow \uex'$
 as $h\rightarrow 0$, i.e., the approximate solution converges to
@@ -5631,6 +5703,8 @@ The constant $C$ in this and the next estimate depends on the shape
 of triangles in 2D and tetrahedra in 3D: squeezed elements with a
 small angle lead to a large $C$, and such deformed elements are
 not favorable for the accuracy.
+
+[kam: The constant may depend on the shape]
 
 One can generalize the above estimate to the general problem class
 $a(u,v)=L(v)$: the error in the derivative is proportional
@@ -5661,6 +5735,9 @@ In general, the convergence is $h^{s+1}$ for elements with polynomials
 of degree $s$. Note that the estimate for $u'$ is proportional to
 $h$ raised to one power less.
 
+[kam: no reason to let the L2 estimate come after the H1 estimate
+unless we want to prove something]
+
 # #ifdef UNFINISHED
 === A posteriori error estimate ===
 
@@ -5677,6 +5754,13 @@ is cite{Larson_2013}
 # #endif
 
 !split
+
+[kam: summary is placed at a random place. I suggest
+to conclude each chap with a summary. In fact every
+chap may also begin with a outline that highlights
+the story]
+
+
 ======= Summary =======
 
  * When approximating $f$ by $u = \sum_j c_j\basphi_j$, the least squares
@@ -5746,6 +5830,12 @@ is cite{Larson_2013}
    no Dirichlet condition is set.
 
 !split
+
+[kam: I'd like to also use the word "localized" and not only
+the term "almost orthogonal"]
+
+[kam: advare om Dirichlet bonazaen på forhånd]
+
 ======= Exercises =======
 
 ===== Exercise: Compute the deflection of a cable with 2 P1 elements =====
@@ -5767,8 +5857,7 @@ the Galerkin method, after integration by parts, reads
 We have two elements,
 $\Omega^{(0)}=[0,\half]$ and $\Omega^{(1)}=[\half,1]$.
 
-=== Method 1: Excluding the unknown at $x=0$ ===
-
+__Method 1: Excluding the unknown at $x=0$.__
 Since $u(0)=0$, we exclude the value at $x=0$ as degree of freedom in
 the linear system. (There is no need for any boundary function.)
 The expansion reads $u=c_0\basphi_1(x) + c_1\basphi_2(x)$.
@@ -5835,8 +5924,7 @@ The difference between the numerical and exact solution is that the
 numerical solution varies linearly over the two elements while the
 exact solution is quadratic.
 
-=== Method 2: Modifying the linear system ===
-
+__Method 2: Modifying the linear system.__
 Now we let $c_i$ correspond to the value at node $\xno{i}$, i.e.,
 all known Dirichlet values become part of the linear system.
 The expansion is now simply $u=\sum_{i=0}^2c_i\basphi_i(x)$, with
@@ -5948,8 +6036,7 @@ or in mathematical notation:
 \]
 !et
 
-=== Method 1: Excluding the unknown at $x=0$ ===
-
+__Method 1: Excluding the unknown at $x=0$.__
 The expansion is $u=c_0\basphi_1(x) + c_1\basphi_2(x)$. The element matrix
 corresponding to the first element excludes contributions associated with
 the unknown at the left node, i.e., we exclude row and column 0. In the
@@ -5994,8 +6081,7 @@ ref{fem:deq:exer:cable:2P1}, the values at the nodes are exact, but
 this time the variation between the nodes is quadratic, i.e., exact.
 One P2 element produces the complete, exact solution.
 
-=== Method 2: Modifying the linear system ===
-
+__Method 2: Modifying the linear system.__
 This time the expansion reads $u=\sum_{i=0}^2 c_i\basphi_i(x)$ with
 three unknowns $c_0$, $c_1$, and $c_2$. The linear system consists
 of the complete $3\times 3$ element matrix and the corresponding
@@ -6322,6 +6408,8 @@ h_{N_e}
 !esol
 !esubex
 
+[kam: no details about the non-uniformity of the mesh]
+
 !bsubex
 It is of interest to compare the discrete equations for the finite
 element method in a non-uniform mesh with the corresponding discrete
@@ -6444,6 +6532,8 @@ Plot the exact solution and the finite element solution for
 $d=1,2,3,4$ and $m=0, 1, 2, 3, 4$. Find values of $d$ and $m$
 that make the finite element solution exact at the nodes in the mesh.
 
+[kam: presume that $d$ is polynomial degree. Is that clear?]
+
 !bhint
 Use the `mesh_uniform`, `finite_element1D`, and `u_glob2` functions
 from the `fe1D.py` module.
@@ -6511,7 +6601,7 @@ discrepancy between the numerical and exact values at the nodes.
 
 % for m in [0, 1, 2, 3, 4]:
 
-=== Plots for m=${m} ===
+__Plots for m=${m}.__
 
 FIGURE: [fig/u_xx_xm${m}_P1to4, width=800 frac=1]
 % endfor
