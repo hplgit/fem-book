@@ -37,7 +37,7 @@ label{overview:2d:fdm}
 On a structured mesh, the stencil is convenient to implement 
 and appears natural. However, for a unstructured "complicated" domain
 as shown in Figure X, we would need to be careful when placing
-points and evaluting stencils and functions.  Both accuracy and efficiency
+points and evaluating stencils and functions.  Both accuracy and efficiency
 may easily be sacrificed by a reckless implementation.   
 
 In general, a domain like the one represented in Fig X will be
@@ -93,7 +93,7 @@ label{overview:fem:a}
 
 A perfectly natural question at this point is: Why multiply 
 with a test function $v$? The simple answer is that 
-there are $N+1$ uknowns that needs to be determined in $u$ 
+there are $N+1$ unknowns that needs to be determined in $u$ 
 in (ref{overview:u:fem}) 
 and for this we need $N+1$ equations. The equations are
 obtained by using  $N+1$ different test functions which when used 
@@ -115,7 +115,7 @@ The reasons behind this alternative formulation is rather mathematical and will
 not be a major subject of this book as it is well described elsewhere. 
 The precise explanation is also rather mathematical and requires tools
 from functional analysis. 
-With the above Gauss-Green's lemma and assuming now that the boundary conditions vannish the
+With the above Gauss-Green's lemma and assuming now that the boundary conditions vanish the
 stencil is represented by  
 
 !bt
@@ -139,7 +139,7 @@ In fact, finite element packages like FEniCS are typically
 structured as general toolboxes that can be adapted to any PDE
 as soon as the derivation of variational formulations is mastered. 
 The main obstacle here for a novice FEM user is then to understand the
-concept of trial functions, test functions realized in terms of polynomial spaces. 
+concept of trial functions, test functions realised in terms of polynomial spaces. 
 
 While the finite element method is versatile and may be adapted to any
 PDE on any domain in any dimension, the different methods that are derived
