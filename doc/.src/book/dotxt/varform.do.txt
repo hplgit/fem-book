@@ -161,13 +161,23 @@ label{fem:deq:1D:model3}
 \end{equation}
 !et
 
-We can easily solve these model problems
+The solution $u$ to the model problem (ref{fem:deq:1D:model1})
+can be determined as 
+!bt
+\begin{align*}
+u'(x) &= -\int_0^x f(x) + c_0, \\  
+u(x) &= \int_0^x u'(x) + c_1,  
+\end{align*}
+!et
+where $c_0$ and $c_1$ are determined by the boundary conditions 
+such that $u'(0) = C$ and $u(L) = D$. 
+
+Computing the solution is easily done 
 using `sympy`. Some common code is defined first:
 
 @@@CODE src/u_xx_f_sympy.py fromto: import sympy@def model1
 The following function computes the solution
 symbolically for the model problem (ref{fem:deq:1D:model1}):
-[kam: include integration formula as well?]
 
 @@@CODE src/u_xx_f_sympy.py fromto: def model1@def model2
 Calling `model1(2, L, D)` results in the solution
@@ -319,8 +329,6 @@ label{fem:deq:1D:Galerkin0}
 !et
 This is the Galerkin method for differential equations.
 
-[kam: I would rather say that the abstract formulation can be made concrete
-for a choosen basis]
 
 #As shown in (ref{fem:approx:vec:Np1dim:Galerkin}) and (ref{fem:approx:vec:Np1dim:Galerkin0}),
 The above abstract statment can be made concrete by choosing a concrete basis.
@@ -398,9 +406,6 @@ the differential equation, and then the resulting residual is demanded to be
 orthogonal to $V$.
 !enotice
 
-[kam: I consider a form something like an $f(...) \rightarrow R$ while
-'a formulation' is a formulation of a problem. Hence, a PDE problem has
-a variational formulation in terms of forms.]
 
 !bnotice Remark on terminology
 The terms weak or variational formulations often refer to a statement like
@@ -765,7 +770,6 @@ We can quickly use `sympy` to verify that the maximum error
 occurs at the midpoint $x=L/2$ and find what the errors are.
 First we set up the error expressions:
 
-[kam: dette er uklart. Jeg tror vi trenger noen figurer]
 
 !bc pyshell
 >>> import sympy as sym
@@ -903,6 +907,10 @@ for $i\in\If$. What about a boundary condition like $u(L)=D\neq0$?
 This condition immediately faces a problem:
 $u = \sum_j c_j\basphi_j(L) = 0$ since all $\basphi_i(L)=0$.
 
+We remark that we  faced exactly the same problem  in Section ref{fem:approx:global:Fourier} where
+we considered Fourier series approximations of functions that where non-zero at the boundaries.
+We will use the same trick as we did earlier to get around this problem.  
+
 A boundary condition of the form $u(L)=D$ can be implemented by
 demanding that all $\baspsi_i(L)=0$, but adding a
 *boundary function* $B(x)$ with the right boundary value, $B(L)=D$, to
@@ -919,7 +927,7 @@ This $u$ gets the right value at $x=L$:
 \begin{equation*} u(L) = B(L) + \sum_{j\in\If} c_j\baspsi_j(L) = B(L) = D\tp  \end{equation*}
 !et
 The idea is that for any boundary where $u$ is known we demand $\baspsi_i$ to
-vanish and construct a function $B(x)$ to attain the boundary value of $u$.
+vanish and construct a function $B(x)$ to attain the boundary value of $u$. 
 There are no restrictions on how $B(x)$ varies with $x$ in the interior of the
 domain, so this variation needs to be constructed in some way. Exactly how
 we decide the variation to be, is not important.
@@ -1137,8 +1145,8 @@ over all functions $v\in V$. That is,
 
 === Derivation ===
 
-[kam: reformuler første setning. Sjekk resten.
-Skal si tidlig at: Find u such that .. droppes
+[kam: 
+need that F is convex and a is positive, symmetric, right? Check 
 ]
 
 To see this, we write $F(u)\leq F(\eta)$, $\forall\eta\in V$ instead
@@ -1350,7 +1358,6 @@ gives
 This is nothing but a linear system $\sum_j A_{i,j}c_j=b_i$
 with
 
-[kam: check for $a$ and $\alpha$ in this example]
 
 !bt
 \begin{align*}
@@ -1398,7 +1405,6 @@ a test function $v\in V$ and integrating over $\Omega$:
 !et
 We apply integration by parts to the $u''v$ term only. Although we could
 also integrate $u' v$ by parts, this is not common.
-[kam: sometimes used for NS.]
 The result becomes
 
 !bt
@@ -1648,10 +1654,8 @@ w(x_0-h))/(2h)=0$. We can therefore utilize symmetry to halve the domain.
 We then seek $w(x)$ in $[0,L/2]$ with boundary conditions $w(0)=0$ and
 $w'(L/2)=0$.
 
-The problem can be scaled by introducing dimensionless independent
-and dependent variables,
+The problem can be scaled by introducing dimensionless  variables,
 
-[kam: don't understand the sentence]
 
 !bt
 \[ \bar x = \frac{x}{L/2},\quad \bar u = \frac{w}{w_c},\]

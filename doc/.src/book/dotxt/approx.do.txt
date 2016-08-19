@@ -1449,8 +1449,6 @@ well, at least visually.
 
 FIGURE: [fig/parabola_ls_sines4_12_wfterm, width=800]  Best approximation of a parabola by a sum of 3 (left) and 11 (right) sine functions with a boundary term.  label{fem:approx:global:fig:parabola:sine2}
 
-[kam: this is a clear link to the Dirchlet conditions used later on.
-Check that the link is there]
 
 ===== Orthogonal basis functions =====
 label{fem:approx:global:orth}
@@ -2374,7 +2372,6 @@ completely analogously to the 1D case (ref{fem:approx:LS:innerprod}):
 \end{equation}
 !et
 
-[kam: sometimes $\dx$ and sometimes $dx$ check for consistency. Might be 2D].
 
 ===== 2D basis functions as tensor products of 1D functions =====
 label{fem:approx:2D:global}
@@ -4137,7 +4134,6 @@ The formula for $\basphi_i(x)$ is given by
 provided in Figures ref{fem:approx:fe:fig:P1} and
 ref{fem:approx:fe:fig:phi:i:im1}.
 
-[kam: $N=N_n$ alltid, ikke sant?]
 
 #We clearly see
 #from the figures the very important property
@@ -4875,8 +4871,6 @@ It may therefore be wise to introduce a fall back on numerical
 integration. The symbolic integration can also spend considerable time
 before reaching an unsuccessful conclusion, so we may also introduce a parameter
 `symbolic` to turn symbolic integration on and off:
-
-[kam: I think this has been said multiple times before]
 
 !bc pycod
 def element_vector(f, phi, Omega_e, symbolic=True):
@@ -5727,17 +5721,18 @@ The concept of a *finite element* is now
 
   * a *reference cell* in a local reference coordinate system;
   * a set of *basis functions* $\refphi_i$ defined on the cell;
-  * a set of *degrees of freedom* that uniquely determines
+  * a set of *degrees of freedom* that uniquely how basis functions 
+    from different elements are glued together accross element interfaces.  
+    A common technique is to choose  
     the basis functions such that $\refphi_i=1$ for degree of freedom
-    number $i$ and $\refphi_i=0$ for all other degrees of freedom;
+    number $i$ that is associated with nodal point  
+    $x_i$ and $\refphi_i=0$ for all other degrees of freedom. This 
+    technique ensures the desired continuity;
   * a mapping between local and global degree of freedom numbers,
     here called the *dof map*;
   * a geometric *mapping* of the reference cell onto the cell in the physical
     domain.
 
-[kam: a finite element might be defined in terms of
-precomputed basis functions or (as here) implicitly defined
-basis functions defined in terms of dofs. I would like to revise this.  ]
 
 There must be a geometric description of a cell. This is trivial in 1D
 since the cell is an interval and is described by the interval limits,
@@ -5866,7 +5861,7 @@ for N_e in 4, 8:
 !ec
 Figure ref{fem:approx:fe:element:impl:fig:P0:x2} shows the result.
 
-[kam: does not seem to work]
+[kam: does not seem to work, something for yappi]
 
 FIGURE: [fig/fe_p0_x2_4e_8e, width=600] Approximation of a parabola by 4 (left) and 8 (right) P0 elements. label{fem:approx:fe:element:impl:fig:P0:x2}
 
@@ -6012,10 +6007,7 @@ has the function value at vertex $\xno{i}$
 as degree of freedom number $2i$ and the value of the derivative
 at $\xno{i}$ as degree of freedom number $2i+1$, $i=0,\ldots,N_e+1$.
 
-[kam: Fint eksempel, men brå avslutning]
-[kam: explain unisolvence]
-
-
+[
 !split
 ======= Numerical integration =======
 
@@ -6153,7 +6145,7 @@ $\Omega^{(e)}$ in the physical coordinate system.
 #and the mapping between the reference element and the physical space may
 #be nonlinear.
 
-[hpl: project with sin and cos functions over an alement]
+[hpl: project with sin and cos functions over an element]
 
 We shall see that the above characteristics of an element generalize to
 higher dimensions and to much more complicated elements.
@@ -6687,18 +6679,6 @@ FIGURE: [fig/tanh_fe_interpol_P4, width=800 frac=1]
 !esol
 !esubex
 
-!split
-======= Approximation properties and error rates =======
-
- * Do approximation of a Gaussian bell function with global functions
-   composed of both sin series and polynomials.
- * Do a least square to check error rates in terms of number of functions
- * Discuss problems with doing least square / regression to estimate error
-   rates
-
-FIGURE: [fig/error_rates_global, width=800 frac=1] Log-log plot of error when approximating Gaussian bell function with Fourier and Taylor series.
-
-[kam: todo]
 
 
 ======= Exercises =======
