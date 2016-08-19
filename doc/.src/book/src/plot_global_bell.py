@@ -64,7 +64,7 @@ for N in Ns:
   plot_solution("Taylor", N, func)
 legend = ["N=%d" % N for N in Ns]
 plot_u(func)
-legend.append("gauss")
+legend.append("analytical solution")
 pylab.legend(legend)
 pylab.show()
 pylab.savefig("step.png", title="sin approximation")

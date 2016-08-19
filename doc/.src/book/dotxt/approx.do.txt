@@ -457,7 +457,6 @@ b_i &= (\psib_i, \f)\tp  \end{align}
 We have changed the order of the two vectors in the inner
 product according to (ref{fem:vec:rule:symmetry}):
 
-[kam: wrong ref for some reason. Ref outside env?]
 
 !bt
 \[ A_{i,j} = (\psib_j,\psib_i) = (\psib_i,\psib_j),\]
@@ -894,10 +893,10 @@ than the simplistic version shown above.  The file `ex_approx1D.py`
 applies the `approx1D` module to accomplish the forthcoming examples.
 
 !bnotice
-We remind the reader that the code examples can be found in
-URL: "http://hplgit.github.io/fem-book/doc/web/" where
-a tarball can be found.
-The following commands shows a useful way to search for code
+We remind the reader that the code examples can be found in a
+tarball at 
+URL: "http://hplgit.github.io/fem-book/doc/web/".  
+The following command shows a useful way to search for code
 
 !bc shcod
 Terminal> find . -name '*.py' -exec grep least_squares {} \; -print
@@ -1212,19 +1211,21 @@ The regression method is not much used for approximating differential
 equations or a given function, but is central in uncertainty quantification
 methods such as polynomial chaos expansions.
 
-!bnotice
-The residual vector is an important and much used vector
-in scientific computing. When attempting to  solve
-a system $A c = b$, we may question how far of a vector $c_0$ is.
-The error is $e=c-c_0$ and the residual
-is defined
+!bnotice The residual: an indirect but computationally cheap measure of the error   
+When attempting to  solve
+a system $A c = b$, we may question how far off a vector $c_0$ is.
+The error is clearly the difference between $c$ and $c_0$, $e=c-c_0$.  
+The vector $c_0$ is obviously the solution of the problem $A c_0 = b_0$,
+where $b_0$ is easily computable as the matrix vector product $A c_0$.  
+The residual can be seen as the error of the input data, $b - b_0$
+and is defined
 
 !bt
 \[
 r = b - A c_0 .
 \]
 !et
-The error and the residual are related by
+Clearly, the error and the residual are related by
 
 !bt
 \[
@@ -1233,8 +1234,8 @@ A e = r .
 !et
 While the computation of the error requires inversion of $A$,
 which may be computationally expensive, the residual
-is easily computed as a matrix-vector product combined with vector-vector additions.
-the residual is directly computable simply
+is easily computable.
+
 [hpl: Here something is missing? What is actually the point? Try to insert a heading in the notice...]
 !enotice
 
@@ -1924,12 +1925,22 @@ shows the result that up to `N=4` we achieve an exact approximation,
 and then round-off errors start to grow, such that
 `N=15` leads to a 15-degree polynomial for $u$ where
 the coefficients in front of $x^r$ for $r>2$ are
-of size $10^{-5}$ and smaller.
+of size $10^{-5}$ and smaller. As the matrix is ill-conditioned
+and we use floating-point arithmetic, we do not obtain the exact
+solution. Still, we get  a solution that is visually identical to the
+exact solution. The reason is that the ill-conditioning causes
+the system to have many solutions very close to the true solution.    
+While we are lucky for `N=15` and obtain a solution that is 
+visually identical to the true solution, ill-conditioning may also 
+result in completely wrong results. As we continue with higher values,  `N=20` reveals that the 
+procedure is starting to fall apart as the approximate solution is around 0.9 at $x=1.0$, 
+where it should have
+been $1.0$. At `N=30` the approximate solution is around $5\cdot10^8 $ at $x=1$.  
 
-[kam: litt uklart om det er et problem for grad 15 eller ikke.
-Igjen er løsningen lik, det er flere muligheter for like løsninger da
-systemet er nært singulært
-]
+[kam: Not sure of this. Need to test. Seems like an unstable variant
+of Lagrange which is somewhat strange when combined with interpolation which 
+should produce the identity matrix]
+
 
 === Successful example ===
 
@@ -2115,12 +2126,16 @@ idx{Bernstein(interpolating) polynomial}
 
 An alternative to the Taylor and Lagrange families of polynomials
 are the Bernstein polynomials.
-These polynomials are much used in visualization and we include a
-presentation of them for completeness and to show that the choice of
-basis functions may matter. In fact, in finite element methods,
-one of the main challenges is to determine appropriate bases
-with the desired stability properties.
-On the unit interval, these
+These polynomials are popular in visualization and we include a
+presentation of them for completeness. Furthermore, as we 
+will demonstrate, the choice of basis functions may matter
+in terms of accuracy and efficiency. 
+In fact, in finite element methods,
+a main challenge, from a numerical analysis point of view,  
+is to determine appropriate basis functions for 
+a particular purpose or equation. 
+
+On the unit interval, the Bernstein  
 polynomials are defined in terms of powers of $x$ and $1-x$
 (the barycentric coordinates of the unit interval) as
 !bt
@@ -2130,36 +2145,44 @@ label{bernstein:basis}
 \end{equation}
 !et
 
+FIGURE: [fig/Bernstein_basis8.png] The nine functions of a Bernstein basis of order 8. label{Bernstein_basis_8}
 
 FIGURE: [fig/Lagrange_basis8.png] The nine functions of a Lagrange basis of order 8. label{Lagrange_basis_8}
 
-FIGURE: [fig/Bernstein_basis8.png] The nine functions of a Bernstein basis of order 8. label{Bernstein_basis_8}
 
-The Figure ref{Lagrange_basis_8} shows the basis functions of a Lagrange basis of order 8.
-The basis is convenient because a basis function is either 1 or 0 in the nodal points. However,
-we also notice that the basis function are oscillatory and have values that are both larger than 1.
-Considering for instance the basis function represented by the purple color, it clearly is 1 in $x=0.5$
-and hence the basis function represents the value at the mid-point. However, the function has strong
-negative contributions close to the element boundaries.
 
-The Figure ref{Bernstein_basis_8} illustrate the corresponding basis functions of a Bernstein basis of order
-8. Here, it is clear that all basis functions are positive and there is no oscillatory behavior, a
-property that sometimes that sometimes result in improved stability.
-A disadvantage is however that there is no nodal basis and all functions contributes everywhere.
+The Figure ref{Bernstein_basis_8} shows the  basis functions of a Bernstein basis of order 8.  
+This figure should be compared against Figure ref{Lagrange_basis_8}, which
+shows the corresponding Lagrange basis of order 8.  
+The Lagrange basis is convenient because a basis function is either 1 or 0 
+at the nodal points. However, looking at Figure ref{Lagrange_basis_8}
+we also notice that the basis function are oscillatory and have absolute 
+values that are significantly larger than 1.
+Considering for instance the basis function represented by the purple color, it clearly is 1 in $x=0.5$ and hence the basis function represents the value at the mid-point. However, this function also has strong
+negative contributions close to the element boundaries where
+it takes negative values less than $-2$. 
+For the Berstein basis, it is clear that all  functions are positive 
+in the whole interval $[0,1]$ and that there is no oscillatory behavior. 
+A disadvantage is that the Bernstein basis is not 
+a nodal basis and all functions contributes everywhere.
+
 We also remark that the Bernstein basis has an explicit simple expressions that
 can be extended to polygons in 2D and 3D in terms of the barycentric coordinates.
-Both Lagrange and Bernstein polynomials are larger towards the element boundaries than in
+
+Both Lagrange and Bernstein polynomials take larger values towards the element boundaries than in
 the middle of the element, but the Bernstein polynomials always remain less or equal to 1.
 
 
 
 ======= Approximation Properties and Convergence rates =======
 
-We have considered four different series for generating approximations:
+We will now compare the different approximation methods in terms
+of accuracy and efficiency. 
+We consider four different series for generating approximations:
 Taylor, Lagrange, sinusoidal, and Bernstein. For all families
 we should expect that the approximations improve as we increase the
-number of basis functions in our representations, but also
-that the computational complexity increases. Let us therefore
+number of basis functions in our representations. We should
+also expect that the computational complexity increases. Let us therefore
 try to quantify the accuracy and efficiency of the different methods
 in terms of the number of basis functions $N$. In the present
 example we consider the least square method.
@@ -2168,17 +2191,17 @@ Let us consider the approximation of a Gaussian bell function, i.e.,
 that the exact solution is
 !bt
 \[
-u_e = \exp(-(x-0.5)**2) - \exp(-0.5**2)
+u_e = \exp(-(x-0.5)^2) - \exp(-0.5^2)
 \]
 !et
 We remark that `u_e` is zero in $x=0$ and $x=1$ and that
-we have choosen the bell function as it can not be expressed
-as a finite sum of either polynomials or sines and that
-we therefore may study the behavior as $N\rightarrow\infty$.
+we have choosen the bell function because it cannot be expressed
+as a finite sum of either polynomials or sines.  
+We may therefore study the behavior as $N\rightarrow\infty$.
 
 To quantify the behavior of the error as well as the
 complexity of the computations we  compute the approximation
-with increasing number of basis functions and also time
+with increasing number of basis functions and time
 the computations by using `time.time`. A code example is as
 follows:
 
@@ -2203,7 +2226,7 @@ def convergence_rate_analysis(series_type, func):
   return Ns, norms, cpu_times
 !ec
 
-The following Tables show the error reduction and CPU time as N increase.
+Below we list the numerical error for different $N$  when approximating the Gaussian bell function.
 
 |------------------------------------------------------------------|
 |  N          |  2        |  4          |  8         |  16         |
@@ -2213,9 +2236,12 @@ The following Tables show the error reduction and CPU time as N increase.
 |  Bernstein  |  0.0021   |  4.45e-05   |  8.73e-09  |  4.49e-15   |
 |  Lagrange   |  0.0021   |  4.45e-05   |  8.73e-09  |  2.45e-12   |
 |------------------------------------------------------------------|
-Error when approximating the Gaussian bell function with
-Taylor, sine, Bernstein and Lagrange function as the number of basis functions, $N$, increase.
+It is quite clear that the different methods have different properties. 
+For example, the Lagrange basis for $N=16$ is 145 times
+more accurate than the Taylor basis. However, Bernstein is actually more than 500 times more
+accurate than Lagrange.
 
+The corresponding CPU time of the required computations also vary quite a bit:
 |------------------------------------------------------------------|
 |  N          |  2        |  4          |  8         |  16         |
 |--c----------|--c--------|--c----------|--c---------|--c----------|
@@ -2224,41 +2250,66 @@ Taylor, sine, Bernstein and Lagrange function as the number of basis functions, 
 |  Bernstein  |  0.0384   |  0.1100    |  0.3368  |  1.187   |
 |  Lagrange   |  0.0807   |  0.3820    |  2.5233  |  26.52   |
 |------------------------------------------------------------------|
-CPU time of the required computations  when approximating the Gaussian bell function with
-Taylor, sine, Bernstein and Lagrange function as the number of basis functions, $N$, increase.
-
-
-Clearly, the behavior of both the error and CPU time vary among the different methods.
+Here, the timings are in seconds. 
 The Taylor basis appears efficient and is in fact more than 60 times faster
-than Lagrange for $N=16$. On the other hand, the Lagrange basis for $N=16$ is 145 times
-more accurate than the Taylor basis. However, Bernstein is actually more than 500 times more
-accurate than Lagrange.
+than Lagrange for $N=16$. 
 
 In order to get a more precise idea of how the methods behave as $N$ increase we
 model the behavior we perform a simple regression analysis.
 There are two natural models of accuracy and computational complexity in terms
 of $N$: polynomial and exponential.
-Unless we know which
-to choose, it is a good idea to visualize both and look for lines that are close
-to linear.
 
+Let us therefore consider the following models:
+!bt
+\begin{align}
+label{sec:approx:pol:model}
+E_{1}(N) &= \alpha_{1} N^{\beta_{1}}, \\
+label{sec:approx:exp:model}
+E_{2}(N) &= \alpha_{2} \exp(\beta_2 N)
+\end{align}
+!et
+
+Taking the logarithm of (ref{sec:approx:pol:model}) we 
+obtain 
+!bt
+\[
+\log (E_1(N)) = \beta_1 \log(N) + \alpha_1 
+\]
+!et
+Hence, letting $x=\log(N)$ we may perform a regression analysis
+as earlier with respect to the basis functions $(1,x)$ and obtain an estimate of 
+the order of convergence in terms of $\beta_1$ . For the second model (ref{sec:approx:exp:model}), 
+we take the natural logarithm and obtain 
+!bt
+\[
+\log (E_2(N)) = \beta_2 N + \alpha_2 
+\]
+!et
+Again, regression analysis provide the means to estimate the convergence, but here we let $x=N$. 
+
+Before we perform the regression analysis, we should always inspect the behavior visually
+in log and loglog plots. Figure ref{fem:approx:bell:loglogfig} shows a loglog plot of
+the error with respect to $N$ for the various methods. Clearly, the sinusoidal basis seems to 
+have a polynomial convergence rate as the loglog plot is a linear line. The Bernstein, Lagrange, and 
+Taylor methods appear to have convergence that is faster than polynomial. It is then interesting to 
+consider a log plot and to consider if the behavior is exponential. Figure ref{fem:approx:bell:semilogfig}
+is a log plot. Here, the Berstein approximation appears to be a linear line which suggests that
+the convergence is exponential.         
+
+   
 FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot.  label{fem:approx:bell:loglogfig}
 
 FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot.  label{fem:approx:bell:semilogfig}
 
-Let us therefore consider the following models:
-!bt
-\begin{align*}
-E_{1}(N) &= \alpha_{1} N^\beta_{1}, \\
-E_{2}(N) &= \alpha_{2} \exp(\beta_2 N)
-\end{align*}
-!et
-
-
-
-
+The following program computes the order of convergence for
+the sines using the polynomial model (ref{sec:approx:pol:model})
+while the Bernstein approximation is estimates 
+in terms of model (ref{sec:approx:exp:model}). We avoid to 
+compute estimate the Taylor and Lagrange approximations as neither
+the loglog plot nor the log plot demonstrated linear behavior.  
 
 !bc
+
 Ns =[2, 4, 8, 16]
 Taylor     = [0.0983, 0.00263,  7.83e-07, 3.57e-10]
 Sinusoidal = [0.0027, 0.00061,  0.00012,  2.17e-05]
@@ -2269,21 +2320,30 @@ x = sym.Symbol('x')
 psi = [1, x]
 
 u, c = regression_with_noise(log2(Sinusoidal), psi, log2(Ns))
-print u, c
+print "estimated model for sine: %3.2e*N**(%3.2e)" % (2**(c[0]), c[1])
 
-X = log2(Ns)
-U = sym.lambdify([x], u)
-UU = U(X)
+# check the numbers estimated by the model by manual inspection
+for N in Ns: 
+  print 2**c[0] * N **c[1]
 
-pylab.plot(X, log2(Sinusoidal))
-pylab.plot(X, UU)
-pylab.legend(["data", "model"])
-pylab.show()
+u, c = regression_with_noise(log(Bernstein), psi, Ns)
+print "estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % (exp(c[0]), c[1])
+
+# check the numbers estimated by the model by manual inspection
+for N in Ns: 
+  print exp(c[0]) * exp(N * c[1])
 !ec
+
+The program estimates the sine approximation convergences as $ 1.43e-02 N^{-2.3}$ 
+while the Bernstein approximation is $  8.01e-02 exp(-1.92e+00 N)$. 
 
 The complete code can be found in
 "`conv_rate_estimates.py`": "${fem_src}/conv_rate_estimates.py".
 
+The CPU time in this example here would be significantly faster if the algorithms
+were implemented in a compiled language like C/C++ or Fortran and we should not 
+be careful in drawing conclusion about the efficiency of the different methods
+based on this example alone.  
 
 !split
 ======= Approximation of functions in higher dimensions =======
@@ -3941,7 +4001,6 @@ the element size and hence be different.
 #share global node 2, $\basphi_2(x)=0$. The same reasoning is applied to
 #the construction of $\basphi_4(x)$ and $\basphi_6(x)$.
 
-[hpl: Karen suggested we begin with P1 and not P2.]
 
 ===== Example: Linear finite element functions =====
 
