@@ -2364,14 +2364,13 @@ A_{i,j} &= (\baspsi_j',\baspsi_i') = \int_{0}^1 \baspsi_i'(x)\baspsi_j'(x)\dx
 = \int_0^1 (i+1)(j+1)(1-x)^{i+j}\dx = \frac{(i+1)(j+1)}{i + j + 1},\\
 b_i &= (2,\baspsi_i) - (D,\baspsi_i') -C\baspsi_i(0)\\
 &= \int_0^1\left( 2\baspsi_i(x) - D\baspsi_i'(x)\right)\dx -C\baspsi_i(0)\\
-&= \int_0^1 \left( 2(1-x)^{i+1} - D(i+1)(1-x)^i\right)\dx  -C\\
+&= \int_0^1 \left( 2(1-x)^{i+1} + D(i+1)(1-x)^i\right)\dx  -C\\
 &= \frac{(D-C)(i+2) + 2}{i+2} = D - C + \frac{2}{i+2}
 \tp
 \end{align*}
 !et
 Relevant `sympy` commands to help calculate these expressions are
 
-[kam: check - according to my hand calculations it is - D]
 
 @@@CODE src/u_xx_2_CD.py fromto: from sympy@N = 1
 The output becomes
@@ -2444,7 +2443,7 @@ $a(u,v)=L(u)\ \forall v\in V$. The exact solution also fulfills
 $a(\uex,v)=L(v)$, but normally $(\uex -B)$ lies in a much larger
 (infinite-dimensional) space. Suppose, nevertheless, that
 $\uex - B = E$, where $E\in V$. That is, apart from Dirichlet conditions,
-$\uex$ lies in our finite-dimensional space $V$ we use to compute $u$.
+$\uex$ lies in our finite-dimensional space $V$ which we use to compute $u$.
 Writing also $u$ on the same form $u=B+F$, $F\in V$, we have
 
 !bt
@@ -2516,7 +2515,6 @@ functions associated with *all* nodes in the mesh. The parameter
 $N$, which counts the unknowns from 0 to $N$, is then equal to
 $N_n-1$ such that the total number of unknowns, $N+1$, is the
 total number of nodes.
-[kam: Need to check this $N_n$ thing]
 However, when solving differential equations we will often have
 $N<N_n-1$ because of Dirichlet boundary conditions. The reason is
 simple: we know what $u$ are at some (here two) nodes, and the number of
@@ -2549,7 +2547,8 @@ with all the interior nodes in the mesh:
 The $i$ index runs over all the unknowns $c_i$ in the expansion
 for $u$, and in this case $N=N_n-3$.
 
-In the general case, the nodes are not necessarily numbered from left
+In the general case, and in particular on domains in higher dimensions,  
+the nodes are not necessarily numbered from left
 to right, so we introduce a mapping from the node numbering, or more
 precisely the degree of freedom numbering, to the numbering of
 the unknowns in the final equation system. These unknowns take on
@@ -2726,7 +2725,6 @@ label{fem:deq:1D:ex1:Ab:glob}
 \end{equation}
 !et
 
-[kam: no BC - check that it is correct all the way through and with the $N_n$ thing]
 
 ===== Comparison with a finite difference discretization =====
 label{fem:deq:1D:fdm_vs_fem}
@@ -3033,8 +3031,6 @@ B(x) = \sum_{j\in\Ifb} U_j\basphi_j(x)\tp
 It is easy to verify that
 $B(\xno{i})= \sum_{j\in\Ifb} U_j\basphi_j(\xno{i})=U_i$.
 
-[kam: so dofs in the interior are $c_j$ whereas on
-the boundary it is $U_j$.]
 
 The unknown function can then be written as
 
@@ -3635,7 +3631,6 @@ We can also perform the symmetric modification. This operation affects
 only the last cell with a nonzero Dirichlet condition. The algorithm
 is the same as for the global linear system, resulting in
 
-[kam: both cells have Dirichlet]
 
 !bt
 \begin{equation}
@@ -3876,7 +3871,6 @@ label{fem:deq:1D:BC:nat:Aub:system}
 \end{equation}
 !et
 
-[kam: noe rart her, skal være derivert i 0 eller?]
 
 Next we consider the technique where we modify the linear system to
 incorporate Dirichlet conditions
@@ -4431,12 +4425,10 @@ ones fail.
 
 The user must prepare a function `integrand_lhs(psi, i, j)` for
 returning the integrand of the integral that contributes to matrix
-entry $(i,j)$.  The `psi` variable is a Python dictionary holding the
+entry $(i,j)$ on the left-hand side.  The `psi` variable is a Python dictionary holding the
 basis functions and their derivatives in symbolic form. More
 precisely, `psi[q]` is a list of
 
-[kam: lhs and rhs should be spelled out when first used, not sure
-if they are]
 
 !bt
 \begin{equation*}
@@ -4753,7 +4745,21 @@ for e in range(len(cells)):
 <solve linear system>
 !ec
 
-[kam:show irhs and ilhs]
+Having implemented this function, 
+the user only has supply the `ilhs`, `irhs`, `blhs`, and `brhs` functions
+that specify the PDE and boundary conditions. The rest of
+the implementation forms a generic computational engine. The 
+finite element packages Diffpack and FEniCS are structured exactly the same 
+way. A sample implementation of `ilhs` for the 1D Poisson problem is:    
+
+!bc pycod 
+   def integrand_lhs(phi, i, j):
+        return phi[1][i]*phi[1][j]
+!ec 
+which returns  $d\refphi_i (X)/dx d\refphi_j (X)/dx$.  Reducing the 
+amount of code the user has to supply and making the code as close as
+possible to the mathematical formulation makes the software user-friendly and
+easy to debug. 
 
 A complete function `finite_element1D_naive`
 for the 1D finite algorithm above, is found in the file
@@ -4913,12 +4919,12 @@ $Cv(0)$, which in the local element coordinate system becomes $C\refphi_r(-1)$,
 is only included for the element $e=0$.
 
 The functions for specifying the element matrix and vector entries
-must contain the integrand, but without the $\det J\dX$ term, and
+must contain the integrand, but without the $\det J\dX$ term
+as this term is taken care of by the quadrature loop, and
 the derivatives $d\refphi_r(X)/dx$
 with respect to the physical $x$ coordinates are
 contained in `phi[1][r](X)`, computed by the function `basis`.
 
-[kam: why " but without the $\det J\dX$ term"]
 
 !bc pycod
 def ilhs(e, phi, r, s, X, x, h):
@@ -5308,9 +5314,6 @@ we have the relation
 !et
 which we can solve with respect to $\nabla_{\x}\basphi_i$:
 
-[kam: I understand that $\cdot$ is intentional, but we
-need to say something about why we use $\cdot$ for some
-matrix vector products and not for others]
 
 !bt
 \begin{equation}
@@ -5374,7 +5377,6 @@ polynomials of degree 1, 2, 3, and 4, respectively.
 In 3D, rules with 1, 4, 5, and 11 points over the tetrahedron will
 exactly integrate polynomials of degree 1, 2, 3, and 4, respectively.
 
-[kam: name the quadrature families]
 
 
 ## See http://www.mems.rice.edu/~akin/Elsevier/Chap_10.pdf
@@ -5480,8 +5482,6 @@ functions by $r$, and look up vertex coordinates through $q(e,r)$.
 
 Similar formulas exist for integration of P1 elements in 3D.
 
-[kam: tempting to show some code, barycentric coord or
-Bernstein - but try not to make it overly abstract]
 
 ===== A glimpse of the mathematical theory of the finite element method =====
 
@@ -5566,8 +5566,9 @@ derivative is also square-integrable:
 The requirements of square-integrable zeroth- and first-order derivatives
 are motivated from the formula for $a(u,v)$ where products of the
 first-order derivatives are to be integrated on $\Omega$.
-
-[kam: remark on the usage of the symbol $H^1_0$ and bc]
+We remark that it is common that  $H^1_0$ denote the
+space of $H^1$ functions that are zero everywhere on the boundary, but
+here we use it for functions that are zero only at $x=0$.  
 
 The Sobolev space $H^1_0(\Omega)$ has an inner product
 
@@ -5600,8 +5601,6 @@ such that $\uex\in\Vex$. The space has an associated norm $||v||$
 Based on the above assumptions, which must be verified in each specific
 problem, one can derive some general results that are listed below.
 
-[kam: remark that symmetry is not needed for Lax-M but convenient here]
-
 === Existence and uniqueness ===
 
 There exists a unique solution of the problem: find $\uex\in\Vex$
@@ -5610,10 +5609,9 @@ such that
 !bt
 \[ a(\uex,v)=L(v)\quad\forall v\in\Vex\tp\]
 !et
-(This result is known as the Lax-Milgram Theorem.)
+(This result is known as the Lax-Milgram Theorem.
+We remark that symmetry is not strictly needed for this theorem.)
 
-[kam: why the *find* we use "There exists a unique solution of the
-problem: find ... elsewhere]
 
 === Stability ===
 
@@ -5643,9 +5641,8 @@ The discrete solution $u\in V$ is the best approximation in energy norm,
 !bt
 \[ ||\uex -  u||_a \leq ||\uex - v||_a\quad\forall v\in V\tp\]
 !et
-This is quite remarkable: once we have $V$ (i.e., a mesh), the Galerkin
+This is quite remarkable: once we have $V$ (i.e., a mesh and a finite element), the Galerkin
 method finds the best approximation in this space.
-[kam: i.e., a mesh + a fe]
 In the example above, we have $||v||_a=\int_0^1 (v')^2dx$, so
 the derivative $u'$ is closer to $\uex'$ than any other possible
 function in $V$:
@@ -5685,30 +5682,27 @@ one can derive the following error estimate for Lagrange finite element
 approximations of degree $s$:
 
 !bt
-\begin{align*}
-\left(\int_0^1 (\uex' - u')^2dx\right)^{\half}&\leq Ch^s||\uex||_{H^{s+1}},\\
-||\uex - u|| &\leq Ch^2 g(\uex),
-\end{align*}
+\[
+\left(\int_0^1 (\uex' - u')^2dx\right)^{\half} \leq Ch^s||\uex||_{H^{s+1}},\\
+\]
 !et
 where $||u||_{H^{s+1}}$ is a norm that integrates the sum of the square of all
-derivatives up to order $s+1$, $g(\uex)$ is the integral of $(u'')^2$,
+derivatives up to order $s+1$,
 $C$ is a constant, and $h$ is the maximum
 cell length.
 The estimate shows that choosing
 elements with higher-degree polynomials (large $s$) requires more
 smoothness in $\uex$ since higher-order derivatives need to be square-integrable.
-[kam: remove L2 part here. Decide on how to write norms]
 
 A consequence of the error estimate is that $u'\rightarrow \uex'$
 as $h\rightarrow 0$, i.e., the approximate solution converges to
 the exact one.
 
-The constant $C$ in this and the next estimate depends on the shape
+The constant $C$ in  depends on the shape
 of triangles in 2D and tetrahedra in 3D: squeezed elements with a
 small angle lead to a large $C$, and such deformed elements are
 not favorable for the accuracy.
 
-[kam: The constant may depend on the shape]
 
 One can generalize the above estimate to the general problem class
 $a(u,v)=L(v)$: the error in the derivative is proportional
@@ -5725,11 +5719,11 @@ $u$, which is available in computations.
 
 === A priori error estimate for the solution ===
 
-The finite element solution of our sample problem, using P1 elements, fulfills
+The finite element solution of our sample problem  fulfills
 
 !bt
 \[
-\left(\int_0^1 (\uex - u)^2dx\right)^{\half} \leq Ch^2 g(\uex)\tp
+||\uex - u|| \leq Ch^{s+1} ||\uex||_{H^{s+1}},
 \]
 !et
 This estimate shows that the error converges as $h^2$ for P1 elements.
@@ -5738,9 +5732,8 @@ is expected.
 In general, the convergence is $h^{s+1}$ for elements with polynomials
 of degree $s$. Note that the estimate for $u'$ is proportional to
 $h$ raised to one power less.
+We remark that the second estimate strictly speaking requires extra smoothness (regularity).  
 
-[kam: no reason to let the L2 estimate come after the H1 estimate
-unless we want to prove something]
 
 # #ifdef UNFINISHED
 === A posteriori error estimate ===
@@ -5759,10 +5752,6 @@ is cite{Larson_2013}
 
 !split
 
-[kam: summary is placed at a random place. I suggest
-to conclude each chap with a summary. In fact every
-chap may also begin with a outline that highlights
-the story]
 
 
 ======= Summary =======
@@ -5776,6 +5765,9 @@ the story]
  * Basis functions should optimally be orthogonal or almost orthogonal,
    because this gives little round-off errors when solving the linear
    system, and the coefficient matrix becomes diagonal or sparse.
+   One way to obtain almost orthogonal basis functions is to localize the
+   basis by making the basis functions that have local support in only a few 
+   cells of a mesh. This is utilized in the finite element method.  
  * Finite element basis functions are *piecewise* polynomials, normally
    with discontinuous derivatives at the cell boundaries. The basis
    functions overlap very little, leading to stable numerics and sparse
@@ -5835,10 +5827,6 @@ the story]
 
 !split
 
-[kam: I'd like to also use the word "localized" and not only
-the term "almost orthogonal"]
-
-[kam: advare om Dirichlet bonazaen på forhånd]
 
 ======= Exercises =======
 
@@ -6412,7 +6400,6 @@ h_{N_e}
 !esol
 !esubex
 
-[kam: no details about the non-uniformity of the mesh]
 
 !bsubex
 It is of interest to compare the discrete equations for the finite
@@ -6533,10 +6520,9 @@ where $m\geq 0$ is an integer, and $L$, $C$, and $D$ are given numbers.
 Utilize a mesh with two (non-uniform) elements: $\Omega^{(0)}=[0,3]$ and
 $\Omega^{(0)}=[3,4]$.
 Plot the exact solution and the finite element solution for
-$d=1,2,3,4$ and $m=0, 1, 2, 3, 4$. Find values of $d$ and $m$
+polynomial degree $d=1,2,3,4$ and $m=0, 1, 2, 3, 4$. Find values of $d$ and $m$
 that make the finite element solution exact at the nodes in the mesh.
 
-[kam: presume that $d$ is polynomial degree. Is that clear?]
 
 !bhint
 Use the `mesh_uniform`, `finite_element1D`, and `u_glob2` functions
