@@ -31,36 +31,27 @@ def sin_series(N):
   # FIXME: do not satisfy bc  
   psi = []
   for k in range(1,N): 
-    psi_k = sin(pi*k*x)
+    psi_k = sym.sin(sym.pi*k*x)
     psi.append(psi_k)
   return psi
 
-def taylor_series(N): 
-  # FIXME: do not satisfy bc  
-  print "Cannot with current BC implementation" 
-  return 
-  psi = []
-  for k in range(1,N): 
-    psi_k = x**k 
-    psi.append(psi_k)
-  return psi
 
 def series(series_type, N): 
-  if series_type=="Taylor" : return taylor_series(N) # cannot do with current implementation of bc
-  elif series_type=="sin"  : return sin_series(N)
+  if series_type=="sin"  : return sin_series(N)
   elif series_type=="Bernstein"  : return bernstein_series(N)
   elif series_type=="Lagrange"  : return lagrange_series(N)
   else: print "series type unknown " # sys.exit(0)
 
 
-N = 16 
-#series_type = "Bernstein"
+N = 8 
+series_type = "Bernstein"
 #series_type = "sin"
-series_type = "Lagrange"
+#series_type = "Lagrange"
 Omega = [0, 1]
 x = sym.Symbol("x")
 
 psi = series(series_type, N)
+print len(psi)
 
 eps = 0.3 
 f = 1 
@@ -83,6 +74,7 @@ for eps in eps_vals:
   c = A.LUsolve(b)
   u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
 
+  print u 
   U = sym.lambdify([x], u)
   xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0)) 
   UU = U(xx)
