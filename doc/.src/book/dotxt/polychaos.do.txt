@@ -22,13 +22,13 @@ be already discretized in terms of random variables.
 We shall look at two driving examples, the simple ODE
 
 !bt
-\begin{eqution}
+\begin{equation}
 u'(t) = a(t)u(t),\quad u(0)=I,
 \end{equation}
 !et
 where $a$ and $I$ can be uncertain. If $a$ is uncertain, we assume that it
 consists of uncertain piecewise constants: $a=a_i$ is a random variable
-in some time interval $[t_i,t_{t_{i+1}]$. Typically, we can write
+in some time interval $[t_i,t_{t_{i+1}}]$. Typically, we can write
 $a(t) = \sum_{i=0}^N a_i\hat\baspsi_i(\x)$, with $\hat\baspsi_i$ being P0
 elements in time, and $a_i$ are the unknown coefficients (in this case we
 count to $i$ from 0 to $N$ and consider $I$ as certain).

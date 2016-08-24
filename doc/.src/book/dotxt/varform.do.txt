@@ -4742,6 +4742,9 @@ u_bar, c = solver(integrand_lhs, integrand_rhs, psi, Omega,
 u = B + u_bar
 print 'solution u:', sym.simplify(sym.expand(u))
 !ec
+
+[kam: does not work]
+
 The printout of `u` reads `-b*x**2/2 + b*x/2 - x + 1`.
 Note that expanding `u`, before simplifying, is necessary
 in the present case
