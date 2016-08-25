@@ -1,0 +1,18 @@
+TITLE: Study Guide for Introduction to Numerical Methods for Variational Problems
+AUTHOR: Hans Petter Langtangen  {copyright|CC BY} at Center for Biomedical Computing, Simula Research Laboratory & Department of Informatics, University of Oslo
+AUTHOR: Kent-Andre Mardal  {copyright|CC BY} at Department of Mathematics, University of Oslo & Center for Biomedical Computing, Simula Research Laboratory
+DATE: today
+
+#TOC: off
+
+# #include "slides/approx.do.txt"
+
+# #include "slides/varform.do.txt"
+
+# #include "slides/femtime.do.txt"
+
+# #include "slides/femsys.do.txt"
+
+# copy nonlin
+
+

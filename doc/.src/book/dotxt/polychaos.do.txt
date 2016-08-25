@@ -77,20 +77,20 @@ We also address the stationary PDE
 
 !bt
 \begin{equation}
--\nabla\cdot(\dfc(x)\nabla u(\x)) = -f(\x)\mbox{ in }\Omega,
+-\nabla\cdot(\dfc(\x)\nabla u(\x)) = f(\x)\mbox{in }\Omega,
 \end{equation}
 !et
-with appropriate Dirichlet, Neumann, or Robin conditions at the boundary,
-The coefficients $\dfc$ and $f$ are assumed to be stochastic quantities
-discretized in terms of expansions, e.g.,
-$\dfc = \sum_{i=0}^M\dfc_i\hat\baspsi_i(\x)$,
-where $\hat\baspsi_i(\x)$ is some spatial discretization -- think of,
-for instance, of piecewise constant P0 finite elements or global sine
-functions, and the parameters $\dfc_i$ as the random uncertain variables
-in the problem. We form some final vector $(\zeta_0,\ldots,\zeta_M)$
-with all the random parameters, from $\dfc(\x)$ only, from $f(\x)$ only, or
-as a combination of randomness in $\dfc$ and $f$. Here, one can include
-randomness in boundary conditions as well.
+with appropriate Dirichlet, Neumann, or Robin conditions at the
+boundary, The coefficients $\dfc$ and $f$ are assumed to be stochastic
+quantities discretized in terms of expansions, e.g., $\dfc =
+\sum_{i=0}^M\dfc_i\hat\baspsi_i(\x)$, where $\hat\baspsi_i(\x)$ is
+some spatial discretization -- think of, for instance, of piecewise
+constant P0 finite elements or global sine functions, and the
+parameters $\dfc_i$ as the random uncertain variables in the
+problem. We form some final vector $(\zeta_0,\ldots,\zeta_M)$ with all
+the random parameters, from $\dfc(\x)$ only, from $f(\x)$ only, or as
+a combination of randomness in $\dfc$ and $f$. Here, one can obviously
+include randomness in boundary conditions as well.
 
 !bnotice 1D model problem
 A specific 1D problem for heat conduction,
@@ -134,28 +134,41 @@ so $N$ can be kept small.
 
 !bnotice Polynomial chaos expansions may have many unknowns!
 We have $M+1$ uncertain parameters so the approximation problem
-takes place in a $M+1$ dimensional space, constrary to previous chapters
-where $M$ would be physical space, $M=1,2,3$. For each variable, we
+takes place in an $N+1$ dimensional space, constrary to previous chapters
+where $N$ would be physical space, $N=1,2,3$. For each variable, we
 will need a set of basis functions to represent the variation in that
-variable.
-[hpl: Formula for number of terms!]
-The parameter $N$ grows expontially with $M$, so the method is potentially
-very heavy if we should just utilize a standard finite element method as
-expansion. The geometry of the $W$ space is also very simple as each
-parameter is supposed to the defined over an interval so that $W$ is
-a hypercube.x
+variable. Suppose we use polynomials of order $Q$ and lower in each
+variable $\zeta_i$, $i=0,\ldots,M$. The total number of terms in the
+expansion is then
+
+!bt
+\begin{equation}
+N + 1 = \frac{(Q + M)!}{Q!M!}\tp
+\end{equation}
+!et
+Suppose we have 10 uncertain input variables ($M+1=10$) and want to approximate
+each variable by a cubic polynomial ($Q=3$). This results in $N+1=220$
+terms in the expansion. And a cubic variation is modest, so going to
+degree 10, demands 92,378 terms. Consequently,
+for the polynomial chaos method to be
+effective, we need very fast convergence and that lower-order polynomial
+variation is sufficient. First of all this demands that the mapping from
+$\bm{\zeta}$ to $u$ is smooth, but the parameter is very often smooth
+even though the solution $u(\x)$ in physical space is non-smooth.
 !enotice
 
 !bnotice Remark on terminology
 The development of the theory in this chapter builds on the seminal work
 on polynomial chaos theory by Roger Ghanem and co-workers. This theory
 expands functions in Hermite polynomials, which was a great success for a
-range of Gaussian engineering problems. To obtain faster convergence
+range of linear Gaussian engineering safety problems.
+To obtain faster convergence
 in non-Gaussian problems, functions were expanded in other families of
-orthogonal polynomials, which is the view we take here, but the method
+orthogonal polynomials, which is the view we take here, but that method
 is known as *generalized* polynomial chaos, often abbreviated gPC.
-In this text, however, we use the shorter term Polynomial Chaos for all
-expansions in terms of global orthogonal polynomials.
+In this text, however, we use the shorter term polynomial chaos for all
+expansions of stochastic parameter dependence
+in terms of global orthogonal polynomials.
 !enotice
 
 
@@ -171,3 +184,250 @@ expectation of $u$ is
 \E{u} = \E{\sum_{j\in\If} c_j\baspsi_j} = \sum_{j\in\If} \E{c_j}\baspsi_j
 \end{equation}
 !et
+
+A third pillar among assumption for the polynomial chaos method is that
+the *random input variables are stochstically independent*. There are
+methods to come around this problem, but these are very recent and we
+keep the traditional assumption in the present of the theory here.
+
+# Determining c_i
+
+ o Least-squares minimization or Galerkin projection with exact
+   computation of integrals
+ o Least-squares minimization or Galerkin projection with numerical
+   computation of integrals
+ o Interpolation or collocation
+ o Regression
+
+Method 2 and 4 are the domininating ones. These go under the names
+psedo-spectral methods and stochastic collocation methods, respectively.
+
+===== Least-squares methods =====
+
+A major difference for deterministic approximation methods and
+polynomial chaos based on least squares is that we introduce
+probabilistic information in the inner product in the latter case.
+This means that *we must know the joint probability distrbution*
+$p(\bm{\zeta})$ for the input parameters! Then we define the
+inner product between two elements $u$ and $w$ in $V$ as
+
+!bt
+\begin{equation}
+(u,v) = \E{uv} = \int_\Omega u(\bm{\zeta})v(\bm{\zeta}) p(\bm{\zeta})d\bm{\zeta}
+\end{equation}
+!et
+with the associated norm
+
+!bt
+\[ || u ||^2 = (u,u)\tp\]
+!et
+The domain $\Omega$ is the hypercube of input parameters:
+
+!bt
+\[ \Omega = [\zeta_{0,\min},\zeta_{0,\max}]\times
+[\zeta_{1,\min},\zeta_{1,\max}]\times\cdots\times
+[\zeta_{N,\min},\zeta_{N,\max}]\tp\]
+!et
+Since the random input variables are independent, we can factorize
+the joint probability distribution as
+
+!bt
+\[ p(\bm{\zeta}) = \Pi_{i=0}^N p_i(\zeta_i)\tp\]
+We then have
+
+!bt
+\[
+\E{\bm{\zeta}} = \E{\zeta_0}\E{\zeta_1}\cdots\E{\zeta_0}
+= \Pi_{i=0}^N
+\int\limits_{\zeta_{i,\,min}}^{\zeta_{i,max}}\zeta_i p_i(\zeta_0)d\zeta_i\tp
+\]
+!et
+
+Requiring that the polynomials are orthogonal means that
+
+!bt
+\[ (u,v) = {\delta_{ij}}||u||,\]
+!et
+where $\delta_{ij}$ is the Kronecker delta: $\delta_{ij}=1$ if and only if
+$i=j$, otherwise $\delta_{ij}=0$.
+
+Let $f$ be the solution computed by our mathematical model, either
+approximately by a numerical method or exact.
+When we do the least squares minimization, we know from Chapter
+ref{ch:approx:global} that the associated linear system is diagonal
+and its solution is
+
+!bt
+\begin{equation}
+c_i = \frac{(\baspsi_i, f)}{||\baspsi||^2} =
+         \frac{\E{f\baspsi_i}}{\E{\baspsi^2}}\tp
+label{pc:ci:ls}
+\end{equation}
+!et
+In case of orthonormal polynomials $\baspsi_i$ we simply have
+$c_i = \E{f\baspsi_i}$.
+
+Galerkin's method or project gives
+
+!bt
+\[ (f-\sum_i c_i \baspsi_i, v) = 0,\quad\forall v\in V,\]
+!et
+which is equivalent to
+
+!bt
+\[ (f-\sum_i c_i \baspsi_i, \baspsi_j) = 0,\quad j=0,\ldots,N,\]
+!et
+and consequently the formula (ref{pc:ci:ls}) for $c_i$.
+
+The major question, from a computational point of view, is how to
+evaluate the integrals in the formula for $c_i$. Let us look at our
+two primary examples.
+
+===== Example: Least squares applied to the decay ODE =====
+
+In this model problem, we are interested in the statistics of the
+solution $u(t)$. The response is $u(t)=Ie^{-at} =
+\zeta_0e^{-\zeta_1 t}$ as our $f(\zeta)$ function.
+Consequently,
+
+!bt
+\[ u(\x) = \sum_{i\in\If} c_i(t)\baspsi_i(\zeta_0,\zeta_1)\tp\]
+Furthermore,
+
+!bt
+\[ c_i(t) =
+\frac{(\zeta_0e^{-\zeta_1 t},\baspsi_i)}{||\baspsi_i||^2}
+= ||\baspsi_i||^{-2}\int\limits_{\zeta_{0,\min}}^{\zeta_{0,\max}}
+\int\limits_{\zeta_{1,\min}}^{\zeta_{1,\max}}
+\zeta_0e^{-\zeta_1 t}\baspsi_i(\zeta_0,\zeta_1) p_0(\zeta_0)p_1(\zeta_1)
+d\zeta_0 d\zeta_1\tp
+\]
+!et
+This is a quite heavy integral to perform by hand; it really depends on
+the complexity of the probability density function $p_0$ for $I$ and
+$p_1$ for $a$. A tool like SymPy or Mathematica is indispensable,
+but even these will soon give up when $i$ grows.
+
+Uniform distributions!
+
+===== Modeling the response =====
+
+Our aim is to approximate the mapping from input to output in a
+simulation program. The output will often require solving a
+differential equation. Let $f$ be the output response as a result of
+solving the differential equation. We then want to find the mapping
+
+!bt
+\[ u(\x;\bm{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\bm{\zeta}),\]
+!et
+or if the reponse is some operation (functional) on the solution $u$,
+say $f(u)$, we seek the mapping
+
+!bt
+\[ f(\bm{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\bm{\zeta}),\]
+!et
+Normally, $c_i$ will depend on the spatial coordinate $\x$ as here,
+but in some cases it
+
+Give examples with flux etc!
+
+===== Numerical integration =====
+
+Clenshaw-Curtis quadrature,
+Gauss-Legendre quadrature,
+Gauss-Patterson quadrature,
+Genz-Keister quadrature,
+Leja quadrature,
+Monte Carlo integration,
+Optimal Gaussian quadrature,
+
+===== Stochastic collocation ======
+
+The stochastic collocation method is nothing but what we called
+regression in Chapter ref{ch:approx:global}.  We simply choose a large
+number $P$ of evaluation points in the parameter space $W$ and compute
+the response at these points.  Then we fit an orthogonal polynomial
+expansion to these points using the principle of least squares. Here,
+in this educational text, the principle of least squares sufficies,
+but one should that for real-life computations a lot of difficulties
+may happen, especially in large-scale problems. We then need to
+stabilize the least squares computations in various ways, and for this
+purpose, one needs tailored software like Chaospy to be briefly
+introduced in Section ref{pc:chaospy}. Chaospy offers, for example, a
+wide range of regression schemes.
+
+Also, the choice of collocation points should make use of point families
+that suit this kind of problems. Again, Chaospy offers many collections
+of point families, and not surprisingly, numerical integration points
+constitute popular families.
+
+
+======= The Chaospy software ========
+label{pc:chaospy}
+
+idx{Chaospy software}
+
+Refer to our ref for comparison with Dakota and Turns.
+
+======= Intrusive polynomial chaos methods =======
+label{pc:intrusive}
+
+idx{intrusive polynomial chaos}
+idx{non-intrusive polynomial chaos}
+
+So far we have described *non-intrusive* polynomial chaos theory, which means
+that the stocahstic solution method can use the underlying differential
+equation solver ``as is'' without any modifications. This is a great
+advantage, and it also makes the theory easier to understand.
+However, one may construct *intrusive* methods that applies the mapping
+()
+in the *solution process* of the differential equation model.
+
+Let us address the decay ODE, $u'=-au$, where we have the mapping
+$u=\sum_i c_i\baspsi_i$ for $u$ which can be inserted in the ODE,
+giving rise to a residual $R$:
+
+!bt
+\[ R = \sum_i c_i'(t)\baspsi_i(\bm{\zeta}) -
+\sum_i c_i\baspsi_i(\bm{\zeta})\tp\]
+Galerkin's method is a common choice for incorporating the polynomial
+chaos expansion when solving differential equations, so we require
+as usual $(R,v)=0$ for all $v\in V$, or expressed via basis functions:
+
+!bt
+\[ \sum_j (\baspsi_i,\baspsi_j) c_i'(t) = -a (\baspsi_i,\baspsi_i)\,\quad
+i=0,\ldots,N tp\]
+!et
+This is now a differential equation system in $c_i$, which can be solved
+by any ODE solver. However, the size of this system is $(N+1)\times (N+1)$
+rather than just a scalar ODE in the original model and the non-intrusive
+method. This is characteristic for non-intrusive methods: the size of
+the underlying system grows exponentially with the number of uncertain
+parameters, and one always ends up in high-dimensional spaces for the ODEs
+or the coordinates for PDEs.
+
+
+For the Poisson equation we insert the mapping
+
+!bt
+\[ u(\x; \bm{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\bm{\zeta}),\]
+!bt
+and get a residual
+
+\begin{equation}
+R = -\sum_{j\in\If}
+\nabla\cdot(\dfc(\x)\nabla c_j(\x))\baspsi_j(\bm{\zeta}) +
+f(\x)\tp
+\end{equation}
+!et
+Now we can apply Galerkin's method to get equations for $c_i(\x)$:
+
+!bt
+\[ \sum_{i\in\If} (\baspsi_j(\bm{\zeta}), \baspsi_i(\bm{\zeta}))
+\nabla\cdot(\dfc(\x)\nabla c_j(\x)) = (f(\x),\baspsi_i(\bm{\zeta})),\quad
+i=0,\ldots,N\tp\]
+!et
+Here, we think that we solve the Poisson equation by some finite difference
+or element method on some mesh, so for each node $\x$ in the mesh, we get
+the above system for $c_j$.
+[hpl: Integration by parts?]
