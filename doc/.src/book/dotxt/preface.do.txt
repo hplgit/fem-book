@@ -8,10 +8,10 @@ intuitive, algorithmic treatment of the subject cite{}, to the
 structural engineering view on the method cite{}. The present book has
 a very strong algorithmic focus (``how to compute''), but formulate
 the method in the abstract form with variational forms and function
-spaces.  
+spaces.
 
 [kam: I don´t know the reference you intend to put in above.
-Also I find the relation to FEniCS odd here. I would 
+Also I find the relation to FEniCS odd here. I would
 rather remove it. The exposition here is significantly
 different in the sense that the hidden part of FEniCS is exposed
 here. I think we should actually say it.]
@@ -23,7 +23,7 @@ solving partial differential equations by the finite element method,
 and it was designed to make implementations very compact for those who
 are used to the abstract formulation of the method.
 
-   
+
 
 
 
@@ -62,7 +62,7 @@ finite element programs: one can run a one-dimensional problem, print
 out intermediate results, and compare with separate hand calculations.
 When the program is fully verified in 1D, ideally the program should
 turned into a 2D/3D simulation simply by switching from a 1D mesh
-to the relevant 2D/3D mesh.  
+to the relevant 2D/3D mesh.
 
 
 When working with algorithms and hand calculations in the present
@@ -96,7 +96,7 @@ apply finite element software?  A thorough understanding of the errors
 is obviously essential, but the classical error analysis of elliptic
 problems is of limited practical interest for the practitioner, except
 for the final results regarding convergence rates of different types
-of finite elements.  
+of finite elements.
 
 
 
@@ -126,15 +126,15 @@ compare the two methods, which is frequently done throughout the text.
 [kam: suggestion (perhaps overselling)]
 
 One highly valued feature of the finite element method is the prospect of
-rigorous analysis provided by the functional analysis framework. In particular, 
-for elliptic problems (or in general symmetric problems) the theory provides 
-error control via sharp estimates and efficient computations via multiscale 
+rigorous analysis provided by the functional analysis framework. In particular,
+for elliptic problems (or in general symmetric problems) the theory provides
+error control via sharp estimates and efficient computations via multiscale
 algorithms. In fact, the development of this mathematical theory of finite element methods
 is one of the highlights of numerical analysis. However, within scientific computing the computational
-engine of the finite element method is being used far outside the 
+engine of the finite element method is being used far outside the
 what is theoretically understood. Obviously, this is a trend that
-will continue in the future. Hence, it is our aim here provide habits of 
-workflow for verification and debugging that are applicable in general situations. 
+will continue in the future. Hence, it is our aim here provide habits of
+workflow for verification and debugging that are applicable in general situations.
 
 The mathematical notation in this text makes deviations from the
 literature trends. Especially books on the abstract formulation of the
@@ -200,5 +200,5 @@ URL: "http://hplgit.github.io/fem-book/doc/web/".
 \vspace{1cm}
 
 \noindent
-{\it Oslo, March 2016}  \hfill  {\it Hans Petter Langtangen, Kent-Andre Mardal}
+{\it Oslo, September 2016}  \hfill  {\it Hans Petter Langtangen, Kent-Andre Mardal}
 # #endif

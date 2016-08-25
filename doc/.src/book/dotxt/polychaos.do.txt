@@ -1,39 +1,79 @@
-Show how polynomial chaos fits right into the framework from the second
-and third chapter.
+idx{polynomial chaos}
 
-We shall now look at *uncertainty analysis* of differential equations. We
-assume that we have some function $u(\x,t;\zeta)$, where $\zeta$ is a
-vector of *random variables* $(\zeta_0,\ldots,\zeta_N)$ that introduces
-uncertainty in the problem. Note that the uncertainty is described by
-$N+1$ stochastic parmeters and is therefore *discretized*. If we have
-temporal or spatial stochastic processes or stochastic space-time fields,
-these are continuous, and the mathematical formulations become considerably
-more complicated. Assuming the uncertainty to be described by a set of
-discrete stochastic *variables* represents the same simplification as we
-introduced in earlier chapters where we assumed the solution to be
+The purpose of this chapter is show how the method of *polynomial
+chaos* just applies simple ideas from Chapter ref{ch:approx:global} to
+perform *stochastic uncertainty analysis* of differential
+equations. We assume that we have some function $u(\x,t;\zeta)$, where
+$\zeta$ is a vector of *random parameters* $(\zeta_0,\ldots,\zeta_N)$
+that introduces uncertainty in the problem. Note that the uncertainty
+is described by $M+1$ stochastic scalar parmeters and is therefore
+*discretized*. If we have temporal or spatial stochastic processes or
+stochastic space-time fields, these are continuous, and the
+mathematical formulations become considerably more
+complicated. Assuming the uncertainty to be described by a set of
+discrete stochastic *variables* represents the same simplification as
+we introduced in earlier chapters where we assumed the solution to be
 discrete, $u(\x)\approx\sum_ic_i\baspsi_i(\x)$, and worked with
-variational forms in finite-dimensional spaces. We could, as briefly shown,
-equally well worked with variational forms in *infinite-dimensional* spaces,
-but the theory would involve Sobelov spaces rather than the far more
-intuitive vector spaces. In the same manner, stochastic processes and fields
-and their mathematical theory are avoided when assuming the uncertainty to
-be already discretized in terms of random variables.
+variational forms in finite-dimensional spaces. We could, as briefly
+shown in Chapter ref{ch:approx:global}, equally well worked with variational
+forms in *infinite-dimensional* spaces, but the theory would involve
+Sobelov spaces rather than the far more intuitive vector spaces. In
+the same manner, stochastic processes and fields and their
+mathematical theory are avoided when assuming the uncertainty to be
+already discretized in terms of random variables.
 
-We shall look at two driving examples, the simple ODE
+There are some excellent expositions of polynomial chaos in the recent
+literature by Xiu cite{Xiu_2009,Xiu_2010}. However, for the reader
+with an understanding of Chapter ref{ch:approx:global} in this book, the authors
+think the ideas can be conveyed much faster using those approximation
+concepts rather than the more traditional exposition in the literature.
+
+======= Sample problems =======
+
+We shall look at two driving examples to illustrate the methods.
+
+===== ODE for decay processes =====
+
+A simple ODE, governing decay processes cite{Langtangen_decay}, reads
 
 !bt
-\begin{eqution}
+\begin{equation}
 u'(t) = a(t)u(t),\quad u(0)=I,
 \end{equation}
 !et
 where $a$ and $I$ can be uncertain. If $a$ is uncertain, we assume that it
 consists of uncertain piecewise constants: $a=a_i$ is a random variable
-in some time interval $[t_i,t_{t_{i+1}]$. Typically, we can write
-$a(t) = \sum_{i=0}^N a_i\hat\baspsi_i(\x)$, with $\hat\baspsi_i$ being P0
+in some time interval $[t_i,t_{i+1}]$. Typically, we can write
+$a(t) = \sum_{i=0}^M a_i\hat\baspsi_i(\x)$, with $\hat\baspsi_i$ being P0
 elements in time, and $a_i$ are the unknown coefficients (in this case we
-count to $i$ from 0 to $N$ and consider $I$ as certain).
+count to $i$ from 0 to $M$ and consider $I$ as certain).
 
-We also address stationary PDE
+!bnotice Stochastic ODE
+To be specific, we let $a$ be a scalar uncertain constant and let also
+$I$ be uncertain. Then
+we have two stochastic variables, $M=2$: $\zeta_0=a$ and $\zeta_1=I$.
+$M=2$.
+
+The analytical solution to this ODE is $u(t)=Ie^{-at}$. With only $I$ as
+stochastic variable, we see that the solution is simply a linear function
+of $I$, so if $I$ has a Gaussian probability distribution, so has $u$ for
+any $t$, with expectation and variance
+
+!bt
+\begin{align*}
+\E{u} &= \E{I}e^{-at},\\
+\Var{u} &= \Var{I}e^{2at}\tp
+\end{align*}
+!et
+However, as soon as $a$ is stochastic, the problem is, from a stochastic
+view point *nonlinear*, so there is no simple transformation of the
+probability distribution for $a$ or its statistics.
+[hpl: Think Jonathan did some calculations!]
+!enotice
+
+===== The stochastic Poission equation =====
+
+We also address the stationary PDE
 
 !bt
 \begin{equation}
@@ -42,7 +82,92 @@ We also address stationary PDE
 !et
 with appropriate Dirichlet, Neumann, or Robin conditions at the boundary,
 The coefficients $\dfc$ and $f$ are assumed to be stochastic quantities
-discretized in terms expansions, e.g., $\dfc = \sum_{i=0}^N\dfc_i\hat\baspsi_i(\x)$,
+discretized in terms of expansions, e.g.,
+$\dfc = \sum_{i=0}^M\dfc_i\hat\baspsi_i(\x)$,
 where $\hat\baspsi_i(\x)$ is some spatial discretization -- think of,
 for instance, of piecewise constant P0 finite elements or global sine
-functions.
+functions, and the parameters $\dfc_i$ as the random uncertain variables
+in the problem. We form some final vector $(\zeta_0,\ldots,\zeta_M)$
+with all the random parameters, from $\dfc(\x)$ only, from $f(\x)$ only, or
+as a combination of randomness in $\dfc$ and $f$. Here, one can include
+randomness in boundary conditions as well.
+
+!bnotice 1D model problem
+A specific 1D problem for heat conduction,
+
+!bt
+\[ \frac{\partial}{\partial x}\left(\dfc(x)\frac{\partial u}{\partial x}
+\right) = 0,\quad x\in\Omega = [0,L],\]
+!et
+may have two materials with $\dfc$ as an uncertain
+constant in each material. Let $\Omega = \Omega_0 = [0,\hat L]
+\cup\Omega_1 = [\hat L, 0]$, where
+$\Omega_i$ is material number $i$. Let $\dfc_i$ be the corresponding
+uncertain heat conduction coefficient value.
+Now we have $M=2$, and $\zeta_0=\dfc_0$ and $\zeta_1=\dfc_1$.
+!enotice
+
+======= Basic principles =======
+
+The *fundamental idea* in polynomial chaos theory
+is that we now assume the mapping from an input parameter
+$\bm{zeta}=(\zeta_0,\ldots,\zeta_M) \in W$ to $u$,
+to $u$, to be smooth
+enough be approximated by *the sum*
+
+!bt
+\begin{equation}
+u(\x;\bm{\zeta}) = \sum_{i=0}^{N} c_i\baspsi_i(\bm{\zeta})
+=\ \sum_{j\in\If} c_j\baspsi_j \in V \tp
+label{pc:fem:approx:ufem2}
+\end{equation}
+!et
+This is the same formula as we used for approximation in Chapter
+(ref{pc:fem:approx:ufem2}).
+Note that $\hbox{dim} W = M+1$, while $\hbox{dim} V = N+1$.
+
+Another basic principle in polynomial chaos theory is to choose the
+basis functions in $V$, $\baspsi_i(\x)$,
+as *orthogonal polynomials*. The reason is that this choice has the
+potential that the sum (ref{pc:fem:approx:ufem2}) may converge very fast
+so $N$ can be kept small.
+
+!bnotice Polynomial chaos expansions may have many unknowns!
+We have $M+1$ uncertain parameters so the approximation problem
+takes place in a $M+1$ dimensional space, constrary to previous chapters
+where $M$ would be physical space, $M=1,2,3$. For each variable, we
+will need a set of basis functions to represent the variation in that
+variable.
+[hpl: Formula for number of terms!]
+The parameter $N$ grows expontially with $M$, so the method is potentially
+very heavy if we should just utilize a standard finite element method as
+expansion. The geometry of the $W$ space is also very simple as each
+parameter is supposed to the defined over an interval so that $W$ is
+a hypercube.x
+!enotice
+
+!bnotice Remark on terminology
+The development of the theory in this chapter builds on the seminal work
+on polynomial chaos theory by Roger Ghanem and co-workers. This theory
+expands functions in Hermite polynomials, which was a great success for a
+range of Gaussian engineering problems. To obtain faster convergence
+in non-Gaussian problems, functions were expanded in other families of
+orthogonal polynomials, which is the view we take here, but the method
+is known as *generalized* polynomial chaos, often abbreviated gPC.
+In this text, however, we use the shorter term Polynomial Chaos for all
+expansions in terms of global orthogonal polynomials.
+!enotice
+
+
+===== Basic statistical results =====
+
+Our task is to compute the coeffiients $c_i$. When these are known, we
+can easily compute the statistics of the response $u$ of the differential
+equation, or any other quantity derived from $u$. For example, the
+expectation of $u$ is
+
+!bt
+\begin{equation}
+\E{u} = \E{\sum_{j\in\If} c_j\baspsi_j} = \sum_{j\in\If} \E{c_j}\baspsi_j
+\end{equation}
+!et
