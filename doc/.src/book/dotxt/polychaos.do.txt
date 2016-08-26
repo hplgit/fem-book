@@ -1,4 +1,5 @@
 idx{polynomial chaos}
+label{ch:pce}
 
 The purpose of this chapter is show how the method of *polynomial
 chaos* just applies simple ideas from Chapter ref{ch:approx:global} to
@@ -174,7 +175,7 @@ in terms of global orthogonal polynomials.
 
 ===== Basic statistical results =====
 
-Our task is to compute the coeffiients $c_i$. When these are known, we
+Our task is to compute the coefficients $c_i$. When these are known, we
 can easily compute the statistics of the response $u$ of the differential
 equation, or any other quantity derived from $u$. For example, the
 expectation of $u$ is
@@ -233,6 +234,7 @@ the joint probability distribution as
 
 !bt
 \[ p(\bm{\zeta}) = \Pi_{i=0}^N p_i(\zeta_i)\tp\]
+!et
 We then have
 
 !bt
@@ -292,6 +294,7 @@ Consequently,
 
 !bt
 \[ u(\x) = \sum_{i\in\If} c_i(t)\baspsi_i(\zeta_0,\zeta_1)\tp\]
+!et
 Furthermore,
 
 !bt
@@ -320,7 +323,7 @@ solving the differential equation. We then want to find the mapping
 !bt
 \[ u(\x;\bm{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\bm{\zeta}),\]
 !et
-or if the reponse is some operation (functional) on the solution $u$,
+or if the response is some operation (functional) on the solution $u$,
 say $f(u)$, we seek the mapping
 
 !bt
@@ -341,14 +344,14 @@ Leja quadrature,
 Monte Carlo integration,
 Optimal Gaussian quadrature,
 
-===== Stochastic collocation ======
+===== Stochastic collocation =====
 
 The stochastic collocation method is nothing but what we called
 regression in Chapter ref{ch:approx:global}.  We simply choose a large
 number $P$ of evaluation points in the parameter space $W$ and compute
 the response at these points.  Then we fit an orthogonal polynomial
 expansion to these points using the principle of least squares. Here,
-in this educational text, the principle of least squares sufficies,
+in this educational text, the principle of least squares suffices,
 but one should that for real-life computations a lot of difficulties
 may happen, especially in large-scale problems. We then need to
 stabilize the least squares computations in various ways, and for this
@@ -362,7 +365,7 @@ of point families, and not surprisingly, numerical integration points
 constitute popular families.
 
 
-======= The Chaospy software ========
+======= The Chaospy software =======
 label{pc:chaospy}
 
 idx{Chaospy software}
@@ -376,7 +379,7 @@ idx{intrusive polynomial chaos}
 idx{non-intrusive polynomial chaos}
 
 So far we have described *non-intrusive* polynomial chaos theory, which means
-that the stocahstic solution method can use the underlying differential
+that the stochastic solution method can use the underlying differential
 equation solver ``as is'' without any modifications. This is a great
 advantage, and it also makes the theory easier to understand.
 However, one may construct *intrusive* methods that applies the mapping
@@ -390,6 +393,7 @@ giving rise to a residual $R$:
 !bt
 \[ R = \sum_i c_i'(t)\baspsi_i(\bm{\zeta}) -
 \sum_i c_i\baspsi_i(\bm{\zeta})\tp\]
+!et 
 Galerkin's method is a common choice for incorporating the polynomial
 chaos expansion when solving differential equations, so we require
 as usual $(R,v)=0$ for all $v\in V$, or expressed via basis functions:
@@ -411,9 +415,10 @@ For the Poisson equation we insert the mapping
 
 !bt
 \[ u(\x; \bm{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\bm{\zeta}),\]
-!bt
+!et
 and get a residual
 
+!bt
 \begin{equation}
 R = -\sum_{j\in\If}
 \nabla\cdot(\dfc(\x)\nabla c_j(\x))\baspsi_j(\bm{\zeta}) +
