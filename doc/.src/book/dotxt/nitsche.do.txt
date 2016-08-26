@@ -27,7 +27,7 @@ In our specific example, there is only one solution: $x=0$, $y=0$.
 Now we want to optimize $f(x,y)$ under the constraint $y=2-x$.
 This means that only $f$ values along the line $y=2-x$ are relevant,
 and we can imagine we view $f(x,y)$ along this line and want to find
-the the optimum value.
+the optimum value.
 
 [kam: need a plot]
 

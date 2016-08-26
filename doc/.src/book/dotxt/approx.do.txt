@@ -2160,7 +2160,7 @@ values that are significantly larger than 1.
 Considering for instance the basis function represented by the purple color, it clearly is 1 in $x=0.5$ and hence the basis function represents the value at the mid-point. However, this function also has strong
 negative contributions close to the element boundaries where
 it takes negative values less than $-2$.
-For the Berstein basis, it is clear that all  functions are positive
+For the Bernstein basis, it is clear that all  functions are positive
 in the whole interval $[0,1]$ and that there is no oscillatory behavior.
 A disadvantage is that the Bernstein basis is not
 a nodal basis and all functions contributes everywhere.
@@ -2194,7 +2194,7 @@ u_e = \exp(-(x-0.5)^2) - \exp(-0.5^2)
 \]
 !et
 We remark that `u_e` is zero in $x=0$ and $x=1$ and that
-we have choosen the bell function because it cannot be expressed
+we have chosen the bell function because it cannot be expressed
 as a finite sum of either polynomials or sines.
 We may therefore study the behavior as $N\rightarrow\infty$.
 
@@ -2287,12 +2287,12 @@ we take the natural logarithm and obtain
 Again, regression analysis provide the means to estimate the convergence, but here we let $x=N$.
 
 Before we perform the regression analysis, we should always inspect the behavior visually
-in log and loglog plots. Figure ref{fem:approx:bell:loglogfig} shows a loglog plot of
+in log and log-log plots. Figure ref{fem:approx:bell:loglogfig} shows a log-log plot of
 the error with respect to $N$ for the various methods. Clearly, the sinusoidal basis seems to
-have a polynomial convergence rate as the loglog plot is a linear line. The Bernstein, Lagrange, and
+have a polynomial convergence rate as the log-log plot is a linear line. The Bernstein, Lagrange, and
 Taylor methods appear to have convergence that is faster than polynomial. It is then interesting to
 consider a log plot and to consider if the behavior is exponential. Figure ref{fem:approx:bell:semilogfig}
-is a log plot. Here, the Berstein approximation appears to be a linear line which suggests that
+is a log plot. Here, the Bernstein approximation appears to be a linear line which suggests that
 the convergence is exponential.
 
 
@@ -2305,7 +2305,7 @@ the sines using the polynomial model (ref{sec:approx:pol:model})
 while the Bernstein approximation is estimates
 in terms of model (ref{sec:approx:exp:model}). We avoid to
 compute estimate the Taylor and Lagrange approximations as neither
-the loglog plot nor the log plot demonstrated linear behavior.
+the log-log plot nor the log plot demonstrated linear behavior.
 
 !bc
 
@@ -5723,7 +5723,7 @@ The concept of a *finite element* is now
   * a *reference cell* in a local reference coordinate system;
   * a set of *basis functions* $\refphi_i$ defined on the cell;
   * a set of *degrees of freedom* that uniquely how basis functions
-    from different elements are glued together accross element interfaces.
+    from different elements are glued together across element interfaces.
     A common technique is to choose
     the basis functions such that $\refphi_i=1$ for degree of freedom
     number $i$ that is associated with nodal point

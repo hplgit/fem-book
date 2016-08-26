@@ -331,7 +331,7 @@ This is the Galerkin method for differential equations.
 
 
 #As shown in (ref{fem:approx:vec:Np1dim:Galerkin}) and (ref{fem:approx:vec:Np1dim:Galerkin0}),
-The above abstract statment can be made concrete by choosing a concrete basis.
+The above abstract statement can be made concrete by choosing a concrete basis.
 For example, the statement is equivalent to $R$ being orthogonal to the $N+1$
 basis functions $\{\baspsi_i\}$ spanning $V$ (and this is
 the most convenient way to express (ref{fem:deq:1D:Galerkin0}):
@@ -1557,7 +1557,7 @@ label{ch:convdiff}
 In the previous examples we have obtained reasonable approximations
 of the continuous solution with several approaches. In this
 chapter we will consider a convection-diffusion equation where
-many methods will fail. The failure is purly numerical
+many methods will fail. The failure is purely numerical
 and is often tied to the resolution. This example is perhaps
 the prime example of numerical instabilities in the context of
 PDEs. 
@@ -1583,7 +1583,7 @@ the second order term $-\epsilon u_{xx}$
 makes the problem a second order
 problem and two boundary conditions are required, one condition on each side. In the limiting 
 case where $\epsilon=0$ only one condition is needed.  
-For this reason, the problem is called a *singular pertubation problem* as the problem changes
+For this reason, the problem is called a *singular perturbation problem* as the problem changes
 fundamentally in the sense that different boundary conditions are required in the limiting
 $\epsilon=0$.
 
@@ -1602,7 +1602,7 @@ The solution is plotted in Figure ref{convdiff:analytical} for different values 
 Clearly, as $\epsilon$ decrease the exponential function represents a sharper and sharper gradient.
 From a physical or engineering point of view, the equation (ref{convdiff:1D}) and the solution
 (ref{convdiff:1D:analytical}) represent the simplest problem representing the common
-phenomen of boundary layers that is common in all kinds of fluid-flow problems in nature.
+phenomenon of boundary layers that is common in all kinds of fluid-flow problems in nature.
 Here, $\epsilon$ is related to the inverse of the Reynolds number which frequently
 in engineering is significantly larger than $10^3$. In these applications, the boundary
 layer representing the gradient is extremely thin.
@@ -1621,8 +1621,8 @@ sharp boundary layer.
 
 
 
-In this chapter we will not embark on the facinating and complex issue of boundary layer
-theory but only consider the numerical issues related to this phenomen.
+In this chapter we will not embark on the fascinating and complex issue of boundary layer
+theory but only consider the numerical issues related to this phenomenon.
 Let us as earlier therefore consider an approximate solution on the following form
 !bt
 \begin{equation}
@@ -1641,8 +1641,8 @@ B(x) = c_0 (1-x) + c_N x .
 !et
 
 Then we fixate $c_0=0$ and $c_N=1$ which makes $B(x) = x$.
-To determine $\{c_i\}_{i=1}^{N-1}\}$  we consider the homogenous Dirichlet problem
-where we solve for $\hat{u} = u - B$. The homogenous Dirichlet problem reads
+To determine $\{c_i\}_{i=1}^{N-1}\}$  we consider the homogeneous Dirichlet problem
+where we solve for $\hat{u} = u - B$. The homogeneous Dirichlet problem reads
 !bt
 \begin{align*}
 \label{convdiff:1D:homo}
@@ -1676,9 +1676,9 @@ of the same polynomal space. CPU time is however enormously different. ]
 
 In the previous chapter we saw that there was a difference between ...
 
-FIGURE: [fig/Lagrange8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomals of order up to 8 for various $epsilon$. label{convdiff:osc:Lagrange8}
+FIGURE: [fig/Lagrange8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $epsilon$. label{convdiff:osc:Lagrange8}
 
-FIGURE: [fig/Lagrange16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomals of order up to 16 for various $epsilon$. label{convdiff:osc:Lagrange16}
+FIGURE: [fig/Lagrange16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $epsilon$. label{convdiff:osc:Lagrange16}
 
 
 

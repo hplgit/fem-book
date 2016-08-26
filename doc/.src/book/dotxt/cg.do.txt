@@ -341,7 +341,7 @@ Both the restarted and truncated version of the algorithm require
 storage of only $K+1$ basis vectors $\q_{k-K},\ldots,\q_k$.
 The basis vectors are also often called *search direction vectors*.
 The truncated version of the least-squares algorithm above
-is widely known as *Generalized Mininum Residuals*, shortended as GMRES,
+is widely known as *Generalized Minimum Residuals*, shortened as GMRES,
 or GMRES$(K)$ to explicitly indicate the
 number of search direction vectors.
 In the literature one encounters the name

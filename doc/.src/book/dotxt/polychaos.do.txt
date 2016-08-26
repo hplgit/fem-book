@@ -6,7 +6,7 @@ perform *stochastic uncertainty analysis* of differential
 equations. We assume that we have some function $u(\x,t;\zeta)$, where
 $\zeta$ is a vector of *random parameters* $(\zeta_0,\ldots,\zeta_N)$
 that introduces uncertainty in the problem. Note that the uncertainty
-is described by $M+1$ stochastic scalar parmeters and is therefore
+is described by $M+1$ stochastic scalar parameters and is therefore
 *discretized*. If we have temporal or spatial stochastic processes or
 stochastic space-time fields, these are continuous, and the
 mathematical formulations become considerably more
@@ -17,7 +17,7 @@ discrete, $u(\x)\approx\sum_ic_i\baspsi_i(\x)$, and worked with
 variational forms in finite-dimensional spaces. We could, as briefly
 shown in Chapter ref{ch:approx:global}, equally well worked with variational
 forms in *infinite-dimensional* spaces, but the theory would involve
-Sobelov spaces rather than the far more intuitive vector spaces. In
+Sobolev spaces rather than the far more intuitive vector spaces. In
 the same manner, stochastic processes and fields and their
 mathematical theory are avoided when assuming the uncertainty to be
 already discretized in terms of random variables.
@@ -71,7 +71,7 @@ probability distribution for $a$ or its statistics.
 [hpl: Think Jonathan did some calculations!]
 !enotice
 
-===== The stochastic Poission equation =====
+===== The stochastic Poisson equation =====
 
 We also address the stationary PDE
 
@@ -134,7 +134,7 @@ so $N$ can be kept small.
 
 !bnotice Polynomial chaos expansions may have many unknowns!
 We have $M+1$ uncertain parameters so the approximation problem
-takes place in an $N+1$ dimensional space, constrary to previous chapters
+takes place in an $N+1$ dimensional space, contrary to previous chapters
 where $N$ would be physical space, $N=1,2,3$. For each variable, we
 will need a set of basis functions to represent the variation in that
 variable. Suppose we use polynomials of order $Q$ and lower in each
@@ -186,7 +186,7 @@ expectation of $u$ is
 !et
 
 A third pillar among assumption for the polynomial chaos method is that
-the *random input variables are stochstically independent*. There are
+the *random input variables are stochastically independent*. There are
 methods to come around this problem, but these are very recent and we
 keep the traditional assumption in the present of the theory here.
 
@@ -199,15 +199,15 @@ keep the traditional assumption in the present of the theory here.
  o Interpolation or collocation
  o Regression
 
-Method 2 and 4 are the domininating ones. These go under the names
-psedo-spectral methods and stochastic collocation methods, respectively.
+Method 2 and 4 are the dominating ones. These go under the names
+pseudo-spectral methods and stochastic collocation methods, respectively.
 
 ===== Least-squares methods =====
 
 A major difference for deterministic approximation methods and
 polynomial chaos based on least squares is that we introduce
 probabilistic information in the inner product in the latter case.
-This means that *we must know the joint probability distrbution*
+This means that *we must know the joint probability distribution*
 $p(\bm{\zeta})$ for the input parameters! Then we define the
 inner product between two elements $u$ and $w$ in $V$ as
 
