@@ -53,7 +53,6 @@ count to $i$ from 0 to $M$ and consider $I$ as certain).
 To be specific, we let $a$ be a scalar uncertain constant and let also
 $I$ be uncertain. Then
 we have two stochastic variables, $M=2$: $\zeta_0=a$ and $\zeta_1=I$.
-$M=2$.
 
 The analytical solution to this ODE is $u(t)=Ie^{-at}$. With only $I$ as
 stochastic variable, we see that the solution is simply a linear function
@@ -70,6 +69,7 @@ However, as soon as $a$ is stochastic, the problem is, from a stochastic
 view point *nonlinear*, so there is no simple transformation of the
 probability distribution for $a$ or its statistics.
 [hpl: Think Jonathan did some calculations!]
+[kam: we probably need definition of E and Var]
 !enotice
 
 ===== The stochastic Poisson equation =====
@@ -112,7 +112,7 @@ Now we have $M=2$, and $\zeta_0=\dfc_0$ and $\zeta_1=\dfc_1$.
 
 The *fundamental idea* in polynomial chaos theory
 is that we now assume the mapping from an input parameter
-$\bm{zeta}=(\zeta_0,\ldots,\zeta_M) \in W$ to $u$,
+$\bm{\zeta}=(\zeta_0,\ldots,\zeta_M) \in W$ to $u$,
 to $u$, to be smooth
 enough be approximated by *the sum*
 
@@ -132,6 +132,9 @@ basis functions in $V$, $\baspsi_i(\x)$,
 as *orthogonal polynomials*. The reason is that this choice has the
 potential that the sum (ref{pc:fem:approx:ufem2}) may converge very fast
 so $N$ can be kept small.
+[kam: I don't get this. I arrested Jonathan also on this earlier and
+he did not provide an answer. I think orthogonality leads to easy or direct
+computations of moments such as E and Var. ]
 
 !bnotice Polynomial chaos expansions may have many unknowns!
 We have $M+1$ uncertain parameters so the approximation problem
