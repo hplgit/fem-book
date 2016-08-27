@@ -1551,7 +1551,7 @@ be solved by constructing a sequence of linear systems whose solutions
 hopefully converge to the solution of the nonlinear system. Frequently applied
 methods are Picard iteration and Newton's method.
 
-======= Convection-diffusion equation - non-physical oscillations  =======
+======= Approximations may fail: The convection-diffusion equation =======
 label{ch:convdiff}
 
 In the previous examples we have obtained reasonable approximations
@@ -1564,12 +1564,12 @@ PDEs.
 
 Consider the equation
 !bt
-\begin{align*}
+\begin{align}
 \label{convdiff:1D}
 - \epsilon u_{xx} - u_x &= 0, \quad \in  (0,1), \\
 u(0) &= 1, \\
 u(1) &= 0 .
-\end{align*}
+\end{align}
 !et
 
 The problem describes a convection-diffusion problem where 
@@ -1595,17 +1595,17 @@ u(x) = \frac{e^{-x/\epsilon} - 1}{ e^{-1/\epsilon} -1 } .
 \end{equation}
 !et
 
-FIGURE: [fig/conv-diff-analytical.png, width=400] Analytical solution to the convection-diffusion problem for varying $epsilon$. label{convdiff:analytical}
+FIGURE: [fig/conv-diff-analytical.png, width=400] Analytical solution to the convection-diffusion problem for varying $\epsilon$. label{convdiff:analytical}
 
 
 The solution is plotted in Figure ref{convdiff:analytical} for different values of $\epsilon$.
 Clearly, as $\epsilon$ decrease the exponential function represents a sharper and sharper gradient.
-From a physical or engineering point of view, the equation (ref{convdiff:1D}) and the solution
-(ref{convdiff:1D:analytical}) represent the simplest problem representing the common
+From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem representing the common
 phenomenon of boundary layers that is common in all kinds of fluid-flow problems in nature.
-Here, $\epsilon$ is related to the inverse of the Reynolds number which frequently
-in engineering is significantly larger than $10^3$. In these applications, the boundary
-layer representing the gradient is extremely thin.
+Boundary layers have the characteristics of the solution
+(ref{convdiff:1D:analytical}), that is; a sharp local exponential gradient. 
+The parameter $\epsilon$ is related to the inverse of the Reynolds number which frequently
+in engineering is significantly larger than $10^3$. In these applications the boundary layer is extremely thin and the gradient extremely sharp.
 
 The case $epsilon=0$ is qualitatively different from the case when $epsilon\rightarrow 0$.
 This case corresponds to the equation
@@ -1656,29 +1656,78 @@ The Galerkin formulation of (ref{convdiff:1D:homo}) is obtained as
 !bt
 \begin{equation}
 \int_0^1
-(- \epsilon \hat{u}_{xx} + \hat{u}_x - 1) \baspsi_j(x) dx .
+(- \epsilon \hat{u}_{xx} + \hat{u}_x - 1) \baspsi_j(x) \dx .
 \end{equation}
 !et
-Integration by parts ....
+Integration by parts leads to 
+!bt
+\begin{equation}
+\int_0^1
+\epsilon \hat{u}_{x} \baspsi_j(x)_{x} + \hat{u}_x \baspsi_j(x) - 1 \baspsi_j(x) \dx .
+\end{equation}
+!et
+In other words, we need to solve the linear system $\sum_j A_{i,j} c_j = b_i$ where
+!bt
+\begin{align*}
+A_{i,j} &= \int_0^1\epsilon \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_i(x)_x \baspsi_j(x) \dx 
+b_i &=\int_0^1 1 \baspsi_j(x) \dx
+\end{align*}
+!et
+A corresponding code where we also plot the behavior of the solution
+with respect to different $\epsilon$ is: 
+!bc pycod
+N = 8 
+eps_vals =[1.0, 0.1, 0.01, 0.001]
+for eps in eps_vals: 
+  A = sym.zeros((N-1), (N-1))
+  b = sym.zeros((N-1))
 
-... matrix and linear system
-.... code
-... global functions before fem?
+  for i in range(0, N-1):  
+    integrand = f*psi[i]
+    integrand = sym.lambdify([x], integrand)
+    b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
+    for j in range(0, N-1): 
+      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) -  sym.diff(psi[i], x)*psi[j] 
+      integrand = sym.lambdify([x], integrand)
+      A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
+
+  c = A.LUsolve(b)
+  u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
+ 
+  U = sym.lambdify([x], u)
+  xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0)) 
+  UU = U(xx)
+  pylab.plot(xx, UU)
+!ec 
 
 
 
 
-[kam: Petrov-Galerkin does not really work for these global function. 
-Probably the  problem is that the test functions is not zero at 
-the boundary? Perhaps conclude this part of conv-diff that
-the different methods give exactly the same solution as they are just different representation
-of the same polynomal space. CPU time is however enormously different. ]
 
 In the previous chapter we saw that there was a difference between ...
 
-FIGURE: [fig/Lagrange8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $epsilon$. label{convdiff:osc:Lagrange8}
+FIGURE: [fig/Lagrange_convdiff_8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
 
-FIGURE: [fig/Lagrange16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $epsilon$. label{convdiff:osc:Lagrange16}
+FIGURE: [fig/Lagrange_convdiff_16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
+
+The numerical solutions for different $\epsilon$ is shown in Figure ref{convdiff:osc:Lagrange8}
+and ref{convdiff:osc:Lagrange16} for $N=8$ and $N=16$, respectively. 
+From these figures we can make two observations. The first observation is that
+the numerical solution contains non-physical oscillations that grows as
+$\epsilon$ decreases. These oscillations are so strong that for $N=8$, the
+numerical solutions do not resemble the true solution at all
+when $\epsilon$ is less than $1/10$. The true solution
+is always in the interval $[0,1]$ while the numerical solution has values
+larger than 2 for $\epsilon=1/100$ and larger than 10 for $\epsilon=1/1000$.
+The second observation is that the numerical solutions appear to improve
+as $N$ increases. While the numerical solution is outside the interval $[0,1]$ 
+for $\epsilon$ less than $1/10$ the magnitude of the oscillations clearly
+has decreased.  
+
+We will return to this example later and show examples of 
+techniques that can be used to improve the approximation. 
+The complete source code can be found in
+ "`test_epsilon`":"${fem_src}/conv_diff.py".
 
 
 
@@ -2505,7 +2554,6 @@ Relevant `sympy` commands to help calculate these expressions are
 
 @@@CODE src/u_xx_2_CD.py fromto: from sympy@N = 1
 The output becomes
-
 !bc dat
 A_ij: (i + 1)*(j + 1)/(i + j + 1)
 b_i: ((-C + D)*(i + 2) + 2)/(i + 2)
@@ -2687,8 +2735,6 @@ the numbers $0,\ldots,N$. Unknown number $j$ in the linear system
 corresponds to degree of freedom number $\nu (j)$, $j\in\If$.
 We can then write
 
-[kam: I think we should say somewhere that this is motivated by 2D, 3D where there is no ordering
-that is natural.]
 
 !bt
 \[ \baspsi_i=\basphi_{\nu(i)},\quad i=0,\ldots,N\tp\]

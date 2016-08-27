@@ -13,10 +13,19 @@ a discretization in time:
    the resulting system of ordinary differential equations (ODEs) by
    some standard method for ODEs.
 
-[kam: This can be stated more clearly. Sometimes the methods
-are equivalent and sometimes not]
+With the first strategy, we discretize in time prior to the space
+discretization while the second strategy consists of doing exactly
+the opposite. It should come as no surprise that in many situations
+these two strategies end up in exactly the same systems to be solved, but
+this is not always the case.  We will here mostly adopt the first strategy,
+which is the most common strategy as it turns the time-dependent
+PDE problem to a sequence of stationary problem for which efficient
+solution strategies often are available. The second strategy rely 
+on ODE solvers, which are available as user-friendly routines
+in Python. However, these routines are presently not efficient enough
+for PDE problem in 2D and 3D. 
 
-We shall exemplify these strategies using a simple diffusion problem
+We shall use a simple diffusion problem to illustrate
 
 !bt
 \begin{align}
@@ -35,12 +44,15 @@ $f(\x,t)$ and $I(x)$ are given functions. We have assigned the particular
 boundary condition (ref{fem:deq:diffu:bcN}) to minimize
 the details on handling boundary conditions in the finite element method.
 
+A list of finite difference formulas can be found in ref{sec:form:fdop}.
+
 ======= Discretization in time by a Forward Euler scheme =======
 label{fem:deq:diffu:FE}
 
 # 2DO
 # N_s out: use N_t in time N in general space in all examples,
-# and change decay and vib to N_t
+# and change decay and vib to N_to
+# KAM: I think this is done 
 
 ===== Time discretization =====
 
@@ -77,31 +89,6 @@ label{fem:deq:diffu:FE:eq:unp1}
 Given $u^0=I$, we can use (ref{fem:deq:diffu:FE:eq:unp1}) to compute
 $u^1,u^2,\dots,u^{N_t}$.
 
-
-===== Space discretization =====
-
-We now introduce a finite element approximation to $\uex^n$ and $\uex^{n+1}$
-in (ref{fem:deq:diffu:FE:eq:uex:n}), where the coefficients depend on the
-time level:
-
-!bt
-\begin{align}
-\uex^n &\approx u^n = \sum_{j=0}^{N} c_j^{n}\baspsi_j(\x),
-label{fem:deq:diffu:femapprox:n}\\
-\uex^{n+1} &\approx u^{n+1} = \sum_{j=0}^{N} c_j^{n+1}\baspsi_j(\x)
-label{fem:deq:diffu:femapprox:np1}
-\tp
-\end{align}
-!et
-Note that, as before, $N$ denotes the number of degrees of freedom
-in the spatial domain. The number of time points is denoted by $N_t$.
-We define a space $V$ spanned by the basis functions $\sequencei{\baspsi}$.
-#Also note that we use $u^n$ as the numerical solution we want
-#to compute in a program, while $\uex$ and $\uex^n$ are used when
-#we occasionally
-#need to refer to the exact solution and the time-discrete solution,
-#respectively.
-
 !bnotice More precise notation
 For absolute clarity in the various stages of the discretizations, we
 introduce $\uex(\x,t)$ as the exact solution of the space-and time-continuous
@@ -127,13 +114,37 @@ label{fem:deq:diffu:FE:eq:uex:n}
 \end{equation}
 !et
 
-[kam: It is not clear what kind of vectors are boldface. Presumably
-vector fields are bf while vectors are not. In particular $\x$ is
-not always consistent. ]
+
 
 The $\uex^{n+1}$ quantity is then discretized in space and approximated
 by $u^{n+1}$.
 !enotice
+
+
+===== Space discretization =====
+
+We now introduce a finite element approximation to $\uex^n$ and $\uex^{n+1}$
+in (ref{fem:deq:diffu:FE:eq:uex:n}), where the coefficients depend on the
+time level:
+
+!bt
+\begin{align}
+\uex^n &\approx u^n = \sum_{j=0}^{N} c_j^{n}\baspsi_j(\x),
+label{fem:deq:diffu:femapprox:n}\\
+\uex^{n+1} &\approx u^{n+1} = \sum_{j=0}^{N} c_j^{n+1}\baspsi_j(\x)
+label{fem:deq:diffu:femapprox:np1}
+\tp
+\end{align}
+!et
+Note that, as before, $N$ denotes the number of degrees of freedom
+in the spatial domain. The number of time points is denoted by $N_t$.
+We define a space $V$ spanned by the basis functions $\sequencei{\baspsi}$.
+#Also note that we use $u^n$ as the numerical solution we want
+#to compute in a program, while $\uex$ and $\uex^n$ are used when
+#we occasionally
+#need to refer to the exact solution and the time-discrete solution,
+#respectively.
+
 
 ===== Variational forms =====
 
@@ -192,7 +203,7 @@ space and time then reads
 !bt
 \begin{equation}
 \int_{\Omega} u^{n+1}v\dx =
-\int_{\Omega} u^n vdx -
+\int_{\Omega} u^n v\dx -
 \Delta t \int_{\Omega}\dfc\nabla u^n\cdot\nabla v\dx +
 \Delta t\int_{\Omega}f^n v\dx,\quad \forall v\in V\tp
 label{fem:deq:diffu:FE:vf:u:np1}
@@ -243,8 +254,8 @@ naming convention is consequently expressed as
 
 !bt
 \begin{equation}
-\int_{\Omega} u vdx =
-\int_{\Omega} u_1 vdx -
+\int_{\Omega} u v\dx =
+\int_{\Omega} u_1 v\dx -
 \Delta t \int_{\Omega}\dfc\nabla u_1\cdot\nabla v\dx +
 \Delta t\int_{\Omega}f^n v\dx
 \tp
@@ -366,9 +377,9 @@ initial condition at the nodes means $c_{1,j} = I(\x_j)$. Otherwise
 one has to solve the linear system
 
 !bt
-\[ \sum_j\baspsi_j(\xno{i})c_{1,j} = I(\xno{i}),\]
+\[ \sum_j\baspsi_j(\x_i)c_{1,j} = I(\x_i),\]
 !et
-where $\x_j$ denotes an interpolation point.  Projection
+where $\x_i$ denotes an interpolation point.  Projection
 (or Galerkin's method) implies solving a linear system with $M$ as
 coefficient matrix:
 
@@ -376,8 +387,6 @@ coefficient matrix:
 \[ \sum_j M_{i,j}c_{1,j} = (I,\baspsi_i),\quad i\in\If\tp\]
 !et
 
-[kam: sometimes $\x_j$ sometimes $\xno{j}$. $\x$ is almost the
-only vector that is boldface].
 
 ===== Example using sinusoidal basis functions =====
 label{fem:deq:diffu:FE:cosex}
@@ -390,7 +399,7 @@ algorithm from the previous section. We consider a 1D problem
 \frac{\partial u}{\partial t} &= \dfc\frac{\partial^2 u}{\partial x^2},\quad
 &x\in (0,L),\ t\in (0,T],
 label{fem:deq:diffu:pde1D:eq}\\
-u(x, 0) & = A\cos(\pi\x/L) + B\cos(10\pi x/L),\quad &x\in[0,L],
+u(x, 0) & = A\cos(\pi x/L) + B\cos(10\pi x/L),\quad &x\in[0,L],
 label{fem:deq:diffu:pde1D:ic}\\
 \frac{\partial u}{\partial x} &= 0,\quad &x=0,L,\ t\in (0,T]
 label{fem:deq:diffu:pde1D:bcN}
@@ -422,8 +431,14 @@ Therefore,
 while $c_{1,i}=0$ for $i\neq 1,10$.
 
 The $M$ and $K$ matrices are easy to compute since the basis functions
-are orthogonal on $[0,L]$. We get
-
+are orthogonal on $[0,L]$, which means that we
+only need to compute the diagonal entries. We get
+!bt
+\[
+M_{i,i} = \int_0^L  cos(i x \pi/L)^2 \dx 
+\]
+!et
+which is computed as 
 !bc pyshell
 >>> import sympy as sym
 >>> x, L = sym.symbols('x L')
@@ -433,13 +448,12 @@ Piecewise((L, Eq(pi*i/L, 0)), (L/2, True))
 !ec
 which means $L$ if $i=0$ and $L/2$ otherwise. Similarly,
 
+The diagonal entries of the $K$ matrix are computed as  
 !bc pyshell
 >>> sym.integrate(sym.diff(cos(i*x*sym.pi/L),x)**2, (x,0,L))
 pi**2*i**2*Piecewise((0, Eq(pi*i/L, 0)), (L/2, True))/L**2
 !ec
 so
-
-[kam: don't get why Piecewise is used.] 
 
 !bt
 \[ M_{0,0}=L,\quad M_{i,i}=L/2,\ i>0,\quad K_{0,0}=0,\quad K_{i,i}=\frac{\pi^2 i^2}{2L},\ i>0\tp\]
@@ -567,24 +581,23 @@ can be expressed as follows using the finite difference operator notation:
 \tp
 \]
 !et
+Here $[D_t^- u]^n\approx (u^{n}-u^{n-1})/\Delta t$. 
 Written out, and collecting the unknown $u^n$ on the left-hand side
 and all the known terms on the right-hand side,
 the time-discrete differential equation becomes
 
-[kam: it is not clear when or if the $D_t^-$ notation ever has
-been introduced properly. ]
 
 !bt
 \begin{equation}
-\u^{n} - \Delta t \left( \dfc\nabla^2 \u^n + f(\x, t_{n})\right) =
-\u^{n-1}
+u^{n} - \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_{n})\right) =
+u^{n-1}
 label{fem:deq:diffu:BE:eq:un}
 \tp
 \end{equation}
 !et
 Equation (ref{fem:deq:diffu:BE:eq:un}) can compute
-$\u^1,\u^2,\dots,\u^{N_t}$,
-if we have a start $\u^0=I$ from the initial condition.
+$u^1,u^2,\dots,u^{N_t}$,
+if we have a start $u^0=I$ from the initial condition.
 [kam: bold face. Bold face not used in e.g. 6.1.6]
 However, (ref{fem:deq:diffu:BE:eq:un}) is a partial differential
 equation in space and needs a solution method based on discretization
@@ -659,8 +672,8 @@ The computational algorithm goes as follows.
 
 In case of finite element basis functions, interpolation of the
 initial condition at the nodes means $c_{1,j} = I(\x_j)$. Otherwise
-one has to solve the linear system $\sum_j\baspsi_j(\xno{i})c_j =
-I(\xno{i})$, where $\x_j$ denotes an interpolation point.  Projection
+one has to solve the linear system $\sum_j\baspsi_j(\x_i)c_j =
+I(\x_i)$, where $\x_i$ denotes an interpolation point.  Projection
 (or Galerkin's method) implies solving a linear system with $M$ as
 coefficient matrix: $\sum_j M_{i,j}c_{1,j} = (I,\baspsi_i)$,
 $i\in\If$.
@@ -697,7 +710,6 @@ label{fem:deq:diffu:BE:fdinterp:lumped}
 ======= Dirichlet boundary conditions =======
 label{fem:deq:diffu:Dirichlet}
 
-[kam: all of a sudden we have explicit scheme]
 
 Suppose now that the boundary condition (ref{fem:deq:diffu:bcN}) is
 replaced by a mixed Neumann and Dirichlet condition,
@@ -725,7 +737,6 @@ form at a time level becomes
 ===== Boundary function =====
 
 
-[kam: all of a sudden we have explicit scheme]
 
 The Dirichlet condition $u=u_0$ at $\partial\Omega_D$ can be incorporated
 through a boundary function $B(\x)=u_0(\x)$ and demanding that $v=0$
@@ -755,10 +766,10 @@ c^{n+1}_j &= \sum_{j\in\If}
 ===== Finite element basis functions =====
 
 When using finite elements, each basis function $\basphi_i$ is associated
-with a node $\xno{i}$. We have a collection of nodes
-$\{\xno{i}\}_{i\in\Ifb}$ on the boundary $\partial\Omega_D$.
+with a node $\x_{i}$. We have a collection of nodes
+$\{\x_i\}_{i\in\Ifb}$ on the boundary $\partial\Omega_D$.
 Suppose $U_k^n$ is the known
-Dirichlet value at $\xno{k}$ at time $t_n$ ($U_k^n=u_0(\xno{k},t_n)$).
+Dirichlet value at $\x_{k}$ at time $t_n$ ($U_k^n=u_0(\x_{k},t_n)$).
 The appropriate boundary function is then
 
 !bt
@@ -859,9 +870,9 @@ We shall address the one-dimensional initial-boundary value problem
 
 !bt
 \begin{align}
-u_t &= (\dfc u_x)_x + f,\quad & \x\in\Omega =[0,L],\ t\in (0,T],
+u_t &= (\dfc u_x)_x + f,\quad & x\in\Omega =[0,L],\ t\in (0,T],
 label{fem:deq:diffu:Dirichlet:ex:pde} \\
-u(x,0) &= 0,\quad & \x\in\Omega,
+u(x,0) &= 0,\quad & x\in\Omega,
 label{fem:deq:diffu:Dirichlet:ex:uic}\\
 u(0,t) &= a\sin\omega t,\quad & t\in (0,T],
 label{fem:deq:diffu:Dirichlet:ex:uL}\\
