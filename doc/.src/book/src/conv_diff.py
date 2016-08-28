@@ -43,6 +43,36 @@ def series(series_type, N):
   else: print "series type unknown " # sys.exit(0)
 
 
+def test_epsilon(N, series_type, Omega):
+  psi = series(series_type, N)
+  f = 1 
+  eps_vals =[1.0, 0.1, 0.01, 0.001]
+  for eps in eps_vals: 
+    A = sym.zeros((N-1), (N-1))
+    b = sym.zeros((N-1))
+
+    for i in range(0, N-1):  
+      integrand = f*psi[i]
+      integrand = sym.lambdify([x], integrand)
+      b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
+      for j in range(0, N-1): 
+	integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) -  sym.diff(psi[i], x)*psi[j] 
+	integrand = sym.lambdify([x], integrand)
+	A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
+
+    c = A.LUsolve(b)
+    u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
+
+    U = sym.lambdify([x], u)
+    xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0)) 
+    UU = U(xx)
+    pylab.plot(xx, UU)
+
+  pylab.legend(["eps=%e" %eps for eps in eps_vals], loc="upper left")
+  pylab.show()
+
+
+
 N = 8 
 series_type = "Bernstein"
 #series_type = "sin"
@@ -50,38 +80,7 @@ series_type = "Bernstein"
 Omega = [0, 1]
 x = sym.Symbol("x")
 
-psi = series(series_type, N)
-print len(psi)
-
-eps = 0.3 
-f = 1 
-
-
-eps_vals =[1.0, 0.1, 0.01, 0.001]
-for eps in eps_vals: 
-  A = sym.zeros((N-1), (N-1))
-  b = sym.zeros((N-1))
-
-  for i in range(0, N-1):  
-    integrand = f*psi[i]
-    integrand = sym.lambdify([x], integrand)
-    b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
-    for j in range(0, N-1): 
-      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) -  sym.diff(psi[i], x)*psi[j] 
-      integrand = sym.lambdify([x], integrand)
-      A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
-
-  c = A.LUsolve(b)
-  u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
-
-  print u 
-  U = sym.lambdify([x], u)
-  xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0)) 
-  UU = U(xx)
-  pylab.plot(xx, UU)
-
-pylab.legend(["eps=%e" %eps for eps in eps_vals], loc="lower right")
-pylab.show()
+test_epsilon(N, series_type, Omega)
 
 
 

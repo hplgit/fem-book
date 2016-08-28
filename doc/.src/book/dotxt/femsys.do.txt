@@ -80,7 +80,6 @@ a vector of test functions
 !et
 with
 
-[kam: boldface again]
 
 !bt
 \[ \u, \v \in  \V = V^{(0)}\times \cdots \times V^{(m)}
@@ -237,6 +236,9 @@ label{fem:sys:wT:ex:T:vf1}
 \tp
 \end{align}
 !et
+The equation $R_w$ in (ref{fem:sys:wT:ex:weq:R}) is linear
+in $w$, while the equation $R_T$ in (ref{fem:sys:wT:ex:Teq:R})
+is linear in $T$ and nonlinear in $w$. 
 
 ===== Compound scalar variational form =====
 
@@ -292,6 +294,12 @@ label{fem:sys:wT:ex:T:vf1i}
 \tp
 \end{align}
 !et
+Note that the left-hand side of (ref{fem:sys:wT:ex:w:vf1i}) is
+again linear in $w$, the left-hand side
+of (ref{fem:sys:wT:ex:T:vf1i}) is linear in $T$
+and the nonlinearity of $w$ appears in the right-hand side
+of  (ref{fem:sys:wT:ex:T:vf1i})
+
 
 ===== Decoupled linear systems =====
 
@@ -341,7 +349,9 @@ can now be expressed in matrix-vector form as
 
 We can solve the first system for $c^{(w)}$, and then
 the right-hand side $b^{(T)}$ is known such that we can
-solve the second system for $c^{(T)}$.
+solve the second system for $c^{(T)}$. Hence, the
+decoupling of the unknowns $w$ and $T$ reduces the
+system of nonlinear PDEs to two linear PDEs. 
 
 
 ===== Coupled linear systems =====
@@ -358,8 +368,6 @@ $\nabla w_{-}\cdot\nabla w$, $w_{-}$ being the $w$
 computed in the previous iteration. Then the term
 $\nabla w_{-}\cdot\nabla w$ is linear in $w$ since $w_{-}$ is
 known. The total linear system becomes
-
-[kam: tidligere har underscore sett anderledes ut]
 
 !bt
 \begin{align}
@@ -386,9 +394,8 @@ L c^{(w)} + \kappa K c^{(T)} & =0,
 \end{align}
 !et
 with $L$ as the matrix from the $\nabla w_{-}\cdot\nabla$ operator:
-$L_{i,j} = A^{(w,T)}_{i,j}$.
-
-[kam: and $K$ ..]
+$L_{i,j} = A^{(w,T)}_{i,j}$. The matrix $K$ is $K_{i,j} = 
+A^{(w,w)}_{i,j} = A^{(T,T)}_{i,j}$. 
 
 The matrix-vector equations are often conveniently written in block form:
 
@@ -491,11 +498,13 @@ label{fem:sys:wT:ex:wT:vf3}
 !et
 valid $\forall \v\in\V = V^{(w)}\times V^{(T)}$.
 
-The associated linear system is similar to
+As earlier, we may decoupled the system in terms
+of two linear PDEs as we did with 
 (ref{fem:sys:wT:ex:linsys:w1})-(ref{fem:sys:wT:ex:linsys:T1})
-or
-(ref{fem:sys:wT:ex:linsys:w2})-(ref{fem:sys:wT:ex:linsys:T2}),
-except that we need to distinguish between $\baspsi_i^{(w)}$
+or linearize the coupled system by introducing the previous
+iterate $w_{-}$ as in 
+(ref{fem:sys:wT:ex:linsys:w2})-(ref{fem:sys:wT:ex:linsys:T2}). 
+However, we need to distinguish between $\baspsi_i^{(w)}$
 and $\baspsi_i^{(T)}$, and the range in the sums over $j$
 must match the number of degrees of freedom in the spaces $V^{(w)}$
 and $V^{(T)}$. The formulas become
@@ -509,11 +518,11 @@ label{fem:sys:wT:ex:linsys:T1:mixed}\\
 A^{(w)}_{i,j} &= \mu(\nabla \baspsi_j^{(w)},\nabla \baspsi_i^{(w)}),\\
 b_i^{(w)} &= (\beta, \baspsi_i^{(w)}),\\
 A^{(T)}_{i,j} &= \kappa(\nabla \baspsi_j^{(T)},\nabla \baspsi_i^{(T)}),\\
-b_i^{(T)} &= \mu(\nabla w_{-}, \baspsi_i^{(T)})
+b_i^{(T)} &= \mu(\sum_{j=0}^{N_w} c^{(w)}_j\nabla\baspsi_j^{(w)})\cdot (\sum_{k=0}^{N_w}
+c^{(w)}_k\nabla\baspsi_k^{(w)}) , \baspsi_i^{(T)})
 \tp
 \end{align}
 !et
-[kam: $b$ er vel ikke riktig.] 
 
 In the case we formulate one compound linear system involving
 both $c^{(w)}_j$, $j=0,\ldots,N_w$, and $c^{(T)}_j$, $j=0,\ldots,N_T$,
@@ -536,7 +545,7 @@ b_i^{(T)} &= 0
 \tp
 \end{align}
 !et
-[kam: $b$ er vel ikke riktig.] 
+Here, we have again performed a linearization by employing a previous iterate $w_{-}$.
 The corresponding block form
 
 !bt
@@ -614,10 +623,10 @@ conditions are $du/dr = dT/dr =0$ for $r=0$, $u(R)=0$, and $T(R)=T_0$.
 
 
 [hpl: Calculations to be continued...]
+[kam: hva skal vi gjøre? Løse i sympy?]
+ 
 
-[kam: ok. ser at det er div ifdef som jeg må sjekke ut.] 
-
-# #ifdef NOTREADY
+## #ifdef NOTREADY
 ===== Another example in 1D =====
 label{fem:sys:up:1D}
 
@@ -625,7 +634,7 @@ label{fem:sys:up:1D}
 \begin{align}
 \frac{\partial w}{\partial x} &= 0,
 label{fem:sys:up:1D:eq:mass}\\
-w &=-a\frac{partial u}{\partial x}
+w &=-a\frac{\partial u}{\partial x}
 label{fem:sys:up:1D:eq:Darcy}
 \tp
 \end{align}
@@ -635,7 +644,7 @@ Boundary conditions: $u(0)=0$, $u(L)=C$.
 
 !bt
 \begin{equation}
-\frac{\partial}{\partial x}\left( a \frac{partial u}{\partial x}\right )= 0
+\frac{\partial}{\partial x}\left( a \frac{\partial u}{\partial x}\right )= 0
 label{fem:sys:up:1D:eq:u}
 \tp
 \end{equation}
@@ -643,11 +652,13 @@ label{fem:sys:up:1D:eq:u}
 
 Mixed finite elements vs standard finite elements.
 
+[kam: ok, we compare P1-P1, P1-P0, and point to stability briefly.]
+
 # 2DO
 
 _Calculations to be continued..._
 
-# #endif
+## #endif
 
 # #ifdef 2DO
  * why we don't use least squares for finite elements (exercise?)

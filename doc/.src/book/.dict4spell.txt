@@ -120,3 +120,14 @@ penalization
 symmetrization
 Nitsche
 Diffpack
+fem
+Xiu
+Ghanem
+gPC
+Clenshaw
+Genz
+Keister
+Leja
+co
+auvgradsympy
+py
