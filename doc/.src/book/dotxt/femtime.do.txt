@@ -14,14 +14,14 @@ a discretization in time:
    some standard method for ODEs.
 
 With the first strategy, we discretize in time prior to the space
-discretization while the second strategy consists of doing exactly
+discretization, while the second strategy consists of doing exactly
 the opposite. It should come as no surprise that in many situations
 these two strategies end up in exactly the same systems to be solved, but
 this is not always the case.  We will here mostly adopt the first strategy,
 which is the most common strategy as it turns the time-dependent
 PDE problem to a sequence of stationary problem for which efficient
-solution strategies often are available. The second strategy rely 
-on ODE solvers, which are available as user-friendly routines
+solution strategies often are available. The second strategy would 
+naturally employ ODE solvers, which are available as user-friendly routines
 in Python. However, these routines are presently not efficient enough
 for PDE problem in 2D and 3D. 
 
@@ -44,15 +44,10 @@ $f(\x,t)$ and $I(x)$ are given functions. We have assigned the particular
 boundary condition (ref{fem:deq:diffu:bcN}) to minimize
 the details on handling boundary conditions in the finite element method.
 
-A list of finite difference formulas can be found in ref{sec:form:fdop}.
 
 ======= Discretization in time by a Forward Euler scheme =======
 label{fem:deq:diffu:FE}
 
-# 2DO
-# N_s out: use N_t in time N in general space in all examples,
-# and change decay and vib to N_to
-# KAM: I think this is done 
 
 ===== Time discretization =====
 
@@ -62,7 +57,9 @@ mesh points $t_n = n\Delta t$, $n=0,1,\ldots,N_t$.
 A Forward Euler scheme consists of sampling (ref{fem:deq:diffu:eq})
 at $t_n$ and approximating the time derivative by a forward
 difference $[D_t^+ u]^n\approx
-(u^{n+1}-u^n)/\Delta t$. This approximation turns (ref{fem:deq:diffu:eq})
+(u^{n+1}-u^n)/\Delta t$. 
+A list of finite difference formulas can be found in ref{sec:form:fdop}.
+This approximation turns (ref{fem:deq:diffu:eq})
 into a differential equation that is discrete in time, but still
 continuous in space.
 With a finite difference operator notation we can write the
@@ -74,7 +71,8 @@ time-discrete problem as
 label{fem:deq:diffu:FE:eq:FEop}
 \end{equation}
 !et
-for $n=1,2,\ldots,N_t-1$. Writing this equation out in detail and
+for $n=1,2,\ldots,N_t-1$.
+Writing this equation out in detail and
 isolating the unknown $u^{n+1}$ on the left-hand side, demonstrates that
 the time-discrete problem is a recursive set of problems that are
 continuous in space:
@@ -232,11 +230,7 @@ label{fem:deq:diffu:femapprox:np1:B}
 
 ===== Simplified notation for the solution at recent time levels =====
 
-In a program it is only necessary to store $u^{n+1}$ and $u^n$ at the
-same time. 
-[kam: funny sentence - better to discribe time stepping is most
-often a two term recursion ? ]
-
+In a program it is only necessary to have the two variables $u^{n+1}$ and $u^n$ at the same time at a given time step.  
 It is therefore unnatural to use the index $n$ in
 computer code. Instead a natural variable naming is
 `u` for $u^{n+1}$, the new unknown, and `u_1` for
@@ -278,11 +272,10 @@ label{fem:deq:diffu:FE:vf:u:short}
 ===== Deriving the linear systems =====
 
 In the following,
-we adopt the
+we adopt the previously introduced 
 convention that the unknowns $c_j^{n+1}$ are written as
 $c_j$, while the known $c_j^n$ from the previous time level
 are denoted by $c_{1,j}$.
-[kam: just as in the continuous case -- this was just explained in detail ]
 To derive the equations for the new unknown coefficients
 $c_j$, we insert
 
@@ -407,8 +400,6 @@ label{fem:deq:diffu:pde1D:bcN}
 \end{align}
 !et
 
-[kam: sometimes $\x$ sometimes $x$].
-
 We use a Galerkin method with basis functions
 
 !bt
@@ -417,8 +408,6 @@ We use a Galerkin method with basis functions
 These basis functions fulfill (ref{fem:deq:diffu:pde1D:bcN}), which is
 not a requirement (there are no Dirichlet conditions in this problem),
 but helps to make the approximation good.
-
-[kam: don't know what "helps to make the approximation good" means.] 
 
 Since the initial condition (ref{fem:deq:diffu:pde1D:ic}) lies in the
 space $V$ where we seek the approximation, we know that a Galerkin or
@@ -435,7 +424,7 @@ are orthogonal on $[0,L]$, which means that we
 only need to compute the diagonal entries. We get
 !bt
 \[
-M_{i,i} = \int_0^L  cos(i x \pi/L)^2 \dx 
+M_{i,i} = \int_0^L  cos^2(i x \pi/L) \dx, 
 \]
 !et
 which is computed as 
@@ -447,8 +436,7 @@ which is computed as
 Piecewise((L, Eq(pi*i/L, 0)), (L/2, True))
 !ec
 which means $L$ if $i=0$ and $L/2$ otherwise. Similarly,
-
-The diagonal entries of the $K$ matrix are computed as  
+the diagonal entries of the $K$ matrix are computed as  
 !bc pyshell
 >>> sym.integrate(sym.diff(cos(i*x*sym.pi/L),x)**2, (x,0,L))
 pi**2*i**2*Piecewise((0, Eq(pi*i/L, 0)), (L/2, True))/L**2
@@ -598,7 +586,6 @@ label{fem:deq:diffu:BE:eq:un}
 Equation (ref{fem:deq:diffu:BE:eq:un}) can compute
 $u^1,u^2,\dots,u^{N_t}$,
 if we have a start $u^0=I$ from the initial condition.
-[kam: bold face. Bold face not used in e.g. 6.1.6]
 However, (ref{fem:deq:diffu:BE:eq:un}) is a partial differential
 equation in space and needs a solution method based on discretization
 in space. For this purpose we use an expansion as in
@@ -781,8 +768,6 @@ functions for $V$ are chosen as $\baspsi_i = \basphi_{\nu(i)}$, $i\in\If$,
 and all of these vanish at the boundary nodes as they should.
 The expansion for $u^{n+1}$ and $u^n$ become
 
-[kam: $\x$ and $x$ for no apparant reason]
-
 !bt
 \begin{align*}
 u^n &= \sum_{j\in\Ifb} U_j^n\basphi_j + \sum_{j\in\If}c_{1,j}\basphi_{\nu(j)},\\
@@ -843,7 +828,7 @@ The equation system can then be written as
 Mc = Mc_1 - \Delta t Kc_1 + \Delta t f\tp
 \end{equation}
 !et
-When $M$, $K$, and $b$ are assembled without paying attention to
+When $M$, $K$, and $f$ are assembled without paying attention to
 Dirichlet boundary conditions, we need to replace equation $k$
 by $c_k=U_k$ for $k$ corresponding to all boundary nodes ($k\in\Ifb$).
 The modification of $M$ consists in setting $M_{k,j}=0$, $j\in\If$, and
@@ -851,7 +836,6 @@ the $M_{k,k}=1$. Alternatively, a modification that preserves
 the symmetry of $M$ can be applied. At each time level one forms
 $b = Mc_1 - \Delta t Kc_1 + \Delta t f$ and sets $b_k=U^{n+1}_k$,
 $k\in\Ifb$, and solves the system $Mc=b$.
-[kam: should it be $b$ or $f$ in the first sentence ]
 
 In case of a Backward Euler method, the system becomes
 (ref{fem:deq:diffu:BE:vf:linsys}). We can write the system
@@ -884,8 +868,6 @@ A physical interpretation may be that $u$ is the temperature
 deviation from a constant mean temperature in a body $\Omega$
 that is subject to an oscillating temperature (e.g., day and
 night, or seasonal, variations) at $x=0$.
-
-[kam: sometimes $x$ and sometimes $\x$.]
 
 We use a Backward Euler scheme in time and P1 elements of
 constant length $h$ in space.
