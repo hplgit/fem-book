@@ -204,13 +204,13 @@ is transformed to
 \[ \int_\Omega\nabla u\cdot\nabla vd\dx = \int_\Omega fv\dx\tp\]
 !et
 This statement is assumed valid for all test functions $v$ in some
-function space of polynomials. The right-hand side expression is
+function space $V$ of polynomials. The right-hand side expression is
 coded in FEniCS as
 
 !bc pycod
 L = f*v*dx
 !ec
-and the problem is solved by the statements
+and the problem is then solved by the statements
 
 !bc pycod
 u = Function(V)  # unknown FEM function
@@ -222,19 +222,34 @@ Assuming $u=0$ on the boundary, we can in FEniCS generate a triangular
 mesh over a rectangular domain $[-1,-1]\times [-1,1]$ as follows:
 
 !bc pycod
-mesh = Rectangle(
-bc = DirichletBC(
+mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+bc = DirichletBC(V, 0, 'on_boundary')
 !ec
+
+Mathematically, the finite element method transforms our PDE to
+a sparse linear system. The `solve` step performs two tasks:
+construction of the linear system based on the given information about
+the domain and its elements, and then solution of the linear system by
+either an iterative or direct method.
 
 We are now in a position to summarize all the parts of a FEniCS program
-that solves the Poisson equation:
+that solves the Poisson equation by the finite element method:
 
 !bc pycod
-# Give access to Rectangle, Mesh, TrialFunction, etc.
 from fenics import *
-
-...
+mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+V = FunctionSpace(mesh, 'P', 2)  # quadratic polynomials
+bc = DirichletBC(V, 0, 'on_boundary')
+u = TrialFunction(V)
+v = TestFunction(V)
+a = dot(grad(u), grad(v))*dx
+L = f*v*dx
+u = Function(V)  # unknown FEM function
+solve(a == L, u, bc)
+vtkfile = File('poisson.pvd'); vtkfile << u
 !ec
+Solving a different PDE is a matter of changing `a` and `L`. We refer to
+the FEniCS tutorial cite{ftut1,ftut2} for lots of examples.
 
 Although we assert here that the finite element method is a tool that
 can solve any PDE problem on any domain of any complexity, the
