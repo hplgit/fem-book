@@ -29,7 +29,6 @@ This means that only $f$ values along the line $y=2-x$ are relevant,
 and we can imagine we view $f(x,y)$ along this line and want to find
 the optimum value.
 
-[kam: need a plot]
 
 ===== Elimination of variables =====
 
@@ -51,7 +50,7 @@ In the general case we have a scalar function $f(\x)$,
 $\x=(x_0,\ldots,x_m)$ with $n+1$ constraints $g_i(\x)=0$,
 $i=0,\ldots,n$. In theory, we could use the constraints to
 express $n+1$ variables in terms of the remaining $m-n$ variables,
-but this very seldom possible, because it requires us to solve
+but this is very seldom possible, because it requires us to solve
 the $g_i=0$ symbolically with respect to $n+1$ different variables.
 
 ===== Lagrange multiplier method =====
@@ -247,8 +246,8 @@ becomes
 
 !bt
 \begin{equation}
-\frac{d}{d\epsilon} \int\limits_{\partial\Omega_N} \uN \cdot (u+\epsilon v) \ds
-= \int\limits_{\partial\Omega_N}\uN v \ds,
+\frac{d}{d\epsilon} \int\limits_{\partial\Omega_N} g \cdot (u+\epsilon v) \ds
+= \int\limits_{\partial\Omega_N} g v \ds,
 label{nitcshe:varform:Poisson3}
 \end{equation}
 !et
@@ -259,7 +258,7 @@ for any $\epsilon$. From (ref{nitcshe:varform:Poisson1})-(ref{nitcshe:varform:Po
 \frac{\delta F}{\delta u} =
 \int\limits_\Omega \nabla u\cdot\nabla v \dx -
 \int\limits_\Omega fv \dx -
-\int\limits_{\partial\Omega_N}\uN v \ds =0\tp
+\int\limits_{\partial\Omega_N} g v \ds =0\tp
 label{nitcshe:varform:Poisson}
 \end{equation}
 !et
@@ -302,14 +301,14 @@ Using this rewrite in (ref{nitcshe:varform:Poisson}) gives
 -\int\limits_\Omega (\nabla^2 u)v\dx +
 \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
 -\int\limits_\Omega fv\dx
--\int\limits_{\partial\Omega_N}\uN v, \ds
+-\int\limits_{\partial\Omega_N} g v, \ds
 \]
 !et
 which equals
 
 !bt
 \[\int\limits_\Omega (\nabla^2 u + f)v\dx +
-\int\limits_{\partial\Omega_N}\left(\frac{\partial u}{\partial n}-g\right)vds
+\int\limits_{\partial\Omega_N}\left(\frac{\partial u}{\partial n}-g\right)v \ds
 =0\tp
 \]
 !et
@@ -340,7 +339,7 @@ u &=0,\quad (x,y)\in\partial\Omega_D,\\
    $\partial\Omega_D$ (so-called *essential boundary condition*).
    The condition involving $\partial u/\partial n$ is easier to
    implement since it is just a matter of computing a line integral.
- * The solution is not unique if $\partial\Omega_E = \emptyset$
+ * The solution is not unique if $\partial\Omega_D = \emptyset$
    (any solution $u+\hbox{const}$ is also a solution).
 !enotice
 
@@ -363,10 +362,15 @@ in $V$. We can achieve this by enforcing the constraint
 
 !bt
 \begin{equation}
-\int\limits_{\partial\Omega_N} (u-\uN)\ds = 0\tp
+\int\limits_{\partial\Omega_N} |u-\uN| \ds = 0\tp
 label{nitsche:essbc:constraint}
 \end{equation}
 !et
+
+However, this constraint is cumbersome to implement. Note that 
+the absolute sign here is needed as in general there
+are many functions $u$ such that 
+$\int\limits_{\partial\Omega_N} u-\uN \ds = 0$. 
 
 __A penalty method.__
 The idea is to add a penalization term $\frac{1}{2}\lambda(u-\uN)^2$,
@@ -385,7 +389,7 @@ The new functional becomes
 \int\limits_\Omega ||\nabla u||^2 \dx -
 \int\limits_\Omega fu \dx -
 \int\limits_{\partial\Omega_N}gu \ds +
-\frac{1}{2}\lambda\int\limits_{\partial\Omega_N}(u-\uN)^2 \ds,\quad
+\frac{1}{2}\int\limits_{\partial\Omega_N}\lambda (u-\uN)^2 \ds,\quad
 u\in V,
 label{nitsche:Fu:functional2}
 \end{equation}
@@ -442,8 +446,8 @@ The lack of symmetry is
 evident in that we cannot interchange $u$ and $v$ in $a(u,v)$.
 The standard finite element method has the symmetry property
 in Poisson problems. The problematic non-symmetric term
-is the line integral of $v\partial u/\partial n$.
-If we had another term $u\partial v/\partial n$, the sum would be
+is the line integral of $v\,\partial u/\partial n$.
+If we had another term $u\,\partial v/\partial n$, the sum would be
 symmetric. The idea is therefore to subtract $\int_{\partial\Omega_N}
 u\partial v/\partial n\ds$ from both $a(u,v)$ and $L(v)$.
 Since $u=\uN$ on $\partial\Omega_N$ we subtract
@@ -530,6 +534,7 @@ $\tilde\lambda$ for $u$ and $\lambda$ and compute
 \end{align*}
 !et
 
+[kam: write up the system to conclude the section]
 
 ===== Example: 1D problem =====
 label{nitsche:pde:opt:1Dex}
@@ -568,6 +573,7 @@ Now, set
 \]
 !et
 
+[kam: ok, write this up in detail]
 
 
 ===== Example: adding a constraint in a Neumann problem =====

@@ -3,6 +3,9 @@
 ========= Variational forms for systems of PDEs =========
 label{ch:femsys}
 
+[kam: consider to move this chap after non-linear as the main example
+here is nonlinear]
+
 Many mathematical models involve $m+1$ unknown functions
 governed by a system of $m+1$ differential equations. In abstract form
 we may denote the unknowns by $u^{(0)},\ldots,

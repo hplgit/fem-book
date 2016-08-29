@@ -25,6 +25,8 @@ naturally employ ODE solvers, which are available as user-friendly routines
 in Python. However, these routines are presently not efficient enough
 for PDE problem in 2D and 3D. 
 
+[kam: now stated that we mostly do the first]
+
 We shall use a simple diffusion problem to illustrate
 
 !bt
@@ -230,7 +232,7 @@ label{fem:deq:diffu:femapprox:np1:B}
 
 ===== Simplified notation for the solution at recent time levels =====
 
-In a program it is only necessary to have the two variables $u^{n+1}$ and $u^n$ at the same time at a given time step.  
+In a program it is only necessary to have  two variables $u^{n+1}$ and $u^n$ at a given time step.  
 It is therefore unnatural to use the index $n$ in
 computer code. Instead a natural variable naming is
 `u` for $u^{n+1}$, the new unknown, and `u_1` for
@@ -412,7 +414,7 @@ but helps to make the approximation good.
 Since the initial condition (ref{fem:deq:diffu:pde1D:ic}) lies in the
 space $V$ where we seek the approximation, we know that a Galerkin or
 least squares approximation of the initial condition becomes exact.
-Therefore,
+Therefore, the initial condition can be expressed as
 
 !bt
 \[ c_{1,1}=A,\quad c_{1,10}=B,\]
@@ -420,14 +422,14 @@ Therefore,
 while $c_{1,i}=0$ for $i\neq 1,10$.
 
 The $M$ and $K$ matrices are easy to compute since the basis functions
-are orthogonal on $[0,L]$, which means that we
+are orthogonal on $[0,L]$. Hence, we
 only need to compute the diagonal entries. We get
 !bt
 \[
-M_{i,i} = \int_0^L  cos^2(i x \pi/L) \dx, 
+M_{i,i} = \int_0^L  cos^2(i x \pi/L) \dx 
 \]
 !et
-which is computed as 
+and is computed as 
 !bc pyshell
 >>> import sympy as sym
 >>> x, L = sym.symbols('x L')
@@ -569,7 +571,7 @@ can be expressed as follows using the finite difference operator notation:
 \tp
 \]
 !et
-Here $[D_t^- u]^n\approx (u^{n}-u^{n-1})/\Delta t$. 
+Here, $[D_t^- u]^n\approx (u^{n}-u^{n-1})/\Delta t$. 
 Written out, and collecting the unknown $u^n$ on the left-hand side
 and all the known terms on the right-hand side,
 the time-discrete differential equation becomes
@@ -1028,10 +1030,6 @@ and the analysis of the finite element solution is therefore performed
 in the same way as for finite difference methods. Expressing the
 discrete finite element equations as finite difference operators turns
 out to be very convenient for the calculations.
-
-[kam: uklar motivasjon og inngang til dette tema. Også uklart hva $q$ er.
-Tror referansen også er feil.
-] 
 
 We introduce $x_q=qh$, or $x_q=q\Delta x$, for the node coordinates,
 to align the notation with
