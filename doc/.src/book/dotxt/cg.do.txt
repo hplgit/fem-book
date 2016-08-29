@@ -1,8 +1,4 @@
 
-[kam: this chap is on a very different abstraction level then the others]
-
-[kam: start with Richardson briefly?]
-
 A successful family of methods, usually referred to as Conjugate
 Gradient-like algorithms, or Krylov subspace methods, can be viewed as
 Galerkin or least-squares methods applied to a linear system $Ax =b$.
@@ -52,9 +48,6 @@ To be specific, let $q_0,\ldots,q_k$ be basis vectors for $V_{k+1}$:
 !et
 The associated inner product $(\cdot,\cdot )$ is here
 the standard Euclidean inner product on $\Real^n$.
-
-[kam: above it was stated thre times that the vectors were in $V_{k+1}$.
-Removed two. ]
 
 The corresponding error in the equation $Ax =b$, the residual, becomes
 
@@ -183,7 +176,6 @@ the same size as our original system $Ax =b$!
 A diagonal matrix, however, ensures an efficient closed form solution for
 $c_0,\ldots,c_k$.
 
-[kam: må sies klarere]
 
 To obtain a diagonal coefficient matrix, we require in Galerkin's method
 that
@@ -287,8 +279,6 @@ Sometimes it is more appropriate to use a relative residual,
 $||\residual^{k+1}||/||\residual^0||\leq\epsilon_r$.
 Termination criteria for Conjugate Gradient-like methods is a subject
 on its own cite{Bruaset_1995}.
-[kam: link convergence criteria to criteria for non-linear iterations]
-
 
 ===== Summary of the least squares method =====
 
@@ -492,11 +482,11 @@ apply the iterative method to the mathematically equivalent system
 !bt
 \begin{equation} M^{-1}Ax = M^{-1}b \tp\end{equation}
 !et
-The aim now is to construct a nonsingular *preconditioning matrix*
-$M$  such that $M^{-1}A$
+The aim now is to construct a nonsingular *preconditioning matrix or algorithm*
+such that $M^{-1}A$
 has a more favorable condition number than $A$.
-
-[kam: comment on the use of the notation $M^{-1}$]
+We remark that we use the notation $M^{-1}$ here to indicate that it should resemble the inverse 
+of the matrix $A$. 
 
 For increased flexibility we can write
 $M^{-1} = C_LC_R$ and transform the system according to
@@ -521,9 +511,9 @@ preconditioner $M$ in the following.
 
 ===== Use of the preconditioning matrix in the iterative methods =====
 
-Optimal convergence rate for the Conjugate Gradient method is
+Optimal convergence for the Conjugate Gradient method is
 achieved when the coefficient matrix $M^{-1}A$ equals the identity matrix
-$I$. In the algorithm we need to perform matrix-vector products
+$I$ and only one iteration is required. In the algorithm we need to perform matrix-vector products
 $M^{-1}Au$ for an arbitrary $u\in\Real^n$.
 This means that we have to solve a linear system with $M$ as coefficient
 matrix in each iteration since we implement the product $y =M^{-1}Au$
@@ -531,18 +521,16 @@ in a two step fashion: First we compute $v = Au$ and then we
 solve the linear system $My =v$ for $y$. The optimal choice $M =A$
 therefore involves the solution of $Ay =v$ in each iteration, which
 is a problem of the same complexity as our original system $Ax =b$.
-The strategy must hence be to compute an $M\approx A$ such that the
-algorithmic operations involving $M$ are cheap.
+The strategy must hence be to compute an $M^{-1} \approx A^{-1} $ such that the
+algorithmic operations involved in the inversion of $M$ are cheap.
 
-[kam: reword: Optimal convergence is achieved when similar to indentity. So lets start by
-assuming ..  ]
 
 The preceding discussion motivates the following
 demands on the preconditioning matrix $M$:
 
-  * $M$ should be a good approximation to $A$,
-  * $M$ should be inexpensive to compute,
-  * $M$ should be sparse in order to minimize storage requirements,
+  * $M^{-1}$ should be a good approximation to $A$,
+  * $M^{-1}$ should be inexpensive to compute,
+  * $M^{-1}$ should be sparse in order to minimize storage requirements,
   * linear systems with $M$ as coefficient matrix must be efficiently solved.
 
 Regarding the last property, such systems must be solved in
@@ -563,8 +551,6 @@ The simplest possible iterative method for solving $Ax=b$ is
 !et
 Applying this method to the preconditioned system
 $M^{-1}Ax =M^{-1}b$ results in the scheme
-
-[kam: include a relax parameter?]
 
 !bt
 \begin{equation*} x^{k+1} = x^{k} + M^{-1}\residual^{k} , \end{equation*}
