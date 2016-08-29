@@ -1105,8 +1105,11 @@ the complete scheme becomes
 from which we find $A$ to be
 
 !bt
-\[ A = 1 - 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
-\tp \]
+\begin{equation}
+label{fem:deq:fiffu:analysis:A:fe}
+ A = 1 - 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
+\tp 
+\end{equation}
 !et
 
 How does this $A$ change the stability criterion compared to the
@@ -1206,6 +1209,70 @@ Remaining tasks:
  * Taylor expansion of the error in the amplification factor $\Aex - A$
  * Taylor expansion of the error $e = (\Aex^n - A^n)e^{ikx}$
  * $L^2$ norm of $e$
+
+
+The difference between the exact and the numerical amplification factors
+gives insight into the order of the approximation. Considering for example the
+forward Euler scheme, the difference $\Aex-A$, where
+$\Aex$ and $A$ are given in 
+(ref{fem:deq:diffu:analysis:Ae}) and (ref{fem:deq:fiffu:analysis:A:fe})
+is a complicated expression. However,  performing a Taylor expansion in terms of $\Delta t$
+using `sympy` is straightforward:  
+
+!bc ipy
+>>> import sympy as sym
+>>> k, dt, dx, alpha = sym.symbols("k dt dx alpha")
+>>> p = k*dx/2 
+>>> F = alpha*dt/(dx*dx)
+>>> Ae = sym.exp(-alpha*k**2*dt) # exact 
+>>> Af =  1 - 4*F*sym.sin(p)**2/(1 - 2.0/3.0*sym.sin(p)**2) # FE
+>>> (Ae - Af).series(dt, n=2)
+dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+(-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2)) + O(dt**2)
+!ec 
+Hence, the differences between the numerical and exact amplification factor is first order in time, 
+as expected. 
+
+The $L_2$ error of the numerical solution at time step $n$ is 
+!bt
+\[
+\sqrt{\int_0^1 (u - u_e)^2 \dx}
+\sqrt{\int_0^1 ((\Aex^n - A^n)e^{ikx})^2 \dx} 
+\]
+!et
+Again this yields a complicated expression for hand-calculations, but
+the following `sympy` provides the estimate: 
+!bc ipy
+>>> n, i, x = sym.symbols("n i x")
+>>> e = (Ae**n - Af**n)*sym.exp(i*k*x)  
+>>> L2_error_squared = sym.integrate(e**2, (x, 0, 1))
+>>> sym.sqrt(L2_error_squared.series(dt, n=2))
+O(dt)
+!ec 
+We remark here that it is an advantage to take the square-root after the deriving 
+the Taylor-series.
+
+
+Plotting the error in the amplification factor versus k 
+!bc pycod
+from numpy import *
+
+k_max=100
+k = arange(1, k_max, 1)
+dx = 1.0/k_max
+dt = 0.5*dx**2
+alpha = 1
+f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+(-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
+
+import pylab
+pylab.plot(k, f)
+pylab.show()
+!ec 
+
+FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}
+
+[kam: not sure if this is what we want]
 
 ======= Exercises =======
 
