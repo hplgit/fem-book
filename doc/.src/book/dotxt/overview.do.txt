@@ -61,7 +61,7 @@ The triangulation in Figure ref{overview:meshex} is a mesh that
 consists of cells that are connected and defined in terms of
 vertices. The fundamental idea of the finite element method is
 to construct a procedure to compute a stencil on a general element and
-then apply this procedure to each element of the mesh. Let 
+then apply this procedure to each element of the mesh. Let
 us therefore denote the mesh as $\Omega$ while $\Omega_e$ is the domain
 of a generic element such that $\Omega=\cup_e \Omega_e$.
 
@@ -117,17 +117,17 @@ idx{trial function}
 idx{test function}
 
 While (ref{overview:poisson}) is a variational formulation of
-our PDE problem, it is not the most common form. 
-It is common to re-write   
+our PDE problem, it is not the most common form.
+It is common to re-write
 !bt
 \begin{equation}
 label{overview:fem:a}
-\int_{\Omega_e} -\nabla^2 u \, v \dx 
+\int_{\Omega_e} -\nabla^2 u \, v \dx
 \end{equation}
 !et
 to weaken the requirement of the polynomial space used for the
-trial function (that here needs to be twice differentiable)  
-and write this term on its corresponding weak form.  
+trial function (that here needs to be twice differentiable)
+and write this term on its corresponding weak form.
 That
 is, the term is rewritten in terms of first-derivatives only (of
 both the trial and the test function)  with the aid of Gauss-Green's lemma:
@@ -141,7 +141,7 @@ label{overview:fem:a:weak}
 !et
 The reasons behind this alternative formulation is rather mathematical and will
 not be a major subject of this book as it is well described elsewhere.
-In fact, a precise explanation would need tools from functional analysis. 
+In fact, a precise explanation would need tools from functional analysis.
 
 With the above rewrite assuming now that the boundary term vanish due to
 boundary conditions (why this is possible will be dealt with in detail
@@ -177,15 +177,15 @@ here for a novice FEM user is then to understand the concept of trial
 functions and test functions realised in terms of polynomial spaces.
 
 
-Hence, a finite element formulation (or a weak formulation) of 
-the Poisson problem that works on any mesh $\Omega$ can be written 
-in terms of solving the problem:  
+Hence, a finite element formulation (or a weak formulation) of
+the Poisson problem that works on any mesh $\Omega$ can be written
+in terms of solving the problem:
 !bt
 \[ \int_\Omega\nabla u\cdot\nabla vd\dx = \int_\Omega fv\dx\tp\]
 !et
-By varying the trial and test spaces we obtain different stencils, 
-some of which will be identical to finite difference schemes on 
-particular meshes. We will now show a complete FEniCS program to 
+By varying the trial and test spaces we obtain different stencils,
+some of which will be identical to finite difference schemes on
+particular meshes. We will now show a complete FEniCS program to
 illustrate how a typical finite element code may be structured
 
 !bc pycod
@@ -251,6 +251,61 @@ The two first task here should ideally be performed by independent calculations
 outside the framework used for the simulations. In our view `sympy` is a
 convenient tool that can be used to assist hand calculations.
 
+So far, we have outlined how the finite element method handles derivatives
+in a PDE, but we also had a right-hand side $f$. This term is multiplied
+by the test function $v$ as well, such that the entire Poisson equation
+is transformed to
+
+!bt
+\[ \int_\Omega\nabla u\cdot\nabla vd\dx = \int_\Omega fv\dx\tp\]
+!et
+This statement is assumed valid for all test functions $v$ in some
+function space $V$ of polynomials. The right-hand side expression is
+coded in FEniCS as
+
+!bc pycod
+L = f*v*dx
+!ec
+and the problem is then solved by the statements
+
+!bc pycod
+u = Function(V)  # unknown FEM function
+solve(a == L, u, bc)
+!ec
+where `bc` holds information about boundary conditions. This information
+is connected to information about the triangulation, the *mesh*.
+Assuming $u=0$ on the boundary, we can in FEniCS generate a triangular
+mesh over a rectangular domain $[-1,-1]\times [-1,1]$ as follows:
+
+!bc pycod
+mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+bc = DirichletBC(V, 0, 'on_boundary')
+!ec
+
+Mathematically, the finite element method transforms our PDE to
+a sparse linear system. The `solve` step performs two tasks:
+construction of the linear system based on the given information about
+the domain and its elements, and then solution of the linear system by
+either an iterative or direct method.
+
+We are now in a position to summarize all the parts of a FEniCS program
+that solves the Poisson equation by the finite element method:
+
+!bc pycod
+from fenics import *
+mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+V = FunctionSpace(mesh, 'P', 2)  # quadratic polynomials
+bc = DirichletBC(V, 0, 'on_boundary')
+u = TrialFunction(V)
+v = TestFunction(V)
+a = dot(grad(u), grad(v))*dx
+L = f*v*dx
+u = Function(V)  # unknown FEM function to be computed
+solve(a == L, u, bc)
+vtkfile = File('poisson.pvd'); vtkfile << u  # store solution
+!ec
+Solving a different PDE is a matter of changing `a` and `L`. We refer to
+the FEniCS tutorial cite{ftut1,ftut2} for lots of examples.
 
 Although we assert here that the finite element method is a tool that
 can solve any PDE problem on any domain of any complexity, the
@@ -265,7 +320,3 @@ i.e, understanding how $\baspsi_i$ are constructed and how $c_i$ are
 computed, we believe the reader can develop a better intuitive
 understanding the finite element method in particular and its
 foundation in general.
-
-
-
-

@@ -365,6 +365,20 @@
    note:      \url{http://hplgit.github.io/scaling-book/doc/web/}
    url:       http://hplgit.github.io/scaling-book/doc/web/
    entrytype: book
+** Writing State-of-the-Art PDE Solvers in Minutes -- The FEniCS Tutorial I
+   key:       ftut1
+   author:    H. P. Langtangen, A. Logg
+   year:      2016
+   note:      \url{http://hplgit.github.io/fenics-tutorial/doc/web/}
+   url:       http://hplgit.github.io/fenics-tutorial/doc/web/
+   entrytype: book
+** Writing More Advanced FEniCS Programs -- The FEniCS Tutorial II
+   key:       ftut2
+   author:    H. P. Langtangen, A. Logg
+   year:      2016
+   note:      \url{http://hplgit.github.io/fenics-tutorial/doc/web/}
+   url:       http://hplgit.github.io/fenics-tutorial/doc/web/
+   entrytype: book
 * chapters
 ** Finite Elements for the {Boussinesq} Wave Equations
    key:       Langtangen:95
