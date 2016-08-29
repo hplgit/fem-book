@@ -988,6 +988,8 @@ element vector corresponding to the extra term
 ======= Analysis of the discrete equations =======
 label{fem:deq:diffu:anal}
 
+[kam: intro/bridge to subject]
+
 ===== Fourier components =====
 
 The diffusion equation $u_t = \dfc u_{xx}$ allows a (Fourier)
@@ -1056,8 +1058,7 @@ are listed below.
 \end{align}
 !et
 
-[kam: usikker på hvor opplagt dette er. Ta resten av kap nøye etter
-å diskutere med HPL]
+[kam: either ref to appendix or write out first eq in detail]
 
 ===== Forward Euler discretization =====
 
