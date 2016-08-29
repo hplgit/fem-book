@@ -422,17 +422,10 @@ are orthogonal on $[0,L]$. Hence, we
 only need to compute the diagonal entries. We get
 !bt
 \[
-<<<<<<< HEAD
-M_{i,i} = \int_0^L  cos^2(i x \pi/L) \dx 
-\]
-!et
-and is computed as 
-=======
 M_{i,i} = \int_0^L  cos^2(i x \pi/L) \dx,
 \]
 !et
 which is computed as
->>>>>>> cd7541dbf4d448b1e5557db255b152d593d24797
 !bc pyshell
 >>> import sympy as sym
 >>> x, L = sym.symbols('x L')
@@ -575,11 +568,7 @@ can be expressed as follows using the finite difference operator notation:
 \tp
 \]
 !et
-<<<<<<< HEAD
-Here, $[D_t^- u]^n\approx (u^{n}-u^{n-1})/\Delta t$. 
-=======
 Here $[D_t^- u]^n\approx (u^{n}-u^{n-1})/\Delta t$.
->>>>>>> cd7541dbf4d448b1e5557db255b152d593d24797
 Written out, and collecting the unknown $u^n$ on the left-hand side
 and all the known terms on the right-hand side,
 the time-discrete differential equation becomes
@@ -1040,13 +1029,6 @@ in the same way as for finite difference methods. Expressing the
 discrete finite element equations as finite difference operators turns
 out to be very convenient for the calculations.
 
-<<<<<<< HEAD
-=======
-[kam: uklar motivasjon og inngang til dette tema. Også uklart hva $q$ er.
-Tror referansen også er feil.
-]
-
->>>>>>> cd7541dbf4d448b1e5557db255b152d593d24797
 We introduce $x_q=qh$, or $x_q=q\Delta x$, for the node coordinates,
 to align the notation with
 that frequently used in finite difference methods.
