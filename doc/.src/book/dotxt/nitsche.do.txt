@@ -301,7 +301,7 @@ Using this rewrite in (ref{nitcshe:varform:Poisson}) gives
 -\int\limits_\Omega (\nabla^2 u)v\dx +
 \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
 -\int\limits_\Omega fv\dx
--\int\limits_{\partial\Omega_N} g v, \ds
+-\int\limits_{\partial\Omega_N} g v \ds,
 \]
 !et
 which equals
@@ -366,7 +366,6 @@ in $V$. We can achieve this by enforcing the constraint
 label{nitsche:essbc:constraint}
 \end{equation}
 !et
-
 However, this constraint is cumbersome to implement. Note that 
 the absolute sign here is needed as in general there
 are many functions $u$ such that 
@@ -388,7 +387,7 @@ The new functional becomes
 \begin{equation} F(u) =
 \int\limits_\Omega ||\nabla u||^2 \dx -
 \int\limits_\Omega fu \dx -
-\int\limits_{\partial\Omega_N}gu \ds +
+\int\limits_{\partial\Omega_N}gu \ds + \,
 \frac{1}{2}\int\limits_{\partial\Omega_N}\lambda (u-\uN)^2 \ds,\quad
 u\in V,
 label{nitsche:Fu:functional2}
@@ -446,10 +445,10 @@ The lack of symmetry is
 evident in that we cannot interchange $u$ and $v$ in $a(u,v)$.
 The standard finite element method has the symmetry property
 in Poisson problems. The problematic non-symmetric term
-is the line integral of $v\,\partial u/\partial n$.
-If we had another term $u\,\partial v/\partial n$, the sum would be
+is the line integral of $v \partial u/\partial n$.
+If we had another term $u \partial v/\partial n$, the sum would be
 symmetric. The idea is therefore to subtract $\int_{\partial\Omega_N}
-u\partial v/\partial n\ds$ from both $a(u,v)$ and $L(v)$.
+u \partial v/\partial n\ds$ from both $a(u,v)$ and $L(v)$.
 Since $u=\uN$ on $\partial\Omega_N$ we subtract
 $\int_{\partial\Omega_N}
 u\partial v/\partial n\ds = \int_{\partial\Omega_N}
