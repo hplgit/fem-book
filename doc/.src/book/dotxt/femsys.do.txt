@@ -631,8 +631,104 @@ conditions are $du/dr = dT/dr =0$ for $r=0$, $u(R)=0$, and $T(R)=T_0$.
 
 ## #ifdef NOTREADY
 ===== Another example in 1D =====
-label{fem:sys:up:1D}
 
+label{fem:sys:up:1D}
+Consider the problem 
+!bt
+\begin{align}
+label{femsys:varcoeff:1D}
+ -(a u')' &= 0,
+u(0) &= 0,
+u(1) &= 1 \tp
+\end{align} 
+!et
+If $a=1$, we may easily verify that the solution is $x$. 
+In many applications such as for example porous media flow
+or head conduction, $a$ contains a jump that represents 
+the transition from one material to the next. Hence, 
+let us consider the problem where $a$ is on the following
+form
+!bt
+\[
+a = \left\{ \begin{array}{ll} 
+            1 & \mbox{if } x\le\half, \\
+            1/a_0 &  \mbox{if } x<\half\tp 
+           \end{array} \right.  
+\]
+!et
+Notice that (ref{femsys:varcoeff:1D}) does not necessarily make
+sense as we can not differentiate $a$. That is $a'$ is the
+Dirac's delta function. 
+
+Hand-calculations do however show that we may be able to 
+compute the solution. Integrating (ref{femsys:varcoeff:1D}) 
+yields the expression
+!bt
+\[
+-(a u') = C 
+\]
+!et 
+A trick now is to divide by $a$ on both sides to obtain
+!bt
+\[
+- u' = C/a 
+\]
+!et 
+and hence
+!bt
+\begin{equation}
+label{varcoeff:analytical:solution}
+u(x) = (C/a) x + D 
+\end{equation}
+!et
+The boundary conditions demand that $u(0) = 0$, which means that $D=0$
+and $u(1) = 1$ fixate $C$ to be $1/a_0$. 	
+
+To obtain a variational form of this problem suitable for
+finite element simulation, we transform the problem 
+to a homogeneous Dirichlet problem. 
+Let the solution be $u(x) = B(x) + \sum_{j\in\If} c_j\baspsi_j(x)$ where 
+$B(x)=x$.
+
+[kam: the right hand side is hard to compute. Perhaps find 
+a problem with homogeneous BC.]
+
+The variational problem derived from a standard Galerkin method reads: Find $u$ such that  
+!bt
+\[
+\int_{\Omega} a u' v' \, dx = f v dx 
+\]
+!et
+
+We observe that in the variational problem, the discontinuity of $a$ does not cause any problem
+as the differentiation is moved to $v$ by using integration by parts. 
+Letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and $v=\baspsi_i(x)$ the corresponding linear system is $\sum_j A_{i,j}c_j=b_i$
+with
+
+
+!bt
+\begin{align*}
+A_{i,j} &= (a \baspsi_j', \baspsi_i') = \int_{\Omega} a(x) \baspsi_j'(x),
+\baspsi_i'(x)\dx,\\
+b_i &= (f,\baspsi_i)= 0 \tp
+\end{align*}
+!et
+
+The solution of the problem is shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotu} at different mesh resolutions. 
+The analytical solution in (ref{varcoeff:analytical:solution}) is a piecewise polynomial, linear 
+for $x$ in $[0,\half)$ and $(\half,1]$ and it seems that the numerical strategy gives a reasonable approximation 
+of the solution. 
+
+The flux $a u'$ is often a quantity of interest. As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux}, this
+quantity is not well approximated with the Standard Galerkin method. 
+
+FIGURE: [fig/darcy_a1D, width=800] Solution of the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu}
+
+FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
+
+To improve the approximation of the flux, it is common to consider an equivalent form 
+of (ref{femsys:varcoeff:1D}) where the flux is one of the unknowns. 
+The equations reads: 
 !bt
 \begin{align}
 \frac{\partial w}{\partial x} &= 0,
@@ -643,7 +739,7 @@ label{fem:sys:up:1D:eq:Darcy}
 \end{align}
 !et
 
-Boundary conditions: $u(0)=0$, $u(L)=C$.
+Boundary conditions: $u(0)=0$, $u(L)=1$.
 
 !bt
 \begin{equation}
@@ -655,7 +751,9 @@ label{fem:sys:up:1D:eq:u}
 
 Mixed finite elements vs standard finite elements.
 
-[kam: ok, we compare P1-P1, P1-P0, and point to stability briefly.]
+[kam: ok, we compare P1-P1, P1-P0, and point to stability briefly.
+comment on the boundary condition. Work on plot which is not fine. 
+]
 
 # 2DO
 
