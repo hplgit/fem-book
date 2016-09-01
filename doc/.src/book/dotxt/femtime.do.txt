@@ -983,8 +983,18 @@ element vector corresponding to the extra term
 # Show assembled form
 # #endif
 
-======= Analysis of the discrete equations =======
+======= Accuracy of the finite element solution =======
 label{fem:deq:diffu:anal}
+
+===== Illustrating example =====
+
+ * Two insulated metal pieces
+ * Run CN finite difference and finite element
+ * Run FE
+ * Point to problems
+
+===== Mwthods of analysis =====
+
 
 ===== Fourier components =====
 

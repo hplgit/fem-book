@@ -1,3 +1,6 @@
+========= Flexible implementations of boundary conditions =========
+label{ch:nitsche}
+
 ======= Optimization with constraint =======
 label{nitsche:fxy:opt}
 
