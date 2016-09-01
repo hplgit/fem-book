@@ -1236,7 +1236,7 @@ as expected.
 The $L_2$ error of the numerical solution at time step $n$ is 
 !bt
 \[
-\sqrt{\int_0^1 (u - u_e)^2 \dx}
+\|u-u_e\|_{L_2} = \sqrt{\int_0^1 (u - u_e)^2 \dx} = 
 \sqrt{\int_0^1 ((\Aex^n - A^n)e^{ikx})^2 \dx} 
 \]
 !et
@@ -1252,27 +1252,55 @@ O(dt)
 We remark here that it is an advantage to take the square-root after the deriving 
 the Taylor-series.
 
-
-Plotting the error in the amplification factor versus k 
+As we saw earlier, the amplification factor varied with $k$, 
+in particular with respect to the resolution. Let us therefore
+consider the error in the amplification factor $A_e - A$
+at different resolutions for the $k=1\ldots 100$
+at mesh sizes that under-resolve and properly resolve the first
+hundred components. That is, we vary $\dx$ from $\frac{8}{100}$ to 
+$\frac{1}{800}$.  
+Plotting the error in the amplification factor versus $k$ as follows, 
 !bc pycod
 from numpy import *
+import pylab 
+dxs = [8*10**-2, 4*10**-2, 2*10**-2, 10**-2, 10**-2/2, 10**-2/4, 10**-2/8]
+for dx in dxs: 
+  k_max=100 
+  k = arange(1, k_max, 1)
+  dt = 0.5*dx**2   
+  alpha = 1 
+  f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+  (-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
 
-k_max=100
-k = arange(1, k_max, 1)
-dx = 1.0/k_max
-dt = 0.5*dx**2
-alpha = 1
-f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
-(-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
-
-import pylab
-pylab.plot(k, f)
+  pylab.loglog(k, f)
+pylab.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
 pylab.show()
 !ec 
 
 FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}
 
-[kam: not sure if this is what we want]
+Figure ref{fem:deq:diffu:AeA:VS:k} shows that that there is a polynomial
+relationship between the error of the amplification factor
+and $k$, that is $Ae-A$ goes as $k^4$. For well-resolved meshes, 
+$\Delta x \le 0.2 k$ the amplification factor is always less than
+$1/1000$. For the under-resolved meshes, e.g. $\Delta x = 8 k$
+the error of the amplification factor is even larger than 1. 
+
+
+FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}
+
+From the previous analysis of forward Euler scheme, we know that 
+the scheme is only stable as long as the stability criterion
+$\Delta t \le \half \Delta x^2$ is satisfied. Let us therefore consider
+the error in the amplification factor with respect to $\Delta t$. 
+Figure ref{fem:deq:diffu:AeA:VS:dt} shows a clear tendency that
+lower frequencies (lower $k$) are quickly dampened. In fact, the
+lower frequencies will be dampened even though the stability criterion 
+is not satisfied. However, the stability criterion is important for the
+high frequency components of the error. 
+
+
+[kam: I have to admit I not sure this is what we want to show]
 
 ======= Exercises =======
 

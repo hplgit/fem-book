@@ -779,13 +779,27 @@ FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with d
 
 FIGURE: [fig/darcy_adx1D_mx, width=800] The corresponding flux $a u'$ for the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux:mx}
 
-Mixed finite elements vs standard finite elements.
+It is interesting to note that the standard Galerkin formulation
+of the problem result in perfect approximation of $u$, while
+the flux $-a u'$ is badly represented. On the other hand, 
+for the mixed formulation, the flux is well approximated but
+$u$ is approximated only to first order yielding a staircase
+approximation. These observations naturally suggest
+that we should employ P1 approximation of both $u$ and
+its flux. We should then get a perfect approximation of
+both unknowns. This is however not possible. The
+linear system we obtain with P1 elements for both variables is singular
+and can not be solved. 
 
-[kam: ok, we compare P1-P1, P1-P0, and point to stability briefly.
-comment on the boundary condition. Work on plot which is not fine. 
-]
+This example shows that when we are solving systems of PDEs with 
+several unknowns, we can not choose the approximation arbitrary. 
+The polynomial spaces of the different unknowns have to be compatible. 
+We will not discuss reasons for the need of compatibility here 
+as it is well presented in many books, e.g. cite{Brenner_Scott,Braess, Silvester_et_al_2015}
 
-[kam: check signs in figures]
+
+
+[kam: Not sure why the I don't get $a_0$. Need to debug. ]
 
 # 2DO
 
