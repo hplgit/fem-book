@@ -1327,7 +1327,7 @@ pylab.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
 pylab.show()
 !ec 
 
-FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}
+FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}.
 
 Figure ref{fem:deq:diffu:AeA:VS:k} shows that there is a polynomial
 relationship between the error of the amplification factor
@@ -1337,7 +1337,7 @@ $1/1000$. For the under-resolved meshes, e.g. $\Delta x = 8 k$
 the error of the amplification factor is even larger than 1. 
 
 
-FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}
+FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}.
 
 From the previous analysis of forward Euler scheme, we know that 
 the scheme is only stable as long as the stability criterion
