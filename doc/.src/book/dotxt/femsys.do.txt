@@ -626,7 +626,7 @@ as
 \begin{align*}
 w_x &= - \int \frac{\beta}{\mu} \dx + C_w, \\
 w &= \int w_x \dx + D_w, \\
-T_x = - \int \mu*w_x^2 \dx + C_T,\\
+T_x &= - \int \mu w_x^2 \dx + C_T,\\
 w &= \int w_x \dx + D_T, \\
 \end{align*}
 !et
@@ -658,9 +658,18 @@ We find that the solutions are
 !bt
 \begin{align*}
 w(x) &= \frac{\beta x}{2 \mu} \left(H - x\right), \\
-T(x) &= \frac{1}{\mu} \left(\frac{H^{3} x}{24} \beta^{2} - \frac{H^{2} \beta^{2}}{8} x^{2} + \frac{H \beta^{2}}{6} x^{3} + T_{0} \mu - \frac{\beta^{2} x^{4}}{12}\right) \tp
+T(x) &= \frac{\beta^{2}}{\mu} \left(\frac{H^{3} x}{24}  - \frac{H^{2}}{8} x^{2} + \frac{H}{6} x^{3} - \frac{ x^{4}}{12}\right)  + T_{0} \tp
 \end{align*}
 !et
+
+The figure ref{femsys:cooling:w:plot} shows $w$ computed by the finite element method using the  decoupled
+approach with P1 elements for both $w$ and $T$. Clearly, the coarse approximation gives poor approximation, but
+the linear finite element field produced nice approximation to the parabolic function when $N=16, 32$. 
+FIGURE: [fig/cooling_w, width=800] The solution $w$ of (ref{fem:sys:wT:ex1D:weq}) with $\beta=\mu=1$ for different mesh resolutions. label{femsys:cooling:w:plot}
+
+The figure ref{femsys:cooling:w:plot} shows $T$. The same tendency is apparent. 
+FIGURE: [fig/cooling_T, width=800] The solution $T$ of (ref{fem:sys:wT:ex1D:Teq}) for $\kappa=H=1$. label{femsys:cooling:T:plot}
+
 
 The calculations for (ref{fem:sys:wT:ex1Dr:weq})
 and (ref{fem:sys:wT:ex1Dr:Teq}) are similar. 
