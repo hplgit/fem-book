@@ -3,29 +3,42 @@
 label{ch:femtime}
 
 The finite element method is normally used for discretization in
-space. There are two alternative strategies for performing
+space. There are three alternative strategies for performing
 a discretization in time:
 
- * use finite differences for time derivatives to arrive at
+ o Use *finite differences* for time derivatives to arrive at
    a recursive set of spatial problems that can be discretized by
-   the finite element method, or
- * discretize in space by finite elements first, and then solve
+   the finite element method.
+ o Discretize in space by finite elements first, and then solve
    the resulting system of ordinary differential equations (ODEs) by
-   some standard method for ODEs.
+   some *standard library* for ODEs.
+ o Use discontinuous finite elements in the spatial direction separately.
 
 With the first strategy, we discretize in time prior to the space
 discretization, while the second strategy consists of doing exactly
 the opposite. It should come as no surprise that in many situations
 these two strategies end up in exactly the same systems to be solved, but
-this is not always the case.  We will here mostly adopt the first strategy,
+this is not always the case.  The third approach reproduces standard
+finite difference schemes such as the Backward Euler and the Crank-Nicolson
+schemes, but offers an interesting framework for deriving higher-order
+methods. In this chaper we shall be concerned with
+the first strategy,
 which is the most common strategy as it turns the time-dependent
-PDE problem to a sequence of stationary problem for which efficient
-solution strategies often are available. The second strategy would
-naturally employ ODE solvers, which are available as user-friendly routines
+PDE problem to a sequence of stationary problems for which efficient
+finite element solution strategies often are available.
+The second strategy would
+naturally employ well-known ODE software,
+which are available as user-friendly routines
 in Python. However, these routines are presently not efficient enough
-for PDE problem in 2D and 3D.
+for PDE problems in 2D and 3D. The first strategy gives complete hands-on
+control of the implementation and the computational efficiency
+in time and space.
 
-We shall use a simple diffusion problem to illustrate
+We shall use a simple diffusion problem to illustrate the basic
+principles of how a time-dependent PDE is solved by finite differences
+in time and finite elements in space. Of course, instead of finite elements,
+we may employ other types of basis functions, such as global polynomials.
+Our model problem reads
 
 !bt
 \begin{align}
@@ -48,6 +61,11 @@ the details on handling boundary conditions in the finite element method.
 ======= Discretization in time by a Forward Euler scheme =======
 label{fem:deq:diffu:FE}
 
+The discretization strategy is to first apply a simple finite difference
+scheme in time and derive a recursive set of spatially continuous PDE
+problems, one at each time level. For each spatial PDE problem we can
+set up a variational formulation and employ the finite element method
+for solution.
 
 ===== Time discretization =====
 
@@ -408,7 +426,7 @@ but helps to make the approximation good.
 Since the initial condition (ref{fem:deq:diffu:pde1D:ic}) lies in the
 space $V$ where we seek the approximation, we know that a Galerkin or
 least squares approximation of the initial condition becomes exact.
-Therefore,
+Therefore, the initial condition can be expressed as
 
 !bt
 \[ c_{1}^n=A,\quad c_{10}^n=B,\]
@@ -416,7 +434,7 @@ Therefore,
 while $c_{i}^n=0$ for $i\neq 1,10$.
 
 The $M$ and $K$ matrices are easy to compute since the basis functions
-are orthogonal on $[0,L]$, which means that we
+are orthogonal on $[0,L]$. Hence, we
 only need to compute the diagonal entries. We get
 !bt
 \[
@@ -991,12 +1009,17 @@ label{fem:deq:diffu:anal}
  * Two insulated metal pieces
  * Run CN finite difference and finite element
  * Run FE
- * Point to problems
+ * Point to problems with non-physical oscillations, should be larger
+   in FE than in FD
 
-===== Mwthods of analysis =====
+===== Methods of analysis =====
+
+ * Truncation error
+ * Finite element error analysis framework
+ * Dispersion relations
 
 
-===== Fourier components =====
+===== Fourier components and dispersion relations =====
 
 The diffusion equation $u_t = \dfc u_{xx}$ allows a (Fourier)
 wave component
@@ -1037,10 +1060,6 @@ in the same way as for finite difference methods. Expressing the
 discrete finite element equations as finite difference operators turns
 out to be very convenient for the calculations.
 
-[kam: uklar motivasjon og inngang til dette tema. Også uklart hva $q$ er.
-Tror referansen også er feil.
-]
-
 We introduce $x_q=qh$, or $x_q=q\Delta x$, for the node coordinates,
 to align the notation with
 that frequently used in finite difference methods.
@@ -1068,8 +1087,7 @@ are listed below.
 \end{align}
 !et
 
-[kam: usikker på hvor opplagt dette er. Ta resten av kap nøye etter
-å diskutere med HPL]
+[kam: either ref to appendix or write out first eq in detail]
 
 ===== Forward Euler discretization =====
 
@@ -1116,8 +1134,11 @@ the complete scheme becomes
 from which we find $A$ to be
 
 !bt
-\[ A = 1 - 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
-\tp \]
+\begin{equation}
+label{fem:deq:fiffu:analysis:A:fe}
+ A = 1 - 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
+\tp
+\end{equation}
 !et
 
 How does this $A$ change the stability criterion compared to the
@@ -1217,6 +1238,98 @@ Remaining tasks:
  * Taylor expansion of the error in the amplification factor $\Aex - A$
  * Taylor expansion of the error $e = (\Aex^n - A^n)e^{ikx}$
  * $L^2$ norm of $e$
+
+
+The difference between the exact and the numerical amplification factors
+gives insight into the order of the approximation. Considering for example the
+forward Euler scheme, the difference $\Aex-A$, where
+$\Aex$ and $A$ are given in
+(ref{fem:deq:diffu:analysis:Ae}) and (ref{fem:deq:fiffu:analysis:A:fe})
+is a complicated expression. However,  performing a Taylor expansion in terms of $\Delta t$
+using `sympy` is straightforward:
+
+!bc ipy
+>>> import sympy as sym
+>>> k, dt, dx, alpha = sym.symbols("k dt dx alpha")
+>>> p = k*dx/2
+>>> F = alpha*dt/(dx*dx)
+>>> Ae = sym.exp(-alpha*k**2*dt) # exact
+>>> Af =  1 - 4*F*sym.sin(p)**2/(1 - 2.0/3.0*sym.sin(p)**2) # FE
+>>> (Ae - Af).series(dt, n=2)
+dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+(-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2)) + O(dt**2)
+!ec
+Hence, the differences between the numerical and exact amplification factor is first order in time,
+as expected.
+
+The $L_2$ error of the numerical solution at time step $n$ is
+!bt
+\[
+\|u-u_e\|_{L_2} = \sqrt{\int_0^1 (u - u_e)^2 \dx} =
+\sqrt{\int_0^1 ((\Aex^n - A^n)e^{ikx})^2 \dx}
+\]
+!et
+Again this yields a complicated expression for hand-calculations, but
+the following `sympy` provides the estimate:
+!bc ipy
+>>> n, i, x = sym.symbols("n i x")
+>>> e = (Ae**n - Af**n)*sym.exp(i*k*x)
+>>> L2_error_squared = sym.integrate(e**2, (x, 0, 1))
+>>> sym.sqrt(L2_error_squared.series(dt, n=2))
+O(dt)
+!ec
+We remark here that it is an advantage to take the square-root after the deriving
+the Taylor-series.
+
+As we saw earlier, the amplification factor varied with $k$,
+in particular with respect to the resolution. Let us therefore
+consider the error in the amplification factor $A_e - A$
+at different resolutions for the $k=1\ldots 100$
+at mesh sizes that under-resolve and properly resolve the first
+hundred components. That is, we vary $\dx$ from $\frac{8}{100}$ to
+$\frac{1}{800}$.
+Plotting the error in the amplification factor versus $k$ as follows,
+!bc pycod
+from numpy import *
+import pylab
+dxs = [8*10**-2, 4*10**-2, 2*10**-2, 10**-2, 10**-2/2, 10**-2/4, 10**-2/8]
+for dx in dxs:
+  k_max=100
+  k = arange(1, k_max, 1)
+  dt = 0.5*dx**2
+  alpha = 1
+  f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+  (-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
+
+  pylab.loglog(k, f)
+pylab.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
+pylab.show()
+!ec
+
+FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}
+
+Figure ref{fem:deq:diffu:AeA:VS:k} shows that that there is a polynomial
+relationship between the error of the amplification factor
+and $k$, that is $Ae-A$ goes as $k^4$. For well-resolved meshes,
+$\Delta x \le 0.2 k$ the amplification factor is always less than
+$1/1000$. For the under-resolved meshes, e.g. $\Delta x = 8 k$
+the error of the amplification factor is even larger than 1.
+
+
+FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}
+
+From the previous analysis of forward Euler scheme, we know that
+the scheme is only stable as long as the stability criterion
+$\Delta t \le \half \Delta x^2$ is satisfied. Let us therefore consider
+the error in the amplification factor with respect to $\Delta t$.
+Figure ref{fem:deq:diffu:AeA:VS:dt} shows a clear tendency that
+lower frequencies (lower $k$) are quickly dampened. In fact, the
+lower frequencies will be dampened even though the stability criterion
+is not satisfied. However, the stability criterion is important for the
+high frequency components of the error.
+
+
+[kam: I have to admit I not sure this is what we want to show]
 
 ======= Exercises =======
 

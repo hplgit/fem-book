@@ -13,11 +13,12 @@ A linear, scalar, algebraic equation in $x$ has the form
 for arbitrary real constants $a$ and $b$. The unknown is a number $x$.
 All other algebraic equations, e.g., $x^2 + ax + b = 0$, are nonlinear.
 The typical feature in a nonlinear algebraic equation is that the unknown
-appears in products with itself, like $x^2$ or $e^x = 1 + x +\half x^2 +
+appears in products with itself, like $x^2$ or
+in functions that are infinite sums of products, like $e^x = 1 + x +\half x^2 +
 \frac{1}{3!}x^3 + \cdots$.
 
 We know how to solve a linear algebraic equation, $x=-b/a$, but there are
-no general methods for finding the exact solutions of
+no general closed formulas for finding the exact solutions of
 nonlinear algebraic equations, except for very special cases (quadratic
 equations constitute a primary example). A nonlinear algebraic equation
 may have no solution, one solution, or many solutions. The tools for
@@ -36,7 +37,6 @@ are linear in the unknown function or its derivatives. Linear here means that
 the unknown function, or a derivative of it, is multiplied by a number or
 a known function. All other differential equations are non-linear.
 
-[kam: nonlinear / linear has been described earlier - refer to proper section]
 
 The easiest way to see if an equation is nonlinear, is to spot nonlinear terms
 where the unknown function or its derivatives are multiplied by
@@ -232,8 +232,6 @@ may be 1) the exact solution of the ODE/PDE problem,
 2) the numerical approximation to the exact solution, or 3) the unknown
 solution at a certain time level.
 
-[kam: said earlier]
-
 The quadratic equation for the unknown $u^n$ in
 (ref{nonlin:timediscrete:logistic:eq:BE}) can, with the new
 notation, be written
@@ -338,8 +336,6 @@ more compact form
 with $a=\Delta t$, $b=1-\Delta t$, and $c=-u^{(1)}$.
 Let $u^{-}$ be an available approximation of the unknown $u$.
 
-[kam: Perhaps say something about notation $u^{-}$. Sometimes $u^{-}$, sometimes $u{-}$ and sometimes $u\_$ ] 
-
 Then we can linearize the term $u^2$ simply by writing
 $u^{-}u$. The resulting equation, $\hat F(u)=0$, is now linear
 and hence easy to solve:
@@ -376,7 +372,6 @@ the value of $u$).
 The iteration is started with the value of the unknown at the
 previous time level: $u^{-}=u^{(1)}$.
 
-[kam: do we need the $\leftarrow$?]
 
 Some prefer an explicit iteration counter as superscript
 in the mathematical notation. Let $u^k$ be the computed approximation
@@ -448,7 +443,6 @@ previous time step, as the *Picard1* method. It is a widely used
 approach in science and technology, but with some limitations if
 $\Delta t$ is not sufficiently small (as will be illustrated later).
 
-[kam: the *Picard1* notation is ugly. ]
 
 !bnotice
 
@@ -557,8 +551,8 @@ being $\frac{1}{4}\Delta t u^n(u^{n+1}-u^n)\approx \frac{1}{4}\Delta t^2
 u^\prime u$, i.e., a difference of size $\Delta t^2$).
 !enotice
 
-[kam: this is the first time I've seen this $\overline{u}$ notation. 
-Also the finite difference notation has been poorly introduced]
+[kam: this is the first time I've seen this $\overline{u}^t $ notation.
+It is not in the appendix either. ]
 
 ===== Newton's method =====
 label{nonlin:timediscrete:logistic:Newton}
@@ -748,7 +742,7 @@ geometric mean gives a simpler algorithm:
 We may run experiments with the model problem
 (ref{nonlin:timediscrete:logistic:eq}) and the different strategies for
 dealing with nonlinearities as described above. For a quite coarse
-time resolution, $\Delta t=0.9$, use of a tolerance $\epsilon_r=0.1$
+time resolution, $\Delta t=0.9$, use of a tolerance $\epsilon_r=0.05$
 in the stopping criterion introduces an iteration error, especially in
 the Picard iterations, that is visibly much larger than the
 time discretization error due to a large $\Delta t$. This is illustrated
@@ -767,10 +761,6 @@ that the Picard1 method gives significant errors in addition to
 the time discretization unless the time step is as small as in
 the lower right plot.
 
-[kam: don't understand the argument  "larger than the
-time discretization error due to a large $\Delta t$". Seems counterintuitive.  
-Perhaps the point is that $T$.] 
-
 The *BE exact* curve corresponds to using the exact solution of the
 quadratic equation at each time level, so this curve is only affected
 by the Backward Euler time discretization.  The *CN gm* curve
@@ -787,7 +777,7 @@ iterations required at each time level for Newton's method and
 Picard iteration. The smaller $\Delta t$ is, the better starting value
 we have for the iteration, and the faster the convergence is.
 With $\Delta t = 0.9$ Picard iteration requires on average 32 iterations
-per time step, but this number is dramatically reduced as $\Delta t$
+per time step for the stricter convergence criterion, but this number is dramatically reduced as $\Delta t$
 is reduced.
 
 However, introducing relaxation and a parameter $\omega=0.8$
@@ -830,9 +820,7 @@ than $\epsilon_r$. Ideally, one should estimate the error in the
 time discretization, as the solution progresses, and set $\epsilon_r$
 accordingly.
 
-[kam: the argument here is difficult to follow. For instance, 
-we don't know the difference in CN from 0.9 to 0.09. It also seem natural 
-to discuss BE Picard1 which seems far off and contradicts the conclusion? ]
+
 
 ===== Generalization to a general nonlinear ODE =====
 label{nonlin:ode:generic}
@@ -916,7 +904,7 @@ implicitly.
 
 A trick to treat $f$ implicitly in Picard iteration is to
 evaluate it as $f(u^{-},t)u/u^{-}$. For a polynomial $f$, $f(u,t)=u^m$,
-this corresponds to $(u^{-})^{m}u/u^{-1}=(u^{-})^{m-1}u$. Sometimes this more implicit
+this corresponds to $(u^{-})^{m}u/u^{-}=(u^{-})^{m-1}u$. Sometimes this more implicit
 treatment has no effect, as with $f(u,t)=\exp(-u)$ and $f(u,t)=\ln (1+u)$,
 but with $f(u,t)=\sin(2(u+1))$, the $f(u^{-},t)u/u^{-}$ trick
 leads to 7, 9, and 11 iterations during the first three steps, while
@@ -1175,8 +1163,6 @@ Given $A(u)u=b(u)$ and an initial guess $u^{-}$, iterate until convergence:
 change in the unknown, $||u - u^{-}||$, or the residual $||A(u)u-b||$,
 is sufficiently small, see Section ref{nonlin:systems:alg:terminate} for
 more details.
-
-[kam: as before check bf notation and $\leftarrow$]
 
 ===== Newton's method =====
 label{nonlin:systems:alg:Newton}

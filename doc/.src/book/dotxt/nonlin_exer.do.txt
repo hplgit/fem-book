@@ -419,9 +419,6 @@ than an arbitrary $n$ - the main point is the product and addition
 of Taylor series.)
 !ehint
 
-[kam: don't understand. E.g. what is cls]
-
-[kam: have not read these exercises]
 
 ===== Problem: Newton's method for linear problems =====
 label{nonlin:exer:Newton:linear}

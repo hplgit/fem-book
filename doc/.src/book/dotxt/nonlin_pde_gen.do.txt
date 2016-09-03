@@ -72,8 +72,6 @@ time discretization, and $u$ is the spatial approximation to
 $u^n$ from the most recent iteration in a nonlinear iteration method.
 !enotice
 
-[kam: said before]
-
 Let us assume homogeneous Neumann conditions
 on the entire boundary for simplicity in the boundary term. The
 variational form becomes: find $u\in V$ such that
@@ -116,7 +114,7 @@ $\sequencei{c}$ by inserting $u=\sum_jc_j\baspsi_j$. We get
 
 !bt
 \[ A_{i,j} =
-\int_\Omega (\basphi_j\baspsi_i + \Delta t\,\dfc(u^{-})\nabla \basphi_j
+\int_\Omega (\baspsi_j\baspsi_i + \Delta t\,\dfc(u^{-})\nabla \baspsi_j
 \cdot\nabla \baspsi_i)\dx,\quad b_i =
 \int_\Omega (\Delta t f(u^{-})\baspsi_i + u^{(1)}\baspsi_i)\dx\tp
 \]
@@ -273,7 +271,7 @@ u^n_{i,j} &- \frac{\Delta t}{h^2}(
 &\quad +
  \half(\dfc(u_{i,j}^n)   + \dfc(u_{i,j+1}^n))(u_{i,j+1}^n-u_{i,j}^n)\\
 &\quad -
- \half(\dfc(u_{i,j-1}^n) + \dfc(u_{i,j}^n))(u_{i,j}^n-u_{i-1,j-1}^n))
+ \half(\dfc(u_{i,j-1}^n) + \dfc(u_{i,j}^n))(u_{i,j}^n-u_{i,j-1}^n))
 - \Delta tf(u_{i,j}^n) = u^{n-1}_{i,j}
 \end{align*}
 !et
@@ -308,12 +306,10 @@ F_{i,j} &= u_{i,j} - \frac{\Delta t}{h^2}(\\
 &\qquad \half(\dfc(u_{i,j})   + \dfc(u_{i+1,j}))(u_{i+1,j}-u_{i,j}) -\\
 &\qquad \half(\dfc(u_{i-1,j}) + \dfc(u_{i,j}))(u_{i,j}-u_{i-1,j}) + \\
 &\qquad \half(\dfc(u_{i,j})   + \dfc(u_{i,j+1}))(u_{i,j+1}-u_{i,j}) -\\
-&\qquad \half(\dfc(u_{i,j-1}) + \dfc(u_{i,j}))(u_{i,j}-u_{i-1,j-1})) -
+&\qquad \half(\dfc(u_{i,j-1}) + \dfc(u_{i,j}))(u_{i,j}-u_{i,j-1})) -
 \Delta t\, f(u_{i,j}) - u^{(1)}_{i,j} = 0\tp
 \end{align*}
 !et
-
-[kam: have not checked this yet]
 
 It is convenient to work with two indices $i$ and $j$ in 2D
 finite difference discretizations, but it complicates
@@ -359,18 +355,18 @@ The specific derivatives become
 
 !bt
 \begin{align*}
-J_{i,j,i-1,j} &= \frac{\partial F_{i,j}}{\partial u_{i-1,j}}\\
-&= \frac{\Delta t}{h^2}(\dfc^{\prime}(u_{i-1,j})(u_{i,j}-u_{i-1,j})
-+ \dfc(u_{i-1,j})(-1)),\\
+J_{i,j,i-1,j} &=\frac{\partial F_{i,j}}{\partial u_{i-1,j}}\\
+&= \half\frac{\Delta t}{h^2}(\dfc^{\prime}(u_{i-1,j})(u_{i,j}-u_{i-1,j})
++ (\dfc(u_{i-1,j}) + \dfc(u_{i,j}))(-1)),\\
 J_{i,j,i+1,j} &= \frac{\partial F_{i,j}}{\partial u_{i+1,j}}\\
-&= \frac{\Delta t}{h^2}(-\dfc^{\prime}(u_{i+1,j})(u_{i+1,j}-u_{i,j})
-- \dfc(u_{i-1,j})),\\
-J_{i,j,i,j-1} &= \frac{\partial F_{i,j}}{\partial u_{i,j-1}}\\
-&= \frac{\Delta t}{h^2}(\dfc^{\prime}(u_{i,j-1})(u_{i,j}-u_{i,j-1})
-+ \dfc(u_{i,j-1})(-1)),\\
+&= \half \frac{\Delta t}{h^2}(-\dfc^{\prime}(u_{i+1,j})(u_{i+1,j}-u_{i,j})
+- (\dfc(u_{i-1,j}) + \dfc(u_{i,j}))),\\
+J_{i,j,i,j-1} &=\frac{\partial F_{i,j}}{\partial u_{i,j-1}}\\
+&= \half \frac{\Delta t}{h^2}(\dfc^{\prime}(u_{i,j-1})(u_{i,j}-u_{i,j-1})
++ (\dfc(u_{i,j-1})+ \dfc(u_{i,j}))(-1)),\\
 J_{i,j,i,j+1} &= \frac{\partial F_{i,j}}{\partial u_{i,j+1}}\\
-&= \frac{\Delta t}{h^2}(-\dfc^{\prime}(u_{i,j+1})(u_{i,j+1}-u_{i,j})
-- \dfc(u_{i,j-1}))\tp
+&= \half\frac{\Delta t}{h^2}(-\dfc^{\prime}(u_{i,j+1})(u_{i,j+1}-u_{i,j})
+- (\dfc(u_{i,j-1}) + \dfc(u_{i,j})))\tp
 \end{align*}
 !et
 The $J_{i,j,i,j}$ entry has a few more terms and is left as an

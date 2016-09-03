@@ -256,8 +256,6 @@ Note that $\delta F$ is a linear function of $\delta u$, and
 $F$ contains only terms that are known, such that
 the PDE for $\delta u$ is indeed linear.
 
-[kam: check sign]
-
 !bnotice Observations
 The notational form $\delta F = -F$ resembles the Newton system $J\delta u =-F$
 for systems of algebraic equations, with $\delta F$ as $J\delta u$.
@@ -268,8 +266,6 @@ the PDE level we have a linear differential operator instead
 ($\delta F$).
 !enotice
 
-[kam: had to read this observation multiple times. Still not
-sure.]
 
 === Similarity with Picard iteration ===
 
@@ -320,7 +316,7 @@ the Newton method's derivative terms becomes
 The Picard and full Newton versions correspond to
 $\gamma=0$ and $\gamma=1$, respectively.
 
-[kam: write more clearly]
+
 
 === Derivation with alternative notation ===
 
@@ -399,8 +395,8 @@ mean of products. Exercise ref{nonlin:exer:products:arith:mean} investigates
 this question, and the answer is that the approximation is
 $\Oof{\Delta t^2}$ in both cases.
 
-[kam: this has depend on the smoothness? Or? ]
-[kam: mean value notation]
+
+[kam: mean value notation. Refer to appedix?]
 
 
 !split
@@ -476,9 +472,6 @@ the Laplace term with a variable coefficient:
 \[ [-D_x\dfc D_x u +au = f]_i\tp\]
 !et
 
-[kam: do we call it Laplace term? Laplace like term, second
-order term? ]
-
 Writing this out for a uniform mesh with points $x_i=i\Delta x$,
 $i=0,\ldots,N_x$, leads to
 
@@ -496,8 +489,6 @@ At $i=N_x$ we have the Dirichlet condition $u_i=D$.
 The only difference from the case with $(\dfc(x)u^{\prime})^{\prime}$ and $f(x)$ is that
 now $\dfc$ and $f$ are functions of $u$ and not only of $x$:
 $(\dfc(u(x))u^{\prime})^{\prime}$ and $f(u(x))$.
-
-[kam: we have $u_i=D$. We don't do the Dirichlet trick for the FDM?]
 
 The quantity $\dfc_{i+\half}$, evaluated between two mesh points,
 needs a comment. Since $\dfc$ depends on $u$ and $u$ is only known
@@ -563,8 +554,6 @@ after every Picard or Newton iteration. Such an approach means that
 we use a known $u_{-1}$ value in (ref{nonlin:alglevel:1D:fd:deq})
 from the previous iteration.
 
-[kam: don't understand]
-
 ===== Solution of algebraic equations =====
 
 === The structure of the equation system ===
@@ -622,6 +611,7 @@ procedure is to fill a tridiagonal matrix data structure and the
 right-hand side vector with the right numbers and call a Gaussian
 elimination routine for tridiagonal linear systems.
 
+[kam: yapi checks the calculations of the following pages]
 === Mesh with two cells ===
 
 It helps on the understanding of the details to write out all the
@@ -904,7 +894,8 @@ with basis functions $\sequencei{\baspsi}$. Because of the
 Dirichlet condition at $x=L$ we require $\baspsi_i(L)=0$, $i\in\If$.
 The approximate solution is written as $u = D + \sum_{j\in\If}c_j\baspsi_j$,
 where the term $D$ can be viewed as a boundary function needed to
-implement the Dirichlet condition $u(L)=D$.
+implement the Dirichlet condition $u(L)=D$. We remark that 
+the boundary function is $D$ rather than $Dx/L$ because of the Neumann condition at $x=0$.  
 
 Using Galerkin's method,
 we multiply the differential equation by any $v\in V$ and integrate
@@ -1119,8 +1110,6 @@ respect to $x$, so
 Similarly, $f$ is a function
 of $u$, so $f^{\prime}$ means $df/du$.
 !enotice
-
-[kam: this has been said before]
 
 When calculating the right-hand side vector $F_i$ and the coefficient
 matrix $J_{i,j}$ in the linear system to be solved in each Newton

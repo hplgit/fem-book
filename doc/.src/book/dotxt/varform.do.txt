@@ -967,6 +967,9 @@ are many choices of $B(x)$ in a problem. Fortunately, there is a general, unique
 technique for constructing $B(x)$ when we use finite element basis functions for
 $V$.
 
+[kam: in the below, I cannot really find where it is stated that
+we need to adjust the right-hand side as well]
+
 !bsummary How to deal with nonzero Dirichlet conditions
 The general procedure of incorporating Dirichlet boundary
 conditions goes as follows.
