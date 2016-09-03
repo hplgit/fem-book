@@ -493,7 +493,7 @@ label{nitsche:pde:opt:Lagrange}
 
 We consider the same problem as in Section ref{nitsche:pde:opt:penalty},
 but this time we want to apply a Lagrange multiplier method so we can
-solve for a multiplier function* rather than specifying a large number for a
+solve for a *multiplier function* rather than specifying a large number for a
 penalty parameter and getting an approximate result.
 
 The functional to be optimized reads
@@ -516,7 +516,11 @@ $\partial\Omega_N$. The optimization criteria are
 !et
 We write $\tilde u = u + \epsilon_u v$ and $\tilde\lambda = \lambda +
 \epsilon_\lambda p$, where $v$ is an arbitrary function in $V$ and $p$ is an
-arbitrary function in $Q$. We insert the expressions for $\tilde u$ and
+arbitrary function in $Q$. Notice that $V$ is here a usual
+function space with functions defined on $\Omega$, while on 
+the other hand is a function space defined only on the
+surface $\Omega_N$. 
+We insert the expressions for $\tilde u$ and
 $\tilde\lambda$ for $u$ and $\lambda$ and compute
 
 !bt
@@ -529,7 +533,7 @@ $\tilde\lambda$ for $u$ and $\lambda$ and compute
 \int\limits_{\partial\Omega_N}\lambda(u-\uN)\ds = 0,\\
 \frac{\delta F}{\delta \lambda} &=
 \lim_{\epsilon_\lambda\rightarrow 0}\frac{dF}{d\epsilon_\lambda} =
-\int\limits_{\partial\Omega_N} \lambda(u-\uN) p\ds = 0 \tp
+\int\limits_{\partial\Omega_N} (u-\uN) p\ds = 0 \tp
 \end{align*}
 !et
 
@@ -541,7 +545,15 @@ a(u,v) + b(\lambda, v) &= L(v), \\
 b(u, p)                &= 0, 
 \end{align*}
 !et
-for all test functions $v\in V$ and $p \in Q$. 
+for all test functions $v\in V$ and $p \in Q$ and 
+!bt
+\begin{align*}
+a(u,v)        &= \int\limits_{\Omega}\nabla u\cdot\nabla v\dx - \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v\ds, \\
+b(\lambda, v) &= \int\limits_\Omega \lambda v \ds, \\
+L(v)          &= \int\limits_\Omega fv \dx, \\
+L(\lambda)    &= \int\limits_\Omega \uN \lambda \ds . 
+\end{align*}
+!et
 
 Letting 
 $u=\sum_{j\in\If} c_j\baspsi^{(u)}_j$, 
@@ -568,38 +580,97 @@ b^{(u)}_i &= 0 \tp
 \end{align*}
 !et
 
-[kam: write up the system to conclude the section]
+[kam: $a$ should be symmetric. Check why not. Also here $\partial \Omega_N$ is used almost everywhere. Should
+probably be $\partial \Omega$.]
 
 ===== Example: 1D problem =====
 label{nitsche:pde:opt:1Dex}
+__Penalty method.__
+
 
 Let us do hand calculations to demonstrate weakly enforced boundary
 conditions via a penalty method and via the Lagrange multiplier method.
-
 We study the simple problem $-u'' = 2$ on $[0,1]$ with boundary
-conditions $u(0)=0$ and $u(1)=1$. A uniform mesh with nodes
+conditions $u(0)=0$ and $u(1)=1$.
+!bt
+\begin{align*}
+a(u,v) &=
+\int_0^1 \nabla u\cdot\nabla v \dx
+-[u_x v]_0^1
+-[v_x u]_0^1
++[\lambda uv]_0^1  \\
+L(v) &= \int_0^1 fv \dx
+- [v_x \uN]_0^1
++ [\lambda \uN v]_0^1
+\tp
+\end{align*}
+!et
+
+A uniform mesh with nodes
 $x_i=i\Delta x$ is introduced, numbered from left to right:
 $i=0,\ldots,N_x$. The approximate value of $u$ at $x_i$ is denoted
 by $u_i$, and in general the approximation to $u$ is $\sum_{i=0}^{N_x}
 \varphi_i(x)u_i$.
 
-A standard finite element method
-with linear Lagrange (P1) elements leads to the coupled linear equations
-
+The elements at the boundaries needs special attention. Let us consider 
+element 0 defined on $[0,h]$. The basis functions are 
+$\varphi_0(x) = 1 - x/h$ and 
+$\varphi_1(x) = x/h$. Hence, 
+$\varphi_0|_0 = 1$, 
+$\varphi'_0|_0 = -1/h$, 
+$\varphi_1|_0 = 0$, and  
+$\varphi'_1|_0 = 1/h$. Therefore, for element 0 we obtain the element matrix
 !bt
-\[ \frac{1}{h}\left(-u_{i-1} + 2u_i - u_{i+1}\right) = 2,\]
+\begin{align*}
+A^{(0)}_{0, 0} &= \lambda \left(1 - \frac{x}{h}\right) + \frac{3}{h},\\
+A^{(0)}_{0, 1} &= \frac{\lambda x}{h} - \frac{2}{h},\\
+A^{(0)}_{1, 0} &= - \frac{2}{h}, \\
+A^{(0)}_{1, 1} &= \frac{1}{h} \tp
+\end{align*}
 !et
-for $i=1,\ldots,N_x-1$, with $u_0=0$ and $u_{N_x}=1$. We may set
-up a matrix system with all the parameters $u_0,\ldots,u_{N_x}$:
+The interior elements ($e=1\ldots N_e-2$) result in the following element matrices
+!bt
+\begin{align*}
+A^{(e)}_{0, 0} &= \frac{1}{h}, 
+A^{(e)}_{0, 1} &= - \frac{1}{h},\\ 
+A^{(e)}_{1, 0} &= - \frac{1}{h}, 
+A^{(e)}_{1, 1} &= \frac{1}{h} \tp
+\end{align*}
+!et
+While the element at the boundary $x=1$ result in a element matrix similar to $A^0$
+except that 0 and 1 are swapped. The calculations are straightforward in `sympy`
+!bc pycod
+import sympy as sym 
+x, h, lam = sym.symbols("x h \lambda")
+basis = [1 - x/h, x/h]
 
- * Set up matrix system explicitly.
+for i in range(len(basis)): 
+  phi_i = basis[i]
+  for j in range(len(basis)): 
+    phi_j = basis[j]
+    a  = sym.integrate(sym.diff(phi_i, x)*sym.diff(phi_j, x), (x, 0, h))
+    a -= (sym.diff(phi_i, x)*phi_j).subs(x,0) 
+    a -= (sym.diff(phi_j, x)*phi_i).subs(x,0) 
+    a += lam*phi_j*phi_i.subs(x,0) 
 
-Let us enforce both boundary
-conditions weakly.
+    print "A(%d, %d) = %s "% (i,j, str(a)) 
+!ec 
 
-__Penalty method.__
+
+
+
+
+[kam: this is perhaps all that is needed? We don't need to solve anything.]
+
+
 
 __Lagrange multiplier method.__
+
+For the Lagrange multiplier method we need a function space $Q$ defined on the boundary 
+of the domain. In 1D with $\Omega=(0,1)$ the boundary is $x=0$ and $x=1$. Hence, $Q$
+can be spanned by two basis functions $\lambda_0$ and $\lambda_1$. These functions
+should be such that $\lambda_0=1$ for $x=0$ and zero everywhere else, while
+$\lambda_1=1$ for $x=1$ and zero everywhere else. 
 Now, set
 
 !bt
