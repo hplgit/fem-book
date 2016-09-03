@@ -529,7 +529,42 @@ $\tilde\lambda$ for $u$ and $\lambda$ and compute
 \int\limits_{\partial\Omega_N}\lambda(u-\uN)\ds = 0,\\
 \frac{\delta F}{\delta \lambda} &=
 \lim_{\epsilon_\lambda\rightarrow 0}\frac{dF}{d\epsilon_\lambda} =
-\int\limits_{\partial\Omega_N} \lambda(u-\uN) p\ds = 0
+\int\limits_{\partial\Omega_N} \lambda(u-\uN) p\ds = 0 \tp
+\end{align*}
+!et
+
+These equations can be written as a linear system of equations: 
+Find $u, \lambda \in V\times Q$ such that  
+!bt
+\begin{align*}
+a(u,v) + b(\lambda, v) &= L(v), \\
+b(u, p)                &= 0, 
+\end{align*}
+!et
+for all test functions $v\in V$ and $p \in Q$. 
+
+Letting 
+$u=\sum_{j\in\If} c_j\baspsi^{(u)}_j$, 
+$\lambda=\sum_{j\in\If} c_j\baspsi^{(\lambda)}_j$, 
+$v =  \baspsi^{(v)}_i$, and 
+$p =  \baspsi^{(p)}_i$, we obtain the following system 
+of linear equations   
+!bt
+\[
+A\, c = \left[ \begin{array}{cc} A^{(u,u)} & A^{(\lambda,u)}\\ A^{(u,\lambda)} & 0 \end{array} \right]
+\left[ \begin{array}{c} c^{(u)} \\ c^{(\lambda)} \end{array} \right] =  
+\left[ \begin{array}{c} b^{(u)} \\ b^{(\lambda)} \end{array} \right] 
+= b, 
+\]
+!et 
+where 
+!bt
+\begin{align*}
+A^{(u,u)}_{i,j} &=  a(\baspsi^{(w)}_j, \baspsi^{(w)}_i),  \\ 
+A^{(u,\lambda)}_{i,j} &=  b(\baspsi^{(u)}_j, \baspsi^{(w)}_i),  \\
+A^{(\lambda,u)}_{i,j} &= A^{(u,\lambda)}_{j,i}, \\
+b^{(w)}_i &= (f,\baspsi^{(w)}_i), \\
+b^{(u)}_i &= 0 \tp
 \end{align*}
 !et
 
@@ -580,3 +615,36 @@ Now, set
  * Neumann problem: add $\int_\Omega u\dx =0$ as constraint.
  * Set up Nitsche and Lagrange multiplier method and the simple
    trick $u$ fixed at a point. Compare in 1D.
+
+
+
+======= Exercises =======
+
+===== Problem: Estimate order of convergence for the Cooling law =====
+label{femsys:exer:cooling:1}
+Consider the 1D Example of the fluid flow in a straight pipe 
+coupled to heat conduction in Section ref{femsys:cooling:1D}. 
+The example demonstrated fast convergence when using linear elements
+for both variables $w$ and $T$. In this exercise we quantify the order 
+of convergence. That is, we expect that
+!bt
+\begin{align*}
+\|w - w_e \|_{L_2} &\le C_w h^{\beta_w}, \\
+\|T - T_e \|_{L_2} &\le C_T h^{\beta_T},
+\end{align*}
+!et  
+for some $C_w$, $C_T$, $\beta_w$ and $\beta_T$. 
+Assume therefore that
+!bt
+\begin{align*}
+\|w - w_e \|_{L_2} &= C_w h^{\beta_w},\\ 
+\|T - T_e \|_{L_2} &= C_T h^{\beta_T},
+\end{align*}
+!et  
+and estimate  $C_w$, $C_T$, $\beta_w$ and $\beta_T$.
+
+
+===== Problem: Estimate order of convergence for the Cooling law =====
+label{femsys:exer:cooling:2}
+Repeat Exercise ref{femsys:exer:cooling:1} with quadratic finite
+elements for both $w$ and $T$. 

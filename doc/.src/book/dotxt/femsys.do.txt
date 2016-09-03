@@ -568,7 +568,7 @@ has square and rectangular block matrices: $K^{(w)}$ is $N_w\times N_w$,
 $K^{(T)}$ is $N_T\times N_T$, while $L$ is $N_T\times N_w$,
 
 ======= Computations in 1D =======
-
+label{femsys:cooling:1D}
 # 2DO
 # show analytical solution in [0,H]
 # use global polynomials (x^i(H-x)), exact sol
@@ -624,10 +624,10 @@ and (ref{fem:sys:wT:ex1D:Teq}) are computed
 as
 !bt
 \begin{align*}
-w_x &= - \int \frac{\beta}{\mu} \dx + C_w, \\
-w &= \int w_x \dx + D_w, \\
-T_x &= - \int \mu w_x^2 \dx + C_T,\\
-w &= \int w_x \dx + D_T, \\
+w_{e,x} &= - \int \frac{\beta}{\mu} \dx + C_w, \\
+w_e &= \int w_x \dx + D_w, \\
+T_{e,x} &= - \int \mu w_x^2 \dx + C_T,\\
+w_e &= \int w_x \dx + D_T, \\
 \end{align*}
 !et
 where we determine the constants $C_w$, $D_w$, $C_T$, and $D_T$ 
@@ -657,14 +657,24 @@ T = sym.simplify(sym.expand(T))
 We find that the solutions are
 !bt
 \begin{align*}
-w(x) &= \frac{\beta x}{2 \mu} \left(H - x\right), \\
-T(x) &= \frac{\beta^{2}}{\mu} \left(\frac{H^{3} x}{24}  - \frac{H^{2}}{8} x^{2} + \frac{H}{6} x^{3} - \frac{ x^{4}}{12}\right)  + T_{0} \tp
+w_e(x) &= \frac{\beta x}{2 \mu} \left(H - x\right), \\
+T_e(x) &= \frac{\beta^{2}}{\mu} \left(\frac{H^{3} x}{24}  - \frac{H^{2}}{8} x^{2} + \frac{H}{6} x^{3} - \frac{ x^{4}}{12}\right)  + T_{0} \tp
 \end{align*}
 !et
 
 The figure ref{femsys:cooling:w:plot} shows $w$ computed by the finite element method using the  decoupled
-approach with P1 elements for both $w$ and $T$. Clearly, the coarse approximation gives poor approximation, but
-the linear finite element field produced nice approximation to the parabolic function when $N=16, 32$. 
+approach with P1 elements for both $w$ and $T$.
+That is, implementing (ref{fem:sys:wT:ex:linsys:w1}) and
+(ref{fem:sys:wT:ex:linsys:T1}). The analytical solution $w_e$ is a quadratic 
+polynomial and we see that the linear approximation gives poor approximation on the
+coarse meshes, but also that it improves fast as we refine the mesh. 
+The figure ref{femsys:cooling:w:plot} shows the approximation of $T$ and also here
+we see that the fourth order polynomial is poorly approximated at coarse resolution, but
+that the approximation quickly improves. 
+
+
+
+ 
 FIGURE: [fig/cooling_w, width=800] The solution $w$ of (ref{fem:sys:wT:ex1D:weq}) with $\beta=\mu=1$ for different mesh resolutions. label{femsys:cooling:w:plot}
 
 The figure ref{femsys:cooling:w:plot} shows $T$. The same tendency is apparent. 
@@ -851,8 +861,8 @@ label{fem:sys:up:1D:eq:mass:var}
 and letting 
 $u=\sum_{j\in\If} c_j\baspsi^{(u)}_j(x)$, 
 $w=\sum_{j\in\If} c_j\baspsi^{(w)}_j(x)$, 
-$v^{(u)} =  \baspsi^{(u)_i(x)}$, and 
-$v^{(w)} =  \baspsi^{(w)_i(x)}$, we obtain the following system 
+$v^{(u)} =  \baspsi^{(u)_i}(x)$, and 
+$v^{(w)} =  \baspsi^{(w)_i}(x)$, we obtain the following system 
 of linear equations   
 !bt
 \[
