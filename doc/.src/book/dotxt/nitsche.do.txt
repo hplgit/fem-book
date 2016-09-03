@@ -687,6 +687,8 @@ Now, set
  * Set up Nitsche and Lagrange multiplier method and the simple
    trick $u$ fixed at a point. Compare in 1D.
 
+[kam: penalty is kind of hard, at least in fenics, it involves the terms
+$\int_\Omega u \times \int_\Omega_ v $ rather than $\int_\Omega u v$. ]
 
 
 ======= Exercises =======
