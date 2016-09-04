@@ -132,3 +132,6 @@ co
 auvgradsympy
 py
 Dirac's
+upwinding
+Petrov
+vu

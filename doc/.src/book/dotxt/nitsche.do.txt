@@ -632,9 +632,9 @@ The interior elements ($e=1\ldots N_e-2$) result in the following element matric
 !bt
 \begin{align*}
 A^{(e)}_{0, 0} &= \frac{1}{h}, 
-A^{(e)}_{0, 1} &= - \frac{1}{h},\\ 
+&A^{(e)}_{0, 1} = - \frac{1}{h},\\ 
 A^{(e)}_{1, 0} &= - \frac{1}{h}, 
-A^{(e)}_{1, 1} &= \frac{1}{h} \tp
+&A^{(e)}_{1, 1} = \frac{1}{h} \tp
 \end{align*}
 !et
 While the element at the boundary $x=1$ result in a element matrix similar to $A^0$
@@ -652,12 +652,7 @@ for i in range(len(basis)):
     a -= (sym.diff(phi_i, x)*phi_j).subs(x,0) 
     a -= (sym.diff(phi_j, x)*phi_i).subs(x,0) 
     a += lam*phi_j*phi_i.subs(x,0) 
-
-    print "A(%d, %d) = %s "% (i,j, str(a)) 
 !ec 
-
-
-
 
 
 [kam: this is perhaps all that is needed? We don't need to solve anything.]
@@ -688,7 +683,7 @@ Now, set
    trick $u$ fixed at a point. Compare in 1D.
 
 [kam: penalty is kind of hard, at least in fenics, it involves the terms
-$\int_\Omega u \times \int_\Omega_ v $ rather than $\int_\Omega u v$. ]
+$\int_\Omega u \times \int_\Omega v $ rather than $\int_\Omega u v$. ]
 
 
 ======= Exercises =======
