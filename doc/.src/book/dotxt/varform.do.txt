@@ -1676,6 +1676,7 @@ A_{i,j} &= \int_0^1\epsilon \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_i(x)_x \
 b_i &=\int_0^1 1 \baspsi_j(x) \dx
 \end{align*}
 !et
+[kam: check that we use the right symbol for basis]
 A corresponding code where we also plot the behavior of the solution
 with respect to different $\epsilon$ is: 
 !bc pycod
@@ -5242,14 +5243,18 @@ The test functions $v$ are (as usual) required to vanish on
 $\partial\Omega_D$.
 
 ===== Example on a multi-dimensional variational problem =====
+label{sec:varform:general:convdiff}
 
 Here is a quite general, stationary, linear PDE arising in many problems:
 
 !bt
 \begin{align}
+label{varform:conv:diff:pde:pre}
 \v\cdot\nabla u + \beta u &= \nabla\cdot\left( \dfc\nabla u\right) + f,
 \quad\x\in\Omega,\\
+label{varform:conv:diff:bc1:pre}
 u &= u_0,\quad\x\in\partial\Omega_D,\\
+label{varform:conv:diff:bc2:pre}
 -\dfc\frac{\partial u}{\partial n} &= g,\quad\x\in\partial\Omega_N
 \tp
 \end{align}
@@ -5935,8 +5940,153 @@ is cite{Larson_2013}
 
 !split
 
+======= Convection-Diffusion and Petrov-Galerkin =======
+
+Let us now return to the problem in Section ref{sec:varform:general:convdiff} 
+!bt
+\begin{align}
+label{varform:conv:diff:pde}
+\v\cdot\nabla u + \beta u &= \nabla\cdot\left( \dfc\nabla u\right) + f,
+\quad\x\in\Omega,\\
+label{varform:conv:diff:bc1}
+u &= u_0,\quad\x\in\partial\Omega_D,\\
+label{varform:conv:diff:bc2}
+-\dfc\frac{\partial u}{\partial n} &= g,\quad\x\in\partial\Omega_N
+\tp
+\end{align}
+!et
+
+In Section ref{ch:convdiff} we investigated the simplified case in 
+1D
+!bt
+\begin{align*}
+-u_x - \dfc u_{xx} &= 0, \\ 
+u(0) = 0, u(1) &= 1 \tp 
+\end{align*}
+!et
+and the analytical solution was:
+!bt 
+\[
+u_e(x) = \frac{e^{-x/\dfc} - 1}{e^{-1/\dfc} - 1}. 
+\]
+!et
+
+The approximation
+with global functions failed when $\dfc$ was significantly smaller than 
+$\v$. The computed solution contained non-physical oscillations that
+were orders of magnitude larger than the true solution. The approximation
+did however improve as the number of degrees of freedom increased.  
+
+The variational problem is: 
+Find $u\in V$ such that 
+!bt
+\[
+a(u,v) = L(v) \forall v
+\]
+!et
+where 
+!bt
+\begin{align*}
+a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x \dx, \\
+L(v) &=  \int_0^1  0 v \dx = 0  .  
+\end{align*}
+!et
+
+A Galerkin approximation with a finite element approximation is obtained
+by letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and 
+$v =  \baspsi_i(x)$ which leads to a linear system 
+of equations $\sum_j A_{i,j}c_j=b_i$ where 
+!bt
+\begin{align*}
+A_{i,j} &= \int_0^1
+\mu \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_j(x)_x \baspsi_i(x) \dx, \\
+b_i &= \int_0^1 0 \baspsi_i(x) \dx \tp 
+\end{align*}
+!et
+
+Figure ref{varform:fe:convdiff:plot} shows the finite element solution on a coarse mesh of 10 elements
+for $\mu=0.01$. Clearly, the finite element method has the same problem as was observed 
+earlier in global functions in Section  ref{sec:varform:general:convdiff}. 
+
+FIGURE: [fig/conv-diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 
+For finite differences, the cure for these oscillations is *upwinding*. 
+That is, instead
+of using a central difference scheme, we employ the following difference
+scheme:   
+!bt
+\begin{eqnarray*}
+\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0, \\ 
+\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0 .  
+\end{eqnarray*}
+!et
+Using this scheme, oscillations will disappear as can be seen in 
+Figure ref{varform:fe:convdiffstab:plot}.
+
+There is a relationship between upwinding and artificial diffusion.  If we discretize $u_x$ with a central difference and add diffusion as $\epsilon =h/2 \Delta $ we get
+!bt
+\begin{eqnarray*}
+ \frac{u_{i+1}  -  u_{i-1}}{2 h}    &  \textrm{central scheme, first order derivative}  \\
++ \frac{h}{2} \, \frac{-u_{i+1}   + 2 u_{i}    -u_{i-1}}{h^2}  &  \textrm{central scheme, second order derivate}   \\
+= \frac{u_{i} -u_{i-1}}{h} &  \textrm{upwind scheme}   
+\end{eqnarray*}
+!et
+
+FIGURE: [fig/conv-diff-stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+
+
+\noindent
+Hence, upwinding is equivalent to adding artificial diffusion with $\epsilon=h/2$; that is, in both cases we actually solve the problem
+\[-(\mu+\epsilon)u_{xx} + vu_x = f.\]
+using a central difference scheme. 
+
+Finite difference upwinding is difficult to express using finite elements methods, but
+it is closely to adding some kind of diffusion to the scheme.  
+A clever method of adding diffusion is the so-called *Petrov-Galerkin* method. 
+The Galerkin approximation consist of finding $u\in V$ such that 
+for all $v\in V$ the variational formulation is satisfied. 
+!bt
+\begin{align*}
+a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x \dx, \\
+L(v) &=  \int_0^1  0 v \dx = 0  .  
+\end{align*}
+!et
+The Petrov-Galerkin method is a seemingly innocent and straightforward extension
+of Galerkin where 
+we want to find $u\in V$ such that for all $w\in W$ the 
+variational formulation is fulfilled. 
+!bt
+\begin{align*}
+a(u, w) &= \int_0^1 -u_x w + \mu u_x w_x \dx, \\
+L(w) &=  \int_0^1  0 w \dx = 0  .  
+\end{align*}
+!et
+However, $W$ cannot be chosen freely. For instance, to obtain a quadratic matrix
+the number of basis functions in   $V$ and $W$ must be the same. Let 
+ $w = v  + \beta v\cdot\nabla v$. 
+
+!bt
+\begin{eqnarray*}
+A_{ij} &=& a(\baspsi_i, \baspsi_j + \beta v\cdot\nabla \baspsi_j )\\
+&=& \int_\Omega\mu\nabla \baspsi_i\cdot\nabla (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx + \int_\Omega v\nabla \baspsi_i\cdot (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx\\
+&=&\underbrace{
+\int_\Omega\mu\nabla \baspsi_i \cdot \nabla \baspsi_j \dx + \int_\Omega v \cdot \nabla \baspsi_i\, \baspsi_j \dx}_
+{\textrm{standard Galerkin}}
+\\
+&&\lefteqn{
++\underbrace{
+\beta\int_\Omega\mu\nabla \baspsi_i\cdot\nabla(v \cdot \nabla \baspsi_j) \dx
+}_
+{=0\ \textrm{for linear elements}}+
+\underbrace{\beta\int_\Omega (v\cdot\nabla \baspsi_i) (v\cdot\nabla \baspsi_j) \dx}
+_{\textrm{Artificial diffusion in $v$ direction}}
+}
+\end{eqnarray*}
+!et
+
+
+[kam: improve figures]
 ======= Summary =======
 
  * When approximating $f$ by $u = \sum_j c_j\basphi_j$, the least squares
