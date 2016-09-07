@@ -1003,34 +1003,107 @@ element vector corresponding to the extra term
 
 ======= Accuracy of the finite element solution =======
 label{fem:deq:diffu:anal}
+[kam: new intro]
 
 ===== Illustrating example =====
 
  * Two insulated metal pieces
- * Run CN finite difference and finite element
- * Run FE
+ * Run CN finite difference and finite element (just use FE code)
+ * Run Forward Euler
  * Point to problems with non-physical oscillations, should be larger
    in FE than in FD
 
 ===== Methods of analysis =====
 
+There are three major tools for analysing the accuracy of time-dependent
+finite element problems:
+
  * Truncation error
  * Finite element error analysis framework
- * Dispersion relations
+ * Amplification factor analysis
+
+The truncation error is the dominating tool used to analyze finite
+difference schemes, but very seldom (if at all) used in the finite
+element literature.  This is actually surprising, since finite
+elements also give rise to difference stencils of the same nature
+mathematical form as finite difference methods, and there is no reason
+why we should not use a simple tool as the truncation error to
+establish expected convergence rates of finite element methods.
+
+Instead, a more rigirous and powerful
+error analysis framework has been developed for
+finite element methods. This framework deals primarily with the spatial
+discretization and is not so superior for space-time problems.
+
+To explain the numerical artifacts from the previous section,
+both the truncation error and the error analysis framework fall too
+short, and we have turn to the method based on analysing amplification
+factors. For wave equations, the counterpart is often referred to as analysis
+of dispersion relations.
+
+The idea of the method of analysing amplification factors is to
+see how sinusoidal waves are amplified in time.
+Let us now consider the diffusion equation in
+1D,  $u_t = \dfc u_{xx}$ for $x \in \Omega=(0,\pi)$ and $t \in (0,T]$.
+For the case where we have homogeneous Dirichlet conditions
+and the initial condition is $u(x, 0) = u_0(x)$, the solution to
+the problem can be expressed as
+!bt
+\[
+u(x,t) = \sum_{k=1}^\infty B_k e^{-\dfc (k )^2 t} \sin(k x),
+\]
+!et
+where $B_k = \int_\Omega u_0 \sin(k x)$.
+This is the wel-known Fourier decomposition of a signal in sine waves (one
+can also use cosine functions or a combination of sines and cosines).
+For a given wave $\sin(kx)$ with wave length $\lambda = 2\pi/k$, this part
+of the signal will in time develop as $e^{-\dfc (k )^2 t}$.
+Smooth signals will need only a few long waves ($B_k$ decays rapidly with
+$k$), while discontinuous or
+noisy signals will have an amount of short waves with significant
+amplitude ($B_k$ decays slowly with $k$).
+
+In particular, $\Aex = e^{-\dfc (k )^2 \Delta t}$ is the amplification
+of the amplitude of this wave over one time step and known as the
+*amplification factor*.  Various numerical discretizations in time
+will influence the numerical amplification factor, and by
+understanding the amplification factor and its dependence on $k$, we
+can undertand much about numerical artifacts in the numerical
+solutions.
+
+From the analytical expression for the amplification factor, we see
+that $e^{-\dfc (k)^2}$ is always less than 1. Further, we notice that
+the amplification factor has a strong dependency on the frequency of
+the Fourier component. For low frequency components (when $k$ is
+small), the amplification factor is relatively large although always
+less than 1.  For high frequency components, when $k$ approaches
+$\infty$, the amplification factor goes to 0. Hence, high frequency
+components (rapid changes such as discontinuities or noise) present in
+the initial condition will be quickly dampened, while low frequency
+components stay for a longer time interval.
+
+The purpose of this section is to discuss the amplification factor
+of numerical schemes and compare the amplification factor of
+the scheme with the known analytical amplification factor.
 
 
 ===== Fourier components and dispersion relations =====
 
-The diffusion equation $u_t = \dfc u_{xx}$ allows a (Fourier)
+Let us again consider the diffusion equation in 1D,  $u_t = \dfc u_{xx}$.
+To allow for general boundary conditions, we include
+both the $\sin (k x)$ and $\cos(k x)$, or for
+convenience we expand the Fourier series in
+terms of $\{e^{ikx}\}_{k=-\infty}^{\infty}$.
+Hence, we perform a separation in terms of the (Fourier)
 wave component
-
 !bt
 \[ u=e^{\beta t + ikx}\]
 !et
-as solution if
-$\beta = -\dfc k^2$, which follows from inserting the wave component
-in the equation ($i=\sqrt{-1}$ is the imaginary unit).
-This exact wave component can alternatively be written as
+where
+$\beta = -\dfc k^2$ and $i=\sqrt{-1}$ is the imaginary unit.
+
+Discretizing in time such that $t=n \Delta t$,
+this exact wave component can alternatively be written as
 
 !bt
 \begin{equation}
@@ -1038,8 +1111,13 @@ u = \Aex^n e^{ikx},\quad \Aex = e^{-\dfc k^2\Delta t}\tp
 label{fem:deq:diffu:analysis:Ae}
 \end{equation}
 !et
-Many numerical schemes for the diffusion equation
-have a similar wave component as solution:
+We remark that $\Aex$ is a function of the parameter $k$, but
+to avoid to clutter the notation here we write
+$\Aex$ instead of $A_{e,k}$. This convention will be used
+also for the discrete case.
+
+As we will show, many numerical schemes for the diffusion equation
+also have a similar wave component as solution:
 
 !bt
 \begin{equation}
@@ -1074,27 +1152,38 @@ label{fem:deq:diffu:analysis:uni}
 \end{equation}
 !et
 
-The actions of the
+The forward Euler scheme (see ref{sec:form:fdop}) is
+!bt
+\begin{align*}
+u_q'(t_n) &\approx [D_t^+ u_q]^n = \frac{u_q^{n+1} - u_q^{n}}{\Delta t} \\
+&= \frac{A_q^{n+1} - A^{n}}{\Delta t}e^{ikq\Delta x} \\
+&=A^n e^{ikq\Delta x}\frac{A-1}{\Delta t} \tp
+\end{align*}
+!et
+Similarly, the actions of the
 most common operators of relevance for the model problem at hand
 are listed below.
 
 !bt
 \begin{align}
+label{fem:deq:diffu:analysis:fe:A}
 [D_t^+ A^n e^{ikq\Delta x}]^n &= A^n e^{ikq\Delta x}\frac{A-1}{\Delta t},\\
+label{fem:deq:diffu:analysis:be:A}
 [D_t^- A^n e^{ikq\Delta x}]^n &= A^n e^{ikq\Delta x}\frac{1-A^{-1}}{\Delta t},\\
+label{fem:deq:diffu:analysis:cn:A}
 [D_t A^n e^{ikq\Delta x}]^{n+\half} &= A^{n+\half} e^{ikq\Delta x}\frac{A^{\half}-A^{-\half}}{\Delta t} = A^ne^{ikq\Delta x}\frac{A-1}{\Delta t},\\
+label{fem:deq:diffu:analysis:ddx:A}
 [D_xD_x A^ne^{ikq\Delta x}]_q &= -A^n \frac{4}{\Delta x^2}\sin^2\left(\frac{k\Delta x}{2}\right)\tp
 \end{align}
 !et
 
-[kam: either ref to appendix or write out first eq in detail]
 
 ===== Forward Euler discretization =====
 
 We insert (ref{fem:deq:diffu:analysis:uni}) in the
 Forward Euler scheme with P1 elements in space and $f=0$ (note that
 this type of analysis
-can only be carried out if $f=0$),
+can only be carried out if $f=0$) )
 
 !bt
 \begin{equation}
@@ -1103,7 +1192,8 @@ label{fem:deq:diffu:FE:fdinterp2}
 \tp
 \end{equation}
 !et
-We have
+We have (using (ref{fem:deq:diffu:analysis:fe:A})
+and (ref{fem:deq:diffu:analysis:ddx:A})
 
 !bt
 \[ [D_t^+D_xD_x Ae^{ikx}]^n_q = [D_t^+A]^n [D_xD_x e^{ikx}]_q
@@ -1306,9 +1396,9 @@ pylab.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
 pylab.show()
 !ec
 
-FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}
+FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}.
 
-Figure ref{fem:deq:diffu:AeA:VS:k} shows that that there is a polynomial
+Figure ref{fem:deq:diffu:AeA:VS:k} shows that there is a polynomial
 relationship between the error of the amplification factor
 and $k$, that is $Ae-A$ goes as $k^4$. For well-resolved meshes,
 $\Delta x \le 0.2 k$ the amplification factor is always less than
@@ -1316,7 +1406,7 @@ $1/1000$. For the under-resolved meshes, e.g. $\Delta x = 8 k$
 the error of the amplification factor is even larger than 1.
 
 
-FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}
+FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}.
 
 From the previous analysis of forward Euler scheme, we know that
 the scheme is only stable as long as the stability criterion

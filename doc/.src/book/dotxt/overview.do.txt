@@ -89,7 +89,7 @@ u = \sum_{i=0}^N c_i \baspsi_i(x,y),
 !et
 where $\{c_i\}$ are the coefficients to be determined
 (often called the degrees of freedom)
-and $\baspsi_i(x,y)$ are a  prescribed polynomials.
+and $\baspsi_i(x,y)$ are prescribed polynomials.
 The next step is the variational formulation. This step
 may seem like a trick of magic or a cumbersome
 mathematical exercise at first glance.
