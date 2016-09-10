@@ -14,6 +14,7 @@ Resources for the book *Introduction to Numerical Methods for Variational Proble
  * `doc/.src/book/src`: Programs
  * `doc/.src/book.make.sh`: Make book in LaTeX PDF format
  * `doc/.src/book.make_html.sh`: Make book in various HTML formats
+ * `doc/.src/book/slides`: Study guide (slides) for the book
 
 Development takes place in the master branch, and the gh-pages branch
 is always merged and in sync with master.
