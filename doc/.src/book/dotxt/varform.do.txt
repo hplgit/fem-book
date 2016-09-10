@@ -162,17 +162,17 @@ label{fem:deq:1D:model3}
 !et
 
 The solution $u$ to the model problem (ref{fem:deq:1D:model1})
-can be determined as 
+can be determined as
 !bt
 \begin{align*}
-u'(x) &= -\int_0^x f(x) + c_0, \\  
-u(x) &= \int_0^x u'(x) + c_1,  
+u'(x) &= -\int_0^x f(x) + c_0, \\
+u(x) &= \int_0^x u'(x) + c_1,
 \end{align*}
 !et
-where $c_0$ and $c_1$ are determined by the boundary conditions 
-such that $u'(0) = C$ and $u(L) = D$. 
+where $c_0$ and $c_1$ are determined by the boundary conditions
+such that $u'(0) = C$ and $u(L) = D$.
 
-Computing the solution is easily done 
+Computing the solution is easily done
 using `sympy`. Some common code is defined first:
 
 @@@CODE src/u_xx_f_sympy.py fromto: import sympy@def model1
@@ -909,7 +909,7 @@ $u = \sum_j c_j\basphi_j(L) = 0$ since all $\basphi_i(L)=0$.
 
 We remark that we  faced exactly the same problem  in Section ref{fem:approx:global:Fourier} where
 we considered Fourier series approximations of functions that where non-zero at the boundaries.
-We will use the same trick as we did earlier to get around this problem.  
+We will use the same trick as we did earlier to get around this problem.
 
 A boundary condition of the form $u(L)=D$ can be implemented by
 demanding that all $\baspsi_i(L)=0$, but adding a
@@ -927,7 +927,7 @@ This $u$ gets the right value at $x=L$:
 \begin{equation*} u(L) = B(L) + \sum_{j\in\If} c_j\baspsi_j(L) = B(L) = D\tp  \end{equation*}
 !et
 The idea is that for any boundary where $u$ is known we demand $\baspsi_i$ to
-vanish and construct a function $B(x)$ to attain the boundary value of $u$. 
+vanish and construct a function $B(x)$ to attain the boundary value of $u$.
 There are no restrictions on how $B(x)$ varies with $x$ in the interior of the
 domain, so this variation needs to be constructed in some way. Exactly how
 we decide the variation to be, is not important.
@@ -1148,8 +1148,8 @@ over all functions $v\in V$. That is,
 
 === Derivation ===
 
-[kam: 
-need that F is convex and a is positive, symmetric, right? Check 
+[kam:
+need that F is convex and a is positive, symmetric, right? Check
 ]
 
 To see this, we write $F(u)\leq F(\eta)$, $\forall\eta\in V$ instead
@@ -1554,6 +1554,251 @@ be solved by constructing a sequence of linear systems whose solutions
 hopefully converge to the solution of the nonlinear system. Frequently applied
 methods are Picard iteration and Newton's method.
 
+======= Implementation of the algorithms =======
+label{fem:global:deq:1D:code}
+
+Our hand calculations can benefit greatly by symbolic computing, as shown
+earlier, so it is natural to extend our approximation programs based on
+`sympy` to the problem domain of variational formulations.
+
+===== Extensions of the code for approximation =====
+label{fem:deq:1D:code:global}
+
+The user must prepare a function `integrand_lhs(psi, i, j)` for
+returning the integrand of the integral that contributes to matrix
+entry $(i,j)$ on the left-hand side.  The `psi` variable is a Python dictionary holding the
+basis functions and their derivatives in symbolic form. More
+precisely, `psi[q]` is a list of
+
+
+!bt
+\begin{equation*}
+\{\frac{d^q\baspsi_0}{dx^q},\ldots,\frac{d^q\baspsi_{N_n-1}}{dx^q}\}
+\tp
+\end{equation*}
+!et
+Similarly, `integrand_rhs(psi, i)` returns the integrand
+for entry number $i$ in the right-hand side vector.
+
+Since we also have contributions to the right-hand side vector (and
+potentially also the matrix) from boundary terms without any integral,
+we introduce two additional functions, `boundary_lhs(psi, i, j)` and
+`boundary_rhs(psi, i)` for returning terms in the variational
+formulation that are not to be integrated over the domain $\Omega$.
+Examples, to be shown later, will explain in more detail how these
+user-supplied function may look like.
+
+The linear system can be computed and solved symbolically by
+the following function:
+
+!bc pycod
+import sympy as sym
+
+def solver(integrand_lhs, integrand_rhs, psi, Omega,
+           boundary_lhs=None, boundary_rhs=None):
+    N = len(psi[0]) - 1
+    A = sym.zeros((N+1, N+1))
+    b = sym.zeros((N+1, 1))
+    x = sym.Symbol('x')
+    for i in range(N+1):
+        for j in range(i, N+1):
+            integrand = integrand_lhs(psi, i, j)
+            I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+            if boundary_lhs is not None:
+                I += boundary_lhs(psi, i, j)
+            A[i,j] = A[j,i] = I   # assume symmetry
+        integrand = integrand_rhs(psi, i)
+        I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+        if boundary_rhs is not None:
+            I += boundary_rhs(psi, i)
+        b[i,0] = I
+    c = A.LUsolve(b)
+    u = sum(c[i,0]*psi[0][i] for i in range(len(psi[0])))
+    return u, c
+!ec
+
+===== Fallback on numerical methods =====
+
+Not surprisingly, symbolic solution of differential
+equations, discretized by a Galerkin or least squares method
+with global basis functions,
+is of limited interest beyond the simplest problems, because
+symbolic integration might be very time consuming or impossible, not
+only in `sympy` but also in
+"WolframAlpha": "http://wolframalpha.com"
+(which applies the perhaps most powerful symbolic integration
+software available today: Mathematica). Numerical integration
+as an option is therefore desirable.
+
+The extended `solver` function below tries to combine symbolic and
+numerical integration.  The latter can be enforced by the user, or it
+can be invoked after a non-successful symbolic integration (being
+detected by an `Integral` object as the result of the integration
+in `sympy`).
+# see Section ref{fem:approx:global:Lagrange}).
+Note that for a
+numerical integration, symbolic expressions must be converted to
+Python functions (using `lambdify`), and the expressions cannot contain
+other symbols than `x`. The real `solver` routine in the
+"`varform1D.py`": "${fem_src}/varform1D.py"
+file has error checking and meaningful error messages in such cases.
+The `solver` code below is a condensed version of the real one, with
+the purpose of showing how to automate the Galerkin or least squares
+method for solving differential equations in 1D with global basis functions:
+
+[kam: this point has been made many times already]
+
+!bc pycod
+def solver(integrand_lhs, integrand_rhs, psi, Omega,
+           boundary_lhs=None, boundary_rhs=None, symbolic=True):
+    N = len(psi[0]) - 1
+    A = sym.zeros((N+1, N+1))
+    b = sym.zeros((N+1, 1))
+    x = sym.Symbol('x')
+    for i in range(N+1):
+        for j in range(i, N+1):
+            integrand = integrand_lhs(psi, i, j)
+            if symbolic:
+                I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+                if isinstance(I, sym.Integral):
+                    symbolic = False  # force num.int. hereafter
+            if not symbolic:
+                integrand = sym.lambdify([x], integrand)
+                I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            if boundary_lhs is not None:
+                I += boundary_lhs(psi, i, j)
+            A[i,j] = A[j,i] = I
+        integrand = integrand_rhs(psi, i)
+        if symbolic:
+            I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+            if isinstance(I, sym.Integral):
+                symbolic = False
+        if not symbolic:
+            integrand = sym.lambdify([x], integrand)
+            I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+        if boundary_rhs is not None:
+            I += boundary_rhs(psi, i)
+        b[i,0] = I
+    c = A.LUsolve(b)
+    u = sum(c[i,0]*psi[0][i] for i in range(len(psi[0])))
+    return u, c
+!ec
+
+===== Example: constant right-hand side =====
+
+To demonstrate the code above, we address
+
+!bt
+\begin{equation*} -u''(x)=b,\quad x\in\Omega=[0,1],\quad u(0)=1,\ u(1)=0,\end{equation*}
+!et
+with $b$ as a (symbolic) constant. A possible basis for the space $V$
+is $\baspsi_i(x) = x^{i+1}(1-x)$, $i\in\If$. Note that
+$\baspsi_i(0)=\baspsi_i(1)=0$ as required by the Dirichlet conditions.
+We need a $B(x)$ function to take care of the known boundary
+values of $u$. Any function $B(x)=1-x^p$, $p\in\Real$, is a candidate,
+and one arbitrary choice from this family
+is $B(x)=1-x^3$. The unknown function is then written as
+
+!bt
+\begin{equation*}
+u(x) = B(x) + \sum_{j\in\If} c_j\baspsi_j(x)\tp
+\end{equation*}
+!et
+
+Let us use the Galerkin method to derive the variational formulation.
+Multiplying the differential
+equation by $v$ and integrating by parts yield
+
+!bt
+\begin{equation*}
+\int_0^1 u'v' \dx = \int_0^1 fv \dx\quad\forall v\in V,
+\end{equation*}
+!et
+and with $u=B + \sum_jc_j\baspsi_j$ we get the linear system
+
+
+!bt
+\begin{equation}
+\sum_{j\in\If}\left(\int_0^1\baspsi_i'\baspsi_j' \dx\right)c_j =
+\int_0^1(f\baspsi_i-B'\baspsi_i') \dx,
+\quad i\in\If\tp
+\end{equation}
+!et
+
+
+The application can be coded as follows with `sympy`:
+
+!bc pycod
+import sympy as sym
+x, b = sym.symbols('x b')
+f = b
+B = 1 - x**3
+dBdx = sym.diff(B, x)
+
+# Compute basis functions and their derivatives
+N = 3
+psi = {0: [x**(i+1)*(1-x) for i in range(N+1)]}
+psi[1] = [sym.diff(psi_i, x) for psi_i in psi[0]]
+
+def integrand_lhs(psi, i, j):
+    return psi[1][i]*psi[1][j]
+
+def integrand_rhs(psi, i):
+    return f*psi[0][i] - dBdx*psi[1][i]
+
+Omega = [0, 1]
+
+from varform1D import solver
+u_bar, c = solver(integrand_lhs, integrand_rhs, psi, Omega,
+                  verbose=True, symbolic=True)
+u = B + u_bar
+print 'solution u:', sym.simplify(sym.expand(u))
+!ec
+
+[kam: does not work]
+[hpl: We must get it to work. It's a small extension of the
+code for approximation and very natural to include when we have so much
+material already on `sympy` for implementing algorithms.]
+
+The printout of `u` reads `-b*x**2/2 + b*x/2 - x + 1`.  Note that
+expanding `u`, before simplifying, is necessary in the present case to
+get a compact, final expression with `sympy`. Doing `expand` before
+`simplify` is a common strategy for simplifying expressions in
+`sympy`. However, a non-expanded `u` might be preferable in other
+cases - this depends on the problem in question.
+
+The exact solution $\uex(x)$ can be derived by some `sympy` code that
+closely follows the examples in Section
+ref{fem:deq:1D:models:simple}. The idea is to integrate $-u''=b$ twice
+and determine the integration constants from the boundary conditions:
+
+!bc pycod
+C1, C2 = sym.symbols('C1 C2')    # integration constants
+f1 = sym.integrate(f, x) + C1
+f2 = sym.integrate(f1, x) + C2
+# Find C1 and C2 from the boundary conditions u(0)=0, u(1)=1
+s = sym.solve([u_e.subs(x,0) - 1, u_e.subs(x,1) - 0], [C1, C2])
+# Form the exact solution
+u_e = -f2 + s[C1]*x + s[C2]
+print 'analytical solution:', u_e
+print 'error:', sym.simplify(sym.expand(u - u_e))
+!ec
+The last line prints `0`, which is not surprising when
+$\uex(x)$ is a parabola and our approximate $u$ contains polynomials up to
+degree 4. It suffices to have $N=1$, i.e., polynomials of degree
+2, to recover the exact solution.
+
+We can play around with the code and test that with $f=Kx^p$, for
+some constants $K$ and $p$,
+the solution is a polynomial of degree $p+2$, and $N=p+1$ guarantees
+that the approximate solution is exact.
+
+Although the symbolic code is capable of integrating many choices of $f(x)$,
+the symbolic expressions for $u$ quickly become lengthy and non-informative,
+so numerical integration in the code, and hence numerical answers,
+have the greatest application potential.
+
+
 ======= Approximations may fail: The convection-diffusion equation =======
 label{ch:convdiff}
 
@@ -1563,7 +1808,7 @@ chapter we will consider a convection-diffusion equation where
 many methods will fail. The failure is purely numerical
 and is often tied to the resolution. This example is perhaps
 the prime example of numerical instabilities in the context of
-PDEs. 
+PDEs.
 
 Consider the equation
 !bt
@@ -1575,17 +1820,17 @@ u(1) &= 0 .
 \end{align}
 !et
 
-The problem describes a convection-diffusion problem where 
+The problem describes a convection-diffusion problem where
 the convection is modelled by the first order term $-u_x$ and diffusion
 is described by the second order term $-\epsilon u_{xx}$. In many applications $\epsilon \ll 1$
-and the dominating term is $-u_x$. The sign of $-u_x$ is not important, the same problem 
-occurs for $u_x$. The sign only determine the direction of the convection.   
+and the dominating term is $-u_x$. The sign of $-u_x$ is not important, the same problem
+occurs for $u_x$. The sign only determine the direction of the convection.
 
-Even though the term $-u_x$ is dominating, 
+Even though the term $-u_x$ is dominating,
 the second order term $-\epsilon u_{xx}$
 makes the problem a second order
-problem and two boundary conditions are required, one condition on each side. In the limiting 
-case where $\epsilon=0$ only one condition is needed.  
+problem and two boundary conditions are required, one condition on each side. In the limiting
+case where $\epsilon=0$ only one condition is needed.
 For this reason, the problem is called a *singular perturbation problem* as the problem changes
 fundamentally in the sense that different boundary conditions are required in the limiting
 $\epsilon=0$.
@@ -1606,7 +1851,7 @@ Clearly, as $\epsilon$ decrease the exponential function represents a sharper an
 From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem representing the common
 phenomenon of boundary layers that is common in all kinds of fluid-flow problems in nature.
 Boundary layers have the characteristics of the solution
-(ref{convdiff:1D:analytical}), that is; a sharp local exponential gradient. 
+(ref{convdiff:1D:analytical}), that is; a sharp local exponential gradient.
 The parameter $\epsilon$ is related to the inverse of the Reynolds number which frequently
 in engineering is significantly larger than $10^3$. In these applications the boundary layer is extremely thin and the gradient extremely sharp.
 
@@ -1662,7 +1907,7 @@ The Galerkin formulation of (ref{convdiff:1D:homo}) is obtained as
 (- \epsilon \hat{u}_{xx} + \hat{u}_x - 1) \baspsi_j(x) \dx .
 \end{equation}
 !et
-Integration by parts leads to 
+Integration by parts leads to
 !bt
 \begin{equation}
 \int_0^1
@@ -1672,37 +1917,37 @@ Integration by parts leads to
 In other words, we need to solve the linear system $\sum_j A_{i,j} c_j = b_i$ where
 !bt
 \begin{align*}
-A_{i,j} &= \int_0^1\epsilon \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_i(x)_x \baspsi_j(x) \dx 
+A_{i,j} &= \int_0^1\epsilon \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_i(x)_x \baspsi_j(x) \dx
 b_i &=\int_0^1 1 \baspsi_j(x) \dx
 \end{align*}
 !et
 [kam: check that we use the right symbol for basis]
 A corresponding code where we also plot the behavior of the solution
-with respect to different $\epsilon$ is: 
+with respect to different $\epsilon$ is:
 !bc pycod
-N = 8 
+N = 8
 eps_vals =[1.0, 0.1, 0.01, 0.001]
-for eps in eps_vals: 
+for eps in eps_vals:
   A = sym.zeros((N-1), (N-1))
   b = sym.zeros((N-1))
 
-  for i in range(0, N-1):  
+  for i in range(0, N-1):
     integrand = f*psi[i]
     integrand = sym.lambdify([x], integrand)
-    b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
-    for j in range(0, N-1): 
-      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) -  sym.diff(psi[i], x)*psi[j] 
+    b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+    for j in range(0, N-1):
+      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) -  sym.diff(psi[i], x)*psi[j]
       integrand = sym.lambdify([x], integrand)
-      A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]]) 
+      A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
 
   c = A.LUsolve(b)
   u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
- 
+
   U = sym.lambdify([x], u)
-  xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0)) 
+  xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0))
   UU = U(xx)
   pylab.plot(xx, UU)
-!ec 
+!ec
 
 
 
@@ -1715,7 +1960,7 @@ FIGURE: [fig/Lagrange_convdiff_8.png, width=400] Solution obtained with Galerkin
 FIGURE: [fig/Lagrange_convdiff_16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
 
 The numerical solutions for different $\epsilon$ is shown in Figure ref{convdiff:osc:Lagrange8}
-and ref{convdiff:osc:Lagrange16} for $N=8$ and $N=16$, respectively. 
+and ref{convdiff:osc:Lagrange16} for $N=8$ and $N=16$, respectively.
 From these figures we can make two observations. The first observation is that
 the numerical solution contains non-physical oscillations that grows as
 $\epsilon$ decreases. These oscillations are so strong that for $N=8$, the
@@ -1724,12 +1969,12 @@ when $\epsilon$ is less than $1/10$. The true solution
 is always in the interval $[0,1]$ while the numerical solution has values
 larger than 2 for $\epsilon=1/100$ and larger than 10 for $\epsilon=1/1000$.
 The second observation is that the numerical solutions appear to improve
-as $N$ increases. While the numerical solution is outside the interval $[0,1]$ 
+as $N$ increases. While the numerical solution is outside the interval $[0,1]$
 for $\epsilon$ less than $1/10$ the magnitude of the oscillations clearly
-has decreased.  
+has decreased.
 
-We will return to this example later and show examples of 
-techniques that can be used to improve the approximation. 
+We will return to this example later and show examples of
+techniques that can be used to improve the approximation.
 The complete source code can be found in
  "`test_epsilon`":"${fem_src}/conv_diff.py".
 
@@ -2508,6 +2753,22 @@ integration by parts.
 ========= Variational formulations with finite elements =========
 label{ch:varform:fe}
 
+We shall now take the ideas from previous chapters and put together such that
+we can solve PDEs using the flexible finite element basis functions.
+This is quite a machinery with many details, but the chapter is mostly an
+assembly of concepts and details we have already met.
+
+======= Computing with global polynomials =======
+
+We start out with a computational example using global polynomials and show
+that if our solution, modulo boundary conditions, lies in the space spanned
+by these polynomials, then the Galerkin method recovers the exact solution.
+
+[hpl: Cannot remember why we need an opening example with *global* polynomials
+in a chapter about local polynomials. Could it just be the property of
+Galerkin recovering the exact solution? Chaperwise it fits better in the
+previous one...]
+
 ===== Computing with Dirichlet and Neumann conditions =====
 label{fem:deq:1D:varform:ex:DN:case}
 
@@ -2545,7 +2806,8 @@ The entries in the linear system are then
 !bt
 \begin{align*}
 A_{i,j} &= (\baspsi_j',\baspsi_i') = \int_{0}^1 \baspsi_i'(x)\baspsi_j'(x)\dx
-= \int_0^1 (i+1)(j+1)(1-x)^{i+j}\dx = \frac{(i+1)(j+1)}{i + j + 1},\\
+= \int_0^1 (i+1)(j+1)(1-x)^{i+j}\dx\\
+&= \frac{(i+1)(j+1)}{i + j + 1},\\
 b_i &= (2,\baspsi_i) - (D,\baspsi_i') -C\baspsi_i(0)\\
 &= \int_0^1\left( 2\baspsi_i(x) - D\baspsi_i'(x)\right)\dx -C\baspsi_i(0)\\
 &= \int_0^1 \left( 2(1-x)^{i+1} + D(i+1)(1-x)^i\right)\dx  -C\\
@@ -2730,7 +2992,7 @@ with all the interior nodes in the mesh:
 The $i$ index runs over all the unknowns $c_i$ in the expansion
 for $u$, and in this case $N=N_n-3$.
 
-In the general case, and in particular on domains in higher dimensions,  
+In the general case, and in particular on domains in higher dimensions,
 the nodes are not necessarily numbered from left
 to right, so we introduce a mapping from the node numbering, or more
 precisely the degree of freedom numbering, to the numbering of
@@ -4579,7 +4841,7 @@ proved in a `sympy` session:
 # #endif
 
 !split
-======= Implementation =======
+======= Implementation of finite element algorithms =======
 label{fem:deq:1D:code}
 
 At this point, it is sensible to create a program with symbolic
@@ -4590,253 +4852,8 @@ with finite element computations and incorporation of boundary
 conditions.  An implementation will also act as a structured summary
 of all these details.
 
-===== Global basis functions =====
-label{fem:deq:1D:code:global}
 
-We first consider implementations when $\baspsi_i$ are global functions
-are hence different from zero on most of $\Omega =[0,L]$ so all integrals
-need integration over the entire domain. (Finite element basis functions,
-where we utilize their local support and perform integrations over
-cells, will be treated later.) Since the expressions for
-the entries in the linear system depend on the differential equation
-problem being solved, the user must supply the necessary formulas via
-Python functions. The implementations here attempt to perform symbolic
-calculations, but fall back on numerical computations if the symbolic
-ones fail.
-
-The user must prepare a function `integrand_lhs(psi, i, j)` for
-returning the integrand of the integral that contributes to matrix
-entry $(i,j)$ on the left-hand side.  The `psi` variable is a Python dictionary holding the
-basis functions and their derivatives in symbolic form. More
-precisely, `psi[q]` is a list of
-
-
-!bt
-\begin{equation*}
-\{\frac{d^q\baspsi_0}{dx^q},\ldots,\frac{d^q\baspsi_{N_n-1}}{dx^q}\}
-\tp
-\end{equation*}
-!et
-Similarly, `integrand_rhs(psi, i)` returns the integrand
-for entry number $i$ in the right-hand side vector.
-
-Since we also have contributions to the right-hand side vector (and
-potentially also the matrix) from boundary terms without any integral,
-we introduce two additional functions, `boundary_lhs(psi, i, j)` and
-`boundary_rhs(psi, i)` for returning terms in the variational
-formulation that are not to be integrated over the domain $\Omega$.
-Examples, to be shown later, will explain in more detail how these
-user-supplied function may look like.
-
-The linear system can be computed and solved symbolically by
-the following function:
-
-!bc pycod
-import sympy as sym
-
-def solver(integrand_lhs, integrand_rhs, psi, Omega,
-           boundary_lhs=None, boundary_rhs=None):
-    N = len(psi[0]) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
-    x = sym.Symbol('x')
-    for i in range(N+1):
-        for j in range(i, N+1):
-            integrand = integrand_lhs(psi, i, j)
-            I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
-            if boundary_lhs is not None:
-                I += boundary_lhs(psi, i, j)
-            A[i,j] = A[j,i] = I   # assume symmetry
-        integrand = integrand_rhs(psi, i)
-        I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
-        if boundary_rhs is not None:
-            I += boundary_rhs(psi, i)
-        b[i,0] = I
-    c = A.LUsolve(b)
-    u = sum(c[i,0]*psi[0][i] for i in range(len(psi[0])))
-    return u, c
-!ec
-
-Not surprisingly, symbolic solution of differential
-equations, discretized by a Galerkin or least squares method
-with global basis functions,
-is of limited interest beyond the simplest problems, because
-symbolic integration might be very time consuming or impossible, not
-only in `sympy` but also in
-"WolframAlpha": "http://wolframalpha.com"
-(which applies the perhaps most powerful symbolic integration
-software available today: Mathematica). Numerical integration
-as an option is therefore desirable.
-
-The extended `solver` function below tries to combine symbolic and
-numerical integration.  The latter can be enforced by the user, or it
-can be invoked after a non-successful symbolic integration (being
-detected by an `Integral` object as the result of the integration
-in `sympy`).
-# see Section ref{fem:approx:global:Lagrange}).
-Note that for a
-numerical integration, symbolic expressions must be converted to
-Python functions (using `lambdify`), and the expressions cannot contain
-other symbols than `x`. The real `solver` routine in the
-"`varform1D.py`": "${fem_src}/varform1D.py"
-file has error checking and meaningful error messages in such cases.
-The `solver` code below is a condensed version of the real one, with
-the purpose of showing how to automate the Galerkin or least squares
-method for solving differential equations in 1D with global basis functions:
-
-[kam: this point has been made many times already]
-
-!bc pycod
-def solver(integrand_lhs, integrand_rhs, psi, Omega,
-           boundary_lhs=None, boundary_rhs=None, symbolic=True):
-    N = len(psi[0]) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
-    x = sym.Symbol('x')
-    for i in range(N+1):
-        for j in range(i, N+1):
-            integrand = integrand_lhs(psi, i, j)
-            if symbolic:
-                I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
-                if isinstance(I, sym.Integral):
-                    symbolic = False  # force num.int. hereafter
-            if not symbolic:
-                integrand = sym.lambdify([x], integrand)
-                I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
-            if boundary_lhs is not None:
-                I += boundary_lhs(psi, i, j)
-            A[i,j] = A[j,i] = I
-        integrand = integrand_rhs(psi, i)
-        if symbolic:
-            I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
-            if isinstance(I, sym.Integral):
-                symbolic = False
-        if not symbolic:
-            integrand = sym.lambdify([x], integrand)
-            I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
-        if boundary_rhs is not None:
-            I += boundary_rhs(psi, i)
-        b[i,0] = I
-    c = A.LUsolve(b)
-    u = sum(c[i,0]*psi[0][i] for i in range(len(psi[0])))
-    return u, c
-!ec
-
-===== Example: constant right-hand side =====
-
-To demonstrate the code above, we address
-
-!bt
-\begin{equation*} -u''(x)=b,\quad x\in\Omega=[0,1],\quad u(0)=1,\ u(1)=0,\end{equation*}
-!et
-with $b$ as a (symbolic) constant. A possible basis for the space $V$
-is $\baspsi_i(x) = x^{i+1}(1-x)$, $i\in\If$. Note that
-$\baspsi_i(0)=\baspsi_i(1)=0$ as required by the Dirichlet conditions.
-We need a $B(x)$ function to take care of the known boundary
-values of $u$. Any function $B(x)=1-x^p$, $p\in\Real$, is a candidate,
-and one arbitrary choice from this family
-is $B(x)=1-x^3$. The unknown function is then written as
-
-!bt
-\begin{equation*}
-u(x) = B(x) + \sum_{j\in\If} c_j\baspsi_j(x)\tp
-\end{equation*}
-!et
-
-Let us use the Galerkin method to derive the variational formulation.
-Multiplying the differential
-equation by $v$ and integrating by parts yield
-
-!bt
-\begin{equation*}
-\int_0^1 u'v' \dx = \int_0^1 fv \dx\quad\forall v\in V,
-\end{equation*}
-!et
-and with $u=B + \sum_jc_j\baspsi_j$ we get the linear system
-
-
-!bt
-\begin{equation}
-\sum_{j\in\If}\left(\int_0^1\baspsi_i'\baspsi_j' \dx\right)c_j =
-\int_0^1(f\baspsi_i-B'\baspsi_i') \dx,
-\quad i\in\If\tp
-\end{equation}
-!et
-
-
-The application can be coded as follows with `sympy`:
-
-!bc pycod
-import sympy as sym
-x, b = sym.symbols('x b')
-f = b
-B = 1 - x**3
-dBdx = sym.diff(B, x)
-
-# Compute basis functions and their derivatives
-N = 3
-psi = {0: [x**(i+1)*(1-x) for i in range(N+1)]}
-psi[1] = [sym.diff(psi_i, x) for psi_i in psi[0]]
-
-def integrand_lhs(psi, i, j):
-    return psi[1][i]*psi[1][j]
-
-def integrand_rhs(psi, i):
-    return f*psi[0][i] - dBdx*psi[1][i]
-
-Omega = [0, 1]
-
-from varform1D import solver
-u_bar, c = solver(integrand_lhs, integrand_rhs, psi, Omega,
-                  verbose=True, symbolic=True)
-u = B + u_bar
-print 'solution u:', sym.simplify(sym.expand(u))
-!ec
-
-[kam: does not work]
-
-The printout of `u` reads `-b*x**2/2 + b*x/2 - x + 1`.
-Note that expanding `u`, before simplifying, is necessary
-in the present case
-to get a compact, final expression with `sympy`. Doing `expand` before
-`simplify` is a common strategy for simplifying expressions in
-`sympy`. However,
-a non-expanded `u` might be preferable in other cases - this depends on
-the problem in question.
-
-The exact solution $\uex(x)$ can be derived by
-some `sympy` code that closely follows the examples in
-Section ref{fem:deq:1D:models:simple}. The idea is to integrate
-$-u''=b$ twice and determine the integration constants from
-the boundary conditions:
-
-!bc pycod
-C1, C2 = sym.symbols('C1 C2')    # integration constants
-f1 = sym.integrate(f, x) + C1
-f2 = sym.integrate(f1, x) + C2
-# Find C1 and C2 from the boundary conditions u(0)=0, u(1)=1
-s = sym.solve([u_e.subs(x,0) - 1, u_e.subs(x,1) - 0], [C1, C2])
-# Form the exact solution
-u_e = -f2 + s[C1]*x + s[C2]
-print 'analytical solution:', u_e
-print 'error:', sym.simplify(sym.expand(u - u_e))
-!ec
-The last line prints `0`, which is not surprising when
-$\uex(x)$ is a parabola and our approximate $u$ contains polynomials up to
-degree 4. It suffices to have $N=1$, i.e., polynomials of degree
-2, to recover the exact solution.
-
-We can play around with the code and test that with $f=Kx^p$, for
-some constants $K$ and $p$,
-the solution is a polynomial of degree $p+2$, and $N=p+1$ guarantees
-that the approximate solution is exact.
-
-Although the symbolic code is capable of integrating many choices of $f(x)$,
-the symbolic expressions for $u$ quickly become lengthy and non-informative,
-so numerical integration in the code, and hence numerical answers,
-have the greatest application potential.
-
-===== Finite elements =====
+===== Extensions of the code for approximation =====
 label{fem:deq:1D:code:fe}
 
 Implementation of the finite element algorithms for differential
@@ -4929,29 +4946,31 @@ for e in range(len(cells)):
 <solve linear system>
 !ec
 
-Having implemented this function, 
-the user only has supply the `ilhs`, `irhs`, `blhs`, and `brhs` functions
-that specify the PDE and boundary conditions. The rest of
-the implementation forms a generic computational engine. The 
-finite element packages Diffpack and FEniCS are structured exactly the same 
-way. A sample implementation of `ilhs` for the 1D Poisson problem is:    
+Having implemented this function, the user only has supply the `ilhs`,
+`irhs`, `blhs`, and `brhs` functions that specify the PDE and boundary
+conditions. The rest of the implementation forms a generic
+computational engine. The big finite element packages Diffpack and FEniCS
+are structured exactly the same way. A sample implementation of `ilhs`
+for the 1D Poisson problem is:
 
-!bc pycod 
+!bc pycod
    def integrand_lhs(phi, i, j):
         return phi[1][i]*phi[1][j]
-!ec 
-which returns  $d\refphi_i (X)/dx d\refphi_j (X)/dx$.  Reducing the 
+!ec
+which returns  $d\refphi_i (X)/dx d\refphi_j (X)/dx$.  Reducing the
 amount of code the user has to supply and making the code as close as
 possible to the mathematical formulation makes the software user-friendly and
-easy to debug. 
+easy to debug.
 
-A complete function `finite_element1D_naive`
-for the 1D finite algorithm above, is found in the file
-"`fe1D.py`": "${fem_src}/fe1D.py". The term ``naive'' refers
-to a version of the algorithm where we use a standard dense square matrix
-as global matrix `A`. The implementation also has a verbose mode for
-printing out the element matrices and vectors as they are computed.
-Below is the complete function without the print statements.
+A complete function `finite_element1D_naive` for the 1D finite
+algorithm above, is found in the file "`fe1D.py`":
+"${fem_src}/fe1D.py". The term ``naive'' refers to a version of the
+algorithm where we use a standard dense square matrix as global matrix
+`A`. The implementation also has a verbose mode for printing out the
+element matrices and vectors as they are computed.  Below is the
+complete function without the print statements.  You should study in
+detail since it contains all the steps in the finite element
+algorithm.
 
 !bc pycod
 def finite_element1D_naive(
@@ -5067,7 +5086,7 @@ changes needed in the `finite_element1D_naive` to utilize
 sparse matrices. The resulting modification is found in the
 function `finite_element1D`.
 
-=== Example ===
+===== Example: application to our model problem  =====
 
 Let us demonstrate the finite element software on
 
@@ -5169,18 +5188,17 @@ this problem further using other $m$ and $d$ values.
 
 FIGURE: [fig/uxx_x2, width=500 frac=0.8] Finite element and exact solution using two cells. label{fem:deq:1D:code:fe:fig1}
 
+
 !split
 ======= Variational formulations in 2D and 3D =======
 label{fem:deq:2D:varform}
 
-
-The major difference between deriving variational formulations in 2D and 3D
-compared to 1D is the rule for integrating by parts.
-The cells have shapes different from an interval, so basis functions
-look a bit different, and
-there is a technical difference in actually calculating the integrals
-over cells. Otherwise, going to 2D and 3D is not a big step from 1D. All
-the fundamental ideas still apply.
+The major difference between deriving variational formulations in 2D
+and 3D compared to 1D is the rule for integrating by parts.  The cells
+have shapes different from an interval, so basis functions look a bit
+different, and there is a technical difference in actually calculating
+the integrals over cells. Otherwise, going to 2D and 3D is not a big
+step from 1D. All the fundamental ideas still apply.
 
 ===== Integration by parts =====
 
@@ -5756,7 +5774,7 @@ are motivated from the formula for $a(u,v)$ where products of the
 first-order derivatives are to be integrated on $\Omega$.
 We remark that it is common that  $H^1_0$ denote the
 space of $H^1$ functions that are zero everywhere on the boundary, but
-here we use it for functions that are zero only at $x=0$.  
+here we use it for functions that are zero only at $x=0$.
 
 The Sobolev space $H^1_0(\Omega)$ has an inner product
 
@@ -5920,7 +5938,7 @@ is expected.
 In general, the convergence is $h^{s+1}$ for elements with polynomials
 of degree $s$. Note that the estimate for $u'$ is proportional to
 $h$ raised to one power less.
-We remark that the second estimate strictly speaking requires extra smoothness (regularity).  
+We remark that the second estimate strictly speaking requires extra smoothness (regularity).
 
 
 # #ifdef UNFINISHED
@@ -5942,7 +5960,7 @@ is cite{Larson_2013}
 
 ======= Convection-Diffusion and Petrov-Galerkin =======
 
-Let us now return to the problem in Section ref{sec:varform:general:convdiff} 
+Let us now return to the problem in Section ref{sec:varform:general:convdiff}
 !bt
 \begin{align}
 label{varform:conv:diff:pde}
@@ -5956,72 +5974,72 @@ label{varform:conv:diff:bc2}
 \end{align}
 !et
 
-In Section ref{ch:convdiff} we investigated the simplified case in 
+In Section ref{ch:convdiff} we investigated the simplified case in
 1D
 !bt
 \begin{align*}
--u_x - \dfc u_{xx} &= 0, \\ 
-u(0) = 0, u(1) &= 1 \tp 
+-u_x - \dfc u_{xx} &= 0, \\
+u(0) = 0, u(1) &= 1 \tp
 \end{align*}
 !et
 and the analytical solution was:
-!bt 
+!bt
 \[
-u_e(x) = \frac{e^{-x/\dfc} - 1}{e^{-1/\dfc} - 1}. 
+u_e(x) = \frac{e^{-x/\dfc} - 1}{e^{-1/\dfc} - 1}.
 \]
 !et
 
 The approximation
-with global functions failed when $\dfc$ was significantly smaller than 
+with global functions failed when $\dfc$ was significantly smaller than
 $\v$. The computed solution contained non-physical oscillations that
 were orders of magnitude larger than the true solution. The approximation
-did however improve as the number of degrees of freedom increased.  
+did however improve as the number of degrees of freedom increased.
 
-The variational problem is: 
-Find $u\in V$ such that 
+The variational problem is:
+Find $u\in V$ such that
 !bt
 \[
 a(u,v) = L(v) \forall v
 \]
 !et
-where 
+where
 !bt
 \begin{align*}
 a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x \dx, \\
-L(v) &=  \int_0^1  0 v \dx = 0  .  
+L(v) &=  \int_0^1  0 v \dx = 0  .
 \end{align*}
 !et
 
 A Galerkin approximation with a finite element approximation is obtained
-by letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and 
-$v =  \baspsi_i(x)$ which leads to a linear system 
-of equations $\sum_j A_{i,j}c_j=b_i$ where 
+by letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and
+$v =  \baspsi_i(x)$ which leads to a linear system
+of equations $\sum_j A_{i,j}c_j=b_i$ where
 !bt
 \begin{align*}
 A_{i,j} &= \int_0^1
 \mu \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_j(x)_x \baspsi_i(x) \dx, \\
-b_i &= \int_0^1 0 \baspsi_i(x) \dx \tp 
+b_i &= \int_0^1 0 \baspsi_i(x) \dx \tp
 \end{align*}
 !et
 
 Figure ref{varform:fe:convdiff:plot} shows the finite element solution on a coarse mesh of 10 elements
-for $\mu=0.01$. Clearly, the finite element method has the same problem as was observed 
-earlier in global functions in Section  ref{sec:varform:general:convdiff}. 
+for $\mu=0.01$. Clearly, the finite element method has the same problem as was observed
+earlier in global functions in Section  ref{sec:varform:general:convdiff}.
 
-FIGURE: [fig/conv-diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
+#FIGURE: [fig/conv-diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 
-For finite differences, the cure for these oscillations is *upwinding*. 
+For finite differences, the cure for these oscillations is *upwinding*.
 That is, instead
 of using a central difference scheme, we employ the following difference
-scheme:   
+scheme:
 !bt
 \begin{eqnarray*}
-\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0, \\ 
-\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0 .  
+\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0, \\
+\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0 .
 \end{eqnarray*}
 !et
-Using this scheme, oscillations will disappear as can be seen in 
+Using this scheme, oscillations will disappear as can be seen in
 Figure ref{varform:fe:convdiffstab:plot}.
 
 There is a relationship between upwinding and artificial diffusion.  If we discretize $u_x$ with a central difference and add diffusion as $\epsilon =h/2 \Delta $ we get
@@ -6029,42 +6047,45 @@ There is a relationship between upwinding and artificial diffusion.  If we discr
 \begin{eqnarray*}
  \frac{u_{i+1}  -  u_{i-1}}{2 h}    &  \textrm{central scheme, first order derivative}  \\
 + \frac{h}{2} \, \frac{-u_{i+1}   + 2 u_{i}    -u_{i-1}}{h^2}  &  \textrm{central scheme, second order derivate}   \\
-= \frac{u_{i} -u_{i-1}}{h} &  \textrm{upwind scheme}   
+= \frac{u_{i} -u_{i-1}}{h} &  \textrm{upwind scheme}
 \end{eqnarray*}
 !et
 
-FIGURE: [fig/conv-diff-stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+#FIGURE: [fig/conv-diff-stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
-
-\noindent
 Hence, upwinding is equivalent to adding artificial diffusion with $\epsilon=h/2$; that is, in both cases we actually solve the problem
-\[-(\mu+\epsilon)u_{xx} + vu_x = f.\]
-using a central difference scheme. 
 
-Finite difference upwinding is difficult to express using finite elements methods, but
-it is closely to adding some kind of diffusion to the scheme.  
-A clever method of adding diffusion is the so-called *Petrov-Galerkin* method. 
-The Galerkin approximation consist of finding $u\in V$ such that 
-for all $v\in V$ the variational formulation is satisfied. 
+!bt
+\[-(\mu+\epsilon)u_{xx} + vu_x = f.\]
+!et
+using a central difference scheme.
+
+Finite difference upwinding is difficult to express using finite
+elements methods, but it is closely to adding some kind of diffusion
+to the scheme.  A clever method of adding diffusion is the so-called
+*Petrov-Galerkin* method.  The Galerkin approximation consist of
+finding $u\in V$ such that for all $v\in V$ the variational
+formulation is satisfied.
+
 !bt
 \begin{align*}
 a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x \dx, \\
-L(v) &=  \int_0^1  0 v \dx = 0  .  
+L(v) &=  \int_0^1  0 v \dx = 0  .
 \end{align*}
 !et
 The Petrov-Galerkin method is a seemingly innocent and straightforward extension
-of Galerkin where 
-we want to find $u\in V$ such that for all $w\in W$ the 
-variational formulation is fulfilled. 
+of Galerkin where
+we want to find $u\in V$ such that for all $w\in W$ the
+variational formulation is fulfilled.
 !bt
 \begin{align*}
 a(u, w) &= \int_0^1 -u_x w + \mu u_x w_x \dx, \\
-L(w) &=  \int_0^1  0 w \dx = 0  .  
+L(w) &=  \int_0^1  0 w \dx = 0  .
 \end{align*}
 !et
 However, $W$ cannot be chosen freely. For instance, to obtain a quadratic matrix
-the number of basis functions in   $V$ and $W$ must be the same. Let 
- $w = v  + \beta v\cdot\nabla v$. 
+the number of basis functions in   $V$ and $W$ must be the same. Let
+ $w = v  + \beta v\cdot\nabla v$.
 
 !bt
 \begin{eqnarray*}
@@ -6099,8 +6120,8 @@ _{\textrm{Artificial diffusion in $v$ direction}}
    because this gives little round-off errors when solving the linear
    system, and the coefficient matrix becomes diagonal or sparse.
    One way to obtain almost orthogonal basis functions is to localize the
-   basis by making the basis functions that have local support in only a few 
-   cells of a mesh. This is utilized in the finite element method.  
+   basis by making the basis functions that have local support in only a few
+   cells of a mesh. This is utilized in the finite element method.
  * Finite element basis functions are *piecewise* polynomials, normally
    with discontinuous derivatives at the cell boundaries. The basis
    functions overlap very little, leading to stable numerics and sparse

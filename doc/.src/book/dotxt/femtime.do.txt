@@ -21,7 +21,7 @@ these two strategies end up in exactly the same systems to be solved, but
 this is not always the case.  The third approach reproduces standard
 finite difference schemes such as the Backward Euler and the Crank-Nicolson
 schemes, but offers an interesting framework for deriving higher-order
-methods. In this chaper we shall be concerned with
+methods. In this chapter we shall be concerned with
 the first strategy,
 which is the most common strategy as it turns the time-dependent
 PDE problem to a sequence of stationary problems for which efficient
@@ -1011,11 +1011,11 @@ label{fem:deq:diffu:anal}
  * Run CN finite difference and finite element (just use FE code)
  * Run Forward Euler
  * Point to problems with non-physical oscillations, should be larger
-   in FE than in FD
+   in finite elements than in finite difference
 
 ===== Methods of analysis =====
 
-There are three major tools for analysing the accuracy of time-dependent
+There are three major tools for analyzing the accuracy of time-dependent
 finite element problems:
 
  * Truncation error
@@ -1030,46 +1030,46 @@ mathematical form as finite difference methods, and there is no reason
 why we should not use a simple tool as the truncation error to
 establish expected convergence rates of finite element methods.
 
-Instead, a more rigirous and powerful
-error analysis framework has been developed for
-finite element methods. This framework deals primarily with the spatial
-discretization and is not so superior for space-time problems.
+Instead, a more rigorous and powerful error analysis framework has
+been developed for finite element methods. This framework deals
+primarily with the spatial discretization and is not so superior for
+space-time problems.
 
 To explain the numerical artifacts from the previous section,
 both the truncation error and the error analysis framework fall too
-short, and we have turn to the method based on analysing amplification
+short, and we have turn to the method based on analyzing amplification
 factors. For wave equations, the counterpart is often referred to as analysis
 of dispersion relations.
 
-The idea of the method of analysing amplification factors is to
-see how sinusoidal waves are amplified in time.
-Let us now consider the diffusion equation in
-1D,  $u_t = \dfc u_{xx}$ for $x \in \Omega=(0,\pi)$ and $t \in (0,T]$.
-For the case where we have homogeneous Dirichlet conditions
-and the initial condition is $u(x, 0) = u_0(x)$, the solution to
-the problem can be expressed as
+The idea of the method of analyzing amplification factors is to
+see how sinusoidal waves are amplified in time. For example, if high
+frequency components are damped much less than the analytical damping,
+we may see this as ripples or noise in the solution.
+
+Let us address the diffusion equation in 1D, $u_t = \dfc u_{xx}$ for
+$x \in \Omega=(0,\pi)$ and $t \in (0,T]$.  For the case where we have
+homogeneous Dirichlet conditions and the initial condition is $u(x, 0)
+= u_0(x)$, the solution to the problem can be expressed as
+
 !bt
 \[
 u(x,t) = \sum_{k=1}^\infty B_k e^{-\dfc (k )^2 t} \sin(k x),
 \]
 !et
-where $B_k = \int_\Omega u_0 \sin(k x)$.
-This is the wel-known Fourier decomposition of a signal in sine waves (one
-can also use cosine functions or a combination of sines and cosines).
-For a given wave $\sin(kx)$ with wave length $\lambda = 2\pi/k$, this part
-of the signal will in time develop as $e^{-\dfc (k )^2 t}$.
-Smooth signals will need only a few long waves ($B_k$ decays rapidly with
-$k$), while discontinuous or
-noisy signals will have an amount of short waves with significant
-amplitude ($B_k$ decays slowly with $k$).
+where $B_k = \int_\Omega u_0 \sin(k x)$.  This is the well-known
+Fourier decomposition of a signal in sine waves (one can also use
+cosine functions or a combination of sines and cosines).  For a given
+wave $\sin(kx)$ with wave length $\lambda = 2\pi/k$, this part of the
+signal will in time develop as $e^{-\dfc (k )^2 t}$.  Smooth signals
+will need only a few long waves ($B_k$ decays rapidly with $k$), while
+discontinuous or noisy signals will have an amount of short waves with
+significant amplitude ($B_k$ decays slowly with $k$).
 
-In particular, $\Aex = e^{-\dfc (k )^2 \Delta t}$ is the amplification
-of the amplitude of this wave over one time step and known as the
-*amplification factor*.  Various numerical discretizations in time
-will influence the numerical amplification factor, and by
-understanding the amplification factor and its dependence on $k$, we
-can undertand much about numerical artifacts in the numerical
-solutions.
+The amplification factor is defined as
+$\Aex = e^{-\dfc (k )^2 \Delta t}$ and expresses how much
+a wave with frequency $k$ is damped over a time step.
+The corresponding numerical amplification factor will vary with the
+discretization method and also discretization parameters in space.
 
 From the analytical expression for the amplification factor, we see
 that $e^{-\dfc (k)^2}$ is always less than 1. Further, we notice that
@@ -1371,17 +1371,17 @@ O(dt)
 We remark here that it is an advantage to take the square-root after the deriving
 the Taylor-series.
 
-As we saw earlier, the amplification factor varied with $k$,
-in particular with respect to the resolution. Let us therefore
-consider the error in the amplification factor $A_e - A$
-at different resolutions for the $k=1\ldots 100$
-at mesh sizes that under-resolve and properly resolve the first
-hundred components. That is, we vary $\dx$ from $\frac{8}{100}$ to
-$\frac{1}{800}$.
-Plotting the error in the amplification factor versus $k$ as follows,
+As we saw earlier, the amplification factor varied with $k$, in
+particular with respect to the resolution. Let us therefore consider
+the error in the amplification factor $A_e - A$ at different
+resolutions for the $k=1\ldots 100$ at mesh sizes that under-resolve
+and properly resolve the first hundred components. That is, we vary
+$\dx$ from $\frac{8}{100}$ to $\frac{1}{800}$.  Plotting the error in
+the amplification factor versus $k$ as follows,
+
 !bc pycod
 from numpy import *
-import pylab
+import matplitlib.pyplot as plt
 dxs = [8*10**-2, 4*10**-2, 2*10**-2, 10**-2, 10**-2/2, 10**-2/4, 10**-2/8]
 for dx in dxs:
   k_max=100
@@ -1391,12 +1391,12 @@ for dx in dxs:
   f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
   (-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
 
-  pylab.loglog(k, f)
-pylab.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
-pylab.show()
+  plt.loglog(k, f)
+plt.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
+plt.show()
 !ec
 
-FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$ label{fem:deq:diffu:AeA:VS:k}.
+#FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$. label{fem:deq:diffu:AeA:VS:k}.
 
 Figure ref{fem:deq:diffu:AeA:VS:k} shows that there is a polynomial
 relationship between the error of the amplification factor

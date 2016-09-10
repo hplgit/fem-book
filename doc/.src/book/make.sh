@@ -31,7 +31,7 @@ fi
 
 if [ "$spellcheck" != 'nospell' ]; then
     cd dotxt
-    system doconce spellcheck -d .dict4spell.txt *.do.txt
+    system doconce spellcheck -d ../.dict4spell.txt *.do.txt
     cd ..
 fi
 

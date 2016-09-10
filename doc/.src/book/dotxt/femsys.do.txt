@@ -238,7 +238,7 @@ label{fem:sys:wT:ex:T:vf1}
 !et
 The equation $R_w$ in (ref{fem:sys:wT:ex:weq:R}) is linear
 in $w$, while the equation $R_T$ in (ref{fem:sys:wT:ex:Teq:R})
-is linear in $T$ and nonlinear in $w$. 
+is linear in $T$ and nonlinear in $w$.
 
 ===== Compound scalar variational form =====
 
@@ -351,7 +351,7 @@ We can solve the first system for $c^{(w)}$, and then
 the right-hand side $b^{(T)}$ is known such that we can
 solve the second system for $c^{(T)}$. Hence, the
 decoupling of the unknowns $w$ and $T$ reduces the
-system of nonlinear PDEs to two linear PDEs. 
+system of nonlinear PDEs to two linear PDEs.
 
 
 ===== Coupled linear systems =====
@@ -394,8 +394,8 @@ L c^{(w)} + \kappa K c^{(T)} & =0,
 \end{align}
 !et
 with $L$ as the matrix from the $\nabla w_{-}\cdot\nabla$ operator:
-$L_{i,j} = A^{(w,T)}_{i,j}$. The matrix $K$ is $K_{i,j} = 
-A^{(w,w)}_{i,j} = A^{(T,T)}_{i,j}$. 
+$L_{i,j} = A^{(w,T)}_{i,j}$. The matrix $K$ is $K_{i,j} =
+A^{(w,w)}_{i,j} = A^{(T,T)}_{i,j}$.
 
 The matrix-vector equations are often conveniently written in block form:
 
@@ -499,11 +499,11 @@ label{fem:sys:wT:ex:wT:vf3}
 valid $\forall \v\in\V = V^{(w)}\times V^{(T)}$.
 
 As earlier, we may decoupled the system in terms
-of two linear PDEs as we did with 
+of two linear PDEs as we did with
 (ref{fem:sys:wT:ex:linsys:w1})-(ref{fem:sys:wT:ex:linsys:T1})
 or linearize the coupled system by introducing the previous
-iterate $w_{-}$ as in 
-(ref{fem:sys:wT:ex:linsys:w2})-(ref{fem:sys:wT:ex:linsys:T2}). 
+iterate $w_{-}$ as in
+(ref{fem:sys:wT:ex:linsys:w2})-(ref{fem:sys:wT:ex:linsys:T2}).
 However, we need to distinguish between $\baspsi_i^{(w)}$
 and $\baspsi_i^{(T)}$, and the range in the sums over $j$
 must match the number of degrees of freedom in the spaces $V^{(w)}$
@@ -619,7 +619,7 @@ $T(0)=T(H)=T_0$. For
 is $[0,R]$ ($R$ being the radius of the pipe) and the boundary
 conditions are $du/dr = dT/dr =0$ for $r=0$, $u(R)=0$, and $T(R)=T_0$.
 
-The solutions to (ref{fem:sys:wT:ex1D:weq}) 
+The solutions to (ref{fem:sys:wT:ex1D:weq})
 and (ref{fem:sys:wT:ex1D:Teq}) are computed
 as
 !bt
@@ -630,10 +630,10 @@ T_{e,x} &= - \int \mu w_x^2 \dx + C_T,\\
 w_e &= \int w_x \dx + D_T, \\
 \end{align*}
 !et
-where we determine the constants $C_w$, $D_w$, $C_T$, and $D_T$ 
-by the boundary conditions $w(0)=w(H)=0$ and 
-$T(0)=T(H)=T_0$. The calculations 
-may be performed in  `sympy` as 
+where we determine the constants $C_w$, $D_w$, $C_T$, and $D_T$
+by the boundary conditions $w(0)=w(H)=0$ and
+$T(0)=T(H)=T_0$. The calculations
+may be performed in  `sympy` as
 !bc pycod
 import sympy as sym
 
@@ -665,24 +665,24 @@ T_e(x) &= \frac{\beta^{2}}{\mu} \left(\frac{H^{3} x}{24}  - \frac{H^{2}}{8} x^{2
 The figure ref{femsys:cooling:w:plot} shows $w$ computed by the finite element method using the  decoupled
 approach with P1 elements for both $w$ and $T$.
 That is, implementing (ref{fem:sys:wT:ex:linsys:w1}) and
-(ref{fem:sys:wT:ex:linsys:T1}). The analytical solution $w_e$ is a quadratic 
+(ref{fem:sys:wT:ex:linsys:T1}). The analytical solution $w_e$ is a quadratic
 polynomial and we see that the linear approximation gives poor approximation on the
-coarse meshes, but also that it improves fast as we refine the mesh. 
+coarse meshes, but also that it improves fast as we refine the mesh.
 The figure ref{femsys:cooling:w:plot} shows the approximation of $T$ and also here
 we see that the fourth order polynomial is poorly approximated at coarse resolution, but
-that the approximation quickly improves. 
+that the approximation quickly improves.
 
 
 
- 
+
 FIGURE: [fig/cooling_w, width=800] The solution $w$ of (ref{fem:sys:wT:ex1D:weq}) with $\beta=\mu=1$ for different mesh resolutions. label{femsys:cooling:w:plot}
 
-The figure ref{femsys:cooling:w:plot} shows $T$. The same tendency is apparent. 
+The figure ref{femsys:cooling:w:plot} shows $T$. The same tendency is apparent.
 FIGURE: [fig/cooling_T, width=800] The solution $T$ of (ref{fem:sys:wT:ex1D:Teq}) for $\kappa=H=1$. label{femsys:cooling:T:plot}
 
 
 The calculations for (ref{fem:sys:wT:ex1Dr:weq})
-and (ref{fem:sys:wT:ex1Dr:Teq}) are similar. 
+and (ref{fem:sys:wT:ex1Dr:Teq}) are similar.
 The `sympy` code
 !bc pycod
 import sympy as sym
@@ -703,7 +703,7 @@ s = sym.solve([sym.diff(T,r).subs(r, 0)-T0,  # r=0 condition
                [C, D])                       # unknowns
 T = T.subs(C, s[C]).subs(D, s[D])
 T = sym.simplify(sym.expand(T))
-!ec 
+!ec
 and we obtain the solutions
 !bt
 \begin{align*}
@@ -714,83 +714,83 @@ T(r) &= \frac{1}{64 \mu} \left(R^{4} \beta^{2} + 64 T_{0} \mu - \beta^{2} r^{4}\
 
 [hpl: Calculations to be continued...]
 [kam: hva skal vi gjøre? Løse i sympy?]
- 
+
 
 
 ===== Another example in 1D =====
 
 label{fem:sys:up:1D}
-Consider the problem 
+Consider the problem
 !bt
 \begin{align}
 label{femsys:varcoeff:1D}
  -(a u')' &= 0,\\
 u(0) &= 0,\\
 u(1) &= 1 \tp
-\end{align} 
+\end{align}
 !et
-For any scalar $a$ (larger than 0), we may easily verify that the solution is $u(x)=x$. 
+For any scalar $a$ (larger than 0), we may easily verify that the solution is $u(x)=x$.
 In many applications, such as for example porous media flow
-or heat conduction, the parameter $a$ contains a jump that represents 
-the transition from one material to another. Hence, 
+or heat conduction, the parameter $a$ contains a jump that represents
+the transition from one material to another. Hence,
 let us consider the problem where $a$ is on the following
 form
 !bt
 \[
-a(x) = \left\{ \begin{array}{ll} 
+a(x) = \left\{ \begin{array}{ll}
             1 & \mbox{  if } x\le\half, \\
-            a_0 &  \mbox{  if } x>\half\tp 
-           \end{array} \right.  
+            a_0 &  \mbox{  if } x>\half\tp
+           \end{array} \right.
 \]
 !et
 Notice that for such an $a(x)$, the equation (ref{femsys:varcoeff:1D}) does not necessarily make
 sense because we cannot differentiate $a(x)$. Strictly speaking $a'(x)$ would
 be a Dirac's delta function in $x=\half$, that is $a'$ is $\infty$ at $x=\half$ and zero
-everywhere else.  
+everywhere else.
 
-Hand-calculations do however show that we may be able to 
-compute the solution. Integrating (ref{femsys:varcoeff:1D}) 
+Hand-calculations do however show that we may be able to
+compute the solution. Integrating (ref{femsys:varcoeff:1D})
 yields the expression
 !bt
 \[
--(a u') = C 
+-(a u') = C
 \]
-!et 
+!et
 A trick now is to divide by $a$ on both sides to obtain
 !bt
 \[
-- u' = C/a 
+- u' = C/a
 \]
-!et 
+!et
 and hence
 !bt
 \begin{equation}
 label{varcoeff:analytical:solution}
-u(x) = (C/a) x + D 
+u(x) = (C/a) x + D
 \end{equation}
 !et
 The boundary conditions demand that $u(0) = 0$, which means that $D=0$
-and $u(1) = 1$ fixate $C$ to be $a_0$. 	
+and $u(1) = 1$ fixate $C$ to be $a_0$.
 
 To obtain a variational form of this problem suitable for
-finite element simulation, we transform the problem 
-to a homogeneous Dirichlet problem. 
-Let the solution be $u(x) = B(x) + \sum_{j\in\If} c_j\baspsi_j(x)$ where 
+finite element simulation, we transform the problem
+to a homogeneous Dirichlet problem.
+Let the solution be $u(x) = B(x) + \sum_{j\in\If} c_j\baspsi_j(x)$ where
 $B(x)=x$.
 
-[kam: the right hand side is hard to compute. Perhaps find 
+[kam: the right hand side is hard to compute. Perhaps find
 a problem with homogeneous BC. Or perhaps just comment that we take the
 linear algebra approach.]
 
-The variational problem derived from a standard Galerkin method reads: Find $u$ such that  
+The variational problem derived from a standard Galerkin method reads: Find $u$ such that
 !bt
 \[
-\int_{\Omega} a u' v' \, dx = \int_\Omega f v dx 
+\int_{\Omega} a u' v' \, dx = \int_\Omega f v dx
 \]
 !et
 
 We observe that in the variational problem, the discontinuity of $a$ does not cause any problem
-as the differentiation is moved from $a$ (and u') to $v$ by using integration by parts. 
+as the differentiation is moved from $a$ (and u') to $v$ by using integration by parts.
 Letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and $v=\baspsi_i(x)$ the corresponding linear system is $\sum_j A_{i,j}c_j=b_i$
 with
 
@@ -803,16 +803,16 @@ b_i &= (f,\baspsi_i)= 0 \tp
 \end{align*}
 !et
 
-The solution of the problem is shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotu} at different mesh resolutions. 
-The analytical solution in (ref{varcoeff:analytical:solution}) is a piecewise polynomial, linear 
-for $x$ in $[0,\half)$ and $(\half,1]$ and it seems that the numerical strategy gives a good approximation 
-of the solution. 
+The solution of the problem is shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotu} at different mesh resolutions.
+The analytical solution in (ref{varcoeff:analytical:solution}) is a piecewise polynomial, linear
+for $x$ in $[0,\half)$ and $(\half,1]$ and it seems that the numerical strategy gives a good approximation
+of the solution.
 
-The flux $a u'$ is often a quantity of interest. The flux involves differentiation with respect 
-to $x$ and therefore we have to compute it. A natural approach is to take the Galerkin approximation, 
+The flux $a u'$ is often a quantity of interest. The flux involves differentiation with respect
+to $x$ and therefore we have to compute it. A natural approach is to take the Galerkin approximation,
 that is we seek a $w \approx a u'$ on the form  $w=\sum_{j\in\If} d_j\baspsi_j(x)$ and
 require  that $w-a u'$ should orthogonal to the $\{\baspsi_i\}$. That is, we solve
-the linear system  $\sum_j M_{i,j}d_j=b_i$ with 
+the linear system  $\sum_j M_{i,j}d_j=b_i$ with
 
 
 !bt
@@ -823,15 +823,15 @@ b_i &= (a u',\baspsi_i)=  \int_\Omega a(x)  \sum_j c_j\baspsi_j'(x) \dx\tp
 !et
 
 As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux}, this
-approach does not produce a good approximation of the flux.  
+approach does not produce a good approximation of the flux.
 
 FIGURE: [fig/darcy_a1D, width=800] Solution of the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu}
 
 
 
-To improve the approximation of the flux, it is common to consider an equivalent form 
-of (ref{femsys:varcoeff:1D}) where the flux is one of the unknowns. 
-The equations reads: 
+To improve the approximation of the flux, it is common to consider an equivalent form
+of (ref{femsys:varcoeff:1D}) where the flux is one of the unknowns.
+The equations reads:
 !bt
 \begin{align}
 \frac{\partial w}{\partial x} &= 0,
@@ -843,11 +843,11 @@ label{fem:sys:up:1D:eq:Darcy}
 !et
 A straightforward calculation shows that inserting (ref{fem:sys:up:1D:eq:Darcy}) into (ref{fem:sys:up:1D:eq:mass}) yields
 the equation (ref{femsys:varcoeff:1D}). We also note that we have replaced the second order differential
-equation with a system of two first order differential equations. 
+equation with a system of two first order differential equations.
 
 It is common to swap the order of the equations and also divide equation
 (ref{fem:sys:up:1D:eq:Darcy}) by $a$ in order to get a symmetric system of
-equations. Then variational formulation of the problem, having the two unknowns $w$ and $u$ 
+equations. Then variational formulation of the problem, having the two unknowns $w$ and $u$
 and corresponding test functions  $v^{(w)}$ and $v^{(u)}$,
  becomes
 !bt
@@ -858,24 +858,24 @@ label{fem:sys:up:1D:eq:mass:var}
 \int_\Omega \frac{\partial w}{\partial x} v^{(w)} \dx &= 0\tp
 \end{align}
 !et
-and letting 
-$u=\sum_{j\in\If} c_j\baspsi^{(u)}_j(x)$, 
-$w=\sum_{j\in\If} c_j\baspsi^{(w)}_j(x)$, 
-$v^{(u)} =  \baspsi^{(u)_i}(x)$, and 
-$v^{(w)} =  \baspsi^{(w)_i}(x)$, we obtain the following system 
-of linear equations   
+and letting
+$u=\sum_{j\in\If} c_j\baspsi^{(u)}_j(x)$,
+$w=\sum_{j\in\If} c_j\baspsi^{(w)}_j(x)$,
+$v^{(u)} =  \baspsi^{(u)_i}(x)$, and
+$v^{(w)} =  \baspsi^{(w)_i}(x)$, we obtain the following system
+of linear equations
 !bt
 \[
 A\, c = \left[ \begin{array}{cc} A^{(w,w)} & A^{(w,u)}\\ A^{(u,w)} & 0 \end{array} \right]
-\left[ \begin{array}{c} c^{(w)} \\ c^{(u)} \end{array} \right] =  
-\left[ \begin{array}{c} b^{(w)} \\ b^{(u)} \end{array} \right] 
-= b, 
+\left[ \begin{array}{c} c^{(w)} \\ c^{(u)} \end{array} \right] =
+\left[ \begin{array}{c} b^{(w)} \\ b^{(u)} \end{array} \right]
+= b,
 \]
-!et 
-where 
+!et
+where
 !bt
 \begin{align*}
-A^{(w,w)}_{i,j} &=  \int_{\Omega} \frac{1}{a(x)} \baspsi^{(w)}_j(x) \baspsi^{(w)}_i(x)\dx & i,j = 0\ldots N^{(w)}-1, \\ 
+A^{(w,w)}_{i,j} &=  \int_{\Omega} \frac{1}{a(x)} \baspsi^{(w)}_j(x) \baspsi^{(w)}_i(x)\dx & i,j = 0\ldots N^{(w)}-1, \\
 A^{(w,u)}_{i,j} &=  \int_{\Omega} \frac{\partial}{\partial x} \baspsi^{(u)}_j(x) \baspsi^{(w)}_i(x)\dx &  i=0\ldots N^{(w)}-1, j=0, \ldots N^{(u)}-1, \\
 A^{(u,w)}_{i,j} &= A^{(w,u)}_{j,i}, \\
 b^{(w)}_i &= (0,\baspsi^{(w)}_i)= 0, \\
@@ -886,13 +886,13 @@ b^{(u)}_i &= (0,\baspsi^{(u)}_i)= 0 \tp
 
 
 
-FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu:mx}
+#FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu:mx}
 
 
 
 It is interesting to note that the standard Galerkin formulation
 of the problem result in perfect approximation of $u$, while
-the flux $-a u'$ is badly represented. On the other hand, 
+the flux $-a u'$ is badly represented. On the other hand,
 for the mixed formulation, the flux is well approximated but
 $u$ is approximated only to first order yielding a staircase
 approximation. These observations naturally suggest
@@ -900,12 +900,12 @@ that we should employ P1 approximation of both $u$ and
 its flux. We should then get a perfect approximation of
 both unknowns. This is however not possible. The
 linear system we obtain with P1 elements for both variables is singular
-and can not be solved. 
+and can not be solved.
 
-This example shows that when we are solving systems of PDEs with 
-several unknowns, we can not choose the approximation arbitrary. 
-The polynomial spaces of the different unknowns have to be compatible. 
-We will not discuss reasons for the need of compatibility here 
+This example shows that when we are solving systems of PDEs with
+several unknowns, we can not choose the approximation arbitrary.
+The polynomial spaces of the different unknowns have to be compatible.
+We will not discuss reasons for the need of compatibility here
 as it is well presented in many books, e.g. cite{Brenner_Scott,Braess, Silvester_et_al_2015}
 
 
