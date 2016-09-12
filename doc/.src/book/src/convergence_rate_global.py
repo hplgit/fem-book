@@ -88,42 +88,46 @@ series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
 for series_type in series_types: 
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   plt.loglog(Ns, norms)
-#  plt.semilogy(Ns, norms)
 
   print series_type,  "Ns ", Ns  
   print " norms ", norms  
   print " cpu_time ", cpu_times 
   print ""
 
-plt.legend(series_types)
-plt.show()
+plt.legend(series_types, loc="lower left")
 plt.savefig("Bell_convergence_loglog.png")
 plt.savefig("Bell_convergence_loglog.pdf")
+plt.hold(False)
 
 for series_type in series_types: 
 #  plt.loglog(Ns, cpu_times)
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   plt.loglog(Ns, cpu_times)
-  
-plt.legend(series_types)
-plt.show()
+  plt.hold(True)
+
+plt.legend(series_types, loc="lower left")
+#plt.show()
 plt.savefig("Bell_computations_loglog.png")
 plt.savefig("Bell_computations_loglog.pdf")
+plt.hold(False)
+
 
 
 for series_type in series_types: 
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   plt.semilogy(Ns, norms)
-
+  plt.hold(True)
   print series_type,  "Ns ", Ns  
   print " norms ", norms  
   print " cpu_time ", cpu_times 
   print ""
 
-plt.legend(series_types)
-plt.show()
+plt.legend(series_types, loc="upper left")
+#plt.show()
 plt.savefig("Bell_convergence_semilog.png")
 plt.savefig("Bell_convergence_semilog.pdf")
+plt.hold(False)
+
 
 
 

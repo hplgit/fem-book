@@ -2342,7 +2342,7 @@ the log-log plot nor the log plot demonstrated linear behavior.
 
 !bc
 
-Ns =[2, 4, 8, 16]
+Ns =[2, 4, 8, 16, 32]
 Taylor     = [0.0983, 0.00263,  7.83e-07, 3.57e-10]
 Sinusoidal = [0.0027, 0.00061,  0.00012,  2.17e-05]
 Bernstein  = [0.0021, 4.45e-05, 8.73e-09, 4.49e-15]
@@ -2370,13 +2370,19 @@ The program estimates the sine approximation convergences as $ 1.43e-02\cdot N^{
 which means that the convergence is slightly above second order. 
 The Bernstein approximation on the other hand is $8.01e-02 \cdot \exp(-1.92e+00 N)$.
 
-The complete code can be found in
-"`conv_rate_estimates.py`": "${fem_src}/conv_rate_estimates.py".
 
 The CPU time in this example here would be significantly faster if the algorithms
 were implemented in a compiled language like C/C++ or Fortran and we should not
 be careful in drawing conclusion about the efficiency of the different methods
-based on this example alone.
+based on this example alone. However, for completeness we include a log-log plot
+in Figure ref{fem:comp:bell:loglogfig}
+to illustrate the polynomial increase in CPU time with respect to N. 
+
+FIGURE: [fig/Bell_computations_loglog.png] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
+
+
+The complete code can be found in
+"`conv_rate_estimates.py`": "${fem_src}/conv_rate_estimates.py".
 
 !split
 ======= Approximation of functions in higher dimensions =======
