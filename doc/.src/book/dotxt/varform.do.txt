@@ -1803,12 +1803,12 @@ have the greatest application potential.
 label{ch:convdiff}
 
 In the previous examples we have obtained reasonable approximations
-of the continuous solution with several approaches. In this
+of the continuous solution with several different approaches. In this
 chapter we will consider a convection-diffusion equation where
 many methods will fail. The failure is purely numerical
-and is often tied to the resolution. This example is perhaps
+and it is often tied to the resolution. The current example is perhaps
 the prime example of numerical instabilities in the context of
-PDEs.
+numerical solution algorithms for PDEs.
 
 Consider the equation
 !bt
@@ -1826,14 +1826,27 @@ is described by the second order term $-\epsilon u_{xx}$. In many applications $
 and the dominating term is $-u_x$. The sign of $-u_x$ is not important, the same problem
 occurs for $u_x$. The sign only determine the direction of the convection.
 
-Even though the term $-u_x$ is dominating,
+For $\epsilon=0$, the solution satisfies
+!bt
+\[
+u(x) - u(1) = \int_1^x (-u_x) (-\dx) = 0 ,  
+\]
+!et
+which means that $u(x) = u(1)$. Clearly only the boundary condition at $x=1$ is required
+and the solution is constant throughout the domain. 
+
+If $0 < \epsilon \ll 1$ such that
+the term $-u_x$ is dominating,  
+the solution is similar to the solution for $\epsilon=0$ in the interior. 
+However,
 the second order term $-\epsilon u_{xx}$
 makes the problem a second order
-problem and two boundary conditions are required, one condition on each side. In the limiting
-case where $\epsilon=0$ only one condition is needed.
+problem and two boundary conditions are required, one condition at each side.
+The boundary condition at $x=0$ forces the solution to be zero at that
+point and this creates a sharp gradient close to $x=0$. 
 For this reason, the problem is called a *singular perturbation problem* as the problem changes
 fundamentally in the sense that different boundary conditions are required in the limiting
-$\epsilon=0$.
+case $\epsilon=0$.
 
 The solution of the above problem is
 !bt
@@ -1848,24 +1861,16 @@ FIGURE: [fig/conv-diff-analytical.png, width=400] Analytical solution to the con
 
 The solution is plotted in Figure ref{convdiff:analytical} for different values of $\epsilon$.
 Clearly, as $\epsilon$ decrease the exponential function represents a sharper and sharper gradient.
-From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem representing the common
-phenomenon of boundary layers that is common in all kinds of fluid-flow problems in nature.
+From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem 
+involving a common phenomenon of boundary layers.
+Boundary layers are common in all kinds of fluid flow and is a main problem when discretizing such equations.
 Boundary layers have the characteristics of the solution
 (ref{convdiff:1D:analytical}), that is; a sharp local exponential gradient.
-The parameter $\epsilon$ is related to the inverse of the Reynolds number which frequently
-in engineering is significantly larger than $10^3$. In these applications the boundary layer is extremely thin and the gradient extremely sharp.
+In fluid flow the parameter $\epsilon$ is often related to the inverse of the Reynolds number which frequently
+in engineering is significantly larger than $10^3$ as it was here. 
+In these applications the boundary layer is extremely thin and the gradient extremely sharp.
 
-The case $epsilon=0$ is qualitatively different from the case when $epsilon\rightarrow 0$.
-This case corresponds to the equation
-!bt
-\begin{align*}
-\label{convdiff:1D:0}
-- u_x &= 0, \quad \in  (0,1), \\
-u(0) &= 1, \\
-\end{align*}
-!et
-The solution to this problem is $u=1$. Hence, in the limiting case the solution lack the
-sharp boundary layer.
+
 
 
 
@@ -1874,12 +1879,12 @@ theory but only consider the numerical issues related to this phenomenon.
 Let us as earlier therefore consider an approximate solution on the following form
 !bt
 \begin{equation}
-u(x) = \sum^{N-1}_{i=1} c_i \baspsi_i(x)  + B(x)
+u(x) =  \hat{u}(x) + B(x) = \sum^{N-1}_{j=1} c_j \baspsi_j(x)  + B(x)
 \end{equation}
 !et
 
 
-As earlier $\{\baspsi_i(x)\}_{i=1}^{N-1}\}$ are zero at the boundary $x=0$
+As earlier $\{\baspsi_j(x)\}_{j=1}^{N-1}\}$ are zero at the boundary $x=0$
 and $x=1$ and the boundary conditions are accounted for by the function $B(x)$.
 Let
 !bt
@@ -1889,36 +1894,38 @@ B(x) = c_0 (1-x) + c_N x .
 !et
 
 Then we fixate $c_0=0$ and $c_N=1$ which makes $B(x) = x$.
-To determine $\{c_i\}_{i=1}^{N-1}\}$  we consider the homogeneous Dirichlet problem
+To determine $\{c_j\}_{j=1}^{N-1}\}$  we consider the homogeneous Dirichlet problem
 where we solve for $\hat{u} = u - B$. The homogeneous Dirichlet problem reads
 !bt
-\begin{align*}
-\label{convdiff:1D:homo}
+\begin{align}
 - \epsilon \hat{u}_{xx} + \hat{u}_x &= 1, \quad \in  (0,1), \\
+label{convdiff:1D:homo}
 \hat{u}(0) &= 0, \\
+\nonumber
 \hat{u}(1) &= 0 .
-\end{align*}
+\nonumber
+\end{align}
 !et
 
 The Galerkin formulation of (ref{convdiff:1D:homo}) is obtained as
 !bt
-\begin{equation}
+\[
 \int_0^1
 (- \epsilon \hat{u}_{xx} + \hat{u}_x - 1) \baspsi_j(x) \dx .
-\end{equation}
+\]
 !et
 Integration by parts leads to
 !bt
-\begin{equation}
+\[
 \int_0^1
-\epsilon \hat{u}_{x} \baspsi_j(x)_{x} + \hat{u}_x \baspsi_j(x) - 1 \baspsi_j(x) \dx .
-\end{equation}
+\epsilon \hat{u}_{x} \baspsi_i(x)_{x} + \hat{u}_x \baspsi_i(x) - 1 \baspsi_i(x) \dx .
+\]
 !et
 In other words, we need to solve the linear system $\sum_j A_{i,j} c_j = b_i$ where
 !bt
 \begin{align*}
-A_{i,j} &= \int_0^1\epsilon \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_i(x)_x \baspsi_j(x) \dx
-b_i &=\int_0^1 1 \baspsi_j(x) \dx
+A_{i,j} &= \int_0^1\epsilon \baspsi_j(x)_{x} \baspsi_i(x)_{x} + \baspsi_j(x)_x \baspsi_i(x) \dx,\\
+b_i &=\int_0^1 1 \baspsi_j(x) \dx \tp
 \end{align*}
 !et
 [kam: check that we use the right symbol for basis]
@@ -1953,8 +1960,6 @@ for eps in eps_vals:
 
 
 
-In the previous chapter we saw that there was a difference between ...
-
 FIGURE: [fig/Lagrange_convdiff_8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
 
 FIGURE: [fig/Lagrange_convdiff_16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
@@ -1965,7 +1970,7 @@ From these figures we can make two observations. The first observation is that
 the numerical solution contains non-physical oscillations that grows as
 $\epsilon$ decreases. These oscillations are so strong that for $N=8$, the
 numerical solutions do not resemble the true solution at all
-when $\epsilon$ is less than $1/10$. The true solution
+for  $\epsilon$  less than $1/10$. The true solution
 is always in the interval $[0,1]$ while the numerical solution has values
 larger than 2 for $\epsilon=1/100$ and larger than 10 for $\epsilon=1/1000$.
 The second observation is that the numerical solutions appear to improve

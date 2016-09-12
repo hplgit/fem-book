@@ -619,7 +619,7 @@ $T(0)=T(H)=T_0$. For
 is $[0,R]$ ($R$ being the radius of the pipe) and the boundary
 conditions are $du/dr = dT/dr =0$ for $r=0$, $u(R)=0$, and $T(R)=T_0$.
 
-The solutions to (ref{fem:sys:wT:ex1D:weq})
+The exact solutions, $w_e$ and $T_e$,  to (ref{fem:sys:wT:ex1D:weq})
 and (ref{fem:sys:wT:ex1D:Teq}) are computed
 as
 !bt
@@ -663,11 +663,12 @@ T_e(x) &= \frac{\beta^{2}}{\mu} \left(\frac{H^{3} x}{24}  - \frac{H^{2}}{8} x^{2
 !et
 
 The figure ref{femsys:cooling:w:plot} shows $w$ computed by the finite element method using the  decoupled
-approach with P1 elements for both $w$ and $T$.
-That is, implementing (ref{fem:sys:wT:ex:linsys:w1}) and
-(ref{fem:sys:wT:ex:linsys:T1}). The analytical solution $w_e$ is a quadratic
-polynomial and we see that the linear approximation gives poor approximation on the
-coarse meshes, but also that it improves fast as we refine the mesh.
+approach with P1 elements, 
+that is; implementing (ref{fem:sys:wT:ex:linsys:w1}). The analytical solution $w_e$ is a quadratic
+polynomial.  The linear approximation gives poor approximation on the
+coarse meshes, $N=2$ and $N=4$, but the approximation 
+improves fast and already at $N=8$ the 
+approximation appears adequate. 
 The figure ref{femsys:cooling:w:plot} shows the approximation of $T$ and also here
 we see that the fourth order polynomial is poorly approximated at coarse resolution, but
 that the approximation quickly improves.
@@ -677,7 +678,11 @@ that the approximation quickly improves.
 
 FIGURE: [fig/cooling_w, width=800] The solution $w$ of (ref{fem:sys:wT:ex1D:weq}) with $\beta=\mu=1$ for different mesh resolutions. label{femsys:cooling:w:plot}
 
-The figure ref{femsys:cooling:w:plot} shows $T$. The same tendency is apparent.
+The figure ref{femsys:cooling:w:plot} shows $T$ for different resolutions. The same tendency is apparent
+although the coarse grid solutions are worse for $T$ than for $w$. The solutions at $N=16$ and $N=32$ 
+appears almost identical. 
+
+
 FIGURE: [fig/cooling_T, width=800] The solution $T$ of (ref{fem:sys:wT:ex1D:Teq}) for $\kappa=H=1$. label{femsys:cooling:T:plot}
 
 

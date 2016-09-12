@@ -105,7 +105,7 @@ for series_type in series_types:
   plt.loglog(Ns, cpu_times)
   plt.hold(True)
 
-plt.legend(series_types, loc="lower left")
+plt.legend(series_types, loc="lower right")
 #plt.show()
 plt.savefig("Bell_computations_loglog.png")
 plt.savefig("Bell_computations_loglog.pdf")
@@ -122,7 +122,7 @@ for series_type in series_types:
   print " cpu_time ", cpu_times 
   print ""
 
-plt.legend(series_types, loc="upper left")
+plt.legend(series_types, loc="lower left")
 #plt.show()
 plt.savefig("Bell_convergence_semilog.png")
 plt.savefig("Bell_convergence_semilog.pdf")
