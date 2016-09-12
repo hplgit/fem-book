@@ -83,28 +83,47 @@ gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
 step = sym.Piecewise( (1, 0.25 < x), (0, True)  )- sym.Piecewise( (1, 0.75 < x), (0, True)  )
 func = gauss_bell 
 
-import pylab
+import matplotlib.pyplot as plt
 series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
 for series_type in series_types: 
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
-  pylab.loglog(Ns, norms)
-#  pylab.semilogy(Ns, norms)
+  plt.loglog(Ns, norms)
+#  plt.semilogy(Ns, norms)
 
   print series_type,  "Ns ", Ns  
   print " norms ", norms  
   print " cpu_time ", cpu_times 
   print ""
 
-pylab.legend(series_types)
-pylab.show()
+plt.legend(series_types)
+plt.show()
+plt.savefig("Bell_convergence_loglog.png")
+plt.savefig("Bell_convergence_loglog.pdf")
 
 for series_type in series_types: 
-#  pylab.loglog(Ns, cpu_times)
+#  plt.loglog(Ns, cpu_times)
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
-  pylab.loglog(Ns, cpu_times)
+  plt.loglog(Ns, cpu_times)
   
-pylab.legend(series_types)
-pylab.show()
+plt.legend(series_types)
+plt.show()
+plt.savefig("Bell_computations_loglog.png")
+plt.savefig("Bell_computations_loglog.pdf")
+
+
+for series_type in series_types: 
+  Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
+  plt.semilogy(Ns, norms)
+
+  print series_type,  "Ns ", Ns  
+  print " norms ", norms  
+  print " cpu_time ", cpu_times 
+  print ""
+
+plt.legend(series_types)
+plt.show()
+plt.savefig("Bell_convergence_semilog.png")
+plt.savefig("Bell_convergence_semilog.pdf")
 
 
 
