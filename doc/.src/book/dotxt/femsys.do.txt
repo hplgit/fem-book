@@ -750,7 +750,7 @@ a(x) = \left\{ \begin{array}{ll}
 !et
 Notice that for such an $a(x)$, the equation (ref{femsys:varcoeff:1D}) does not necessarily make
 sense because we cannot differentiate $a(x)$. Strictly speaking $a'(x)$ would
-be a Dirac's delta function in $x=\half$, that is $a'$ is $\infty$ at $x=\half$ and zero
+be a Dirac's delta function in $x=\half$, that is; $a'(x)$ is $\infty$ at $x=\half$ and zero
 everywhere else.
 
 Hand-calculations do however show that we may be able to
@@ -758,13 +758,13 @@ compute the solution. Integrating (ref{femsys:varcoeff:1D})
 yields the expression
 !bt
 \[
--(a u') = C
+-(a(x) u(x)') = C
 \]
 !et
-A trick now is to divide by $a$ on both sides to obtain
+A trick now is to divide by $a(x)$ on both sides to obtain
 !bt
 \[
-- u' = C/a
+- u' = \frac{C}{a(x)}
 \]
 !et
 and hence
@@ -795,7 +795,7 @@ The variational problem derived from a standard Galerkin method reads: Find $u$ 
 !et
 
 We observe that in the variational problem, the discontinuity of $a$ does not cause any problem
-as the differentiation is moved from $a$ (and u') to $v$ by using integration by parts.
+as the differentiation is moved from $a$ (and $u'$) to $v$ by using integration by parts.
 Letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and $v=\baspsi_i(x)$ the corresponding linear system is $\sum_j A_{i,j}c_j=b_i$
 with
 
@@ -813,10 +813,12 @@ The analytical solution in (ref{varcoeff:analytical:solution}) is a piecewise po
 for $x$ in $[0,\half)$ and $(\half,1]$ and it seems that the numerical strategy gives a good approximation
 of the solution.
 
-The flux $a u'$ is often a quantity of interest. The flux involves differentiation with respect
-to $x$ and therefore we have to compute it. A natural approach is to take the Galerkin approximation,
+The flux $a u'$ is often a quantity of interest. Because the flux involves differentiation with respect
+to $x$ we do not have and explicit representation and 
+have to compute it. A natural approach is to take the Galerkin approximation,
 that is we seek a $w \approx a u'$ on the form  $w=\sum_{j\in\If} d_j\baspsi_j(x)$ and
-require  that $w-a u'$ should orthogonal to the $\{\baspsi_i\}$. That is, we solve
+require  Galerkin orthogonality. In other words, we require 
+that $w-a u'$ is orthogonal to $\{\baspsi_i\}$. This is done by solving
 the linear system  $\sum_j M_{i,j}d_j=b_i$ with
 
 
@@ -864,10 +866,10 @@ label{fem:sys:up:1D:eq:mass:var}
 \end{align}
 !et
 and letting
-$u=\sum_{j\in\If} c_j\baspsi^{(u)}_j(x)$,
-$w=\sum_{j\in\If} c_j\baspsi^{(w)}_j(x)$,
-$v^{(u)} =  \baspsi^{(u)_i}(x)$, and
-$v^{(w)} =  \baspsi^{(w)_i}(x)$, we obtain the following system
+$u=\sum_{j\in\If} c_j\baspsi_j^{(u)}(x)$,
+$w=\sum_{j\in\If} c_j\baspsi_j^{(w)}(x)$,
+$v^{(u)} =  \baspsi_i^{(u)}(x)$, and
+$v^{(w)} =  \baspsi_i^{(w)}(x)$, we obtain the following system
 of linear equations
 !bt
 \[
