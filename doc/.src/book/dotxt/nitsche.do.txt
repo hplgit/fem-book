@@ -639,9 +639,9 @@ $\varphi_1|_0 = 0$, and
 $\varphi'_1|_0 = 1/h$. Therefore, for element 0 we obtain the element matrix
 !bt
 \begin{align*}
-A^{(0)}_{0, 0} &= \lambda \left(1 - \frac{x}{h}\right) + \frac{3}{h},\\
-A^{(0)}_{0, 1} &= \frac{\lambda x}{h} - \frac{2}{h},\\
-A^{(0)}_{1, 0} &= - \frac{2}{h}, \\
+A^{(0)}_{0, 0} &= \lambda + \frac{3}{h}, \\
+A^{(0)}_{0, 1} &= - \frac{2}{h}, \\ 
+A^{(0)}_{1, 0} &= - \frac{2}{h}, \\ 
 A^{(0)}_{1, 1} &= \frac{1}{h} \tp
 \end{align*}
 !et
@@ -668,7 +668,7 @@ for i in range(len(basis)):
     a  = sym.integrate(sym.diff(phi_i, x)*sym.diff(phi_j, x), (x, 0, h))
     a -= (sym.diff(phi_i, x)*phi_j).subs(x,0) 
     a -= (sym.diff(phi_j, x)*phi_i).subs(x,0) 
-    a += lam*phi_j*phi_i.subs(x,0) 
+    a += (lam*phi_j*phi_i).subs(x,0) 
 !ec 
 
 

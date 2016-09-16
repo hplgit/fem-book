@@ -2633,7 +2633,7 @@ b_i &= (\baspsi_i,f) = \int_0^{L_y}\int_{0}^{L_x}\baspsi_i f\,dxdx\\
 &= \int_0^{L_y} y^q (1+2y^2)dy
 \int_0^{L_y}x^p (1+x^2)dx\\
 &= (\frac{1}{q+1} L_y^{q+1} + \frac{2}{q+3}L_y^{q+3})
-(\frac{1}{p+1} L_x^{p+1} + \frac{2}{p+3}L_x^{p+3})
+(\frac{1}{p+1} L_x^{p+1} + \frac{1}{p+3}L_x^{p+3})
 \end{align*}
 !et
 
@@ -2652,9 +2652,9 @@ b = \left[\begin{array}{c}
 \frac{308}{9}\\\frac{140}{3}\\44\\60\end{array}\right],
 \quad c = \left[
 \begin{array}{r}
--\frac{1}{9} \\
+-\frac{1}{9}\\
+- \frac{2}{3}
 \frac{4}{3} \\
- - \frac{2}{3} \\
  8
 \end{array}\right]
 \tp
