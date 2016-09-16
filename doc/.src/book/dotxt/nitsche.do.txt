@@ -702,34 +702,3 @@ Now, set
 [kam: penalty is kind of hard, at least in fenics, it involves the terms
 $\int_\Omega u \times \int_\Omega v $ rather than $\int_\Omega u v$. ]
 
-
-======= Exercises =======
-
-===== Problem: Estimate order of convergence for the Cooling law =====
-label{femsys:exer:cooling:1}
-Consider the 1D Example of the fluid flow in a straight pipe 
-coupled to heat conduction in Section ref{femsys:cooling:1D}. 
-The example demonstrated fast convergence when using linear elements
-for both variables $w$ and $T$. In this exercise we quantify the order 
-of convergence. That is, we expect that
-!bt
-\begin{align*}
-\|w - w_e \|_{L_2} &\le C_w h^{\beta_w}, \\
-\|T - T_e \|_{L_2} &\le C_T h^{\beta_T},
-\end{align*}
-!et  
-for some $C_w$, $C_T$, $\beta_w$ and $\beta_T$. 
-Assume therefore that
-!bt
-\begin{align*}
-\|w - w_e \|_{L_2} &= C_w h^{\beta_w},\\ 
-\|T - T_e \|_{L_2} &= C_T h^{\beta_T},
-\end{align*}
-!et  
-and estimate  $C_w$, $C_T$, $\beta_w$ and $\beta_T$.
-
-
-===== Problem: Estimate order of convergence for the Cooling law =====
-label{femsys:exer:cooling:2}
-Repeat Exercise ref{femsys:exer:cooling:1} with quadratic finite
-elements for both $w$ and $T$. 

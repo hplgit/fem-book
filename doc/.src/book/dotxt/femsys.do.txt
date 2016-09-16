@@ -665,7 +665,7 @@ T_e(x) &= \frac{\beta^{2}}{\mu} \left(\frac{H^{3} x}{24}  - \frac{H^{2}}{8} x^{2
 The figure ref{femsys:cooling:w:plot} shows $w$ computed by the finite element method using the  decoupled
 approach with P1 elements, 
 that is; implementing (ref{fem:sys:wT:ex:linsys:w1}). The analytical solution $w_e$ is a quadratic
-polynomial.  The linear approximation gives poor approximation on the
+polynomial.  The linear finite elements result in a poor approximation on the
 coarse meshes, $N=2$ and $N=4$, but the approximation 
 improves fast and already at $N=8$ the 
 approximation appears adequate. 
@@ -679,12 +679,56 @@ that the approximation quickly improves.
 FIGURE: [fig/cooling_w, width=800] The solution $w$ of (ref{fem:sys:wT:ex1D:weq}) with $\beta=\mu=1$ for different mesh resolutions. label{femsys:cooling:w:plot}
 
 The figure ref{femsys:cooling:w:plot} shows $T$ for different resolutions. The same tendency is apparent
-although the coarse grid solutions are worse for $T$ than for $w$. The solutions at $N=16$ and $N=32$ 
-appears almost identical. 
+although the coarse grid solutions are worse for $T$ than for $w$. The solutions at $N=16$ and $N=32$, however, 
+appear almost identical. 
 
 
 FIGURE: [fig/cooling_T, width=800] The solution $T$ of (ref{fem:sys:wT:ex1D:Teq}) for $\kappa=H=1$. label{femsys:cooling:T:plot}
 
+!bc pycod
+def boundary(x):
+  return x[0] < DOLFIN_EPS or x[0] > 1.0 - DOLFIN_EPS
+
+from dolfin import *
+import matplotlib.pyplot as plt
+
+Ns = [2, 4, 8, 16, 32]
+for N in Ns: 
+    mesh = UnitIntervalMesh(N)
+    V = FunctionSpace(mesh, "Lagrange", 1)
+    u = TrialFunction(V)
+    v = TestFunction(V) 
+
+    beta = Constant(1)
+    mu = Constant(1) 
+
+    bc = DirichletBC(V, Constant(0), boundary)
+    a = mu*inner(grad(u), grad(v))*dx 
+    L = -beta*v*dx 
+
+    w = Function(V)
+    solve(a == L, w, bc)
+
+    T0 = Constant(1)
+    kappa = Constant(1)
+    bc = DirichletBC(V, T0, boundary)
+    a = kappa*inner(grad(u), grad(v))*dx 
+    L = -mu*inner(grad(w), grad(w))*v*dx 
+
+    T = Function(V)
+    solve(a == L, T, bc)
+
+    plt.plot(V.dofmap().tabulate_all_coordinates(mesh), T.vector().array())
+    plt.hold(True)
+    plt.legend(["N=%d"%N for N in Ns], loc="upper left")
+plt.show()
+!ec
+
+
+Most of the FEniCS code should be familiar to the reader, but 
+we remark that we use the function `V.dofmap().tabulate_all_coordinates(mesh)` to obtain the coordinates of the nodal points. This is a general
+function that works for any finite element implemented in 
+FEniCS and also in a parallel setting. 
 
 The calculations for (ref{fem:sys:wT:ex1Dr:weq})
 and (ref{fem:sys:wT:ex1Dr:Teq}) are similar.
@@ -717,8 +761,7 @@ T(r) &= \frac{1}{64 \mu} \left(R^{4} \beta^{2} + 64 T_{0} \mu - \beta^{2} r^{4}\
 \end{align*}
 !et
 
-[hpl: Calculations to be continued...]
-[kam: hva skal vi gjøre? Løse i sympy?]
+
 
 
 
@@ -919,6 +962,38 @@ as it is well presented in many books, e.g. cite{Brenner_Scott,Braess, Silvester
 FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
 
 [kam: Not sure why the I don't get $a_0$. Need to debug. ]
+
+
+======= Exercises =======
+
+===== Problem: Estimate order of convergence for the Cooling law =====
+label{femsys:exer:cooling:1}
+Consider the 1D Example of the fluid flow in a straight pipe 
+coupled to heat conduction in Section ref{femsys:cooling:1D}. 
+The example demonstrated fast convergence when using linear elements
+for both variables $w$ and $T$. In this exercise we quantify the order 
+of convergence. That is, we expect that
+!bt
+\begin{align*}
+\|w - w_e \|_{L_2} &\le C_w h^{\beta_w}, \\
+\|T - T_e \|_{L_2} &\le C_T h^{\beta_T},
+\end{align*}
+!et  
+for some $C_w$, $C_T$, $\beta_w$ and $\beta_T$. 
+Assume therefore that
+!bt
+\begin{align*}
+\|w - w_e \|_{L_2} &= C_w h^{\beta_w},\\ 
+\|T - T_e \|_{L_2} &= C_T h^{\beta_T},
+\end{align*}
+!et  
+and estimate  $C_w$, $C_T$, $\beta_w$ and $\beta_T$.
+
+
+===== Problem: Estimate order of convergence for the Cooling law =====
+label{femsys:exer:cooling:2}
+Repeat Exercise ref{femsys:exer:cooling:1} with quadratic finite
+elements for both $w$ and $T$. 
 
 # 2DO
 

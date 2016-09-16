@@ -2284,12 +2284,12 @@ Here, the timings are in seconds.
 The Taylor basis is the most efficient and is in fact more than 60 times faster
 than the Lagrange basis for $N=16$.
 
-In order to get a more precise idea of how the approximation methods behave as $N$ increase
+In order to get a more precise idea of how the approximation methods behave as $N$ increase,
  we assume a simple model which may be used in a regression analysis.
 There are two natural models of the accuracy (and the computational complexity) in terms
 of $N$: polynomial and exponential.
 
-Let us therefore consider the following models:
+Let us therefore consider the following models for the error:
 !bt
 \begin{align}
 label{sec:approx:pol:model}
@@ -2338,7 +2338,7 @@ The following program computes the order of convergence for
 the sines using the polynomial model (ref{sec:approx:pol:model})
 while the Bernstein approximation is estimates
 in terms of model (ref{sec:approx:exp:model}). We avoid to
-compute estimate the Taylor and Lagrange approximations as neither
+compute estimates for the Taylor and Lagrange approximations as neither
 the log-log plot nor the log plot demonstrated linear behavior.
 
 !bc
@@ -2686,7 +2686,7 @@ for i in range(len(basis)):
     A[i,j] = integral(psi_i*psi_j)
 !ec
 We remark that `sympy` may even write the output in LaTeX or C++ format.
-[kam: place this comment somewhere else?]
+
 
 ===== Implementation =====
 label{fem:approx:2D:global:code}

@@ -1000,6 +1000,166 @@ as done above, and have the unknown part $\sum_j c_j \baspsi_j$ in a
 proper function space.
 # Sometimes it is said that $u$ is in the *affine space* $B+V$.
 
+======= Computing with global polynomials =======
+
+The next example uses global polynomials and shows
+that if our solution, modulo boundary conditions, lies in the space spanned
+by these polynomials, then the Galerkin method recovers the exact solution.
+
+
+
+===== Computing with Dirichlet and Neumann conditions =====
+label{fem:deq:1D:varform:ex:DN:case}
+
+# ex_varform1D.py: case2
+
+Let us perform the necessary calculations to solve
+
+!bt
+\begin{equation*}
+-u''(x)=2,\quad x\in \Omega=[0,1],\quad u'(0)=C,\ u(1)=D,
+\end{equation*}
+!et
+using a global polynomial basis $\baspsi_i\sim x^i$.
+The requirements on $\baspsi_i$ is that $\baspsi_i(1)=0$, because $u$ is
+specified at $x=1$, so a proper set of polynomial basis functions can be
+
+!bt
+\[ \baspsi_i(x)=(1-x)^{i+1}, \quad i\in\If\tp\]
+!et
+A suitable $B(x)$ function
+to handle the boundary condition $u(1)=D$ is $B(x)=Dx$.
+The variational formulation becomes
+
+!bt
+\[ (u',v') = (2,v) - Cv(0)\quad\forall v\in V\tp \]
+!et
+From inserting $u=B + \sum_{j}c_j\baspsi_j$ and choosing $v=\baspsi_i$ we get
+
+!bt
+\[ \sum_{j\in\If} (\baspsi_j',\baspsi_i')c_j = (2,\baspsi_i)
+- (B',\baspsi_i') - C\baspsi_i(0),\quad i\in\If\tp\]
+!et
+The entries in the linear system are then
+
+!bt
+\begin{align*}
+A_{i,j} &= (\baspsi_j',\baspsi_i') = \int_{0}^1 \baspsi_i'(x)\baspsi_j'(x)\dx
+= \int_0^1 (i+1)(j+1)(1-x)^{i+j}\dx\\
+&= \frac{(i+1)(j+1)}{i + j + 1},\\
+b_i &= (2,\baspsi_i) - (D,\baspsi_i') -C\baspsi_i(0)\\
+&= \int_0^1\left( 2\baspsi_i(x) - D\baspsi_i'(x)\right)\dx -C\baspsi_i(0)\\
+&= \int_0^1 \left( 2(1-x)^{i+1} + D(i+1)(1-x)^i\right)\dx  -C\\
+&= \frac{(D-C)(i+2) + 2}{i+2} = D - C + \frac{2}{i+2}
+\tp
+\end{align*}
+!et
+Relevant `sympy` commands to help calculate these expressions are
+
+
+@@@CODE src/u_xx_2_CD.py fromto: from sympy@N = 1
+The output becomes
+!bc dat
+A_ij: (i + 1)*(j + 1)/(i + j + 1)
+b_i: ((-C + D)*(i + 2) + 2)/(i + 2)
+!ec
+We can now choose some $N$ and form the linear system, say for $N=1$:
+
+@@@CODE src/u_xx_2_CD.py fromto: N = 1@print 'A:'
+The system becomes
+
+!bt
+\begin{equation*}
+\left(\begin{array}{cc}
+1 & 1\\
+1 & 4/3
+\end{array}\right)
+\left(\begin{array}{c}
+c_0\\
+c_1
+\end{array}\right)
+=
+\left(\begin{array}{c}
+1-C+D\\
+2/3 -C + D
+\end{array}\right)
+\end{equation*}
+!et
+The solution (`c = A.LUsolve(b)`)
+becomes $c_0=2 -C+D$ and $c_1=-1$, resulting in
+
+!bt
+\begin{equation}
+u(x) = 1 -x^2 + D + C(x-1),
+\end{equation}
+!et
+We can form this $u$ in `sympy` and check that the differential equation
+and the boundary conditions are satisfied:
+
+!bc pycod
+u = sum(c[r,0]*psi_i.subs(i, r) for r in range(N+1)) + D*x
+print 'u:', simplify(u)
+print "u'':", simplify(diff(u, x, x))
+print 'BC x=0:', simplify(diff(u, x).subs(x, 0))
+print 'BC x=1:', simplify(u.subs(x, 1))
+!ec
+The output becomes
+
+!bc dat
+u: C*x - C + D - x**2 + 1
+u'': -2
+BC x=0: C
+BC x=1: D
+!ec
+The complete `sympy` code is found in "`u_xx_2_CD.py`":
+"${fem_src}/u_xx_2_CD.py".
+
+The exact solution is found by integrating twice and applying the
+boundary conditions, either by hand or using `sympy` as shown in
+Section ref{fem:deq:1D:models:simple}.  It appears that the numerical
+solution coincides with the exact one.  This result is to be expected
+because if $(\uex - B)\in V$, $u = \uex$, as proved next.
+
+===== When the numerical method is exact =====
+
+We have some variational formulation: find $(u-B)\in V$ such that
+$a(u,v)=L(u)\ \forall v\in V$. The exact solution also fulfills
+$a(\uex,v)=L(v)$, but normally $(\uex -B)$ lies in a much larger
+(infinite-dimensional) space. Suppose, nevertheless, that
+$\uex - B = E$, where $E\in V$. That is, apart from Dirichlet conditions,
+$\uex$ lies in our finite-dimensional space $V$ which we use to compute $u$.
+Writing also $u$ on the same form $u=B+F$, $F\in V$, we have
+
+!bt
+\begin{align*}
+a(B+E,v) &= L(v)\quad\forall v\in V,\\
+a(B+F,v) &= L(v)\quad\forall v\in V\tp
+\end{align*}
+!et
+Since these are two variational statements in the same space, we
+can subtract them and use the bilinear property of $a(\cdot,\cdot)$:
+
+!bt
+\begin{align*}
+a(B+E,v) - a(B+F, v) &= L(v) - L(v)\\
+a(B+E-(B+F),v) &= 0\\
+a(E-F),v) &= 0
+\end{align*}
+!et
+If $a(E-F),v) = 0$ for all $v$ in $V$, then $E-F$ must be zero everywhere
+in the domain, i.e., $E=F$. Or in other words: $u=\uex$. This proves
+that the exact solution is recovered if $\uex - B$ lies in $V$., i.e.,
+can be expressed as $\sum_{j\in\If}d_j\baspsi_j$ where $\{\baspsi_j\}_{j\in\If}$
+is a basis for $V$. The method will then compute the solution $c_j=d_j$,
+$j\in\If$.
+
+The case treated in Section ref{fem:deq:1D:varform:ex:DN:case}
+is of the type where $\uex - B$ is a quadratic function that is 0
+at $x=1$, and therefore $(\uex -B)\in V$, and the method
+finds the exact solution.
+
+!split
+
 ===== Abstract notation for variational formulations =====
 label{fem:deq:1D:varform:abstract}
 
@@ -1911,24 +2071,24 @@ The Galerkin formulation of (ref{convdiff:1D:homo}) is obtained as
 !bt
 \[
 \int_0^1
-(- \epsilon \hat{u}_{xx} + \hat{u}_x - 1) \baspsi_j(x) \dx .
+(- \epsilon \hat{u}'' + \hat{u}' - 1) \baspsi_j \dx .
 \]
 !et
 Integration by parts leads to
 !bt
 \[
 \int_0^1
-\epsilon \hat{u}_{x} \baspsi_i(x)_{x} + \hat{u}_x \baspsi_i(x) - 1 \baspsi_i(x) \dx .
+\epsilon \hat{u}' \baspsi_i' + \hat{u}' \baspsi_i - 1 \baspsi_i \dx .
 \]
 !et
 In other words, we need to solve the linear system $\sum_j A_{i,j} c_j = b_i$ where
 !bt
 \begin{align*}
-A_{i,j} &= \int_0^1\epsilon \baspsi_j(x)_{x} \baspsi_i(x)_{x} + \baspsi_j(x)_x \baspsi_i(x) \dx,\\
-b_i &=\int_0^1 1 \baspsi_j(x) \dx \tp
+A_{i,j} &= \int_0^1\epsilon \baspsi_j' \baspsi_i' + \baspsi_j' \baspsi_i \dx,\\
+b_i &=\int_0^1 1 \baspsi_j \dx \tp
 \end{align*}
 !et
-[kam: check that we use the right symbol for basis]
+
 A corresponding code where we also plot the behavior of the solution
 with respect to different $\epsilon$ is:
 !bc pycod
@@ -1943,7 +2103,8 @@ for eps in eps_vals:
     integrand = sym.lambdify([x], integrand)
     b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
     for j in range(0, N-1):
-      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) -  sym.diff(psi[i], x)*psi[j]
+      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) \
+                  -sym.diff(psi[i], x)*psi[j]
       integrand = sym.lambdify([x], integrand)
       A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
 
@@ -2758,173 +2919,18 @@ integration by parts.
 ========= Variational formulations with finite elements =========
 label{ch:varform:fe}
 
+[hpl: Cannot remember why we need an opening example with *global* polynomials
+in a chapter about local polynomials. Could it just be the property of
+Galerkin recovering the exact solution? Chaperwise it fits better in the
+previous one...]
+[kam: have now moved it before abstract forms in previous chapter]
+
 We shall now take the ideas from previous chapters and put together such that
 we can solve PDEs using the flexible finite element basis functions.
 This is quite a machinery with many details, but the chapter is mostly an
 assembly of concepts and details we have already met.
 
-======= Computing with global polynomials =======
 
-We start out with a computational example using global polynomials and show
-that if our solution, modulo boundary conditions, lies in the space spanned
-by these polynomials, then the Galerkin method recovers the exact solution.
-
-[hpl: Cannot remember why we need an opening example with *global* polynomials
-in a chapter about local polynomials. Could it just be the property of
-Galerkin recovering the exact solution? Chaperwise it fits better in the
-previous one...]
-
-===== Computing with Dirichlet and Neumann conditions =====
-label{fem:deq:1D:varform:ex:DN:case}
-
-# ex_varform1D.py: case2
-
-Let us perform the necessary calculations to solve
-
-!bt
-\begin{equation*}
--u''(x)=2,\quad x\in \Omega=[0,1],\quad u'(0)=C,\ u(1)=D,
-\end{equation*}
-!et
-using a global polynomial basis $\baspsi_i\sim x^i$.
-The requirements on $\baspsi_i$ is that $\baspsi_i(1)=0$, because $u$ is
-specified at $x=1$, so a proper set of polynomial basis functions can be
-
-!bt
-\[ \baspsi_i(x)=(1-x)^{i+1}, \quad i\in\If\tp\]
-!et
-A suitable $B(x)$ function
-to handle the boundary condition $u(1)=D$ is $B(x)=Dx$.
-The variational formulation becomes
-
-!bt
-\[ (u',v') = (2,v) - Cv(0)\quad\forall v\in V\tp \]
-!et
-From inserting $u=B + \sum_{j}c_j\baspsi_j$ and choosing $v=\baspsi_i$ we get
-
-!bt
-\[ \sum_{j\in\If} (\baspsi_j',\baspsi_i')c_j = (2,\baspsi_i)
-- (B',\baspsi_i') - C\baspsi_i(0),\quad i\in\If\tp\]
-!et
-The entries in the linear system are then
-
-!bt
-\begin{align*}
-A_{i,j} &= (\baspsi_j',\baspsi_i') = \int_{0}^1 \baspsi_i'(x)\baspsi_j'(x)\dx
-= \int_0^1 (i+1)(j+1)(1-x)^{i+j}\dx\\
-&= \frac{(i+1)(j+1)}{i + j + 1},\\
-b_i &= (2,\baspsi_i) - (D,\baspsi_i') -C\baspsi_i(0)\\
-&= \int_0^1\left( 2\baspsi_i(x) - D\baspsi_i'(x)\right)\dx -C\baspsi_i(0)\\
-&= \int_0^1 \left( 2(1-x)^{i+1} + D(i+1)(1-x)^i\right)\dx  -C\\
-&= \frac{(D-C)(i+2) + 2}{i+2} = D - C + \frac{2}{i+2}
-\tp
-\end{align*}
-!et
-Relevant `sympy` commands to help calculate these expressions are
-
-
-@@@CODE src/u_xx_2_CD.py fromto: from sympy@N = 1
-The output becomes
-!bc dat
-A_ij: (i + 1)*(j + 1)/(i + j + 1)
-b_i: ((-C + D)*(i + 2) + 2)/(i + 2)
-!ec
-We can now choose some $N$ and form the linear system, say for $N=1$:
-
-@@@CODE src/u_xx_2_CD.py fromto: N = 1@print 'A:'
-The system becomes
-
-!bt
-\begin{equation*}
-\left(\begin{array}{cc}
-1 & 1\\
-1 & 4/3
-\end{array}\right)
-\left(\begin{array}{c}
-c_0\\
-c_1
-\end{array}\right)
-=
-\left(\begin{array}{c}
-1-C+D\\
-2/3 -C + D
-\end{array}\right)
-\end{equation*}
-!et
-The solution (`c = A.LUsolve(b)`)
-becomes $c_0=2 -C+D$ and $c_1=-1$, resulting in
-
-!bt
-\begin{equation}
-u(x) = 1 -x^2 + D + C(x-1),
-\end{equation}
-!et
-We can form this $u$ in `sympy` and check that the differential equation
-and the boundary conditions are satisfied:
-
-!bc pycod
-u = sum(c[r,0]*psi_i.subs(i, r) for r in range(N+1)) + D*x
-print 'u:', simplify(u)
-print "u'':", simplify(diff(u, x, x))
-print 'BC x=0:', simplify(diff(u, x).subs(x, 0))
-print 'BC x=1:', simplify(u.subs(x, 1))
-!ec
-The output becomes
-
-!bc dat
-u: C*x - C + D - x**2 + 1
-u'': -2
-BC x=0: C
-BC x=1: D
-!ec
-The complete `sympy` code is found in "`u_xx_2_CD.py`":
-"${fem_src}/u_xx_2_CD.py".
-
-The exact solution is found by integrating twice and applying the
-boundary conditions, either by hand or using `sympy` as shown in
-Section ref{fem:deq:1D:models:simple}.  It appears that the numerical
-solution coincides with the exact one.  This result is to be expected
-because if $(\uex - B)\in V$, $u = \uex$, as proved next.
-
-===== When the numerical method is exact =====
-
-We have some variational formulation: find $(u-B)\in V$ such that
-$a(u,v)=L(u)\ \forall v\in V$. The exact solution also fulfills
-$a(\uex,v)=L(v)$, but normally $(\uex -B)$ lies in a much larger
-(infinite-dimensional) space. Suppose, nevertheless, that
-$\uex - B = E$, where $E\in V$. That is, apart from Dirichlet conditions,
-$\uex$ lies in our finite-dimensional space $V$ which we use to compute $u$.
-Writing also $u$ on the same form $u=B+F$, $F\in V$, we have
-
-!bt
-\begin{align*}
-a(B+E,v) &= L(v)\quad\forall v\in V,\\
-a(B+F,v) &= L(v)\quad\forall v\in V\tp
-\end{align*}
-!et
-Since these are two variational statements in the same space, we
-can subtract them and use the bilinear property of $a(\cdot,\cdot)$:
-
-!bt
-\begin{align*}
-a(B+E,v) - a(B+F, v) &= L(v) - L(v)\\
-a(B+E-(B+F),v) &= 0\\
-a(E-F),v) &= 0
-\end{align*}
-!et
-If $a(E-F),v) = 0$ for all $v$ in $V$, then $E-F$ must be zero everywhere
-in the domain, i.e., $E=F$. Or in other words: $u=\uex$. This proves
-that the exact solution is recovered if $\uex - B$ lies in $V$., i.e.,
-can be expressed as $\sum_{j\in\If}d_j\baspsi_j$ where $\{\baspsi_j\}_{j\in\If}$
-is a basis for $V$. The method will then compute the solution $c_j=d_j$,
-$j\in\If$.
-
-The case treated in Section ref{fem:deq:1D:varform:ex:DN:case}
-is of the type where $\uex - B$ is a quadratic function that is 0
-at $x=1$, and therefore $(\uex -B)\in V$, and the method
-finds the exact solution.
-
-!split
 ======= Computing with finite elements =======
 label{fem:deq:1D:fem1}
 
