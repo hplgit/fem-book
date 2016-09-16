@@ -5969,6 +5969,10 @@ is cite{Larson_2013}
 
 !split
 
+======= A complete Example in FEniCS =======
+[kam: this should probably be a short description 
+of the first example in the tutorial]
+
 ======= Convection-Diffusion and Petrov-Galerkin =======
 
 Let us now return to the problem in Section ref{sec:varform:general:convdiff}
@@ -6037,7 +6041,7 @@ Figure ref{varform:fe:convdiff:plot} shows the finite element solution on a coar
 for $\mu=0.01$. Clearly, the finite element method has the same problem as was observed
 earlier in global functions in Section  ref{sec:varform:general:convdiff}.
 
-#FIGURE: [fig/conv-diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
+FIGURE: [fig/fenics_conv_diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 
 For finite differences, the cure for these oscillations is *upwinding*.
@@ -6062,7 +6066,7 @@ There is a relationship between upwinding and artificial diffusion.  If we discr
 \end{eqnarray*}
 !et
 
-#FIGURE: [fig/conv-diff-stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+FIGURE: [fig/fenics_conv_diff_stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
 Hence, upwinding is equivalent to adding artificial diffusion with $\epsilon=h/2$; that is, in both cases we actually solve the problem
 
@@ -6117,8 +6121,37 @@ _{\textrm{Artificial diffusion in $v$ direction}}
 \end{eqnarray*}
 !et
 
+The corresponding FEniCS code is 
+!bc pycod
 
-[kam: improve figures]
+from dolfin import *
+import matplotlib.pyplot as plt
+
+def boundary(x):
+    return x[0] < DOLFIN_EPS or x[0] > 1.0 - DOLFIN_EPS
+
+u_analytical = Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % (1.0e-2, 0.5)) 
+mesh = UnitIntervalMesh(10)
+V = FunctionSpace(mesh, "CG", 1)
+u = TrialFunction(V)
+v = TestFunction(V)
+
+alpha = Constant(1.0e-2)
+beta = Constant(0.5)
+f = Constant(0)
+h = mesh.hmin()
+v = v - beta*h*v.dx(0) #Petrov-Galerkin
+
+a = (-u.dx(0)*v + alpha*u.dx(0)*v.dx(0) + beta*h*u.dx(0)*v.dx(0))*dx  
+L = f*v*dx  
+
+bc = DirichletBC(V, u_analytical, boundary) 
+u = Function(V)
+solve(a == L, u, bc) 
+!ec
+
+Notice that the Petrov-Galerkin method is here implemented as 
+`v = v - beta*h*v.dx(0)`. 
 ======= Summary =======
 
  * When approximating $f$ by $u = \sum_j c_j\basphi_j$, the least squares

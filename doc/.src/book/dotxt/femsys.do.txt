@@ -730,6 +730,8 @@ we remark that we use the function `V.dofmap().tabulate_all_coordinates(mesh)` t
 function that works for any finite element implemented in 
 FEniCS and also in a parallel setting. 
 
+[kam: do not need extensive description as it should be covered elsewhere]
+
 The calculations for (ref{fem:sys:wT:ex1Dr:weq})
 and (ref{fem:sys:wT:ex1Dr:Teq}) are similar.
 The `sympy` code

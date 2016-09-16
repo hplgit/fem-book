@@ -6570,7 +6570,7 @@ element package for advanced computations. The package can be programmed
 in C++ or Python. How it works is best illustrated by an example.
 
 ===== Example on approximation in 2D using FEniCS =====
-
+label{approx:2D:fenics}
 === Mathematical problem ===
 
 We want to approximate the function $f(x)=2xy - x^2$ by P1 and P2 elements
@@ -6642,7 +6642,7 @@ in the function  `project`.
 The `problem` function applies `approx` to solve a specific problem.
 This part requires two definitions: one of $f$ and one of $\Omega$,
 or more precisely: the mesh (discrete $\Omega$ divided into cells).
-The definition of $f$ is here expressed in C++ (it will be compiled for 
+The definition of $f$ is here expressed in C++ (it will be compiled  
 for fast evaluation), where the independent
 coordinates are given by a C/C++ vector `x`. This means that $x$ is
 `x[0]`, $y$ is `x[1]`, and $z$ is `x[2]`. Moreover, `x[0]**2` must
