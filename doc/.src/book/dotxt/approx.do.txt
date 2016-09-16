@@ -6661,7 +6661,7 @@ then we can require a Python code to numerically evaluate the formula.
 !ec
 Here, the function `ccode` generates C code and we use
 `x` and `y` as placeholders for 
-`x[0]` and `x[1]` which represent the coordinate of 
+`x[0]` and `x[1]`, which represent the coordinate of 
 a general point `x` in any dimension. The output of  `ccode`
 can then be used directly in  `Expression`. 
 
