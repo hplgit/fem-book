@@ -102,7 +102,7 @@ view point *nonlinear*, so there is no simple transformation of the
 probability distribution for $a$ nor its statistics.
 
 The basic statistics of expectance and variance for a random variable $x$
-varying continously on the interval $\Omega_X$ is as
+varying continuously on the interval $\Omega_X$ is as
 
 !bt
 \begin{align*}

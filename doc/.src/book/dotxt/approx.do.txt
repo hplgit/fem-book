@@ -6556,7 +6556,7 @@ so automation by the computer is a must.
 
 ======= Implementation =======
 
-Our previous programs for doing 1D approxmation by finite elemenent basis
+Our previous programs for doing 1D approximation by finite element basis
 function had a focus on all the
 small details needed to compute the solution. When going to 2D and 3D,
 the basic algorithms are the same, but the amount of computational
@@ -6564,7 +6564,7 @@ details with basis functions, reference functions, mappings,
 numerical integration and so on, becomes overwhelming because of all
 the flexibility and choices of elements. For this purpose, we *must*,
 except in the simplest cases with P1 elements, use some well-developed,
-existing computer library. Here we shal use
+existing computer library. Here we shall use
 "FEniCS": "http://fenicsproject.org", which is a free, open finite
 element package for advanced computations. The package can be programmed
 in C++ or Python. How it works is best illustrated by an example.
@@ -6575,12 +6575,12 @@ in C++ or Python. How it works is best illustrated by an example.
 
 We want to approximate the function $f(x)=2xy - x^2$ by P1 and P2 elements
 on $[0,2]\times[-1,1]$ using a division into $8\times 8$ squares, which are
-then divded into rectangles.
+then divided into rectangles.
 
 === The code ===
 
 Observe that the code employs the basic concepts from 1D, but is capable
-of using any element in FEniCS in any number of space dimensions (!).
+of using any element in FEniCS on any mesh in any number of space dimensions (!).
 
 !bc pycod
 from fenics import *
@@ -6590,27 +6590,27 @@ def approx(f, V):
      u = TrialFunction(V)
      v = TestFunction(V)
      a = u*v*dx
-     L = u*f*dx
+     L = f*v*dx
      u = Function(V)
      solve(a == L, u)
      return u
 
 def problem():
     f = Expression('2*x[0]*x[1] - pow(x[0], 2)', degree=2)
-    mesh = RectangleMesh(Point(0,-1), Point(2,1), nx=8, nx=8)
+    mesh = RectangleMesh(Point(0,-1), Point(2,1), 8, 8)
 
-    V1 = FunctionSpace(mesh, 'P', 1)
+    V1 = FunctionSpace(mesh, 'Lagrange', 1)
     u1 = approx(f, V1)
     u1.rename('u1', 'u1')
-    u1_error = errornorm(f, u, 'L2')
+    u1_error = errornorm(f, u1, 'L2')
 
-    V2 = FunctionSpace(mesh, 'P', 2)
-    u2 = approx(f, v2)
+    V2 = FunctionSpace(mesh, 'Lagrange', 2)
+    u2 = approx(f, V2)
     u2.rename('u2', 'u2')
-    u2_error = errornorm(f, u, 'L2')
+    u2_error = errornorm(f, u2, 'L2')
 
     # Simple plotting
-    plot(f, title='f')
+    plot(f, title='f', mesh=mesh)
     plot(u1, title='u1')
     plot(u2, title='u2')
 
@@ -6618,44 +6618,83 @@ if __name__ == __main__:
     problem()
 !ec
 
+Figure ref{fem:approx:fenics:2D} shows the computed `u2`. The plots of 
+`u1` and `f` are visually identical and therefore not shown. 
+
+FIGURE: [fig/fenics_2D_plot_approx.png, width=400] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D} 
+
+
 === Dissection of the code ===
 
 The function `approx` is a general solver function for any $f$ and
-$V$.  We define the unknown $u$ in the variational form $\int uv\dx$
+$V$.  We define the unknown $u$ in the variational form $a=a(u,v) = \int uv\dx$
 as a `TrialFunction` object and the test function $v$ as a
 `TestFunction` object. Then we define the the variational form through
-the integrand `u*v*dx`. The linear form $L$ is similarly defined
+the integrand `u*v*dx`. The linear form $L=L(v)=\int fv\dx$ is similarly defined
 `f*v*dx`. Here, `f` must be an `Expression` object in FEniCS, i.e., a
-formula defined by its implmentation in C++. With `a` and `L` defined,
+formula defined by its implementation in C++. With `a` and `L` defined,
 we re-define `u` to be a finite element function `Function`, which is
 now the unknown scalar field to be computed by the simple expression
-`solve(a == L, u)`.
+`solve(a == L, u)`. We remark that the above function `approx`
+is implemented in FEniCS (in a slightly more general fashion)
+in the function  `project`.
 
 The `problem` function applies `approx` to solve a specific problem.
 This part requires two definitions: one of $f$ and one of $\Omega$,
 or more precisely: the mesh (discrete $\Omega$ divided into cells).
-The definition of $f$ must be expressed in C++, where the indpendent
+The definition of $f$ is here expressed in C++ (it will be compiled for 
+for fast evaluation), where the independent
 coordinates are given by a C/C++ vector `x`. This means that $x$ is
 `x[0]`, $y$ is `x[1]`, and $z$ is `x[2]`. Moreover, `x[0]**2` must
 be written as `pow(x[0], 2)` in C/C++.
 
 Fortunately, we can easily integrate SymPy and `Expression` objects,
-because SymPy can take a formula amd translate it to C/C++ code, and
+because SymPy can take a formula and translate it to C/C++ code, and
 then we can require a Python code to numerically evaluate the formula.
 
 !bc pyshell
 >>> import sympy as sym
->>> x, y = sym.symbols('x y')
+>>> x, y = sym.symbols('x[0] x[1]')
 >>> f = 2*x*y - x**2
+>>> print sym.ccode(f)
+2*x[0]*x[1] - pow(x[0], 2)
+!ec
+Here, the function `ccode` generates C code and we use
+`x` and `y` as placeholders for 
+`x[0]` and `x[1]` which represent the coordinate of 
+a general point `x` in any dimension. The output of  `ccode`
+can then be used directly in  `Expression`. 
+
+It is often challenging to determine the quality of an
+approximation by visual inspection of 2D and 3D plots.
+Line plots or pointwise evaluation makes quantification 
+easier. The following code shows how to evaluate 
+the approximation using 13 points along the line $y=1-x$.
+Figure ref{fem:approx:fenics:plotalongline} displays 
+$f$ and the approximation using first order Lagrange elements. 
+Clearly, the approximation is very good and the
+maximal error among the 13 points is $\approx 0.01$. 
+
+!bc pycod
+  # plot along line y=1-x, sample at 13 points 
+    import numpy as np
+    point = np.array([0.0, 0.0])
+    value = np.array([0.0])
+    f_values = []
+    u1_values = []
+    for i in range(0, 13): 
+        point[0] = i/13.0
+        point[1] = 1-point[0]
+        f.eval(value, point)
+        f_values.append(value[0])
+        u1.eval(value, point)       
+        u1_values.append(value[0])
 !ec
 
 
+FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline} 
 
-Show
 
- * `project` too
- * allow SymPy code too
- * plot solution versus $f$ along a line
 
 
 ======= Exercises =======
