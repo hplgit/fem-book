@@ -6032,8 +6032,8 @@ of equations $\sum_j A_{i,j}c_j=b_i$ where
 !bt
 \begin{align*}
 A_{i,j} &= \int_0^1
-\mu \baspsi_i(x)_{x} \baspsi_j(x)_{x} + \baspsi_j(x)_x \baspsi_i(x) \dx, \\
-b_i &= \int_0^1 0 \baspsi_i(x) \dx \tp
+\mu \baspsi_i' \baspsi_j' + \baspsi_j' \baspsi_i \dx, \\
+b_i &= \int_0^1 0 \baspsi_i \dx \tp
 \end{align*}
 !et
 
@@ -6100,7 +6100,7 @@ L(w) &=  \int_0^1  0 w \dx = 0  .
 !et
 However, $W$ cannot be chosen freely. For instance, to obtain a quadratic matrix
 the number of basis functions in   $V$ and $W$ must be the same. Let
- $w = v  + \beta v\cdot\nabla v$.
+ $w = v  + \beta \v\cdot\nabla w$.
 
 !bt
 \begin{eqnarray*}
