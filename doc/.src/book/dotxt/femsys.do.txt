@@ -763,6 +763,9 @@ T(r) &= \frac{1}{64 \mu} \left(R^{4} \beta^{2} + 64 T_{0} \mu - \beta^{2} r^{4}\
 \end{align*}
 !et
 
+[kam: so how do we do we conclude this? FEniCS simulation in 3D or
+FEniCS simulation in 1D with r? Or perhaps both? There are some
+stuff happening with piecewise integration in the presence of the r.]
 
 
 
@@ -803,24 +806,24 @@ compute the solution. Integrating (ref{femsys:varcoeff:1D})
 yields the expression
 !bt
 \[
--(a(x) u(x)') = C
+-(a u') = C
 \]
 !et
 A trick now is to divide by $a(x)$ on both sides to obtain
 !bt
 \[
-- u' = \frac{C}{a(x)}
+- u' = \frac{C}{a}
 \]
 !et
 and hence
 !bt
 \begin{equation}
 label{varcoeff:analytical:solution}
-u(x) = (C/a) x + D
+u(x) = \frac{C}{a(x)} x + D
 \end{equation}
 !et
 The boundary conditions demand that $u(0) = 0$, which means that $D=0$
-and $u(1) = 1$ fixate $C$ to be $a_0$.
+and $u(1) = 1$ fixate $C$ to be $a(1) = a_0$.
 
 To obtain a variational form of this problem suitable for
 finite element simulation, we transform the problem
@@ -830,7 +833,10 @@ $B(x)=x$.
 
 [kam: the right hand side is hard to compute. Perhaps find
 a problem with homogeneous BC. Or perhaps just comment that we take the
-linear algebra approach.]
+linear algebra approach.
+Can take the opportunity to say that the BC trick requires extra regularity
+and that we instead do the LA approach.  
+]
 
 The variational problem derived from a standard Galerkin method reads: Find $u$ such that
 !bt
@@ -859,9 +865,9 @@ for $x$ in $[0,\half)$ and $(\half,1]$ and it seems that the numerical strategy 
 of the solution.
 
 The flux $a u'$ is often a quantity of interest. Because the flux involves differentiation with respect
-to $x$ we do not have and explicit representation and 
+to $x$ we do not have an direct access to it and 
 have to compute it. A natural approach is to take the Galerkin approximation,
-that is we seek a $w \approx a u'$ on the form  $w=\sum_{j\in\If} d_j\baspsi_j(x)$ and
+that is we seek a $w \approx a u'$ on the form  $w=\sum_{j\in\If} d_j\baspsi_j$ and
 require  Galerkin orthogonality. In other words, we require 
 that $w-a u'$ is orthogonal to $\{\baspsi_i\}$. This is done by solving
 the linear system  $\sum_j M_{i,j}d_j=b_i$ with
@@ -905,16 +911,16 @@ and corresponding test functions  $v^{(w)}$ and $v^{(u)}$,
 !bt
 \begin{align}
 label{fem:sys:up:1D:eq:Darcy:var}
-\int_\Omega \frac{1}{a} w v^{(u)} + \frac{\partial u}{\partial x} v^{(u)} \dx &=0, \\
+\int_\Omega \frac{1}{a} w v^{(w)} + \frac{\partial u}{\partial x} v^{(w)} \dx &=0, \\
 label{fem:sys:up:1D:eq:mass:var}
-\int_\Omega \frac{\partial w}{\partial x} v^{(w)} \dx &= 0\tp
+\int_\Omega \frac{\partial w}{\partial x} v^{(u)} \dx &= 0\tp
 \end{align}
 !et
 and letting
-$u=\sum_{j\in\If} c_j\baspsi_j^{(u)}(x)$,
-$w=\sum_{j\in\If} c_j\baspsi_j^{(w)}(x)$,
-$v^{(u)} =  \baspsi_i^{(u)}(x)$, and
-$v^{(w)} =  \baspsi_i^{(w)}(x)$, we obtain the following system
+$u=\sum_{j\in\If} c_j\baspsi_j^{(u)}$,
+$w=\sum_{j\in\If} c_j\baspsi_j^{(w)}$,
+$v^{(u)} =  \baspsi_i^{(u)}$, and
+$v^{(w)} =  \baspsi_i^{(w)}$, we obtain the following system
 of linear equations
 !bt
 \[
@@ -943,7 +949,7 @@ b^{(u)}_i &= (0,\baspsi^{(u)}_i)= 0 \tp
 
 
 It is interesting to note that the standard Galerkin formulation
-of the problem result in perfect approximation of $u$, while
+of the problem results in a perfect approximation of $u$, while
 the flux $-a u'$ is badly represented. On the other hand,
 for the mixed formulation, the flux is well approximated but
 $u$ is approximated only to first order yielding a staircase
@@ -951,20 +957,22 @@ approximation. These observations naturally suggest
 that we should employ P1 approximation of both $u$ and
 its flux. We should then get a perfect approximation of
 both unknowns. This is however not possible. The
-linear system we obtain with P1 elements for both variables is singular
-and can not be solved.
+linear system we obtain with P1 elements for both variables is singular.
 
 This example shows that when we are solving systems of PDEs with
 several unknowns, we can not choose the approximation arbitrary.
-The polynomial spaces of the different unknowns have to be compatible.
-We will not discuss reasons for the need of compatibility here
-as it is well presented in many books, e.g. cite{Brenner_Scott,Braess, Silvester_et_al_2015}
+The polynomial spaces of the different unknowns have to be compatible
+and the accuracy of the different unknowns depend on each other. 
+We will not discuss the reasons for the need of compatibility here
+as it is rather mathematical and 
+well presented in many books, e.g. cite{Brenner_Scott, Braess, Silvester_et_al_2015}.
 
 
 FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
 
 [kam: Not sure why the I don't get $a_0$. Need to debug. ]
-
+[kam: integration by parts done above, but not commented. Also bc, not considered.]
+[kam: wrong figure]
 
 ======= Exercises =======
 
