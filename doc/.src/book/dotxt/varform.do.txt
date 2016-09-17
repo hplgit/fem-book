@@ -344,7 +344,7 @@ label{fem:deq:1D:Galerkin}
 !et
 resulting in $N+1$ equations for determining $\sequencei{c}$.
 
-===== The Method of Weighted Residuals =====
+===== The method of weighted residuals =====
 
 idx{weighted residuals}
 idx{method of weighted residuals}
@@ -422,7 +422,7 @@ formulations which, in contrast to the differential equation $R=0$,
 instead demand that an average of $R$ is zero: $(R,v)=0$ for all $v$ in some space.
 !enotice
 
-===== Test and Trial Functions =====
+===== Test and trial Functions =====
 
 idx{trial function} idx{test function} idx{trial space} idx{test space}
 
@@ -1829,21 +1829,21 @@ occurs for $u_x$. The sign only determine the direction of the convection.
 For $\epsilon=0$, the solution satisfies
 !bt
 \[
-u(x) - u(1) = \int_1^x (-u_x) (-\dx) = 0 ,  
+u(x) - u(1) = \int_1^x (-u_x) (-\dx) = 0 ,
 \]
 !et
 which means that $u(x) = u(1)$. Clearly only the boundary condition at $x=1$ is required
-and the solution is constant throughout the domain. 
+and the solution is constant throughout the domain.
 
 If $0 < \epsilon \ll 1$ such that
-the term $-u_x$ is dominating,  
-the solution is similar to the solution for $\epsilon=0$ in the interior. 
+the term $-u_x$ is dominating,
+the solution is similar to the solution for $\epsilon=0$ in the interior.
 However,
 the second order term $-\epsilon u_{xx}$
 makes the problem a second order
 problem and two boundary conditions are required, one condition at each side.
 The boundary condition at $x=0$ forces the solution to be zero at that
-point and this creates a sharp gradient close to $x=0$. 
+point and this creates a sharp gradient close to $x=0$.
 For this reason, the problem is called a *singular perturbation problem* as the problem changes
 fundamentally in the sense that different boundary conditions are required in the limiting
 case $\epsilon=0$.
@@ -1861,13 +1861,13 @@ FIGURE: [fig/conv-diff-analytical.png, width=400] Analytical solution to the con
 
 The solution is plotted in Figure ref{convdiff:analytical} for different values of $\epsilon$.
 Clearly, as $\epsilon$ decrease the exponential function represents a sharper and sharper gradient.
-From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem 
+From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem
 involving a common phenomenon of boundary layers.
 Boundary layers are common in all kinds of fluid flow and is a main problem when discretizing such equations.
 Boundary layers have the characteristics of the solution
 (ref{convdiff:1D:analytical}), that is; a sharp local exponential gradient.
 In fluid flow the parameter $\epsilon$ is often related to the inverse of the Reynolds number which frequently
-in engineering is significantly larger than $10^3$ as it was here. 
+in engineering is significantly larger than $10^3$ as it was here.
 In these applications the boundary layer is extremely thin and the gradient extremely sharp.
 
 
