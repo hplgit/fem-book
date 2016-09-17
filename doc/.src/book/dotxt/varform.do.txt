@@ -422,7 +422,7 @@ formulations which, in contrast to the differential equation $R=0$,
 instead demand that an average of $R$ is zero: $(R,v)=0$ for all $v$ in some space.
 !enotice
 
-===== Test and trial Functions =====
+===== Test and trial functions =====
 
 idx{trial function} idx{test function} idx{trial space} idx{test space}
 
@@ -1844,7 +1844,7 @@ def solver(integrand_lhs, integrand_rhs, psi, Omega,
     return u, c
 !ec
 
-===== Example: constant right-hand side =====
+===== Example with constant right-hand side =====
 
 To demonstrate the code above, we address
 
@@ -1959,8 +1959,9 @@ so numerical integration in the code, and hence numerical answers,
 have the greatest application potential.
 
 
-======= Approximations may fail: The convection-diffusion equation =======
+======= Approximations may fail: convection-diffusion =======
 label{ch:convdiff}
+idx{convection-diffusion}
 
 In the previous examples we have obtained reasonable approximations
 of the continuous solution with several different approaches. In this
@@ -1980,11 +1981,12 @@ u(1) &= 0 .
 \end{align}
 !et
 
-The problem describes a convection-diffusion problem where
-the convection is modelled by the first order term $-u_x$ and diffusion
-is described by the second order term $-\epsilon u_{xx}$. In many applications $\epsilon \ll 1$
-and the dominating term is $-u_x$. The sign of $-u_x$ is not important, the same problem
-occurs for $u_x$. The sign only determine the direction of the convection.
+The problem describes a convection-diffusion problem where the
+convection is modelled by the first order term $-u_x$ and diffusion is
+described by the second order term $-\epsilon u_{xx}$. In many
+applications $\epsilon \ll 1$ and the dominating term is $-u_x$. The
+sign of $-u_x$ is not important, the same problem occurs for
+$u_x$. The sign only determine the direction of the convection.
 
 For $\epsilon=0$, the solution satisfies
 !bt
@@ -5099,7 +5101,7 @@ changes needed in the `finite_element1D_naive` to utilize
 sparse matrices. The resulting modification is found in the
 function `finite_element1D`.
 
-===== Example: application to our model problem  =====
+===== Application to our model problem  =====
 
 Let us demonstrate the finite element software on
 
@@ -5968,7 +5970,7 @@ is cite{Larson_2013}
 ||f + u''||^2 + \frac{1}{4}h_k
 # #endif
 
-======= Implementation in 2D and 3D =======
+======= Implementation in 2D and 3D via FEniCS =======
 label{fem:varform:fenics}
 
 From a principle of view, we have seen that variational forms of the
@@ -6005,12 +6007,12 @@ bore hole of radius $a$ in a porous medium. If the hole is long in the
 vertical direction, we can model it by a 2D domain in the cross section.
 
 !bt
-\begin{alignat}
+\begin{alignat}{2}
 \nabla\cdot \left( \dfc\nabla u\right) &= 0, & \quad a < ||\x|| < b,
 label{fem:varform:fenics:problem:pde}\\
-u(\x) &= U_a, & \quad ||\x|| = a,\\
+u(\x) &= U_a, \quad &  ||\x|| = a,
 label{fem:varform:fenics:problem:ua}\\
-u(\x) &= U_b  & \quad ||\x|| = b\tp
+u(\x) &= U_b  \quad &  ||\x|| = b\tp
 label{fem:varform:fenics:problem:ub}
 \end{alignat}
 !et
@@ -6021,7 +6023,7 @@ this is a pure Dirichlet problem.
 === Symmetry ===
 
 The first thing we should observe is that the problem is radially
-symmetric, so we can change to cylindrical coordinates and obtain a 1D
+symmetric, so we can change to polar coordinates and obtain a 1D
 problem in the radial direction:
 
 !bt
@@ -6030,32 +6032,230 @@ problem in the radial direction:
 This is not very exciting beyond being able to find an analytical solution
 and compute the true error of a finite element approximation.
 
-However, many programs solve problems in Cartesian coordinates, and FEniCS
-basically do this, so we want to take advantage of symmetry and reformulate
-the problem in a smaller domain. Looking at the domain as a cake with a hole,
-any piece of the cake will be a candidate for a reduced-size domain.
+However, many software packages solve problems in Cartesian coordinates, and
+FEniCS basically do this, so we want to take advantage of symmetry in
+Cartesian coordinates and reformulate the problem in a smaller
+domain.
 
+Looking at the domain as a cake with a hole, any piece of the
+cake will be a candidate for a reduced-size domain.  The solution is
+symmetric about any line $\theta = \hbox{const}$ in polar coordinates,
+so at such lines we have the symmetry boundary condition $\partial
+u/\partial n=0$, i.e., a homogeneous Neumann condition.  In Figure
+ref{fem:varform:fenics:problem:meshfig} we have plotted a possible
+mesh of cells as triangles, here with dense refinement toward the bore
+hole, because we know the solution will decay most rapidly toward the
+origin.  This mesh is a piece of the cake with four sides: Dirichlet
+conditions on the inner and outer boundary, named $\Gamma_{D_a}$ and
+$\Gamma_{D_b}$, and $\partial u/\partial n=0$
+on the two other sides, named $\Gamma_N$.
+In this particular example, the arc of the piece
+of the cake is 45 degrees, but any value of the arc will work.
+
+FIGURE: [fig/borehole_mesh1, width=700 frac=1.2] Mesh of a hollow cylinder, with refinement and utilizing symmetry. label{fem:varform:fenics:problem:meshfig}
+
+The boundary problem can then be expressed as
+
+!bt
+\begin{alignat}{2}
+\nabla\cdot \left( \dfc\nabla u\right) &= 0, & \quad \x\in\Omega,
+label{fem:varform:fenics:problem:pde2}\\
+u(\x) &= U_a,  \quad  & \x\in\Gamma_{D_a},
+label{fem:varform:fenics:problem:Ga}\\
+u(\x) &= U_b,  \quad  & \x\in\Gamma_{D_b},
+label{fem:varform:fenics:problem:Gb}\\
+\frac{\partial u}{\partial n} &=0,\quad & \x\in\Gamma_N\tp
+label{fem:varform:fenics:problem:GN}
+\end{alignat}
+!et
+
+===== Variational formulation =====
+label{fem:varform:fenics:varform}
+
+To obtain the variational formulation, we multiply the PDE by a test
+function $v$ and integrate the second-order derivatives by part:
+
+!bt
+\begin{align*}
+\int_\Omega \nabla\cdot (\dfc\nabla u) v \dx &= 0,\quad \forall v\in V\\
+&= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx + \int_{\Gamma_N}\dfc
+\frac{\partial u}{\partial n}v\ds\\
+&= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx\tp
+\end{align*}
+!et
+We are left with a problem of the form: find $u$ such that
+$a(u,v)=L(v)\ \forall v\in V$, with
+
+!bt
+\begin{align}
+a(u,v) &= \int_\Omega \dfc\nabla u\cdot\nabla v\dx,\\
+L(v) &= \int_\Omega 0v\dx \tp
+\end{align}
+!et
+We write the integrand as $0v\dx$ even though $L=0$, because it is necessary
+in FEniCS to specify $L$ as a linear form and not the number zero.
+The Dirichlet conditions make a nonzero solution.
+
+===== The FEniCS solver =====
+
+Suppose we have a function `make_mesh` that can make the mesh for us.
+All we need to do in the solver and that has not been exemplified
+before, is to define $V$ with proper Dirichlet conditions.
+It is easy to do so as long as the Neumann conditions are zero. Otherwise,
+we will have to do a line integral along the boundary and that brings in
+quite some concepts in FEniCS about how to mark boundaries cite{ftut1}.
+Fortunately, a lot of problems have homogeneous Neumann conditions (thanks
+to symmetries!), so the example here can be extended and become useful
+in many contexts.
+
+We have to write functions for testing whether a point is on a Dirichlet
+boundary or not:
+
+@@@CODE-4 src/borehole_fenics.py fromto: V = FunctionSpace@bc_inner =
+Note here that we test with a tolerance since the points on the boundary
+may be subject to rounding errors when making the mesh coordinates.
+
+We then use the `DirichletBC` object to make different kinds of
+Dirichlet conditions, here two, and collect them in a list `bcs:
+
+@@@CODE-4 src/borehole_fenics.py fromto: bc_inner =@# Define variational problem
+
+The next step is to define the variational problem and solve it:
+
+@@@CODE-4 src/borehole_fenics.py fromto: # Define variational problem@# Save solution
+In order to avoid `L=0` (`L` equal to the float zero), we have to
+tell FEniCS that is a linear form, so zero must be specified as `Constant(0)`.
+
+Note that everything is the same as for the approximation problem,
+except for the Dirichlet conditions and the formulas for `a` and
+`L`. FEniCS has, of course, access to very efficient solution methods,
+so we could add arguments to the `solve` call to apply
+state-of-the-art iterative methods and preconditioners for large-scale
+problems. However, for this little 2D case a standard sparse Gaussian
+elimination, as implied by `solve(a = L, u, bcs)` is the most
+efficient and reliable approach.
+
+Finally, we can save the solution to file for using professional
+visualization software and, if desired, add a quick plotting using the
+built-in FEniCS tool `plot`:
+
+@@@CODE-4 src/borehole_fenics.py fromto: # Save solution@return u
+(The `u.rename` call is just for getting a more readable title in the plot.)
+
+The above statements are collected in a function `solver` in the
+file "`borehole_fenics.py`": "${fem_src}/borehole_fenics.py":
+
+@@@CODE src/borehole_fenics.py fromto: def solver@# It is tempting
+
+!bnotice Be careful with name clashes!
+It is easy when coding mathematics to use variable names that correspond
+to one-letter names in the mathematics. For example, in the mathematics
+of this problem there are to $a$ variables: the radius of the inner
+boundary and the bilinear form in the variational formulation.
+Using `a` for the inner boundary in `solver` does not work: it is
+quickly overwritten by the bilinear form. We therefore have to introduce
+`x_a`. Long variable names are to be preferred for safe programming,
+though short names corresponding to the mathematics are nicer...
+!enotice
+
+===== Making the mesh =====
+
+The hardest part of a finite element problem is very often to make the mesh.
+Here the idea is to first make a rectangle, then make the denser toward the
+left end, and then bend it to get the form of the part of a hole.
+
+Let $x$ and $y$ be the coordinates of a vertex in the mesh that is
+a rectangle $(0,a)\times (0,b)$.
+The stretching towards $x=a$ is done by mapping
+
+!bt
+\begin{equation}
+\bar x = a + (b-a)\left({x-a\over b-a}\right)^s\tp
+\end{equation}
+!et
+A stretching towards $x=b$ is given by
+
+!bt
+\begin{equation}
+\bar x = a + (b-a)\left({x-a\over b-a}\right)^{1/s}\tp
+\end{equation}
+!et
+The parameter $s$ controls the amount of stretching.
+The code below shows the details of mapping the coordinates of FEniCS mesh.
+
+Mapping of a rectangle onto a our geometry is done by
+
+!bt
+\begin{equation*}
+\hat x = \bar x\cos (\Theta \bar y),\quad \hat y = \bar x\sin (\Theta \bar y)\tp
+\end{equation*}
+!et
+
+We are now ready for the Python code that codes these formulas and manipulates
+the FEniCS mesh:
+
+@@@CODE src/borehole_fenics.py fromto: def make_mesh@def solver
+
+We could also have used the mesh tool `mshr` in FEniCS, but with our
+approach here we have full control of the refinement towards the hole.
+
+===== Solving a problem =====
+
+We assume that $\dfc$ is constant.
+Before solving such
+a specific problem, it can be wise to scale the problem since
+it often reduces the amount of input data in the model. Here, the variation
+in $u$ is typically $|u_a-u_b|$ so we use that as characteristic
+pressure. The coordinates may be naturally scaled by the bore hole radius,
+so we have new, scaled variables
+
+!bt
+\[ \bar u = \frac{u-u_a}{u_a-u_b},\quad \bar x = \frac{x}{a},\quad
+\bar y = \frac{y}{a}\tp\]
+!et
+Now, we expect $\bar u\in [0,1]$, which is a goal of scaling.
+Inserting this in the problem gives the PDE
+
+!bt
+\[ \nabla^2 \bar u = 0 \]
+!et
+in a domain with inner radius 1 and $\bar u=0$, and outer radius
+
+!bt
+\[ \beta = \frac{a}{b},\]
+!et
+with $\bar u = 1$. Our solver can solve this problem by setting
+`alpha=1`, `u_a=0`, `u_b=0`, `x_a=1`, `x_b=beta`.
+
+[hpl: Show plots from paraview.]
+[hpl: Do 3D automatically.]
+[hpl: Do 1D Dirichlet model problem from previous sections (exercise!).]
 
 
 !split
-======= Convection-Diffusion and Petrov-Galerkin =======
+======= Convection-diffusion and Petrov-Galerkin methods =======
+
+idx{convection-diffusion}
+idx{Petrov-Galerkin methods}
 
 Let us now return to the problem in Section ref{sec:varform:general:convdiff}
+
 !bt
-\begin{align}
+\begin{alignat}{2}
 label{varform:conv:diff:pde}
 \v\cdot\nabla u + \beta u &= \nabla\cdot\left( \dfc\nabla u\right) + f,
-\quad\x\in\Omega,\\
+\quad &\x\in\Omega,\\
 label{varform:conv:diff:bc1}
-u &= u_0,\quad\x\in\partial\Omega_D,\\
+u &= u_0,\quad &\x\in\partial\Omega_D,\\
 label{varform:conv:diff:bc2}
--\dfc\frac{\partial u}{\partial n} &= g,\quad\x\in\partial\Omega_N
+-\dfc\frac{\partial u}{\partial n} &= g,\quad &\x\in\partial\Omega_N
 \tp
-\end{align}
+\end{alignat}
 !et
 
 In Section ref{ch:convdiff} we investigated the simplified case in
 1D
+
 !bt
 \begin{align*}
 -u_x - \dfc u_{xx} &= 0, \\
@@ -6063,6 +6263,7 @@ u(0) = 0, u(1) &= 1 \tp
 \end{align*}
 !et
 and the analytical solution was:
+
 !bt
 \[
 u_e(x) = \frac{e^{-x/\dfc} - 1}{e^{-1/\dfc} - 1}.
@@ -6077,12 +6278,14 @@ did however improve as the number of degrees of freedom increased.
 
 The variational problem is:
 Find $u\in V$ such that
+
 !bt
 \[
 a(u,v) = L(v) \forall v
 \]
 !et
 where
+
 !bt
 \begin{align*}
 a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x \dx, \\
@@ -6094,6 +6297,7 @@ A Galerkin approximation with a finite element approximation is obtained
 by letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and
 $v =  \baspsi_i(x)$ which leads to a linear system
 of equations $\sum_j A_{i,j}c_j=b_i$ where
+
 !bt
 \begin{align*}
 A_{i,j} &= \int_0^1
@@ -6102,17 +6306,18 @@ b_i &= \int_0^1 0 \baspsi_i \dx \tp
 \end{align*}
 !et
 
-Figure ref{varform:fe:convdiff:plot} shows the finite element solution on a coarse mesh of 10 elements
-for $\mu=0.01$. Clearly, the finite element method has the same problem as was observed
-earlier in global functions in Section  ref{sec:varform:general:convdiff}.
+Figure ref{varform:fe:convdiff:plot} shows the finite element solution
+on a coarse mesh of 10 elements for $\mu=0.01$. Clearly, the finite
+element method has the same problem as was observed earlier in global
+functions in Section ref{sec:varform:general:convdiff}.
 
 #FIGURE: [fig/fenics_conv_diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
-
 
 For finite differences, the cure for these oscillations is *upwinding*.
 That is, instead
 of using a central difference scheme, we employ the following difference
 scheme:
+
 !bt
 \begin{eqnarray*}
 \frac{du}{dx} (x_i) = \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0, \\
@@ -6122,7 +6327,10 @@ scheme:
 Using this scheme, oscillations will disappear as can be seen in
 Figure ref{varform:fe:convdiffstab:plot}.
 
-There is a relationship between upwinding and artificial diffusion.  If we discretize $u_x$ with a central difference and add diffusion as $\epsilon =h/2 \Delta $ we get
+There is a relationship between upwinding and artificial diffusion.
+If we discretize $u_x$ with a central difference and add diffusion as
+$\epsilon =h/2 \Delta $ we get
+
 !bt
 \begin{eqnarray*}
  \frac{u_{i+1}  -  u_{i-1}}{2 h}    &  \textrm{central scheme, first order derivative}  \\
@@ -6133,7 +6341,8 @@ There is a relationship between upwinding and artificial diffusion.  If we discr
 
 #FIGURE: [fig/fenics_conv_diff_stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
-Hence, upwinding is equivalent to adding artificial diffusion with $\epsilon=h/2$; that is, in both cases we actually solve the problem
+Hence, upwinding is equivalent to adding artificial diffusion with
+$\epsilon=h/2$; that is, in both cases we actually solve the problem
 
 !bt
 \[-(\mu+\epsilon)u_{xx} + vu_x = f\tp\]
@@ -6153,10 +6362,10 @@ a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x \dx, \\
 L(v) &=  \int_0^1  0 v \dx = 0  .
 \end{align*}
 !et
-The Petrov-Galerkin method is a seemingly innocent and straightforward extension
-of Galerkin where
-we want to find $u\in V$ such that for all $w\in W$ the
-variational formulation is fulfilled.
+The Petrov-Galerkin method is a seemingly innocent and straightforward
+extension of Galerkin where we want to find $u\in V$ such that for all
+$w\in W$ the variational formulation is fulfilled.
+
 !bt
 \begin{align*}
 a(u, w) &= \int_0^1 -u_x w + \mu u_x w_x \dx, \\
@@ -6168,7 +6377,7 @@ the number of basis functions in   $V$ and $W$ must be the same. Let
  $w = v  + \beta \v\cdot\nabla w$.
 
 !bt
-\begin{eqnarray*}
+\begin{align*}
 A_{ij} &=& a(\baspsi_i, \baspsi_j + \beta v\cdot\nabla \baspsi_j )\\
 &=& \int_\Omega\mu\nabla \baspsi_i\cdot\nabla (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx + \int_\Omega v\nabla \baspsi_i\cdot (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx\\
 &=&\underbrace{
@@ -6181,21 +6390,23 @@ A_{ij} &=& a(\baspsi_i, \baspsi_j + \beta v\cdot\nabla \baspsi_j )\\
 }_
 {=0\ \textrm{for linear elements}}+
 \underbrace{\beta\int_\Omega (v\cdot\nabla \baspsi_i) (v\cdot\nabla \baspsi_j) \dx}
-_{\textrm{Artificial diffusion in $v$ direction}}
+_{\textrm{artificial diffusion in $v$ direction}}
 }
-\end{eqnarray*}
+\end{align*}
 !et
 
 The corresponding FEniCS code is
-!bc pycod
 
-from dolfin import *
+!bc pycod
+from fenics import *
 import matplotlib.pyplot as plt
 
 def boundary(x):
-    return x[0] < DOLFIN_EPS or x[0] > 1.0 - DOLFIN_EPS
+    return x[0] < 1E-15 or x[0] > 1.0 - 1E-15
 
-u_analytical = Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % (1.0e-2, 0.5))
+u_analytical = \
+   Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % \
+   (1.0e-2, 0.5))
 mesh = UnitIntervalMesh(10)
 V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
@@ -6217,6 +6428,7 @@ solve(a == L, u, bc)
 
 Notice that the Petrov-Galerkin method is here implemented as
 `v = v - beta*h*v.dx(0)`.
+
 ======= Summary =======
 
  * When approximating $f$ by $u = \sum_j c_j\basphi_j$, the least squares

@@ -10,40 +10,39 @@ a very strong algorithmic focus (``how to compute''), but formulate
 the method in the abstract form with variational forms and function
 spaces.
 
+One highly valued feature of the finite element method is the prospect
+of rigorous analysis provided by the functional analysis framework. In
+particular, for elliptic problems (or in general symmetric problems)
+the theory provides error control via sharp estimates and efficient
+computations via multiscale algorithms. In fact, the development of
+this mathematical theory of finite element methods is one of the
+highlights of numerical analysis. However, within scientific computing
+the computational engine of the finite element method is being used
+far outside what is theoretically understood. Obviously, this is a
+trend that will continue in the future. Hence, it is our aim here
+provide the reader with the gory details of the implementation in an
+explicit, user-friendly and simplistic manner to lower the threshold
+of usage and to provide tools for verification and debugging that are
+applicable in general situations.
 
-[kam: new paragraph, move later]
-One highly valued feature of the finite element method is the prospect of
-rigorous analysis provided by the functional analysis framework. In particular,
-for elliptic problems (or in general symmetric problems) the theory provides
-error control via sharp estimates and efficient computations via multiscale
-algorithms. In fact, the development of this mathematical theory of finite element methods
-is one of the highlights of numerical analysis. However, within scientific computing the computational
-engine of the finite element method is being used far outside 
-what is theoretically understood. Obviously, this is a trend that
-will continue in the future. Hence, it is our aim here provide
-the reader with the gory details of the implementation in 
-an explicit, user-friendly and simplistic manner to lower the 
-threshold of usage and to provide tools for     
-verification and debugging that are applicable in general situations.
+An important motivation for writing this book was to provide an
+intuitive approach to the finite element method, using the
+mathematical language frameworks such as the FEniCS software
+cite{fenics_book}. FEniCS is a modern, very powerful tool for solving
+partial differential equations by the finite element method, and it
+was designed to make implementations very compact for those who are
+used to the abstract formulation of the method.  Our aim here is
+different.
 
-
-An important motivation for writing this book was to provide an intuitive approach to the
-finite element method, using the mathematical language frameworks such as the FEniCS
-software cite{fenics_book}. FEniCS is a modern, very powerful tool for
-solving partial differential equations by the finite element method,
-and it was designed to make implementations very compact for those who
-are used to the abstract formulation of the method.
-Our aim here is different.
-
-A standard reference for FEniCS users have been the
-excellent text by Brenner and Scott cite{Brenner_Scott}, but for many
-students with weak formal mathematical background, the learning curve
-became unnecessarily steep using this book to take advantage of
-FEniCS.  The present book grew out of the need to explain variational
-formulations in the most intuitive way so FEniCS users can transform
-their PDE problem into the proper formulation for FEniCS
-programming. We then added material such that also the details of the
-most fundamental finite element algorithms could easily be understood.
+A standard reference for FEniCS users have been the excellent text by
+Brenner and Scott cite{Brenner_Scott}, but for many students with weak
+formal mathematical background, the learning curve became
+unnecessarily steep using this book to take advantage of FEniCS.  The
+present book grew out of the need to explain variational formulations
+in the most intuitive way so FEniCS users can transform their PDE
+problem into the proper formulation for FEniCS programming. We then
+added material such that also the details of the most fundamental
+finite element algorithms could easily be understood.
 
 The learning outcomes of this book are four-fold
 
@@ -86,14 +85,14 @@ program for one-dimensional problems, but otherwise we have no aim to
 educate the reader to write fast, state-of-the-art finite element
 programs!
 
-Another learning outcome (although not needed to be a successful FEniCS user)
-is to understand how the finite element method is a special case of
-more general variational approaches to solving equations. Therefore,
-we also treat uncertainty quantification via polynomial chaos methods
-and conjugate gradient-like methods for solving linear systems in a
-way that hopefully gives the reader an understanding of how seemingly
-very different numerical methods actually are just variants of a
-common way of reasoning.
+Another learning outcome (although not needed to be a successful
+FEniCS user) is to understand how the finite element method is a
+special case of more general variational approaches to solving
+equations. Therefore, we also treat uncertainty quantification via
+polynomial chaos methods and conjugate gradient-like methods for
+solving linear systems in a way that hopefully gives the reader an
+understanding of how seemingly very different numerical methods
+actually are just variants of a common way of reasoning.
 
 Many common topics found in finite element books are not present in
 this book. A striking feature is perhaps the presence of the abstract
@@ -106,26 +105,10 @@ problems is of limited practical interest for the practitioner, except
 for the final results regarding convergence rates of different types
 of finite elements.
 
-
-
-[hpl: Maybe more psychology is needed here: many
-will have a hard time understanding how one can omit all the classical
-stuff, and it is dangerous to say that it only proves that elliptic
-problems are safe to solve, a fact that is not surprising... In the
-finite difference literature, elliptic problems receive very little
-attention. Of course, the great attention in the finite element
-literature is to lay a foundation for further analysis in theses,
-etc.]  [hpl: Need to treat L-shaped domains and singularities
-somewhere in the text! The only place where elliptic problems are not
-trivial...]  
-[kam: I have now in the second paragraph of this preface tried to
-state that theory is only applicable to certain situation and that they
-are mostly to simplistic for real applications] 
-
-In time-dependent problems, on the other hand, a lot of
-things can go wrong with finite element solutions, but the extensions
-of the classical finite element error analysis to time dependency
-quickly meets limitations with respect to explaining typical numerical
+In time-dependent problems, on the other hand, a lot of things can go
+wrong with finite element solutions, but the extensions of the
+classical finite element error analysis to time dependency quickly
+meets limitations with respect to explaining typical numerical
 artifacts. We therefore follow a completely different type of
 analysis, namely the one often used for finite difference methods:
 insight through numerical dispersion relations and similar results
@@ -136,19 +119,17 @@ analyzing finite difference methods, so a knowledge of finite
 differences is needed. This approach also makes it very easy to
 compare the two methods, which is frequently done throughout the text.
 
-
-
 The mathematical notation in this text makes deviations from the
 literature trends. Especially books on the abstract formulation of the
 finite element method often denotes the numerical solution by $u_h$.
-Our mathematical notation is dictated by the natural notation in
-a computer code, so if `u` is the unknown in the code, we let $u$
-be the corresponding quantity in the mathematical description
-as well. When also the exact solution of the PDE problem is needed,
-it is usually denoted by $\uex$. Especially in the chapter on
-nonlinear problems we introduce notations that are handy in a program
-and use the same notation in the mathematics such that we achieve
-as close correspondence as possible between the mathematics and the code.
+Our mathematical notation is dictated by the natural notation in a
+computer code, so if `u` is the unknown in the code, we let $u$ be the
+corresponding quantity in the mathematical description as well. When
+also the exact solution of the PDE problem is needed, it is usually
+denoted by $\uex$. Especially in the chapter on nonlinear problems we
+introduce notations that are handy in a program and use the same
+notation in the mathematics such that we achieve as close
+correspondence as possible between the mathematics and the code.
 
 === Contents ===
 

@@ -686,7 +686,7 @@ Whether we work with vectors in the plane, general vectors, or
 functions in function spaces, the least squares principle and
 the projection or Galerkin method are equivalent.
 
-===== Example: linear approximation =====
+===== Example on linear approximation =====
 label{fem:approx:global:linear}
 
 Let us apply the theory in the previous section to a simple problem:
@@ -2530,7 +2530,7 @@ and use the standard form for $u$,
 The single index can be expressed in terms of the double index through
 $i=p (N_y+1) + q$ or $i=q (N_x+1) + p$.
 
-===== Example: Polynomial basis in 2D =====
+===== Example on polynomial basis in 2D =====
 
 Let us again consider approximation with the least squares method, but now
 with basis functions in 2D.
@@ -4005,7 +4005,7 @@ local Lagrange polynomials of degree $d$ (according to Section
 ref{fem:approx:global:Lagrange}), but it is not a requirement to have
 the same $d$ value in each element.
 
-===== Example: Quadratic finite element functions =====
+===== Example on quadratic finite element functions =====
 
 Let us set up the `nodes` and `elements` lists corresponding to the
 mesh implied by Figure ref{fem:approx:fe:fig:P2}.
@@ -4082,7 +4082,7 @@ the element size and hence be different.
 #the construction of $\basphi_4(x)$ and $\basphi_6(x)$.
 
 
-===== Example: Linear finite element functions =====
+===== Example on linear finite element functions =====
 
 
 Figure ref{fem:approx:fe:fig:P1} shows
@@ -4150,7 +4150,7 @@ label{fem:approx:fe:phi:1:formula2}
 !et
 
 
-===== Example: Cubic finite element functions =====
+===== Example on cubic finite element functions =====
 
 Piecewise cubic basis functions can be defined by introducing four
 nodes per element. Figure ref{fem:approx:fe:fig:P3} shows
@@ -4717,7 +4717,7 @@ $r\in\Ifd$.
 
 
 
-===== Example: Integration over a reference element =====
+===== Example on integration over a reference element =====
 label{fem:approx:fe:intg:ref}
 
 To illustrate the concepts from the previous section in a specific
@@ -6022,7 +6022,7 @@ but not on $h$, and the norm $|f^{(d+1)}|$ is defined through
 !enotice
 
 
-===== Example: Cubic Hermite polynomials =====
+===== Example on cubic Hermite polynomials =====
 label{fem:approx:fe:element:impl:Hermite}
 
 idx{Hermite polynomials}
@@ -6569,6 +6569,8 @@ so automation by the computer is a must.
 ======= Implementation =======
 label{fe:approx:fenics}
 
+idx{FEniCS}
+
 Our previous programs for doing 1D approximation by finite element
 basis function had a focus on all the small details needed to compute
 the solution. When going to 2D and 3D, the basic algorithms are the
@@ -6598,8 +6600,6 @@ existing computer library. Here we shall use
 element package for advanced computations. The package can be programmed
 in C++ or Python. How it works is best illustrated by an example.
 
-===== Example on approximation in 2D using FEniCS =====
-label{approx:2D:fenics}
 
 === Mathematical problem ===
 
@@ -6661,9 +6661,18 @@ of errors becomes
 L2 errors: e1=0.0131493, e2=4.93418e-15
 !ec
 
+# Remember to rotate PDF file from internal FEniCS plotting:
+# pdftk dolfin_plot_1.pdf cat 1-endnorth output rotated_file.pdf
 
 FIGURE: [fig/fenics_2D_plot_approx, width=400 frac=0.7] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D:fig1}
 
+
+idx{`TestFunction`}
+idx{`TrialFunction`}
+idx{`FunctionSpace`}
+idx{`solve` (FEniCS function)}
+idx{`project` (FEniCS function)}
+idx{`Expression`}
 
 === Dissection of the code ===
 

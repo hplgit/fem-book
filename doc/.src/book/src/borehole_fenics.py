@@ -7,7 +7,7 @@ def make_mesh(Theta, a, b, nr, nt):
     # First make a denser mesh towards r=a
     x = mesh.coordinates()[:,0]
     y = mesh.coordinates()[:,1]
-    s = 1.3
+    s = 3.5
 
     def denser(x, y):
         return [a + (b-a)*((x-a)/(b-a))**s, y]
@@ -81,7 +81,7 @@ def solver(alpha,    # Diffusion coefficient
     return u
 
 def problem():
-    solver(alpha=1, u_a=2, u_b=0, Theta=pi/4, x_a=1, x_b=2, nr=2, nt=2, degree=2, filename='tmp')
+    solver(alpha=1, u_a=1, u_b=0, Theta=pi/4, x_a=1, x_b=10, nr=20, nt=10, degree=1, filename='tmp')
 
 if __name__ == '__main__':
     problem()
