@@ -4,18 +4,18 @@ label{ch:pce}
 Differential equations often contain unknown parameters, but
 mathematically these must be prescribed to run the solution method.
 If some parameters are uncertain, how uncertain is then the answer?
-The simplest *conceptual* approach to this question is let each parameter vary in
-in an interval and use *interval arithmetics* to compute the interval
-of solution at the vertices of the mesh. Unfortunately, this approach is
-terribly inaccurate and not feasible. Also, any deterministic approach to
-the question hides fact that uncertainty is strongly connected to
-statistical variations. Therefore, a more sound approach is to prescribe
-some statistics of the input parameters and then compute some statistics
-of the output. This is called *stochastic uncertainty quantification*, or
-just the name uncertainty quantification, abbreviated UQ,
-implies a stochastic description
-of the input of the model. There has been
-a heavy development of the UQ field during the last couple of decades.
+The simplest *conceptual* approach to this question is let each
+parameter vary in an interval and use *interval arithmetics* to
+compute the interval of solution at the vertices of the
+mesh. Unfortunately, this approach is terribly inaccurate and not
+feasible. Also, any deterministic approach to the question hides fact
+that uncertainty is strongly connected to statistical
+variations. Therefore, a more sound approach is to prescribe some
+statistics of the input parameters and then compute some statistics of
+the output. This is called *stochastic uncertainty quantification*, or
+just the name uncertainty quantification, abbreviated UQ, implies a
+stochastic description of the input of the model. There has been a
+heavy development of the UQ field during the last couple of decades.
 
 One of the most exciting and promising methods of UQ for differential
 equation is *polynomial chaos expansions*. The literature on this method

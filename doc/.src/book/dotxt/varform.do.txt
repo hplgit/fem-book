@@ -5086,8 +5086,9 @@ A[i,j]  = term
 but only the index pairs `(i,j)` we have used in assignments or
 in-place arithmetics are actually stored.
 A tailored solution algorithm is needed. The most reliable is
-sparse Gaussian elimination. SciPy gives access the UMFPACK algorithm
-for this purpose.
+sparse Gaussian elimination. SciPy gives access to the
+"UMFPACK": "https://en.wikipedia.org/wiki/UMFPACK" algorithm
+for this purpose:
 
 !bc pycod
 import scipy.sparse.linalg
@@ -5708,7 +5709,7 @@ type: find $a(u,v)=L\ \forall v\in V$ (and even general nonlinear problems
 $F(u;v)=0$), can apply the computational machinery of introduced for
 the approximation problem $u=f$, we only need two extensions:
 
- o specifiy Dirichlet boundary conditions as part of $V$
+ o specify Dirichlet boundary conditions as part of $V$
  o incorporate Neumann flux boundary conditions in the variational form
 
 The algorithms are all the same in any space dimension, we only need to
@@ -5721,7 +5722,7 @@ the "FEniCS": "http://fenicsproject.org" finite element software.
 Therefore, if we know how to set up an approximation problem in any
 dimension in FEniCS, and know how to derive variational forms in higher
 dimensions, we are (in principle!) very close to solving a
-PDE problem in FEniCS. Building on the Section ref{approx:fenics},
+PDE problem in FEniCS. Building on the Section ref{fe:approx:fenics},
 we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
 There is very much more FEniCS programming than this example, but it
 illustrates our fact that when we go beyond 1D, there is exists
@@ -5733,7 +5734,7 @@ space dimensions.
 label{fem:varform:fenics:problem}
 
 The following model describes the pressure $u$ in the flow around a
-borehole of radius $a$ in a porous medium:
+bore hole of radius $a$ in a porous medium:
 
 !bt
 \begin{alignat}
@@ -6088,7 +6089,7 @@ Figure ref{varform:fe:convdiff:plot} shows the finite element solution on a coar
 for $\mu=0.01$. Clearly, the finite element method has the same problem as was observed
 earlier in global functions in Section  ref{sec:varform:general:convdiff}.
 
-FIGURE: [fig/fenics_conv_diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
+#FIGURE: [fig/fenics_conv_diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 
 For finite differences, the cure for these oscillations is *upwinding*.
@@ -6113,12 +6114,12 @@ There is a relationship between upwinding and artificial diffusion.  If we discr
 \end{eqnarray*}
 !et
 
-FIGURE: [fig/fenics_conv_diff_stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+#FIGURE: [fig/fenics_conv_diff_stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
 Hence, upwinding is equivalent to adding artificial diffusion with $\epsilon=h/2$; that is, in both cases we actually solve the problem
 
 !bt
-\[-(\mu+\epsilon)u_{xx} + vu_x = f.\]
+\[-(\mu+\epsilon)u_{xx} + vu_x = f\tp\]
 !et
 using a central difference scheme.
 

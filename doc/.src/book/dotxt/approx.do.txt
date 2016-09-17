@@ -2289,7 +2289,6 @@ The corresponding CPU time of the required computations also vary quite a bit:
 |  Lagrange   |  0.0807   |  0.3820    |  2.5233  |  26.52   |
 |------------------------------------------------------------------|
 
-<<<<<<< HEAD
 Here, the timings are in seconds.  The Taylor basis is the most
 efficient and is in fact more than 60 times faster than the Lagrange
 basis for $N=16$.
@@ -2302,14 +2301,6 @@ exponential.
 
 Let us therefore consider the following models:
 
-=======
-In order to get a more precise idea of how the approximation methods behave as $N$ increase,
- we assume a simple model which may be used in a regression analysis.
-There are two natural models of the accuracy (and the computational complexity) in terms
-of $N$: polynomial and exponential.
-
-Let us therefore consider the following models for the error:
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 !bt
 \begin{align}
 label{sec:approx:pol:model}
@@ -4821,7 +4812,6 @@ expressions in LaTeX format:
 ======= Implementation =======
 label{fem:approx:fe:impl}
 
-<<<<<<< HEAD
 Based on the experience from the previous example, it makes sense to
 write some code to automate the analytical integration process for any
 choice of finite element basis functions. In addition, we can automate
@@ -4830,17 +4820,6 @@ advantage is that the code for these purposes document all details of
 all steps in the finite element computational machinery.  The complete
 code can be found in the module file "`fe_approx1D.py`":
 "${fem_src}/fe_approx1D.py".
-=======
-Based on the experience from the previous example, it makes
-sense to write some code to automate the analytical integration process
-for any choice of finite element basis functions. In addition,
-we can automate the assembly process and the solution of the linear system.
-Another advantage is that the
-code for these purposes documents all details of all
-steps in the finite element computational machinery.
-The complete code can be found in the module file
-"`fe_approx1D.py`": "${fem_src}/fe_approx1D.py".
->>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
 
 
 ===== Integration =====
@@ -5440,7 +5419,9 @@ only the nonzero entries in the matrix will be stored.
 To solve a system with right-hand side `b` (one-dimensional `numpy`
 array) with a sparse coefficient matrix `A`, we must use some kind of
 a sparse linear system solver. The safest choice is a method based on
-sparse Gaussian elimination:
+sparse Gaussian elimination. One high-qualify package for
+this purpose if "UMFPACK": "https://en.wikipedia.org/wiki/UMFPACK".
+It is interfaced from SciPy by
 
 !bc pycod
 import scipy.sparse.linalg
@@ -6586,12 +6567,7 @@ so automation by the computer is a must.
 # Need 2D exercises
 
 ======= Implementation =======
-<<<<<<< HEAD
-label{approx:fenics}
-=======
-<<<<<<< HEAD
 label{fe:approx:fenics}
->>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
 
 Our previous programs for doing 1D approximation by finite element
 basis function had a focus on all the small details needed to compute
@@ -6605,17 +6581,9 @@ library. Here we shall use "FEniCS": "http://fenicsproject.org", which
 is a free, open finite element package for advanced computations. The
 package can be programmed in C++ or Python. How it works is best
 illustrated by an example.
-<<<<<<< HEAD
 
 ===== Example on approximation in 2D using FEniCS =====
-label{approx:2D:fenics}
-
-=======
-
-===== Example on approximation in 2D using FEniCS =====
-label{fe:approx:fenics:2D}
-
-=======
+label{fem:approx:fenics:2D}
 
 Our previous programs for doing 1D approximation by finite element basis
 function had a focus on all the
@@ -6632,22 +6600,18 @@ in C++ or Python. How it works is best illustrated by an example.
 
 ===== Example on approximation in 2D using FEniCS =====
 label{approx:2D:fenics}
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
->>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
+
 === Mathematical problem ===
 
 We want to approximate the function $f(x)=2xy - x^2$ by P1 and P2 elements
 on $[0,2]\times[-1,1]$ using a division into $8\times 8$ squares, which are
-<<<<<<< HEAD
 then divided into rectangles and then into triangles.
-=======
-then divided into rectangles.
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 
 === The code ===
 
-Observe that the code employs the basic concepts from 1D, but is capable
-of using any element in FEniCS on any mesh in any number of space dimensions (!).
+Observe that the code employs the basic concepts from 1D, but is
+capable of using any element in FEniCS on any mesh in any number of
+space dimensions (!).
 
 !bc pycod
 from fenics import *
@@ -6682,14 +6646,20 @@ def problem():
     plot(u1, title='u1')
     plot(u2, title='u2')
 
-if __name__ == __main__:
+if __name__ == '__main__':
     problem()
+    interactive()  # Enable plotting
 !ec
 
-Figure ref{fem:approx:fenics:2D} shows the computed `u1`. The plots of
-`u2` and `f` are visually identical and therefore not shown.
+Figure ref{fem:approx:fenics:2D:fig1} shows the computed `u1`. The plots of
+`u2` and `f` are identical and therefore not shown. The output
+of errors becomes
 
-FIGURE: [fig/fenics_2D_plot_approx, width=400, frac=0.7] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D}
+!bc
+L2 errors: e1=0.0131493, e2=4.93418e-15
+!ec
+
+FIGURE: [fig/fenics_2D_plot_approx, width=400 frac=0.7] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D:fig1}
 
 
 === Dissection of the code ===
@@ -6777,7 +6747,7 @@ FIGURE: [fig/fenics_plot_along_line, width=400] Plot of the computed approximati
 # #endif
 
 ===== Refined code with curve plotting =====
-label{fe:approx:fenics:2D:2}
+label{fem:approx:fenics:2D:2}
 
 === Interpolation and projection ===
 
@@ -6828,13 +6798,13 @@ mesh resolutions:
 (We note that this code issues a lot of warnings from the `u(point)`
 evaluations.)
 
-We show in Figure ref{fe:approx:fenics:2D:2:fig1}
+We show in Figure ref{fem:approx:fenics:2D:2:fig1}
 how $f$ is approximated by P0, P1, and P2 elements
 on a very coarse $2\times 2$ mesh consisting of 8 cells.
 
 We have also added the result obtained by P2 elements.
 
-FIGURE: [fig/approx_fenics_f1, width=800 frac=1] Comparison of P0, P1, and P2 approximations (left to right) along a line in a 2D mesh. label{fe:approx:fenics:2D:2:fig1}
+FIGURE: [fig/approx_fenics_f1, width=800 frac=1] Comparison of P0, P1, and P2 approximations (left to right) along a line in a 2D mesh. label{fem:approx:fenics:2D:2:fig1}
 
 !bquestion Questions
 There are two striking features in the figure:
@@ -7534,4 +7504,4 @@ the system as
 
 ===== Exercise: Make a 3D code for Lagrange elements of arbitrary order =====
 
-Extend the code from Section ref{fe:approx:fenics:2D:2} to 3D.
+Extend the code from Section ref{fem:approx:fenics:2D:2} to 3D.

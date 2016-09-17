@@ -34,5 +34,6 @@ def problem():
     plot(u1, title='u1')
     plot(u2, title='u2')
 
-if __name__ == __main__:
+if __name__ == '__main__':
     problem()
+    interactive()  # Enable plotting
