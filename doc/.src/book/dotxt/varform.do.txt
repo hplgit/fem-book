@@ -5701,56 +5701,6 @@ functions by $r$, and look up vertex coordinates through $q(e,r)$.
 
 Similar formulas exist for integration of P1 elements in 3D.
 
-======= Implementation in 2D and 3D =======
-label{fem:varform:fenics}
-
-From a principle of view, we have seen that variational forms of the
-type: find $a(u,v)=L\ \forall v\in V$ (and even general nonlinear problems
-$F(u;v)=0$), can apply the computational machinery of introduced for
-the approximation problem $u=f$, we only need two extensions:
-
- o specify Dirichlet boundary conditions as part of $V$
- o incorporate Neumann flux boundary conditions in the variational form
-
-The algorithms are all the same in any space dimension, we only need to
-choose the element type and associated integration rule. Once we know
-how to compute things in 1D, and made the computer code sufficiently
-flexible, the method and code should work for any variational form in
-any number of space dimensions! This fact is exactly the idea behind
-the "FEniCS": "http://fenicsproject.org" finite element software.
-
-Therefore, if we know how to set up an approximation problem in any
-dimension in FEniCS, and know how to derive variational forms in higher
-dimensions, we are (in principle!) very close to solving a
-PDE problem in FEniCS. Building on the Section ref{fe:approx:fenics},
-we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
-There is very much more FEniCS programming than this example, but it
-illustrates our fact that when we go beyond 1D, there is exists
-software which leverage the full power of the finite element method as
-a method for solving ``any'' problem in any number of
-space dimensions.
-
-===== Mathematical problem =====
-label{fem:varform:fenics:problem}
-
-The following model describes the pressure $u$ in the flow around a
-bore hole of radius $a$ in a porous medium:
-
-!bt
-\begin{alignat}
-\nabla\cdot \left( \dfc\nabla u\right) &= 0, & \quad a < ||\x|| < b,
-label{fem:varform:fenics:problem:pde}\\
-u(\x) &= U_a, & \quad ||\x|| = a,\\
-label{fem:varform:fenics:problem:ua}\\
-u(\x) &= U_b  & \quad ||\x|| = b\tp
-label{fem:varform:fenics:problem:ub}
-\end{alignat}
-!et
-That is, we have a hollow circular domain with inner radius $a$ and
-outer radius $b$. The pressure is known on these two boundaries, so
-this is a pure Dirichlet problem.
-
-
 ===== A glimpse of the mathematical theory of the finite element method =====
 
 Almost all books on the finite element method that introduces the
@@ -6018,9 +5968,76 @@ is cite{Larson_2013}
 ||f + u''||^2 + \frac{1}{4}h_k
 # #endif
 
+======= Implementation in 2D and 3D =======
+label{fem:varform:fenics}
+
+From a principle of view, we have seen that variational forms of the
+type: find $a(u,v)=L\ \forall v\in V$ (and even general nonlinear problems
+$F(u;v)=0$), can apply the computational machinery of introduced for
+the approximation problem $u=f$. We actually need two extensions only:
+
+ o specify Dirichlet boundary conditions as part of $V$
+ o incorporate Neumann flux boundary conditions in the variational form
+
+The algorithms are all the same in any space dimension, we only need to
+choose the element type and associated integration rule. Once we know
+how to compute things in 1D, and made the computer code sufficiently
+flexible, the method and code should work for any variational form in
+any number of space dimensions! This fact is exactly the idea behind
+the "FEniCS": "http://fenicsproject.org" finite element software.
+
+Therefore, if we know how to set up an approximation problem in any
+dimension in FEniCS, and know how to derive variational forms in higher
+dimensions, we are (in principle!) very close to solving a
+PDE problem in FEniCS. Building on the Section ref{fe:approx:fenics},
+we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
+There is very much more FEniCS programming than this example, but it
+illustrates our fact that when we go beyond 1D, there is exists
+software which leverage the full power of the finite element method as
+a method for solving ``any'' problem in any number of
+space dimensions.
+
+===== Mathematical problem =====
+label{fem:varform:fenics:problem}
+
+The following model describes the pressure $u$ in the flow around a
+bore hole of radius $a$ in a porous medium. If the hole is long in the
+vertical direction, we can model it by a 2D domain in the cross section.
+
+!bt
+\begin{alignat}
+\nabla\cdot \left( \dfc\nabla u\right) &= 0, & \quad a < ||\x|| < b,
+label{fem:varform:fenics:problem:pde}\\
+u(\x) &= U_a, & \quad ||\x|| = a,\\
+label{fem:varform:fenics:problem:ua}\\
+u(\x) &= U_b  & \quad ||\x|| = b\tp
+label{fem:varform:fenics:problem:ub}
+\end{alignat}
+!et
+That is, we have a hollow circular 2D domain with inner radius $a$ and
+outer radius $b$. The pressure is known on these two boundaries, so
+this is a pure Dirichlet problem.
+
+=== Symmetry ===
+
+The first thing we should observe is that the problem is radially
+symmetric, so we can change to cylindrical coordinates and obtain a 1D
+problem in the radial direction:
+
+!bt
+\[ (r\dfc u')' = 0,\quad u(a)=U_a, u(b)=U_b\tp\]
+!et
+This is not very exciting beyond being able to find an analytical solution
+and compute the true error of a finite element approximation.
+
+However, many programs solve problems in Cartesian coordinates, and FEniCS
+basically do this, so we want to take advantage of symmetry and reformulate
+the problem in a smaller domain. Looking at the domain as a cake with a hole,
+any piece of the cake will be a candidate for a reduced-size domain.
+
+
+
 !split
-
-
 ======= Convection-Diffusion and Petrov-Galerkin =======
 
 Let us now return to the problem in Section ref{sec:varform:general:convdiff}
