@@ -2712,6 +2712,7 @@ for i in range(len(basis)):
     A[i,j] = integral(psi_i*psi_j)
 !ec
 We remark that `sympy` may even write the output in LaTeX or C++ format.
+[kam: place this comment somwehere else?]
 
 
 ===== Implementation =====
@@ -6663,22 +6664,19 @@ def approx(f, V):
 
 def problem():
     f = Expression('2*x[0]*x[1] - pow(x[0], 2)', degree=2)
-<<<<<<< HEAD
-    mesh = RectangleMesh(Point(0,-1), Point(2,1), nx=8, ny=8)
-=======
     mesh = RectangleMesh(Point(0,-1), Point(2,1), 8, 8)
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 
-    V1 = FunctionSpace(mesh, 'Lagrange', 1)
+    V1 = FunctionSpace(mesh, 'P', 1)
     u1 = approx(f, V1)
     u1.rename('u1', 'u1')
     u1_error = errornorm(f, u1, 'L2')
 
-    V2 = FunctionSpace(mesh, 'Lagrange', 2)
+    V2 = FunctionSpace(mesh, 'P', 2)
     u2 = approx(f, V2)
     u2.rename('u2', 'u2')
     u2_error = errornorm(f, u2, 'L2')
 
+    print 'L2 errors: e1=%g, e2=%g' % (u1_error, u2_error)
     # Simple plotting
     plot(f, title='f', mesh=mesh)
     plot(u1, title='u1')
@@ -6688,10 +6686,10 @@ if __name__ == __main__:
     problem()
 !ec
 
-Figure ref{fem:approx:fenics:2D} shows the computed `u2`. The plots of
-`u1` and `f` are visually identical and therefore not shown.
+Figure ref{fem:approx:fenics:2D} shows the computed `u1`. The plots of
+`u2` and `f` are visually identical and therefore not shown.
 
-FIGURE: [fig/fenics_2D_plot_approx.png, width=400] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D}
+FIGURE: [fig/fenics_2D_plot_approx, width=400, frac=0.7] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D}
 
 
 === Dissection of the code ===
@@ -6699,13 +6697,8 @@ FIGURE: [fig/fenics_2D_plot_approx.png, width=400] Plot of the computed approxim
 The function `approx` is a general solver function for any $f$ and
 $V$.  We define the unknown $u$ in the variational form $a=a(u,v) = \int uv\dx$
 as a `TrialFunction` object and the test function $v$ as a
-<<<<<<< HEAD
 `TestFunction` object. Then we define the variational form through
 the integrand `u*v*dx`. The linear form $L$ is similarly defined as
-=======
-`TestFunction` object. Then we define the the variational form through
-the integrand `u*v*dx`. The linear form $L=L(v)=\int fv\dx$ is similarly defined
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 `f*v*dx`. Here, `f` must be an `Expression` object in FEniCS, i.e., a
 formula defined by its implementation in C++. With `a` and `L` defined,
 we re-define `u` to be a finite element function `Function`, which is
@@ -6715,20 +6708,14 @@ is implemented in FEniCS (in a slightly more general fashion)
 in the function  `project`.
 
 The `problem` function applies `approx` to solve a specific problem.
-<<<<<<< HEAD
-This part requires two definitions: one of $f$ and one of $\Omega$.
-Or more precisely: the domain is defined by its discrete counterpart,
-the mesh.
 
 === Integrating SymPy and FEniCS ===
 
-The definition of $f$ must be expressed in C++, where the independent
-=======
+The definition of $f$ must be expressed in C++.
 This part requires two definitions: one of $f$ and one of $\Omega$,
 or more precisely: the mesh (discrete $\Omega$ divided into cells).
 The definition of $f$ is here expressed in C++ (it will be compiled
 for fast evaluation), where the independent
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 coordinates are given by a C/C++ vector `x`. This means that $x$ is
 `x[0]`, $y$ is `x[1]`, and $z$ is `x[2]`. Moreover, `x[0]**2` must
 be written as `pow(x[0], 2)` in C/C++.
@@ -6743,7 +6730,6 @@ Here is how we can specify `f` in SymPy and use it in FEniCS as an
 >>> import sympy as sym
 >>> x, y = sym.symbols('x[0] x[1]')
 >>> f = 2*x*y - x**2
-<<<<<<< HEAD
 >>> print f
 -x[0]**2 + 2*x[0]*x[1]
 >>> f = sym.printing.ccode(f)   # Translate to C code
@@ -6751,9 +6737,6 @@ Here is how we can specify `f` in SymPy and use it in FEniCS as an
 -pow(x[0], 2) + 2*x[0]*x[1]
 >>> import fenics as fe
 >>> f = fe.Expression(f)
-=======
->>> print sym.ccode(f)
-2*x[0]*x[1] - pow(x[0], 2)
 !ec
 Here, the function `ccode` generates C code and we use
 `x` and `y` as placeholders for
@@ -6761,6 +6744,7 @@ Here, the function `ccode` generates C code and we use
 a general point `x` in any dimension. The output of  `ccode`
 can then be used directly in  `Expression`.
 
+# #ifdef KENTEX
 It is often challenging to determine the quality of an
 approximation by visual inspection of 2D and 3D plots.
 Line plots or pointwise evaluation makes quantification
@@ -6772,33 +6756,31 @@ Clearly, the approximation is very good and the
 maximal error among the 13 points is $\approx 0.01$.
 
 !bc pycod
-  # plot along line y=1-x, sample at 13 points
-    import numpy as np
-    point = np.array([0.0, 0.0])
-    value = np.array([0.0])
-    f_values = []
-    u1_values = []
-    for i in range(0, 13):
-        point[0] = i/13.0
-        point[1] = 1-point[0]
-        f.eval(value, point)
-        f_values.append(value[0])
-        u1.eval(value, point)
-        u1_values.append(value[0])
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
+# plot along line y=1-x, sample at 13 points
+import numpy as np
+point = np.array([0.0, 0.0])
+value = np.array([0.0])
+f_values = []
+u1_values = []
+for i in range(0, 13):
+    point[0] = i/13.0
+    point[1] = 1-point[0]
+    f.eval(value, point)
+    f_values.append(value[0])
+    u1.eval(value, point)
+    u1_values.append(value[0])
 !ec
 Note that we must define `x` as `x[0]` and `y` as `x[1]` for the
 C++ syntax to be correct.
 
+FIGURE: [fig/fenics_plot_along_line, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline}
+# #endif
+
 ===== Refined code with curve plotting =====
 label{fe:approx:fenics:2D:2}
 
-<<<<<<< HEAD
 === Interpolation and projection ===
 
-<<<<<<< HEAD
-FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline}
-=======
 The operation with defining `a`, `L`, and solving for a `u` is so
 common that it can be done by single FEniCS command `project`:
 
@@ -6806,12 +6788,6 @@ common that it can be done by single FEniCS command `project`:
 u = project(f, V)
 !ec
 So, there is no need for our `approx` function!
-=======
-FIGURE: [fig/fenics_plot_along_line.png, width=400] Plot of the computed approximation using Lagrange elements of first order along the line $y=1-x$. label{fem:approx:fenics:plotalongline} 
->>>>>>> 98cf03a27b3505152cdfcffda7bf147755d84ff7
-
-
->>>>>>> a7d7df0ab43ff56b5986b9a47dc4ace0ba90fb60
 
 If we want to do interpolation (or collocation) instead, we simply do
 
@@ -6876,7 +6852,7 @@ There are two striking features in the figure:
 With this code, found in the file "`approx_fenics.py`": "$approx_fenics.py",
 we can easily run lots of experiments with the Lagrange element family.
 Just write the
-SymPy expression and choose the mesh resolution.
+SymPy expression and choose the mesh resolution!
 
 ======= Exercises =======
 
