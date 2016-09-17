@@ -365,7 +365,7 @@ label{nitsche:pde:opt:penalty}
 
 The attention is now on optimization of a functional $F(u)$
 with a given constraint that $u=\uN$ on $\partial\Omega_N$.
-We could, of course, just extend the condition on $u$ in the
+We could, of course, just extend the Dirichlet condition on $u$ in the
 previous set-up by saying that $\partial\Omega_D$ is the
 complete boundary $\partial\Omega$ and that $u$ takes on
 the values of $0$ and $\uN$ at the different parts of the
@@ -400,11 +400,15 @@ the $g$ by the unknown $\partial u/\partial n$ in the
 boundary integral term in (ref{nitsche:Fu:functional1}).
 The new functional becomes
 
+[kam: there is a mismatch between text and equations here. If
+we replace $g$ with $\partial u/\partial n$ it seems we get a 
+symmetric form right away as we get $u  \partial u/\partial n $. ]
+
 !bt
 \begin{equation} F(u) =
 \int\limits_\Omega ||\nabla u||^2 \dx -
 \int\limits_\Omega fu \dx -
-\int\limits_{\partial\Omega_N}gu \ds + \,
+\int\limits_{\partial\Omega_N} \frac{\partial u}{\partial n}  u \ds + \,
 \frac{1}{2}\int\limits_{\partial\Omega_N}\lambda (u-\uN)^2 \ds,\quad
 u\in V,
 label{nitsche:Fu:functional2}
@@ -459,9 +463,12 @@ L(v) &= \int\limits_\Omega fv \dx +
 \end{align*}
 !et
 The lack of symmetry is
-evident in that we cannot interchange $u$ and $v$ in $a(u,v)$.
-The standard finite element method has the symmetry property
-in Poisson problems. The problematic non-symmetric term
+evident in that we cannot interchange $u$ and $v$ in $a(u,v)$, that is; 
+$a(u,v)\not=a(v,u)$. 
+The standard finite element method results in a symmetric bilinear form
+and a corresponding matrix for 
+the Poisson problem and we would like to regain this property. 
+The problematic non-symmetric term
 is the line integral of $v \partial u/\partial n$.
 If we had another term $u \partial v/\partial n$, the sum would be
 symmetric. The idea is therefore to subtract $\int_{\partial\Omega_N}
@@ -626,17 +633,17 @@ L(v) &= \int_0^1 fv \dx
 A uniform mesh with nodes
 $x_i=i\Delta x$ is introduced, numbered from left to right:
 $i=0,\ldots,N_x$. The approximate value of $u$ at $x_i$ is denoted
-by $u_i$, and in general the approximation to $u$ is $\sum_{i=0}^{N_x}
-\varphi_i(x)u_i$.
+by $c_i$, and in general the approximation to $u$ is $\sum_{i=0}^{N_x}
+\varphi_i(x)c_i$.
 
 The elements at the boundaries needs special attention. Let us consider 
-element 0 defined on $[0,h]$. The basis functions are 
+the element 0 defined on $[0,h]$. The basis functions are 
 $\varphi_0(x) = 1 - x/h$ and 
 $\varphi_1(x) = x/h$. Hence, 
-$\varphi_0|_0 = 1$, 
-$\varphi'_0|_0 = -1/h$, 
-$\varphi_1|_0 = 0$, and  
-$\varphi'_1|_0 = 1/h$. Therefore, for element 0 we obtain the element matrix
+$\varphi_0|_{x=0} = 1$, 
+$\varphi'_0|_{x=0} = -1/h$, 
+$\varphi_1|_{x=0} = 0$, and  
+$\varphi'_1|_{x=0} = 1/h$. Therefore, for element 0 we obtain the element matrix
 !bt
 \begin{align*}
 A^{(0)}_{0, 0} &= \lambda + \frac{3}{h}, \\
@@ -672,7 +679,7 @@ for i in range(len(basis)):
 !ec 
 
 
-[kam: this is perhaps all that is needed? We don't need to solve anything.]
+[kam: Do the thing in FEniCS. Check results for different $\lambda$.]
 
 
 
