@@ -6652,12 +6652,15 @@ if __name__ == '__main__':
 !ec
 
 Figure ref{fem:approx:fenics:2D:fig1} shows the computed `u1`. The plots of
-`u2` and `f` are identical and therefore not shown. The output
+`u2` and `f` are identical and therefore not shown.
+The plot itself is not very informative about the approximation quality of
+P1 elements. The output
 of errors becomes
 
 !bc
 L2 errors: e1=0.0131493, e2=4.93418e-15
 !ec
+
 
 FIGURE: [fig/fenics_2D_plot_approx, width=400 frac=0.7] Plot of the computed approximation using Lagrange elements of second order. label{fem:approx:fenics:2D:fig1}
 
@@ -6681,14 +6684,14 @@ The `problem` function applies `approx` to solve a specific problem.
 
 === Integrating SymPy and FEniCS ===
 
-The definition of $f$ must be expressed in C++.
-This part requires two definitions: one of $f$ and one of $\Omega$,
-or more precisely: the mesh (discrete $\Omega$ divided into cells).
-The definition of $f$ is here expressed in C++ (it will be compiled
-for fast evaluation), where the independent
-coordinates are given by a C/C++ vector `x`. This means that $x$ is
-`x[0]`, $y$ is `x[1]`, and $z$ is `x[2]`. Moreover, `x[0]**2` must
-be written as `pow(x[0], 2)` in C/C++.
+The definition of $f$ must be expressed in C++.  This part requires
+two definitions: one of $f$ and one of $\Omega$, or more precisely:
+the mesh (discrete $\Omega$ divided into cells).  The definition of
+$f$ is here expressed in C++ (it will be compiled for fast
+evaluation), where the independent coordinates are given by a C/C++
+vector `x`. This means that $x$ is `x[0]`, $y$ is `x[1]`, and $z$ is
+`x[2]`. Moreover, `x[0]**2` must be written as `pow(x[0], 2)` in
+C/C++.
 
 Fortunately, we can easily integrate SymPy and `Expression` objects,
 because SymPy can take a formula and translate it to C/C++ code, and
