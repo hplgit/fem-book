@@ -6207,19 +6207,20 @@ We are now ready for the Python code that codes these formulas and manipulates
 the FEniCS mesh:
 
 @@@CODE src/borehole_fenics.py fromto: def make_mesh@def solver
+Fortunately, the solver is independent of all the details of the mesh making.
+#We can instead generate a simple `RectangleMesh`.
 
 We could also have used the mesh tool `mshr` in FEniCS, but with our
 approach here we have full control of the refinement towards the hole.
 
 ===== Solving a problem =====
 
-We assume that $\dfc$ is constant.
-Before solving such
-a specific problem, it can be wise to scale the problem since
-it often reduces the amount of input data in the model. Here, the variation
-in $u$ is typically $|u_a-u_b|$ so we use that as characteristic
-pressure. The coordinates may be naturally scaled by the bore hole radius,
-so we have new, scaled variables
+We assume that $\dfc$ is constant.  Before solving such a specific
+problem, it can be wise to scale the problem since it often reduces
+the amount of input data in the model. Here, the variation in $u$ is
+typically $|u_a-u_b|$ so we use that as characteristic pressure. The
+coordinates may be naturally scaled by the bore hole radius, so we
+have new, scaled variables
 
 !bt
 \[ \bar u = \frac{u-u_a}{u_a-u_b},\quad \bar x = \frac{x}{a},\quad
