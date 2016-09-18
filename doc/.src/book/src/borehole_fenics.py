@@ -47,15 +47,15 @@ def solver(alpha,    # Diffusion coefficient
     def inner(x, on_boundary):
         """Return True if x on r=a with tolerance."""
         r = on_boundary and \
-            abs(sqrt(x[0]**2 + x[1]**2) - x_a) < 1E-12
-        print 'XXXa', r
+            abs(sqrt(x[0]**2 + x[1]**2) - x_a) < 1E-2
+        print 'XXXa', r, x[0], x[1], abs(sqrt(x[0]**2 + x[1]**2) - x_a), on_boundary
         return r
 
     def outer(x, on_boundary):
         """Return True if x on r=b with tolerance."""
         r = on_boundary and \
-            abs(sqrt(x[0]**2 + x[1]**2) - x_b) < 1E-12
-        print 'XXXb', r
+            abs(sqrt(x[0]**2 + x[1]**2) - x_b) < 1E-2
+        print 'XXXb', r, x[0], x[1], abs(sqrt(x[0]**2 + x[1]**2) - x_b), on_boundary
         return r
 
     bc_inner = DirichletBC(V, u_a, inner)
@@ -72,6 +72,9 @@ def solver(alpha,    # Diffusion coefficient
     u = Function(V)
     solve(a == L, u, bcs)
 
+    f = File("mesh.xml")
+    f << mesh
+
     # Save solution to file in VTK format
     vtkfile = File(filename + '.pvd')
     vtkfile << u
@@ -81,7 +84,7 @@ def solver(alpha,    # Diffusion coefficient
     return u
 
 def problem():
-    solver(alpha=1, u_a=1, u_b=0, Theta=pi/4, x_a=1, x_b=10, nr=20, nt=10, degree=1, filename='tmp')
+    solver(alpha=1, u_a=1, u_b=0, Theta=pi/4, x_a=1, x_b=10, nr=20, nt=20, degree=1, filename='tmp')
 
 if __name__ == '__main__':
     problem()
