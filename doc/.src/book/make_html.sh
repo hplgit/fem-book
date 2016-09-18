@@ -18,7 +18,7 @@ function system {
 pwd
 preprocess -DFORMAT=html ../chapters/newcommands_keep.p.tex > newcommands_keep.tex
 
-opt="CHAPTER=$CHAPTER BOOK=$BOOK APPENDIX=$APPENDIX --encoding=utf-8"
+opt="CHAPTER=$CHAPTER BOOK=$BOOK APPENDIX=$APPENDIX --encoding=utf-8 --allow_refs_to_external_docs"
 
 # Compile Bootstrap HTML
 html=fem-book

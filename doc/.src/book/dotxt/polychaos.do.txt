@@ -238,9 +238,9 @@ the *random input variables are stochastically independent*. There are
 methods to come around this problem, but these are very recent and we
 keep the traditional assumption in the present of the theory here.
 
-# Determining c_i
+There are four methods that have been used to compute $c_i$:
 
- o Least-squares minimization or Galerkin projection with exact
+ o Least squares minimization or Galerkin projection with exact
    computation of integrals
  o Least-squares minimization or Galerkin projection with numerical
    computation of integrals

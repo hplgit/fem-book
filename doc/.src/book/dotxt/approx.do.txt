@@ -1341,8 +1341,8 @@ FIGURE: [fig/ill_conditioning, width=600] The 15 first basis functions $x^i$, $i
 On the other hand, the double precision `numpy` solver does run for
 $N=100$, resulting in answers that are not significantly worse than
 those in the table above, and large powers are
-associated with small coefficients (e.g., $c_j<10^{-2}$ for $10\leq
-j\leq 20$ and $c<10^{-5}$ for $j>20$). Even for $N=100$ the
+associated with small coefficients (e.g., $c_j < 10^{-2}$ for $10\leq
+j\leq 20$ and $c<10^{-5}$ for $j > 20$). Even for $N=100$ the
 approximation still lies on top of the exact curve in a plot (!).
 
 The conclusion is that visual inspection of the quality of the approximation
