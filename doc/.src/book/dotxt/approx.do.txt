@@ -2145,9 +2145,9 @@ label{bernstein:basis}
 \end{equation}
 !et
 
-FIGURE: [fig/Bernstein_basis8.png] The nine functions of a Bernstein basis of order 8. label{Bernstein_basis_8}
+FIGURE: [fig/Bernstein_basis8] The nine functions of a Bernstein basis of order 8. label{Bernstein_basis_8}
 
-FIGURE: [fig/Lagrange_basis8.png] The nine functions of a Lagrange basis of order 8. label{Lagrange_basis_8}
+FIGURE: [fig/Lagrange_basis8] The nine functions of a Lagrange basis of order 8. label{Lagrange_basis_8}
 
 
 
@@ -2347,9 +2347,9 @@ plot. Here, the Bernstein approximation appears to be a linear line
 which suggests that the convergence is exponential.
 
 
-FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot.  label{fem:approx:bell:loglogfig}
+FIGURE: [fig/Bell_convergence_loglog] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot.  label{fem:approx:bell:loglogfig}
 
-FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot.  label{fem:approx:bell:semilogfig}
+FIGURE: [fig/Bell_convergence_semilogy] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot.  label{fem:approx:bell:semilogfig}
 
 The following program computes the order of convergence for
 the sines using the polynomial model (ref{sec:approx:pol:model})
@@ -2401,7 +2401,7 @@ alone. However, for completeness we include a log-log plot in Figure
 ref{fem:comp:bell:loglogfig} to illustrate the polynomial increase in
 CPU time with respect to N.
 
-FIGURE: [fig/Bell_computations_loglog.png] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
+FIGURE: [fig/Bell_computations_loglog] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
 
 
 The complete code can be found in

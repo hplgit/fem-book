@@ -2017,7 +2017,7 @@ u(x) = \frac{e^{-x/\epsilon} - 1}{ e^{-1/\epsilon} -1 } .
 \end{equation}
 !et
 
-FIGURE: [fig/conv-diff-analytical.png, width=400] Analytical solution to the convection-diffusion problem for varying $\epsilon$. label{convdiff:analytical}
+FIGURE: [fig/conv-diff-analytical, width=400] Analytical solution to the convection-diffusion problem for varying $\epsilon$. label{convdiff:analytical}
 
 
 The solution is plotted in Figure ref{convdiff:analytical} for
@@ -2127,9 +2127,9 @@ for eps in eps_valuess:
     plt.plot(x_, U_)
 !ec
 
-FIGURE: [fig/Lagrange_convdiff_8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
+FIGURE: [fig/Lagrange_convdiff_8, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
 
-FIGURE: [fig/Lagrange_convdiff_16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
+FIGURE: [fig/Lagrange_convdiff_16, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
 
 The numerical solutions for different $\epsilon$ is shown in Figure
 ref{convdiff:osc:Lagrange8} and ref{convdiff:osc:Lagrange16} for $N=8$
@@ -6318,7 +6318,7 @@ on a coarse mesh of 10 elements for $\mu=0.01$. Clearly, the finite
 element method has the same problem as was observed earlier in global
 functions in Section ref{sec:varform:general:convdiff}.
 
-#FIGURE: [fig/fenics_conv_diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
+FIGURE: [fig/fenics_conv_diff, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 For finite differences, the cure for these oscillations is *upwinding*.
 That is, instead
@@ -6346,7 +6346,7 @@ $\epsilon =h/2 \Delta $ we get
 \end{eqnarray*}
 !et
 
-#FIGURE: [fig/fenics_conv_diff_stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+FIGURE: [fig/fenics_conv_diff_stab, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
 Hence, upwinding is equivalent to adding artificial diffusion with
 $\epsilon=h/2$; that is, in both cases we actually solve the problem
