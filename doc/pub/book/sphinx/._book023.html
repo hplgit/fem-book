@@ -1,0 +1,1049 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Variational formulations in 2D and 3D</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+
+        <script src="http://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="http://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+
+        <script>sagecell.makeSagecell({inputLocation: ".sage"});</script>
+
+        <style type="text/css">
+                .sagecell .CodeMirror-scroll {
+                        overflow-y: hidden;
+                        overflow-x: auto;
+                }
+                .sagecell .CodeMirror {
+                        height: auto;
+                }
+        </style>
+
+    
+    <link rel="top" title="Introduction to Numerical Methods for Variational Problems" href="index.html" />
+    <link rel="next" title="Convection-diffusion and Petrov-Galerkin methods" href="._book024.html" />
+    <link rel="prev" title="Implementation of finite element algorithms" href="._book022.html" />
+ 
+  
+       <style type="text/css">
+         div.admonition {
+           background-color: whiteSmoke;
+           border: 1px solid #bababa;
+         }
+       </style>
+      </head>
+    
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="._book024.html" title="Convection-diffusion and Petrov-Galerkin methods"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="._book022.html" title="Implementation of finite element algorithms"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="variational-formulations-in-2d-and-3d">
+<span id="fem-deq-2d-varform"></span><h1>Variational formulations in 2D and 3D<a class="headerlink" href="#variational-formulations-in-2d-and-3d" title="Permalink to this headline">¶</a></h1>
+<p>The major difference between deriving variational formulations in 2D
+and 3D compared to 1D is the rule for integrating by parts.  The cells
+have shapes different from an interval, so basis functions look a bit
+different, and there is a technical difference in actually calculating
+the integrals over cells. Otherwise, going to 2D and 3D is not a big
+step from 1D. All the fundamental ideas still apply.</p>
+<div class="section" id="integration-by-parts-2">
+<h2>Integration by parts<a class="headerlink" href="#integration-by-parts-2" title="Permalink to this headline">¶</a></h2>
+<p>A typical second-order term in a PDE may be written in dimension-independent
+notation as</p>
+<div class="math">
+\[\nabla^2 u \quad\hbox{or}\quad \nabla\cdot\left( {\alpha}(\boldsymbol{x})\nabla u\right)
+{\thinspace .}\]</div>
+<p>The explicit forms in a 2D problem become</p>
+<div class="math">
+\[\nabla^2 u = \nabla\cdot\nabla u =
+\frac{\partial^2 u}{\partial x^2} +
+\frac{\partial^2 u}{\partial y^2},\]</div>
+<p>and</p>
+<div class="math">
+\[\nabla\cdot\left( a(\boldsymbol{x})\nabla u\right) =
+\frac{\partial}{\partial x}\left( {\alpha}(x,y)\frac{\partial u}{\partial x}\right) +
+\frac{\partial}{\partial y}\left( {\alpha}(x,y)\frac{\partial u}{\partial y}\right)
+{\thinspace .}\]</div>
+<p>We shall continue with the latter operator as the former arises from
+just setting <span class="math">\({\alpha} =1\)</span>.</p>
+<div class="admonition-the-integration-by-parts-formula-for-math-int-nabla-cdot-alpha-nabla admonition">
+<p class="first admonition-title">The integration by parts formula for <span class="math">\(\int\nabla\cdot({\alpha}\nabla)\)</span></p>
+<p class="last">The general rule for integrating by parts is often referred to as
+<a class="reference external" href="http://en.wikipedia.org/wiki/Green's_identities">Green&#8217;s first identity</a>:</p>
+</div>
+<div class="math" id="eq-fem-deq-2d-int-by-parts">
+\[ \begin{align}\begin{aligned} \tag{225}
+ -\int_{\Omega} \nabla\cdot ({\alpha}(\boldsymbol{x})\nabla u) v{\, \mathrm{d}x} =
+        \int_{\Omega} {\alpha}(\boldsymbol{x})\nabla u\cdot\nabla v {\, \mathrm{d}x} -
+        \int_{\partial\Omega} a\frac{\partial u}{\partial n} v {\, \mathrm{d}s},\\where  \( \partial\Omega \)  is the boundary of  \( \Omega \)  and
+ \( \partial u/\partial n = \boldsymbol{n}\cdot\nabla u \)  is the derivative
+of  \( u \)  in the outward normal direction,  \( \boldsymbol{n} \)  being an outward
+unit normal to  \( \partial\Omega \) . The integrals  \( \int_\Omega (){\, \mathrm{d}x} \)  are
+area integrals in 2D and volume integrals in 3D, while
+ \( \int_{\partial\Omega} (){\, \mathrm{d}s} \)  is a line integral in 2D and a surface
+integral in 3D.\end{aligned}\end{align} \]</div>
+<p>It will be convenient to divide the boundary into two parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><span class="math">\(\partial\Omega_N\)</span>, where we have Neumann conditions
+<span class="math">\(-a\frac{\partial u}{\partial n} = g\)</span>, and</li>
+<li><span class="math">\(\partial\Omega_D\)</span>, where we have Dirichlet conditions
+<span class="math">\(u = u_0\)</span>.</li>
+</ul>
+</div></blockquote>
+<p>The test functions <span class="math">\(v\)</span> are (as usual) required to vanish on
+<span class="math">\(\partial\Omega_D\)</span>.</p>
+</div>
+<div class="section" id="example-on-a-multi-dimensional-variational-problem">
+<span id="sec-varform-general-convdiff"></span><h2>Example on a multi-dimensional variational problem<a class="headerlink" href="#example-on-a-multi-dimensional-variational-problem" title="Permalink to this headline">¶</a></h2>
+<p>Here is a quite general, stationary, linear PDE arising in many problems:</p>
+<div class="math" id="eq-varform-conv-diff-pde-pre">
+\[\tag{226}
+\boldsymbol{v}\cdot\nabla u + \beta u = \nabla\cdot\left( {\alpha}\nabla u\right) + f,
+    \quad\boldsymbol{x}\in\Omega,\]</div>
+<div class="math" id="eq-varform-conv-diff-bc1-pre">
+\[\tag{227}
+u = u_0,\quad\boldsymbol{x}\in\partial\Omega_D,\]</div>
+<div class="math" id="eq-varform-conv-diff-bc2-pre">
+\[\tag{228}
+-{\alpha}\frac{\partial u}{\partial n} = g,\quad\boldsymbol{x}\in\partial\Omega_N
+    {\thinspace .}\]</div>
+<p>The vector field <span class="math">\(\boldsymbol{v}\)</span> and the scalar functions <span class="math">\(a\)</span>, <span class="math">\(\alpha\)</span>, <span class="math">\(f\)</span>, <span class="math">\(u_0\)</span>, and
+<span class="math">\(g\)</span> may vary with the spatial coordinate <span class="math">\(\boldsymbol{x}\)</span> and must be known.</p>
+<p>Such a second-order PDE needs exactly one boundary condition at each
+point of the boundary, so <span class="math">\(\partial\Omega_N\cup\partial\Omega_D\)</span>
+must be the complete boundary <span class="math">\(\partial\Omega\)</span>.</p>
+<p>Assume that the boundary function <span class="math">\(u_0(\boldsymbol{x})\)</span> is defined for all <span class="math">\(\boldsymbol{x}\in\Omega\)</span>.
+The unknown function can then be expanded as</p>
+<div class="math">
+\[u = B + \sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j,\quad B = u_0 {\thinspace .}\]</div>
+<p>As long as any <span class="math">\({\psi}_j=0\)</span> on <span class="math">\(\partial\Omega_D\)</span>, we realize that <span class="math">\(u=u_0\)</span>
+on <span class="math">\(\partial\Omega_D\)</span>.</p>
+<p>The variational formula is obtained from Galerkin&#8217;s method, which
+technically means multiplying the PDE by a test
+function <span class="math">\(v\)</span> and integrating over <span class="math">\(\Omega\)</span>:</p>
+<div class="math">
+\[\int_{\Omega} (\boldsymbol{v}\cdot\nabla u + \beta u)v{\, \mathrm{d}x} =
+\int_{\Omega} \nabla\cdot\left( {\alpha}\nabla u\right){\, \mathrm{d}x} + \int_{\Omega}fv {\, \mathrm{d}x}
+{\thinspace .}\]</div>
+<p>The second-order term is integrated by parts, according to the formula
+<a class="reference internal" href="#eq-fem-deq-2d-int-by-parts"><span class="std std-ref">(225)</span></a>:</p>
+<div class="math">
+\[\int_{\Omega} \nabla\cdot\left( {\alpha}\nabla u\right)v {\, \mathrm{d}x} =
+-\int_{\Omega} {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x}
++ \int_{\partial\Omega} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s}
+{\thinspace .}\]</div>
+<p>Galerkin&#8217;s method therefore leads to</p>
+<div class="math">
+\[\int_{\Omega} (\boldsymbol{v}\cdot\nabla u + \beta u)v{\, \mathrm{d}x} =
+-\int_{\Omega} {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x}
++ \int_{\partial\Omega} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s}
++ \int_{\Omega} fv {\, \mathrm{d}x}
+{\thinspace .}\]</div>
+<p>The boundary term can be developed further by noticing that <span class="math">\(v\neq 0\)</span>
+only on <span class="math">\(\partial\Omega_N\)</span>,</p>
+<div class="math">
+\[\int_{\partial\Omega} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s}
+= \int_{\partial\Omega_N} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s},\]</div>
+<p>and that on <span class="math">\(\partial\Omega_N\)</span>, we have the condition
+<span class="math">\(a\frac{\partial u}{\partial n}=-g\)</span>, so the term becomes</p>
+<div class="math">
+\[-\int_{\partial\Omega_N} gv{\, \mathrm{d}s}{\thinspace .}\]</div>
+<p>The final variational form is then</p>
+<div class="math">
+\[\int_{\Omega} (\boldsymbol{v}\cdot\nabla u + \beta u)v{\, \mathrm{d}x} =
+-\int_{\Omega} {\alpha}\nabla u\cdot\nabla v {\, \mathrm{d}x}
+- \int_{\partial\Omega_N} g v{\, \mathrm{d}s}
++ \int_{\Omega} fv {\, \mathrm{d}x}
+{\thinspace .}\]</div>
+<p>Instead of using the integral signs, we may use the inner product
+notation:</p>
+<div class="math">
+\[(\boldsymbol{v}\cdot\nabla u, v) + (\beta u,v) =
+- ({\alpha}\nabla u,\nabla v) - (g,v)_{N} + (f,v)
+{\thinspace .}\]</div>
+<p>The subscript <span class="math">\(\,{}_N\)</span> in <span class="math">\((g,v)_{N}\)</span> is a notation for a line or surface
+integral over <span class="math">\(\partial\Omega_N\)</span>, while <span class="math">\((\cdot,\cdot)\)</span> is the area/volume
+integral over <span class="math">\(\Omega\)</span>.</p>
+<p>We can derive explicit expressions for the linear system for <span class="math">\(\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}\)</span>
+that arises from the variational formulation.
+Inserting the <span class="math">\(u\)</span> expansion results in</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+\sum_{j\in{\mathcal{I}_s}} ((\boldsymbol{v}\cdot\nabla {\psi}_j, {\psi}_i) &amp;+ (\beta {\psi}_j ,{\psi}_i) + ({\alpha}\nabla {\psi}_j,\nabla {\psi}_i))c_j = \\
+&amp; (g,{\psi}_i)_{N} + (f,{\psi}_i) -
+(\boldsymbol{v}\cdot\nabla u_0, {\psi}_i) + (\beta u_0 ,{\psi}_i) +
+({\alpha}\nabla u_0,\nabla {\psi}_i)
+{\thinspace .}
+\end{align*}\end{split}\]</div>
+<p>This is a linear system with matrix entries</p>
+<div class="math">
+\[A_{i,j} = (\boldsymbol{v}\cdot\nabla {\psi}_j, {\psi}_i) + (\beta {\psi}_j ,{\psi}_i) + ({\alpha}\nabla {\psi}_j,\nabla {\psi}_i)\]</div>
+<p>and right-hand side entries</p>
+<div class="math">
+\[b_i = (g,{\psi}_i)_{N} + (f,{\psi}_i) -
+(\boldsymbol{v}\cdot\nabla u_0, {\psi}_i) + (\beta u_0 ,{\psi}_i) +
+({\alpha}\nabla u_0,\nabla {\psi}_i),\]</div>
+<p>for <span class="math">\(i,j\in{\mathcal{I}_s}\)</span>.</p>
+<p>In the finite element method, we usually express <span class="math">\(u_0\)</span> in terms of
+basis functions and restrict <span class="math">\(i\)</span> and <span class="math">\(j\)</span> to run over the degrees of
+freedom that are not prescribed as Dirichlet conditions.
+However, we can also keep all the <span class="math">\(\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}\)</span> as unknowns,
+drop the <span class="math">\(u_0\)</span> in the expansion for <span class="math">\(u\)</span>, and incorporate all the
+known <span class="math">\(c_j\)</span> values in the linear system. This has been explained
+in detail in the 1D case, and the technique is the same for 2D and
+3D problems.</p>
+</div>
+<div class="section" id="transformation-to-a-reference-cell-in-2d-and-3d">
+<h2>Transformation to a reference cell in 2D and 3D<a class="headerlink" href="#transformation-to-a-reference-cell-in-2d-and-3d" title="Permalink to this headline">¶</a></h2>
+<p>The real power of the finite element method first becomes evident when
+we want to solve partial differential equations posed on two- and
+three-dimensional domains of non-trivial geometric shape.  As in 1D,
+the domain <span class="math">\(\Omega\)</span> is divided into <span class="math">\(N_e\)</span> non-overlapping cells. The
+elements have simple shapes: triangles and quadrilaterals are popular
+in 2D, while tetrahedra and box-shapes elements dominate in 3D.  The
+finite element basis functions <span class="math">\({\varphi}_i\)</span> are, as in 1D, polynomials
+over each cell.  The integrals in the variational formulation are, as
+in 1D, split into contributions from each cell, and these
+contributions are calculated by mapping a physical cell, expressed in
+physical coordinates <span class="math">\(\boldsymbol{x}\)</span>, to a reference cell in a local coordinate
+system <span class="math">\(\boldsymbol{X}\)</span>. This mapping will now be explained in detail.</p>
+<p>We consider an integral of the type</p>
+<div class="math" id="eq-auto106">
+\[\tag{229}
+\int_{{\Omega}^{(e)}} {\alpha}(\boldsymbol{x})\nabla{\varphi}_i\cdot\nabla{\varphi}_j{\, \mathrm{d}x},\]</div>
+<p>where the <span class="math">\({\varphi}_i\)</span> functions are finite element basis functions in
+2D or 3D, defined in the physical domain.
+Suppose we want to calculate this integral over a reference cell,
+denoted by <span class="math">\(\tilde\Omega^r\)</span>, in a coordinate system with coordinates
+<span class="math">\(\boldsymbol{X} = (X_0, X_1)\)</span> (2D) or <span class="math">\(\boldsymbol{X} = (X_0, X_1, X_2)\)</span> (3D).
+The mapping between a point <span class="math">\(\boldsymbol{X}\)</span> in the reference coordinate system  and
+the corresponding point <span class="math">\(\boldsymbol{x}\)</span> in the physical coordinate system is
+given by a vector relation <span class="math">\(\boldsymbol{x}(\boldsymbol{X})\)</span>.
+The corresponding Jacobian, <span class="math">\(J\)</span>, of this mapping has entries</p>
+<div class="math">
+\[J_{i,j}=\frac{\partial x_j}{\partial X_i}{\thinspace .}\]</div>
+<p>The change of variables requires <span class="math">\({\, \mathrm{d}x}\)</span> to be replaced by <span class="math">\(\det J{\, \mathrm{d}X}\)</span>.
+The derivatives in the <span class="math">\(\nabla\)</span> operator in the variational form are
+with respect to <span class="math">\(\boldsymbol{x}\)</span>, which we may denote by <span class="math">\(\nabla_{\boldsymbol{x}}\)</span>.
+The <span class="math">\({\varphi}_i(\boldsymbol{x})\)</span> functions in the integral
+are replaced by local basis functions <span class="math">\({\tilde{\varphi}}_r(\boldsymbol{X})\)</span> so
+the integral features <span class="math">\(\nabla_{\boldsymbol{x}}{\tilde{\varphi}}_r(\boldsymbol{X})\)</span>. We readily have
+<span class="math">\(\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r(\boldsymbol{X})\)</span> from formulas for the basis functions in
+the reference cell, but
+the desired quantity <span class="math">\(\nabla_{\boldsymbol{x}}{\tilde{\varphi}}_r(\boldsymbol{X})\)</span> requires some efforts
+to compute. All the details are provided below.</p>
+<p>Let <span class="math">\(i=q(e,r)\)</span> and consider two space dimensions. By the chain rule,</p>
+<div class="math">
+\[\frac{\partial {\tilde{\varphi}}_r}{\partial X} =
+\frac{\partial {\varphi}_i}{\partial X} =
+\frac{\partial {\varphi}_i}{\partial x}\frac{\partial x}{\partial X} +
+\frac{\partial {\varphi}_i}{\partial y}\frac{\partial y}{\partial X},\]</div>
+<p>and</p>
+<div class="math">
+\[\frac{\partial {\tilde{\varphi}}_r}{\partial Y} =
+\frac{\partial {\varphi}_i}{\partial Y} =
+\frac{\partial {\varphi}_i}{\partial x}\frac{\partial x}{\partial Y} +
+\frac{\partial {\varphi}_i}{\partial y}\frac{\partial y}{\partial Y}
+{\thinspace .}\]</div>
+<p>We can write these two equations as a vector equation</p>
+<div class="math">
+\[\begin{split}\left[\begin{array}{c}
+\frac{\partial {\tilde{\varphi}}_r}{\partial X}\\
+\frac{\partial {\tilde{\varphi}}_r}{\partial Y}
+\end{array}\right]
+=
+\left[\begin{array}{cc}
+\frac{\partial x}{\partial X} &amp; \frac{\partial y}{\partial X}\\
+\frac{\partial x}{\partial Y} &amp; \frac{\partial y}{\partial Y}
+\end{array}\right]
+\left[\begin{array}{c}
+\frac{\partial {\varphi}_i}{\partial x}\\
+\frac{\partial {\varphi}_i}{\partial y}
+\end{array}\right]\end{split}\]</div>
+<p>Identifying</p>
+<div class="math">
+\[\begin{split}\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r = \left[\begin{array}{c}
+\frac{\partial {\tilde{\varphi}}_r}{\partial X}\\
+\frac{\partial {\tilde{\varphi}}_r}{\partial Y}
+\end{array}\right],
+\quad
+J =
+\left[\begin{array}{cc}
+\frac{\partial x}{\partial X} &amp; \frac{\partial y}{\partial X}\\
+\frac{\partial x}{\partial Y} &amp; \frac{\partial y}{\partial Y}
+\end{array}\right],
+\quad
+\nabla_{\boldsymbol{x}}{\varphi}_r =
+\left[\begin{array}{c}
+\frac{\partial {\varphi}_i}{\partial x}\\
+\frac{\partial {\varphi}_i}{\partial y}
+\end{array}\right],\end{split}\]</div>
+<p>we have the relation</p>
+<div class="math">
+\[\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r = J\cdot\nabla_{\boldsymbol{x}}{\varphi}_i,\]</div>
+<p>which we can solve with respect to <span class="math">\(\nabla_{\boldsymbol{x}}{\varphi}_i\)</span>:</p>
+<div class="math" id="eq-auto107">
+\[\tag{230}
+\nabla_{\boldsymbol{x}}{\varphi}_i = J^{-1}\cdot\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r{\thinspace .}\]</div>
+<p>On the reference cell, <span class="math">\({\varphi}_i(\boldsymbol{x}) = {\tilde{\varphi}}_r(\boldsymbol{X})\)</span>, so</p>
+<div class="math" id="eq-auto108">
+\[\tag{231}
+\nabla_{\boldsymbol{x}}{\tilde{\varphi}}_r(\boldsymbol{X}) = J^{-1}(\boldsymbol{X})\cdot\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r(\boldsymbol{X}){\thinspace .}\]</div>
+<p>This means that we have the following transformation of the
+integral in the physical domain to its counterpart over the reference cell:</p>
+<div class="math" id="eq-auto109">
+\[\tag{232}
+\int_{\Omega^{(e)}} {\alpha}(\boldsymbol{x})\nabla_{\boldsymbol{x}}{\varphi}_i\cdot\nabla_{\boldsymbol{x}}{\varphi}_j{\, \mathrm{d}x} =
+    \int_{\tilde\Omega^r} {\alpha}(\boldsymbol{x}(\boldsymbol{X}))(J^{-1}\cdot\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r)\cdot
+    (J^{-1}\cdot\nabla{\tilde{\varphi}}_s)\det J{\, \mathrm{d}X}\]</div>
+</div>
+<div class="section" id="numerical-integration-2">
+<h2>Numerical integration<a class="headerlink" href="#numerical-integration-2" title="Permalink to this headline">¶</a></h2>
+<p>Integrals are normally computed by numerical integration rules.
+For multi-dimensional cells, various families of rules exist.
+All of them are similar to what is shown in 1D:
+<span class="math">\(\int f {\, \mathrm{d}x}\approx \sum_jw_if(\boldsymbol{x}_j)\)</span>, where <span class="math">\(w_j\)</span> are weights and
+<span class="math">\(\boldsymbol{x}_j\)</span> are corresponding points.</p>
+<p>The file <a class="reference external" href="http://tinyurl.com/znpudbt/numint.py">numint.py</a> contains the functions
+<code class="docutils literal"><span class="pre">quadrature_for_triangles(n)</span></code> and <code class="docutils literal"><span class="pre">quadrature_for_tetrahedra(n)</span></code>,
+which returns lists of points and weights corresponding to integration
+rules with <code class="docutils literal"><span class="pre">n</span></code> points over the reference triangle
+with vertices <span class="math">\((0,0)\)</span>, <span class="math">\((1,0)\)</span>, <span class="math">\((0,1)\)</span>, and the reference tetrahedron
+with vertices <span class="math">\((0,0,0)\)</span>, <span class="math">\((1,0,0)\)</span>, <span class="math">\((0,1,0)\)</span>, <span class="math">\((0,0,1)\)</span>,
+respectively. For example, the first two rules for integration over
+a triangle have 1 and 3 points:</p>
+<div class="highlight-ipy"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numint</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">numint</span><span class="o">.</span><span class="n">quadrature_for_triangles</span><span class="p">(</span><span class="n">num_points</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span>
+<span class="p">[(</span><span class="mf">0.3333333333333333</span><span class="p">,</span> <span class="mf">0.3333333333333333</span><span class="p">)]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">w</span>
+<span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">numint</span><span class="o">.</span><span class="n">quadrature_for_triangles</span><span class="p">(</span><span class="n">num_points</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span>
+<span class="p">[(</span><span class="mf">0.16666666666666666</span><span class="p">,</span> <span class="mf">0.16666666666666666</span><span class="p">),</span>
+ <span class="p">(</span><span class="mf">0.66666666666666666</span><span class="p">,</span> <span class="mf">0.16666666666666666</span><span class="p">),</span>
+ <span class="p">(</span><span class="mf">0.16666666666666666</span><span class="p">,</span> <span class="mf">0.66666666666666666</span><span class="p">)]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">w</span>
+<span class="p">[</span><span class="mf">0.16666666666666666</span><span class="p">,</span> <span class="mf">0.16666666666666666</span><span class="p">,</span> <span class="mf">0.16666666666666666</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Rules with 1, 3, 4, and 7 points over the triangle will exactly integrate
+polynomials of degree 1, 2, 3, and 4, respectively.
+In 3D, rules with 1, 4, 5, and 11 points over the tetrahedron will
+exactly integrate polynomials of degree 1, 2, 3, and 4, respectively.</p>
+</div>
+<div class="section" id="convenient-formulas-for-p1-elements-in-2d">
+<h2>Convenient formulas for P1 elements in 2D<a class="headerlink" href="#convenient-formulas-for-p1-elements-in-2d" title="Permalink to this headline">¶</a></h2>
+<p>We shall now provide some formulas for piecewise linear <span class="math">\({\varphi}_i\)</span> functions
+and their integrals <em>in the physical coordinate system</em>.
+These formulas make it convenient to compute with P1 elements without
+the need to work in the reference coordinate system and deal with mappings
+and Jacobians.
+A lot of computational and algorithmic details are hidden by this approach.</p>
+<p>Let <span class="math">\(\Omega^{(e)}\)</span> be cell number <span class="math">\(e\)</span>, and let the three vertices
+have global vertex numbers <span class="math">\(I\)</span>, <span class="math">\(J\)</span>, and <span class="math">\(K\)</span>.
+The corresponding coordinates are
+<span class="math">\((x_{I},y_{I})\)</span>, <span class="math">\((x_{J},y_{J})\)</span>, and <span class="math">\((x_{K},y_{K})\)</span>.
+The basis function <span class="math">\({\varphi}_I\)</span> over <span class="math">\(\Omega^{(e)}\)</span> have the explicit
+formula</p>
+<div class="math" id="eq-fem-approx-fe-2d-phi-i">
+\[\tag{233}
+{\varphi}_I (x,y) = \frac{1}{2}\Delta \left( \alpha_I + \beta_Ix
+    + \gamma_Iy\right),\]</div>
+<p>where</p>
+<div class="math" id="eq-fem-approx-fe-2d-phi-alpha-i">
+\[\tag{234}
+\alpha_I = x_{J}y_{K} - x_{K}y_{J},\]</div>
+<div class="math" id="eq-fem-approx-fe-2d-phi-beta-i">
+\[\tag{235}
+\beta_I = y_{J} - y_{K},\]</div>
+<div class="math" id="eq-fem-approx-fe-2d-phi-gamma-i">
+\[\tag{236}
+\gamma_I = x_{K} - x_{J},
+    ,\]</div>
+<p>and</p>
+<div class="math" id="eq-fem-approx-fe-2d-phi-delta">
+\[\begin{split}\tag{237}
+2\Delta = \det\left(\begin{array}{rrr}
+    1 &amp; x_{I} &amp; y_{I} \\
+    1 &amp; x_{J} &amp; y_{J} \\
+    1 &amp; x_{K} &amp; y_{K} \end{array}\right)
+    {\thinspace .}\end{split}\]</div>
+<p>The quantity <span class="math">\(\Delta\)</span> is the area of the cell.</p>
+<p>The following formula is often convenient when computing element matrices
+and vectors:</p>
+<div class="math" id="eq-fem-approx-fe-2d-phi-integral">
+\[ \begin{align}\begin{aligned}\tag{238}
+\int_{\Omega^{(e)}} {\varphi}_I^{p}{\varphi}_J^{q}{\varphi}_K^{r} dx dy =
+    {p!q!r!\over (p+q+r+2)!}2\Delta\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>(Note that the <span class="math">\(q\)</span> in this formula is not to be mixed with the <span class="math">\(q(e,r)\)</span>
+mapping of degrees of freedom.)</p>
+<p>As an example, the element matrix entry
+<span class="math">\(\int_{\Omega^{(e)}} {\varphi}_I{\varphi}_J{\, \mathrm{d}x}\)</span>
+can be computed by setting
+<span class="math">\(p=q=1\)</span> and <span class="math">\(r=0\)</span>, when <span class="math">\(I\neq J\)</span>, yielding <span class="math">\(\Delta/12\)</span>, and
+<span class="math">\(p=2\)</span> and <span class="math">\(q=r=0\)</span>, when <span class="math">\(I=J\)</span>, resulting in <span class="math">\(\Delta/6\)</span>.
+We collect these numbers in a local element matrix:</p>
+<div class="math">
+\[\begin{split}\frac{\Delta}{12}
+\left[\begin{array}{ccc}
+2 &amp; 1 &amp; 1\\
+1 &amp; 2 &amp; 1\\
+1 &amp; 1 &amp; 2
+\end{array}\right]\end{split}\]</div>
+<p>The common element matrix entry <span class="math">\(\int_{\Omega^{(e)}} \nabla{\varphi}_I\cdot\nabla{\varphi}_J{\, \mathrm{d}x}\)</span>, arising from a Laplace term <span class="math">\(\nabla^2u\)</span>, can also easily be
+computed by the formulas above. We have</p>
+<div class="math">
+\[\nabla{\varphi}_I\cdot\nabla{\varphi}_J =
+\frac{\Delta^2}{4}(\beta_I\beta_J + \gamma_I\gamma_J) = \hbox{const},\]</div>
+<p>so that the element matrix entry becomes
+<span class="math">\(\frac{1}{4}\Delta^3(\beta_I\beta_J + \gamma_I\gamma_J)\)</span>.</p>
+<p>From an implementational point of view, one will work with local vertex
+numbers <span class="math">\(r=0,1,2\)</span>, parameterize the coefficients in the basis
+functions by <span class="math">\(r\)</span>, and look up vertex coordinates through <span class="math">\(q(e,r)\)</span>.</p>
+<p>Similar formulas exist for integration of P1 elements in 3D.</p>
+</div>
+<div class="section" id="a-glimpse-of-the-mathematical-theory-of-the-finite-element-method">
+<h2>A glimpse of the mathematical theory of the finite element method<a class="headerlink" href="#a-glimpse-of-the-mathematical-theory-of-the-finite-element-method" title="Permalink to this headline">¶</a></h2>
+<p>Almost all books on the finite element method that introduces the
+abstract variational problem <span class="math">\(a(u,v)=L(v)\)</span> spend considerable pages on
+deriving error estimates and other properties of the approximate
+solution. The machinery with function spaces and bilinear and linear
+forms has the great advantage that a very large class of PDE problems
+can be analyzed in a unified way.  This feature is often taken as an
+advantage of finite element methods over finite difference and volume
+methods.  Since there are so many excellent textbooks on the
+mathematical properties of finite element methods
+<a class="reference internal" href="._book036.html#ref06" id="id1">[Ref06]</a> <a class="reference internal" href="._book036.html#ref04" id="id2">[Ref04]</a> <a class="reference internal" href="._book036.html#ref03" id="id3">[Ref03]</a> <a class="reference internal" href="._book036.html#ref01" id="id4">[Ref01]</a> <a class="reference internal" href="._book036.html#ref09" id="id5">[Ref09]</a> <a class="reference internal" href="._book036.html#ref02" id="id6">[Ref02]</a>, this text
+will not repeat the theory, but give a glimpse of typical assumptions
+and general results for elliptic PDEs.</p>
+<p><strong>Remark.</strong>
+The mathematical theory of finite element methods is primarily
+developed for to stationary PDE problems of elliptic nature whose
+solutions are smooth. However, such problems can be solved with the
+desired accuracy by most numerical methods and pose no difficulties.
+Time-dependent problems, on the other hand, easily lead to
+non-physical features in the numerical solutions and therefore
+requires more care and knowledge by the user.  Our focus on the
+accuracy of the finite element method will of this reason be centered
+around time-dependent problems, but then we need a different set of
+tools for the analysis. These tools are based on converting finite
+element equations to finite difference form and studying Fourier wave
+components.</p>
+<p>[<strong>kam 15</strong>: This is really two remarks in one and we can split and put them in more appropriate place. Time is dealt with later.]</p>
+<div class="section" id="abstract-variational-forms">
+<h3>Abstract variational forms<a class="headerlink" href="#abstract-variational-forms" title="Permalink to this headline">¶</a></h3>
+<p>To list the main results from the mathematical theory of finite elements,
+we consider linear PDEs with an abstract variational form</p>
+<div class="math">
+\[a(u,v) = L(v)\quad\forall v\in V{\thinspace .}\]</div>
+<p>This is the discretized problem (as usual in this book) where we
+seek <span class="math">\(u\in V\)</span>.
+The weak formulation of the corresponding continuous problem,
+fulfilled by the exact solution <span class="math">\({u_{\small\mbox{e}}}\in\Vex\)</span> is here written as</p>
+<div class="math">
+\[a({u_{\small\mbox{e}}}, v) = L(v)\quad\forall v\in\Vex{\thinspace .}\]</div>
+<p>The space <span class="math">\(V\)</span> is finite dimensional (with dimension <span class="math">\(N+1\)</span>),
+while <span class="math">\(\Vex\)</span> is infinite dimensional.
+Normally
+The hope is that <span class="math">\(u\rightarrow{u_{\small\mbox{e}}}\)</span> as <span class="math">\(N\rightarrow\infty\)</span> and
+<span class="math">\(V\rightarrow\Vex\)</span>.</p>
+</div>
+<div class="section" id="example-on-an-abstract-variational-form-and-associated-spaces">
+<h3>Example on an abstract variational form and associated spaces<a class="headerlink" href="#example-on-an-abstract-variational-form-and-associated-spaces" title="Permalink to this headline">¶</a></h3>
+<p>Consider the problem <span class="math">\(-u''(x)=f(x)\)</span> on <span class="math">\(\Omega=[0,1]\)</span>, with <span class="math">\(u(0)=0\)</span> and
+<span class="math">\(u'(1)=\beta\)</span>. The weak form is</p>
+<div class="math">
+\[a(u,v) = \int_0^1 u'v'dx,\quad L(v)=\int_0^1fvdx + \beta v(1){\thinspace .}\]</div>
+<p>The space <span class="math">\(V\)</span> for the approximate solution <span class="math">\(u\)</span> can be chosen in many
+ways as previously described.
+The exact solution <span class="math">\({u_{\small\mbox{e}}}\)</span> fulfills <span class="math">\(a(u,v)=L(v)\)</span> for all <span class="math">\(v\)</span> in <span class="math">\(\Vex\)</span>,
+and to specify what <span class="math">\(\Vex\)</span> is, we need to introduce <em>Hilbert spaces</em>.
+The Hilbert
+space <span class="math">\(L^2(\Omega)\)</span> consists of all functions that are square-integrable
+on <span class="math">\(\Omega\)</span>:</p>
+<div class="math">
+\[L^2(\Omega) = \left\lbrace\int_\Omega v^2dx &lt; \infty\right\rbrace{\thinspace .}\]</div>
+<p>The space <span class="math">\(\Vex\)</span> is the space of all functions whose first-order
+derivative is also square-integrable:</p>
+<div class="math">
+\[\Vex = H^1_0(\Omega) = \left\lbrace v\in L^2(\Omega)\,\vert\,
+\frac{dv}{dx}\in L^2(\Omega),\hbox{ and }v(0)=0\right\rbrace{\thinspace .}\]</div>
+<p>The requirements of square-integrable zeroth- and first-order derivatives
+are motivated from the formula for <span class="math">\(a(u,v)\)</span> where products of the
+first-order derivatives are to be integrated on <span class="math">\(\Omega\)</span>.
+We remark that it is common that  <span class="math">\(H^1_0\)</span> denote the
+space of <span class="math">\(H^1\)</span> functions that are zero everywhere on the boundary, but
+here we use it for functions that are zero only at <span class="math">\(x=0\)</span>.</p>
+<p>The Sobolev space <span class="math">\(H^1_0(\Omega)\)</span> has an inner product</p>
+<div class="math">
+\[(u,v)_{H^1} = \int_\Omega (uv + \frac{du}{dx}\frac{dv}{dx})dx,\]</div>
+<p>and associated norm</p>
+<div class="math">
+\[||v||_{H^1} = \sqrt{(v,v)_{H^1}}{\thinspace .}\]</div>
+</div>
+<div class="section" id="assumptions">
+<h3>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline">¶</a></h3>
+<p>A set of general results builds on the following
+assumptions. Let <span class="math">\(\Vex\)</span> be an infinite-dimensional inner-product space
+such that <span class="math">\({u_{\small\mbox{e}}}\in\Vex\)</span>. The space has an associated norm <span class="math">\(||v||\)</span>
+(e.g., <span class="math">\(||v||_{H^1}\)</span> in the example above with <span class="math">\(\Vex=H^1_0(\Omega)\)</span>).</p>
+<ol class="arabic simple">
+<li><span class="math">\(L(v)\)</span> is linear in its argument.</li>
+<li><span class="math">\(a(u,v)\)</span> is a bilinear in its arguments.</li>
+<li><span class="math">\(L(v)\)</span> is bounded (also called continuous) if there exists a positive
+constant <span class="math">\(c_0\)</span> such that <span class="math">\(|L(v)|\leq c_0||v||\)</span> $forall vin Vex$.</li>
+<li><span class="math">\(a(u,v)\)</span> is bounded (or continuous) if there exists a positive constant
+<span class="math">\(c_1\)</span> such that <span class="math">\(|a(u,v)|\leq c_1||u|| ||v||\ \forall u,v\in\Vex\)</span>.</li>
+<li><span class="math">\(a(u,v\)</span>) is elliptic (or coercive) if there exists a positive
+constant <span class="math">\(c_2\)</span> such that <span class="math">\(a(v,v)\geq c_2||v||^2\ \forall v\in\Vex\)</span>.</li>
+<li><span class="math">\(a(u,v)\)</span> is symmetric: <span class="math">\(a(u,v)=a(v,u)\)</span>.</li>
+</ol>
+<p>Based on the above assumptions, which must be verified in each specific
+problem, one can derive some general results that are listed below.</p>
+</div>
+<div class="section" id="existence-and-uniqueness">
+<h3>Existence and uniqueness<a class="headerlink" href="#existence-and-uniqueness" title="Permalink to this headline">¶</a></h3>
+<p>There exists a unique solution of the problem: find <span class="math">\({u_{\small\mbox{e}}}\in\Vex\)</span>
+such that</p>
+<div class="math">
+\[a({u_{\small\mbox{e}}},v)=L(v)\quad\forall v\in\Vex{\thinspace .}\]</div>
+<p>(This result is known as the Lax-Milgram Theorem.
+We remark that symmetry is not strictly needed for this theorem.)</p>
+</div>
+<div class="section" id="stability">
+<h3>Stability<a class="headerlink" href="#stability" title="Permalink to this headline">¶</a></h3>
+<p>The solution <span class="math">\({u_{\small\mbox{e}}}\in\Vex\)</span> obeys the stability estimate</p>
+<div class="math">
+\[||u||\leq \frac{c_0}{c_2}{\thinspace .}\]</div>
+</div>
+<div class="section" id="equivalent-minimization-problem">
+<h3>Equivalent minimization problem<a class="headerlink" href="#equivalent-minimization-problem" title="Permalink to this headline">¶</a></h3>
+<p>The solution <span class="math">\({u_{\small\mbox{e}}}\in\Vex\)</span> also fulfills the minimization problem</p>
+<div class="math">
+\[\min_{v\in\Vex} F(v),\quad F(v)=\frac{1}{2}a(v,v) - L(v){\thinspace .}\]</div>
+</div>
+<div class="section" id="best-approximation-principle">
+<h3>Best approximation principle<a class="headerlink" href="#best-approximation-principle" title="Permalink to this headline">¶</a></h3>
+<p>The <em>energy norm</em> is defined as</p>
+<div class="math">
+\[||v||_a = \sqrt{a(v,v)}{\thinspace .}\]</div>
+<p>The discrete solution <span class="math">\(u\in V\)</span> is the best approximation in energy norm,</p>
+<div class="math">
+\[||{u_{\small\mbox{e}}} -  u||_a \leq ||{u_{\small\mbox{e}}} - v||_a\quad\forall v\in V{\thinspace .}\]</div>
+<p>This is quite remarkable: once we have <span class="math">\(V\)</span> (i.e., a mesh and a finite element), the Galerkin
+method finds the best approximation in this space.
+In the example above, we have <span class="math">\(||v||_a=\int_0^1 (v')^2dx\)</span>, so
+the derivative <span class="math">\(u'\)</span> is closer to <span class="math">\({u_{\small\mbox{e}}}'\)</span> than any other possible
+function in <span class="math">\(V\)</span>:</p>
+<div class="math">
+\[\int_0^1 ({u_{\small\mbox{e}}}' - u')^2dx \leq \int_0^1(u' - v')dx\quad\forall v\in V{\thinspace .}\]</div>
+</div>
+<div class="section" id="best-approximation-property-in-the-norm-of-the-space">
+<h3>Best approximation property in the norm of the space<a class="headerlink" href="#best-approximation-property-in-the-norm-of-the-space" title="Permalink to this headline">¶</a></h3>
+<p>If <span class="math">\(||v||\)</span> is the norm associated with <span class="math">\(\Vex\)</span>, we have another
+best approximation property:</p>
+<div class="math">
+\[||{u_{\small\mbox{e}}} - u||\leq\left(\frac{c_1}{c_2}\right)^{\frac{1}{2}}||{u_{\small\mbox{e}}} - v||\quad\forall v\in\boldsymbol{V}{\thinspace .}\]</div>
+</div>
+<div class="section" id="symmetric-positive-definite-coefficient-matrix">
+<h3>Symmetric, positive definite coefficient matrix<a class="headerlink" href="#symmetric-positive-definite-coefficient-matrix" title="Permalink to this headline">¶</a></h3>
+<p>The discrete problem <span class="math">\(a(u,v)=L(v)\)</span> $forall vin V$ leads to a linear
+system <span class="math">\(Ac=b\)</span>, where the coefficient matrix <span class="math">\(A\)</span> is symmetric (<span class="math">\(A^T=A\)</span>)
+and positive definite (<span class="math">\(x^TAx &gt; 0\)</span> for all vectors <span class="math">\(x\neq 0\)</span>).  One
+can then use solution methods that demand less storage and that are
+faster and more reliable than solvers for general linear systems. One
+is also guaranteed the existence and uniqueness of the discrete
+solution <span class="math">\(u\)</span>.</p>
+</div>
+<div class="section" id="equivalent-matrix-minimization-problem">
+<h3>Equivalent matrix minimization problem<a class="headerlink" href="#equivalent-matrix-minimization-problem" title="Permalink to this headline">¶</a></h3>
+<p>The solution <span class="math">\(c\)</span> of the linear system <span class="math">\(Ac=b\)</span> also solves the minimization
+problem <span class="math">\(\min_w(\frac{1}{2} w^TAw - b^Tw\)</span> in the vector space <span class="math">\(\mathbb{R}^{N+1}\)</span>.</p>
+</div>
+<div class="section" id="a-priori-error-estimate-for-the-derivative">
+<h3>A priori error estimate for the derivative<a class="headerlink" href="#a-priori-error-estimate-for-the-derivative" title="Permalink to this headline">¶</a></h3>
+<p>In our sample problem, <span class="math">\(-u''=f\)</span> on <span class="math">\(\Omega=[0,1]\)</span>, <span class="math">\(u(0)=0\)</span>, <span class="math">\(u'(1)=\beta\)</span>,
+one can derive the following error estimate for Lagrange finite element
+approximations of degree <span class="math">\(s\)</span>:</p>
+<div class="math">
+\[\begin{split}\left(\int_0^1 ({u_{\small\mbox{e}}}' - u')^2dx\right)^{\frac{1}{2}} \leq Ch^s||{u_{\small\mbox{e}}}||_{H^{s+1}},\\\end{split}\]</div>
+<p>where <span class="math">\(||u||_{H^{s+1}}\)</span> is a norm that integrates the sum of the square of all
+derivatives up to order <span class="math">\(s+1\)</span>,
+<span class="math">\(C\)</span> is a constant, and <span class="math">\(h\)</span> is the maximum
+cell length.
+The estimate shows that choosing
+elements with higher-degree polynomials (large <span class="math">\(s\)</span>) requires more
+smoothness in <span class="math">\({u_{\small\mbox{e}}}\)</span> since higher-order derivatives need to be square-integrable.</p>
+<p>A consequence of the error estimate is that <span class="math">\(u'\rightarrow {u_{\small\mbox{e}}}'\)</span>
+as <span class="math">\(h\rightarrow 0\)</span>, i.e., the approximate solution converges to
+the exact one.</p>
+<p>The constant <span class="math">\(C\)</span> in  depends on the shape
+of triangles in 2D and tetrahedra in 3D: squeezed elements with a
+small angle lead to a large <span class="math">\(C\)</span>, and such deformed elements are
+not favorable for the accuracy.</p>
+<p>One can generalize the above estimate to the general problem class
+<span class="math">\(a(u,v)=L(v)\)</span>: the error in the derivative is proportional
+to <span class="math">\(h^s\)</span>. Note that the expression <span class="math">\(||{u_{\small\mbox{e}}} - u||\)</span> in the example
+is <span class="math">\(||{u_{\small\mbox{e}}} - u||_{H^1}\)</span> so it involves the sum of the zeroth and
+first derivative. The appearance of the derivative makes the error
+proportional to <span class="math">\(h^s\)</span> - if we only look at the solution it
+converges as <span class="math">\(h^{s+1}\)</span> (see below).</p>
+<p>The above estimate is called an <em>a priori</em> estimate because the bound
+contains the exact solution, which is not computable. There are also
+<em>a posteriori</em> estimates where the bound involves the approximation
+<span class="math">\(u\)</span>, which is available in computations.</p>
+</div>
+<div class="section" id="a-priori-error-estimate-for-the-solution">
+<h3>A priori error estimate for the solution<a class="headerlink" href="#a-priori-error-estimate-for-the-solution" title="Permalink to this headline">¶</a></h3>
+<p>The finite element solution of our sample problem  fulfills</p>
+<div class="math">
+\[||{u_{\small\mbox{e}}} - u|| \leq Ch^{s+1} ||{u_{\small\mbox{e}}}||_{H^{s+1}},\]</div>
+<p>This estimate shows that the error converges as <span class="math">\(h^2\)</span> for P1 elements.
+An equivalent finite difference method, see the section <a class="reference internal" href="._book019.html#fem-deq-1d-fdm-vs-fem"><span class="std std-ref">Comparison with a finite difference discretization</span></a>, is known to have an error proportional to <span class="math">\(h^2\)</span>, so the above estimate
+is expected.
+In general, the convergence is <span class="math">\(h^{s+1}\)</span> for elements with polynomials
+of degree <span class="math">\(s\)</span>. Note that the estimate for <span class="math">\(u'\)</span> is proportional to
+<span class="math">\(h\)</span> raised to one power less.
+We remark that the second estimate strictly speaking requires extra smoothness (regularity).</p>
+</div>
+</div>
+</div>
+<div class="section" id="implementation-in-2d-and-3d-via-fenics">
+<span id="fem-varform-fenics"></span><h1>Implementation in 2D and 3D via FEniCS<a class="headerlink" href="#implementation-in-2d-and-3d-via-fenics" title="Permalink to this headline">¶</a></h1>
+<p>From a principle of view, we have seen that variational forms of the
+type: find <span class="math">\(a(u,v)=L\ \forall v\in V\)</span> (and even general nonlinear problems
+<span class="math">\(F(u;v)=0\)</span>), can apply the computational machinery of introduced for
+the approximation problem <span class="math">\(u=f\)</span>. We actually need two extensions only:</p>
+<ol class="arabic simple">
+<li>specify Dirichlet boundary conditions as part of <span class="math">\(V\)</span></li>
+<li>incorporate Neumann flux boundary conditions in the variational form</li>
+</ol>
+<p>The algorithms are all the same in any space dimension, we only need to
+choose the element type and associated integration rule. Once we know
+how to compute things in 1D, and made the computer code sufficiently
+flexible, the method and code should work for any variational form in
+any number of space dimensions! This fact is exactly the idea behind
+the <a class="reference external" href="http://fenicsproject.org">FEniCS</a> finite element software.</p>
+<p>Therefore, if we know how to set up an approximation problem in any
+dimension in FEniCS, and know how to derive variational forms in higher
+dimensions, we are (in principle!) very close to solving a
+PDE problem in FEniCS. Building on the the section <a class="reference internal" href="._book014.html#fe-approx-fenics"><span class="std std-ref">Implementation</span></a>,
+we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
+There is very much more FEniCS programming than this example, but it
+illustrates our fact that when we go beyond 1D, there is exists
+software which leverage the full power of the finite element method as
+a method for solving &#8220;any&#8221; problem in any number of
+space dimensions.</p>
+<div class="section" id="mathematical-problem-2">
+<span id="fem-varform-fenics-problem"></span><h2>Mathematical problem<a class="headerlink" href="#mathematical-problem-2" title="Permalink to this headline">¶</a></h2>
+<p>The following model describes the pressure <span class="math">\(u\)</span> in the flow around a
+bore hole of radius <span class="math">\(a\)</span> in a porous medium. If the hole is long in the
+vertical direction, we can model it by a 2D domain in the cross section.</p>
+<div class="math" id="eq-fem-varform-fenics-problem-pde">
+\[\tag{239}
+\nabla\cdot \left( {\alpha}\nabla u\right) = 0,  \quad a &lt; ||\boldsymbol{x}|| &lt; b,\]</div>
+<div class="math" id="eq-fem-varform-fenics-problem-ua">
+\[\tag{240}
+u(\boldsymbol{x}) = U_a, \quad   ||\boldsymbol{x}|| = a,\]</div>
+<div class="math" id="eq-fem-varform-fenics-problem-ub">
+\[\tag{241}
+u(\boldsymbol{x}) = U_b  \quad   ||\boldsymbol{x}|| = b{\thinspace .}\]</div>
+<p>That is, we have a hollow circular 2D domain with inner radius <span class="math">\(a\)</span> and
+outer radius <span class="math">\(b\)</span>. The pressure is known on these two boundaries, so
+this is a pure Dirichlet problem.</p>
+<div class="section" id="symmetry">
+<h3>Symmetry<a class="headerlink" href="#symmetry" title="Permalink to this headline">¶</a></h3>
+<p>The first thing we should observe is that the problem is radially
+symmetric, so we can change to polar coordinates and obtain a 1D
+problem in the radial direction:</p>
+<div class="math">
+\[(r{\alpha} u')' = 0,\quad u(a)=U_a, u(b)=U_b{\thinspace .}\]</div>
+<p>This is not very exciting beyond being able to find an analytical solution
+and compute the true error of a finite element approximation.</p>
+<p>However, many software packages solve problems in Cartesian coordinates, and
+FEniCS basically do this, so we want to take advantage of symmetry in
+Cartesian coordinates and reformulate the problem in a smaller
+domain.</p>
+<p>Looking at the domain as a cake with a hole, any piece of the
+cake will be a candidate for a reduced-size domain.  The solution is
+symmetric about any line <span class="math">\(\theta = \hbox{const}\)</span> in polar coordinates,
+so at such lines we have the symmetry boundary condition <span class="math">\(\partial
+u/\partial n=0\)</span>, i.e., a homogeneous Neumann condition.  In Figure
+<a class="reference internal" href="#fem-varform-fenics-problem-meshfig"><span class="std std-ref">Mesh of a hollow cylinder, with refinement and utilizing symmetry</span></a> we have plotted a possible
+mesh of cells as triangles, here with dense refinement toward the bore
+hole, because we know the solution will decay most rapidly toward the
+origin.  This mesh is a piece of the cake with four sides: Dirichlet
+conditions on the inner and outer boundary, named <span class="math">\(\Gamma_{D_a}\)</span> and
+<span class="math">\(\Gamma_{D_b}\)</span>, and <span class="math">\(\partial u/\partial n=0\)</span>
+on the two other sides, named <span class="math">\(\Gamma_N\)</span>.
+In this particular example, the arc of the piece
+of the cake is 45 degrees, but any value of the arc will work.</p>
+<div class="figure" id="id10">
+<span id="fem-varform-fenics-problem-meshfig"></span><a class="reference internal image-reference" href="_images/borehole_mesh1.png"><img alt="_images/borehole_mesh1.png" src="_images/borehole_mesh1.png" style="width: 700px;" /></a>
+<p class="caption"><span class="caption-text"><em>Mesh of a hollow cylinder, with refinement and utilizing symmetry</em></span></p>
+</div>
+<p>The boundary problem can then be expressed as</p>
+<div class="math" id="eq-fem-varform-fenics-problem-pde2">
+\[\tag{242}
+\nabla\cdot \left( {\alpha}\nabla u\right) = 0,  \quad \boldsymbol{x}\in\Omega,\]</div>
+<div class="math" id="eq-fem-varform-fenics-problem-ga">
+\[\tag{243}
+u(\boldsymbol{x}) = U_a,  \quad   \boldsymbol{x}\in\Gamma_{D_a},\]</div>
+<div class="math" id="eq-fem-varform-fenics-problem-gb">
+\[\tag{244}
+u(\boldsymbol{x}) = U_b,  \quad   \boldsymbol{x}\in\Gamma_{D_b},\]</div>
+<div class="math" id="eq-fem-varform-fenics-problem-gn">
+\[\tag{245}
+\frac{\partial u}{\partial n} =0,\quad  \boldsymbol{x}\in\Gamma_N{\thinspace .}\]</div>
+</div>
+</div>
+<div class="section" id="variational-formulation">
+<span id="fem-varform-fenics-varform"></span><h2>Variational formulation<a class="headerlink" href="#variational-formulation" title="Permalink to this headline">¶</a></h2>
+<p>To obtain the variational formulation, we multiply the PDE by a test
+function <span class="math">\(v\)</span> and integrate the second-order derivatives by part:</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+\int_\Omega \nabla\cdot ({\alpha}\nabla u) v {\, \mathrm{d}x} &amp;= 0,\quad \forall v\in V\\
+&amp;= -\int_\Omega {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x} + \int_{\Gamma_N}{\alpha}
+\frac{\partial u}{\partial n}v{\, \mathrm{d}s}\\
+&amp;= -\int_\Omega {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x}{\thinspace .}
+\end{align*}\end{split}\]</div>
+<p>We are left with a problem of the form: find <span class="math">\(u\)</span> such that
+<span class="math">\(a(u,v)=L(v)\ \forall v\in V\)</span>, with</p>
+<div class="math" id="eq-auto110">
+\[\tag{246}
+a(u,v) = \int_\Omega {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x},\]</div>
+<div class="math" id="eq-auto111">
+\[\tag{247}
+L(v) = \int_\Omega 0v{\, \mathrm{d}x} {\thinspace .}\]</div>
+<p>We write the integrand as <span class="math">\(0v{\, \mathrm{d}x}\)</span> even though <span class="math">\(L=0\)</span>, because it is necessary
+in FEniCS to specify <span class="math">\(L\)</span> as a linear form and not the number zero.
+The Dirichlet conditions make a nonzero solution.</p>
+</div>
+<div class="section" id="the-fenics-solver">
+<h2>The FEniCS solver<a class="headerlink" href="#the-fenics-solver" title="Permalink to this headline">¶</a></h2>
+<p>Suppose we have a function <code class="docutils literal"><span class="pre">make_mesh</span></code> that can make the mesh for us.
+All we need to do in the solver and that has not been exemplified
+before, is to define <span class="math">\(V\)</span> with proper Dirichlet conditions.
+It is easy to do so as long as the Neumann conditions are zero. Otherwise,
+we will have to do a line integral along the boundary and that brings in
+quite some concepts in FEniCS about how to mark boundaries <a class="reference internal" href="._book036.html#ref07" id="id7">[Ref07]</a>.
+Fortunately, a lot of problems have homogeneous Neumann conditions (thanks
+to symmetries!), so the example here can be extended and become useful
+in many contexts.</p>
+<p>We have to write functions for testing whether a point is on a Dirichlet
+boundary or not:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">V</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+
+<span class="c1"># Define Dirichlet boundary conditions</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if x on r=a with tolerance.&quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">on_boundary</span> <span class="ow">and</span> \
+        <span class="nb">abs</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">x_a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1E-2</span>
+    <span class="k">print</span> <span class="s1">&#39;XXXa&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">x_a</span><span class="p">),</span> <span class="n">on_boundary</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+<span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if x on r=b with tolerance.&quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">on_boundary</span> <span class="ow">and</span> \
+        <span class="nb">abs</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">x_b</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1E-2</span>
+    <span class="k">print</span> <span class="s1">&#39;XXXb&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">x_b</span><span class="p">),</span> <span class="n">on_boundary</span>
+    <span class="k">return</span> <span class="n">r</span>
+</pre></div>
+</div>
+<p>Note here that we test with a tolerance since the points on the boundary
+may be subject to rounding errors when making the mesh coordinates.</p>
+<p>We then use the <code class="docutils literal"><span class="pre">DirichletBC</span></code> object to make different kinds of
+Dirichlet conditions, here two, and collect them in a list <a href="#id8"><span class="problematic" id="id9">`</span></a>bcs:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">bc_inner</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">u_a</span><span class="p">,</span> <span class="n">inner</span><span class="p">)</span>
+<span class="n">bc_outer</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">u_b</span><span class="p">,</span> <span class="n">outer</span><span class="p">)</span>
+<span class="n">bcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">bc_inner</span><span class="p">,</span> <span class="n">bc_outer</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The next step is to define the variational problem and solve it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Define variational problem</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">dot</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span>  <span class="c1"># L = 0*v*dx = 0 does not work...</span>
+
+<span class="c1"># Compute solution</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">L</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">bcs</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="s2">&quot;mesh.xml&quot;</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">&lt;&lt;</span> <span class="n">mesh</span>
+</pre></div>
+</div>
+<p>In order to avoid <code class="docutils literal"><span class="pre">L=0</span></code> (<code class="docutils literal"><span class="pre">L</span></code> equal to the float zero), we have to
+tell FEniCS that is a linear form, so zero must be specified as <code class="docutils literal"><span class="pre">Constant(0)</span></code>.</p>
+<p>Note that everything is the same as for the approximation problem,
+except for the Dirichlet conditions and the formulas for <code class="docutils literal"><span class="pre">a</span></code> and
+<code class="docutils literal"><span class="pre">L</span></code>. FEniCS has, of course, access to very efficient solution methods,
+so we could add arguments to the <code class="docutils literal"><span class="pre">solve</span></code> call to apply
+state-of-the-art iterative methods and preconditioners for large-scale
+problems. However, for this little 2D case a standard sparse Gaussian
+elimination, as implied by <code class="docutils literal"><span class="pre">solve(a</span> <span class="pre">=</span> <span class="pre">L,</span> <span class="pre">u,</span> <span class="pre">bcs)</span></code> is the most
+efficient and reliable approach.</p>
+<p>Finally, we can save the solution to file for using professional
+visualization software and, if desired, add a quick plotting using the
+built-in FEniCS tool <code class="docutils literal"><span class="pre">plot</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Save solution to file in VTK format</span>
+<span class="n">vtkfile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.pvd&#39;</span><span class="p">)</span>
+<span class="n">vtkfile</span> <span class="o">&lt;&lt;</span> <span class="n">u</span>
+
+<span class="n">u</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span><span class="p">);</span> <span class="n">plot</span><span class="p">(</span><span class="n">u</span><span class="p">);</span> <span class="n">plot</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+<span class="n">interactive</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(The <code class="docutils literal"><span class="pre">u.rename</span></code> call is just for getting a more readable title in the plot.)</p>
+<p>The above statements are collected in a function <code class="docutils literal"><span class="pre">solver</span></code> in the
+file <a class="reference external" href="http://tinyurl.com/znpudbt/borehole_fenics.py">borehole_fenics.py</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span>    <span class="c1"># Diffusion coefficient</span>
+           <span class="n">u_a</span><span class="p">,</span>      <span class="c1"># Inner pressure</span>
+           <span class="n">u_b</span><span class="p">,</span>      <span class="c1"># Outer pressure</span>
+           <span class="n">Theta</span><span class="p">,</span>    <span class="c1"># Arc size</span>
+           <span class="n">x_a</span><span class="p">,</span>      <span class="c1"># Inner boundary</span>
+           <span class="n">x_b</span><span class="p">,</span>      <span class="c1"># Outer boundary</span>
+           <span class="n">nr</span><span class="p">,</span>       <span class="c1"># Resolution r direction</span>
+           <span class="n">nt</span><span class="p">,</span>       <span class="c1"># Resolution azimuthal direction</span>
+           <span class="n">degree</span><span class="p">,</span>   <span class="c1"># Element polynomial degree</span>
+           <span class="n">filename</span><span class="p">,</span> <span class="c1"># Name of VTK file</span>
+           <span class="p">):</span>
+</pre></div>
+</div>
+<div class="admonition-be-careful-with-name-clashes admonition">
+<p class="first admonition-title">Be careful with name clashes</p>
+<p class="last">It is easy when coding mathematics to use variable names that correspond
+to one-letter names in the mathematics. For example, in the mathematics
+of this problem there are to <span class="math">\(a\)</span> variables: the radius of the inner
+boundary and the bilinear form in the variational formulation.
+Using <code class="docutils literal"><span class="pre">a</span></code> for the inner boundary in <code class="docutils literal"><span class="pre">solver</span></code> does not work: it is
+quickly overwritten by the bilinear form. We therefore have to introduce
+<code class="docutils literal"><span class="pre">x_a</span></code>. Long variable names are to be preferred for safe programming,
+though short names corresponding to the mathematics are nicer...</p>
+</div>
+</div>
+<div class="section" id="making-the-mesh">
+<h2>Making the mesh<a class="headerlink" href="#making-the-mesh" title="Permalink to this headline">¶</a></h2>
+<p>The hardest part of a finite element problem is very often to make the mesh.
+Here the idea is to first make a rectangle, then make the denser toward the
+left end, and then bend it to get the form of the part of a hole.</p>
+<p>Let <span class="math">\(x\)</span> and <span class="math">\(y\)</span> be the coordinates of a vertex in the mesh that is
+a rectangle <span class="math">\((0,a)\times (0,b)\)</span>.
+The stretching towards <span class="math">\(x=a\)</span> is done by mapping</p>
+<div class="math" id="eq-auto112">
+\[\tag{248}
+\bar x = a + (b-a)\left({x-a\over b-a}\right)^s{\thinspace .}\]</div>
+<p>A stretching towards <span class="math">\(x=b\)</span> is given by</p>
+<div class="math" id="eq-auto113">
+\[\tag{249}
+\bar x = a + (b-a)\left({x-a\over b-a}\right)^{1/s}{\thinspace .}\]</div>
+<p>The parameter <span class="math">\(s\)</span> controls the amount of stretching.
+The code below shows the details of mapping the coordinates of FEniCS mesh.</p>
+<p>Mapping of a rectangle onto a our geometry is done by</p>
+<div class="math">
+\[\hat x = \bar x\cos (\Theta \bar y),\quad \hat y = \bar x\sin (\Theta \bar y){\thinspace .}\]</div>
+<p>We are now ready for the Python code that codes these formulas and manipulates
+the FEniCS mesh:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_mesh</span><span class="p">(</span><span class="n">Theta</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">nr</span><span class="p">,</span> <span class="n">nt</span><span class="p">):</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">RectangleMesh</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nr</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="s1">&#39;crossed&#39;</span><span class="p">)</span>
+
+    <span class="c1"># First make a denser mesh towards r=a</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[:,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mf">3.5</span>
+
+    <span class="k">def</span> <span class="nf">denser</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">a</span> <span class="o">+</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="p">))</span><span class="o">**</span><span class="n">s</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>
+
+    <span class="n">x_bar</span><span class="p">,</span> <span class="n">y_bar</span> <span class="o">=</span> <span class="n">denser</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">xy_bar_coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_bar</span><span class="p">,</span> <span class="n">y_bar</span><span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[:]</span> <span class="o">=</span> <span class="n">xy_bar_coor</span>
+
+    <span class="c1"># Map onto to a &quot;piece of cake&quot;</span>
+
+    <span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Theta</span><span class="o">*</span><span class="n">s</span><span class="p">),</span> <span class="n">r</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Theta</span><span class="o">*</span><span class="n">s</span><span class="p">)]</span>
+
+    <span class="n">x_hat</span><span class="p">,</span> <span class="n">y_hat</span> <span class="o">=</span> <span class="n">cylinder</span><span class="p">(</span><span class="n">x_bar</span><span class="p">,</span> <span class="n">y_bar</span><span class="p">)</span>
+    <span class="n">xy_hat_coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[:]</span> <span class="o">=</span> <span class="n">xy_hat_coor</span>
+    <span class="k">return</span> <span class="n">mesh</span>
+</pre></div>
+</div>
+<p>We could also have used the mesh tool <code class="docutils literal"><span class="pre">mshr</span></code> in FEniCS, but with our
+approach here we have full control of the refinement towards the hole.</p>
+</div>
+<div class="section" id="solving-a-problem">
+<h2>Solving a problem<a class="headerlink" href="#solving-a-problem" title="Permalink to this headline">¶</a></h2>
+<p>We assume that <span class="math">\({\alpha}\)</span> is constant.
+Before solving such
+a specific problem, it can be wise to scale the problem since
+it often reduces the amount of input data in the model. Here, the variation
+in <span class="math">\(u\)</span> is typically <span class="math">\(|u_a-u_b|\)</span> so we use that as characteristic
+pressure. The coordinates may be naturally scaled by the bore hole radius,
+so we have new, scaled variables</p>
+<div class="math">
+\[\bar u = \frac{u-u_a}{u_a-u_b},\quad \bar x = \frac{x}{a},\quad
+\bar y = \frac{y}{a}{\thinspace .}\]</div>
+<p>Now, we expect <span class="math">\(\bar u\in [0,1]\)</span>, which is a goal of scaling.
+Inserting this in the problem gives the PDE</p>
+<div class="math">
+\[\nabla^2 \bar u = 0\]</div>
+<p>in a domain with inner radius 1 and <span class="math">\(\bar u=0\)</span>, and outer radius</p>
+<div class="math">
+\[\beta = \frac{a}{b},\]</div>
+<p>with <span class="math">\(\bar u = 1\)</span>. Our solver can solve this problem by setting
+<code class="docutils literal"><span class="pre">alpha=1</span></code>, <code class="docutils literal"><span class="pre">u_a=0</span></code>, <code class="docutils literal"><span class="pre">u_b=0</span></code>, <code class="docutils literal"><span class="pre">x_a=1</span></code>, <code class="docutils literal"><span class="pre">x_b=beta</span></code>.</p>
+<p>[<strong>hpl 16</strong>: Show plots from paraview.]
+[<strong>hpl 17</strong>: Do 3D automatically.]
+[<strong>hpl 18</strong>: Do 1D Dirichlet model problem from previous sections (exercise!).]</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <center>
+            <p class="logo"><a href="http://cbc.simula.no/" title="Go to Center for Biomedical Computing">
+              <img class="logo" src="_static/cbc_logo.png" alt="Logo"/>
+            </a></p>
+            </center>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Variational formulations in 2D and 3D</a><ul>
+<li><a class="reference internal" href="#integration-by-parts-2">Integration by parts</a></li>
+<li><a class="reference internal" href="#example-on-a-multi-dimensional-variational-problem">Example on a multi-dimensional variational problem</a></li>
+<li><a class="reference internal" href="#transformation-to-a-reference-cell-in-2d-and-3d">Transformation to a reference cell in 2D and 3D</a></li>
+<li><a class="reference internal" href="#numerical-integration-2">Numerical integration</a></li>
+<li><a class="reference internal" href="#convenient-formulas-for-p1-elements-in-2d">Convenient formulas for P1 elements in 2D</a></li>
+<li><a class="reference internal" href="#a-glimpse-of-the-mathematical-theory-of-the-finite-element-method">A glimpse of the mathematical theory of the finite element method</a><ul>
+<li><a class="reference internal" href="#abstract-variational-forms">Abstract variational forms</a></li>
+<li><a class="reference internal" href="#example-on-an-abstract-variational-form-and-associated-spaces">Example on an abstract variational form and associated spaces</a></li>
+<li><a class="reference internal" href="#assumptions">Assumptions</a></li>
+<li><a class="reference internal" href="#existence-and-uniqueness">Existence and uniqueness</a></li>
+<li><a class="reference internal" href="#stability">Stability</a></li>
+<li><a class="reference internal" href="#equivalent-minimization-problem">Equivalent minimization problem</a></li>
+<li><a class="reference internal" href="#best-approximation-principle">Best approximation principle</a></li>
+<li><a class="reference internal" href="#best-approximation-property-in-the-norm-of-the-space">Best approximation property in the norm of the space</a></li>
+<li><a class="reference internal" href="#symmetric-positive-definite-coefficient-matrix">Symmetric, positive definite coefficient matrix</a></li>
+<li><a class="reference internal" href="#equivalent-matrix-minimization-problem">Equivalent matrix minimization problem</a></li>
+<li><a class="reference internal" href="#a-priori-error-estimate-for-the-derivative">A priori error estimate for the derivative</a></li>
+<li><a class="reference internal" href="#a-priori-error-estimate-for-the-solution">A priori error estimate for the solution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-in-2d-and-3d-via-fenics">Implementation in 2D and 3D via FEniCS</a><ul>
+<li><a class="reference internal" href="#mathematical-problem-2">Mathematical problem</a><ul>
+<li><a class="reference internal" href="#symmetry">Symmetry</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#variational-formulation">Variational formulation</a></li>
+<li><a class="reference internal" href="#the-fenics-solver">The FEniCS solver</a></li>
+<li><a class="reference internal" href="#making-the-mesh">Making the mesh</a></li>
+<li><a class="reference internal" href="#solving-a-problem">Solving a problem</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="._book022.html"
+                        title="previous chapter">Implementation of finite element algorithms</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="._book024.html"
+                        title="next chapter">Convection-diffusion and Petrov-Galerkin methods</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/._book023.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="._book024.html" title="Convection-diffusion and Petrov-Galerkin methods"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="._book022.html" title="Implementation of finite element algorithms"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>
+<div class="wrapper">
+  <div class="footer">
+    <a href="http://cbc.simula.no"><img src="_static/cbc_banner.png" width="100%"><a>
+    <br />
+    <br />
+      &copy;2016, Hans Petter Langtangen, Kent-Andre Mardal. Released under CC Attribution 4.0 license.
+  </div>
+</div>
+
+  </body>
+</html>

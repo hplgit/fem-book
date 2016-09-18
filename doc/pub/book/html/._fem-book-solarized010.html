@@ -1,0 +1,2499 @@
+<!--
+Automatically generated HTML file from DocOnce source
+(https://github.com/hplgit/doconce/)
+-->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="DocOnce: https://github.com/hplgit/doconce/" />
+<meta name="description" content="Introduction to Numerical Methods for Variational Problems">
+<meta name="keywords" content="trial function,test function,approximation of vectors in the plane,basis vector,norm,least squreas method vectors,Galerkin method vectors,projection vectors,approximation of general vectors,Galerkin method vectors,projection vectors,approximation of functions,Galerkin method functions,projection functions,normal equations,$A^TA=A^Tb$ (normal equations),approximation by sines,collocation method (approximation),approximation collocation,interpolation method (approximation),approximation interpolation,Lagrange (interpolating) polynomial,Kronecker delta,Runge's phenomenon,Chebyshev nodes,Bernstein(interpolating) polynomial,tensor product,finite element mesh,mesh finite elements,internal node,shared node,Kronecker delta,chapeau function,hat function,finite element basis function,linear elements,quadratic elements,P1 element,P2 element,element matrix,assembly,affine mapping,mapping of reference cells affine mapping,sparse matrices,mass matrix,mass lumping,lumped mass matrix,cell,vertex,degree of freedom,reference cell,finite element, definition,dof map,finite element expansion reference element,Hermite polynomials,numerical integration Midpoint rule,numerical integration Trapezoidal rule,numerical integration Simpson's rule,numerical integration Newton-Cotes formulas,Midpoint rule,Trapezoidal rule,Simpson's rule,Newton-Cotes rules,Gauss-Legendre quadrature,simplex elements,simplices,faces,edges,affine mapping,isoparametric mapping,mapping of reference cells isoparametric mapping,FEniCS,residual,weighted residuals,method of weighted residuals,variational formulation,weak formulation,trial function,test function,trial space,test space,integration by parts,weak form,strong form,natural boundary condition,essential boundary condition,convection-diffusion,convection-diffusion,Petrov-Galerkin methods,mass matrix,stiffness matrix,mass matrix,mass lumping,lumped mass matrix,mixed finite elements,linearization explicit time integration,linearization,Picard iteration,successive substitutions,fixed-point iteration,linearization Picard iteration,linearization successive substitutions,linearization fixed-point iteration,stopping criteria (nonlinear problems),single Picard iteration technique,relaxation (nonlinear equations),stopping criteria (nonlinear problems),continuation method,continuation method,group finite element method,product approximation technique,polynomial chaos,Chaospy software,intrusive polynomial chaos,non-intrusive polynomial chaos,Krylov space,linear solvers GMRES,linear solvers GCR,linear solvers minimum residuals,linear solvers generalized conjugate residuals,search (direction) vectors,linear solvers conjugate gradients,linear systems preconditioned,linear solvers preconditioning,preconditioning,preconditioning classical iterations,MILU,ILU,incomplete factorization">
+
+<title>Introduction to Numerical Methods for Variational Problems</title>
+
+
+<link href="https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_styles/style_solarized_box/css/solarized_light_code.css" rel="stylesheet" type="text/css" title="light"/>
+<script src="https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_styles/style_solarized_box/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<link href="http://thomasf.github.io/solarized-css/solarized-light.min.css" rel="stylesheet">
+<style type="text/css">
+h1 {color: #b58900;}  /* yellow */
+/* h1 {color: #cb4b16;}  orange */
+/* h1 {color: #d33682;}  magenta, the original choice of thomasf */
+code { padding: 0px; background-color: inherit; }
+pre {
+  border: 0pt solid #93a1a1;
+  box-shadow: none;
+}
+.alert-text-small   { font-size: 80%;  }
+.alert-text-large   { font-size: 130%; }
+.alert-text-normal  { font-size: 90%;  }
+.alert {
+  padding:8px 35px 8px 14px; margin-bottom:18px;
+  text-shadow:0 1px 0 rgba(255,255,255,0.5);
+  border:1px solid #93a1a1;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  color: #555;
+  background-color: #eee8d5;
+  background-position: 10px 5px;
+  background-repeat: no-repeat;
+  background-size: 38px;
+  padding-left: 55px;
+  width: 75%;
+ }
+.alert-block {padding-top:14px; padding-bottom:14px}
+.alert-block > p, .alert-block > ul {margin-bottom:1em}
+.alert li {margin-top: 1em}
+.alert-block p+p {margin-top:5px}
+.alert-notice { background-image: url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_notice.png); }
+.alert-summary  { background-image:url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_summary.png); }
+.alert-warning { background-image: url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_warning.png); }
+.alert-question {background-image:url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_question.png); }
+
+div { text-align: justify; text-justify: inter-word; }
+</style>
+
+
+</head>
+
+<!-- tocinfo
+{'highest level': 0,
+ 'sections': [('Table of contents',
+               0,
+               'table_of_contents',
+               'table_of_contents'),
+              (u'Preface', 0, u'ch:preface', u'ch:preface'),
+              (u'Contents', 3, None, '___sec1'),
+              (u'Supplementary materials', 3, None, '___sec2'),
+              (u'Quick overview of the finite element method',
+               0,
+               u'ch:overview',
+               u'ch:overview'),
+              (u'Function approximation by global functions',
+               0,
+               u'ch:approx:global',
+               u'ch:approx:global'),
+              (u'Approximation of vectors',
+               1,
+               u'fem:approx:vec',
+               u'fem:approx:vec'),
+              (u'Approximation of planar vectors',
+               2,
+               u'fem:approx:vec:plane',
+               u'fem:approx:vec:plane'),
+              (u'The least squares method', 3, None, '___sec7'),
+              (u'The projection method', 3, None, '___sec8'),
+              (u'Approximation of general vectors',
+               2,
+               u'fem:approx:vec:Np1dim',
+               u'fem:approx:vec:Np1dim'),
+              (u'The least squares method', 3, None, '___sec10'),
+              (u'The Galerkin or projection method', 3, None, '___sec11'),
+              (u'Approximation principles',
+               1,
+               u'fem:approx:global',
+               u'fem:approx:global'),
+              (u'The least squares method',
+               2,
+               u'fem:approx:LS',
+               u'fem:approx:LS'),
+              (u'The projection (or Galerkin) method', 2, None, '___sec14'),
+              (u'Example on linear approximation',
+               2,
+               u'fem:approx:global:linear',
+               u'fem:approx:global:linear'),
+              (u'Implementation of the least squares method',
+               2,
+               u'fem:approx:global:LS:code',
+               u'fem:approx:global:LS:code'),
+              (u'Symbolic integration', 3, None, '___sec17'),
+              (u'Fall back on numerical integration', 3, None, '___sec18'),
+              (u'Plotting the approximation', 3, None, '___sec19'),
+              (u'Perfect approximation',
+               2,
+               u'fem:approx:global:exact1',
+               u'fem:approx:global:exact1'),
+              (u'The regression method',
+               2,
+               u'fem:approx:global:regression',
+               u'fem:approx:global:regression'),
+              (u'Overdetermined equation system', 3, None, '___sec22'),
+              (u'The normal equations derived from a least squares principle',
+               3,
+               None,
+               '___sec23'),
+              (u'Implementation', 3, None, '___sec24'),
+              (u'Example', 3, None, '___sec25'),
+              (u'Orthogonal basis functions', 1, None, '___sec26'),
+              (u'Ill-conditioning',
+               2,
+               u'fem:approx:global:illconditioning',
+               u'fem:approx:global:illconditioning'),
+              (u'Fourier series',
+               2,
+               u'fem:approx:global:Fourier',
+               u'fem:approx:global:Fourier'),
+              (u'Orthogonal basis functions',
+               2,
+               u'fem:approx:global:orth',
+               u'fem:approx:global:orth'),
+              (u'Numerical computations', 2, None, '___sec30'),
+              (u'Interpolation', 1, None, '___sec31'),
+              (u'The interpolation (or collocation) principle',
+               2,
+               u'fem:approx:global:interp',
+               u'fem:approx:global:interp'),
+              (u'Example', 3, None, '___sec33'),
+              (u'Lagrange polynomials',
+               2,
+               u'fem:approx:global:Lagrange',
+               u'fem:approx:global:Lagrange'),
+              (u'Approximation of a polynomial', 3, None, '___sec35'),
+              (u'Successful example', 3, None, '___sec36'),
+              (u'Less successful example', 3, None, '___sec37'),
+              (u'Remedy for strong oscillations', 3, None, '___sec38'),
+              (u'Bernstein polynomials',
+               2,
+               u'fem:approx:global:Bernstein',
+               u'fem:approx:global:Bernstein'),
+              (u'Approximation properties and convergence rates',
+               1,
+               None,
+               '___sec40'),
+              (u'Approximation of functions in higher dimensions',
+               1,
+               u'fem:approx:2D',
+               u'fem:approx:2D'),
+              (u'2D basis functions as tensor products of 1D functions',
+               2,
+               u'fem:approx:2D:global',
+               u'fem:approx:2D:global'),
+              (u'Example on polynomial basis in 2D', 2, None, '___sec43'),
+              (u'Implementation',
+               2,
+               u'fem:approx:2D:global:code',
+               u'fem:approx:2D:global:code'),
+              (u'Extension to 3D',
+               2,
+               u'fem:approx:3D:global',
+               u'fem:approx:3D:global'),
+              (u'Exercises', 1, None, '___sec46'),
+              (u'Problem 1: Linear algebra refresher',
+               2,
+               u'fem:approx:exer:linalg1',
+               u'fem:approx:exer:linalg1'),
+              (u'Problem 2: Approximate a three-dimensional vector in a plane',
+               2,
+               u'fem:approx:exer:vec:3Dby2D',
+               u'fem:approx:exer:vec:3Dby2D'),
+              (u'Problem 3: Approximate a parabola by a sine',
+               2,
+               u'fem:approx:exer:parabola_sine',
+               u'fem:approx:exer:parabola_sine'),
+              (u'Problem 4: Approximate the exponential function by power functions',
+               2,
+               u'fem:approx:exer:exp:powers',
+               u'fem:approx:exer:exp:powers'),
+              (u'Problem 5: Approximate the sine function by power functions',
+               2,
+               u'fem:approx:exer:sin:powers',
+               u'fem:approx:exer:sin:powers'),
+              (u'Problem 6: Approximate a steep function by sines',
+               2,
+               u'fem:approx:exer:tanh:sine1',
+               u'fem:approx:exer:tanh:sine1'),
+              (u'Remarks', 3, None, '___sec53'),
+              (u'Problem 7: Approximate a steep function by sines with boundary adjustment',
+               2,
+               u'fem:approx:exer:tanh:sine3',
+               u'fem:approx:exer:tanh:sine3'),
+              (u'Remarks', 3, None, '___sec55'),
+              (u'Exercise 8: Fourier series as a least squares approximation',
+               2,
+               u'fem:approx:exer:Fourier',
+               u'fem:approx:exer:Fourier'),
+              (u'Problem 9: Approximate a steep function by Lagrange polynomials',
+               2,
+               u'fem:approx:exer:tanh:Lagrange',
+               u'fem:approx:exer:tanh:Lagrange'),
+              (u'Problem 10: Approximate a steep function by Lagrange polynomials and regression',
+               2,
+               u'fem:approx:exer:tanh:Lagrange:regression',
+               u'fem:approx:exer:tanh:Lagrange:regression'),
+              (u'Function approximation by finite elements',
+               0,
+               u'ch:approx:fe',
+               u'ch:approx:fe'),
+              (u'Finite element basis functions',
+               1,
+               u'fem:approx:fe',
+               u'fem:approx:fe'),
+              (u'Elements and nodes',
+               2,
+               u'fem:approx:fe:def:elements:nodes',
+               u'fem:approx:fe:def:elements:nodes'),
+              (u'Example', 3, None, '___sec62'),
+              (u'The basis functions', 2, None, '___sec63'),
+              (u'Construction principles', 3, None, '___sec64'),
+              (u'Properties of $\\basphi_i$', 3, None, '___sec65'),
+              (u'Example on quadratic finite element functions',
+               2,
+               None,
+               '___sec66'),
+              (u'Example on linear finite element functions',
+               2,
+               None,
+               '___sec67'),
+              (u'Example on cubic finite element functions',
+               2,
+               None,
+               '___sec68'),
+              (u'Calculating the linear system',
+               2,
+               u'fem:approx:global:linearsystem',
+               u'fem:approx:global:linearsystem'),
+              (u'Calculating specific matrix entries', 3, None, '___sec70'),
+              (u'Calculating a general row in the matrix',
+               3,
+               None,
+               '___sec71'),
+              (u'Assembly of elementwise computations',
+               2,
+               u'fem:approx:fe:elementwise',
+               u'fem:approx:fe:elementwise'),
+              (u'The element matrix', 3, None, '___sec73'),
+              (u'Assembly of element matrices', 3, None, '___sec74'),
+              (u'Assembly of irregularly numbered elements and nodes',
+               3,
+               None,
+               '___sec75'),
+              (u'The element vector', 3, None, '___sec76'),
+              (u'Mapping to a reference element',
+               2,
+               u'fem:approx:fe:mapping',
+               u'fem:approx:fe:mapping'),
+              (u'The coordinate transformation', 3, None, '___sec78'),
+              (u'Formulas for the element matrix and vector entries',
+               3,
+               None,
+               '___sec79'),
+              (u'Formulas for local basis functions', 3, None, '___sec80'),
+              (u'Example on integration over a reference element',
+               2,
+               u'fem:approx:fe:intg:ref',
+               u'fem:approx:fe:intg:ref'),
+              (u'Implementation',
+               1,
+               u'fem:approx:fe:impl',
+               u'fem:approx:fe:impl'),
+              (u'Integration',
+               2,
+               u'fem:approx:fe:impl:intg',
+               u'fem:approx:fe:impl:intg'),
+              (u'Linear system assembly and solution',
+               2,
+               u'fem:approx:fe:impl:linsys',
+               u'fem:approx:fe:impl:linsys'),
+              (u'Example on computing symbolic approximations',
+               2,
+               u'fem:approx:fe:impl:ex1:symbolic',
+               u'fem:approx:fe:impl:ex1:symbolic'),
+              (u'Using interpolation instead of least squares',
+               2,
+               u'fem:approx:fe:impl:ex1:collocation',
+               u'fem:approx:fe:impl:ex1:collocation'),
+              (u'Example on computing numerical approximations',
+               2,
+               u'fem:approx:fe:impl:ex1:numeric',
+               u'fem:approx:fe:impl:ex1:numeric'),
+              (u'The structure of the coefficient matrix',
+               2,
+               u'fem:approx:fe:A:structure',
+               u'fem:approx:fe:A:structure'),
+              (u'Applications',
+               2,
+               u'fem:approx:fe:impl:ex2',
+               u'fem:approx:fe:impl:ex2'),
+              (u'Sparse matrix storage and solution',
+               2,
+               u'fem:approx:fe:impl:sparse',
+               u'fem:approx:fe:impl:sparse'),
+              (u'Comparison of finite elements and finite differences',
+               1,
+               u'fem:approx:fe:fd',
+               u'fem:approx:fe:fd'),
+              (u'Finite difference approximation of given functions',
+               2,
+               u'fem:approx:fe:fd:fdproj',
+               u'fem:approx:fe:fd:fdproj'),
+              (u'Interpretation of a finite element approximation in terms of finite difference operators',
+               2,
+               u'fem:approx:fe:fd:feproj',
+               u'fem:approx:fe:fd:feproj'),
+              (u'Making finite elements behave as finite differences',
+               2,
+               u'fem:deq:1D:approx:fem_vs_fdm',
+               u'fem:deq:1D:approx:fem_vs_fdm'),
+              (u'Computations in physical space', 3, None, '___sec95'),
+              (u'Elementwise computations', 3, None, '___sec96'),
+              (u'Terminology', 3, None, '___sec97'),
+              (u'A generalized element concept',
+               1,
+               u'fem:approx:fe:element',
+               u'fem:approx:fe:element'),
+              (u'Cells, vertices, and degrees of freedom',
+               2,
+               u'fem:approx:fe:element:terminology',
+               u'fem:approx:fe:element:terminology'),
+              (u'Extended finite element concept',
+               2,
+               u'fem:approx:fe:element:def',
+               u'fem:approx:fe:element:def'),
+              (u'Implementation',
+               2,
+               u'fem:approx:fe:element:impl',
+               u'fem:approx:fe:element:impl'),
+              (u'Computing the error of the approximation',
+               2,
+               u'fem:approx:fe:error',
+               u'fem:approx:fe:error'),
+              (u'Example on cubic Hermite polynomials',
+               2,
+               u'fem:approx:fe:element:impl:Hermite',
+               u'fem:approx:fe:element:impl:Hermite'),
+              (u'Numerical integration', 1, None, '___sec104'),
+              (u'Newton-Cotes rules',
+               2,
+               u'fem:approx:fe:numint1',
+               u'fem:approx:fe:numint1'),
+              (u'Gauss-Legendre rules with optimized points',
+               2,
+               None,
+               '___sec106'),
+              (u'Finite elements in 2D and 3D', 1, None, '___sec107'),
+              (u'Basis functions over triangles in the physical domain',
+               2,
+               None,
+               '___sec108'),
+              (u'Element matrices and vectors', 3, None, '___sec109'),
+              (u'Basis functions over triangles in the reference cell',
+               2,
+               None,
+               '___sec110'),
+              (u'Affine mapping of the reference cell', 2, None, '___sec111'),
+              (u'Isoparametric mapping of the reference cell',
+               2,
+               None,
+               '___sec112'),
+              (u'Computing integrals', 2, None, '___sec113'),
+              (u'Implementation',
+               1,
+               u'fe:approx:fenics',
+               u'fe:approx:fenics'),
+              (u'Example on approximation in 2D using FEniCS',
+               2,
+               u'fem:approx:fenics:2D',
+               u'fem:approx:fenics:2D'),
+              (u'Mathematical problem', 3, None, '___sec116'),
+              (u'The code', 3, None, '___sec117'),
+              (u'Dissection of the code', 3, None, '___sec118'),
+              (u'Integrating SymPy and FEniCS', 3, None, '___sec119'),
+              (u'Refined code with curve plotting',
+               2,
+               u'fem:approx:fenics:2D:2',
+               u'fem:approx:fenics:2D:2'),
+              (u'Interpolation and projection', 3, None, '___sec121'),
+              (u'Plotting the solution along a line', 3, None, '___sec122'),
+              (u'Integrating plotting and computations',
+               3,
+               None,
+               '___sec123'),
+              (u'Exercises', 1, None, '___sec124'),
+              (u'Problem 11: Define nodes and elements',
+               2,
+               u'fem:approx:fe:exer:mesh1',
+               u'fem:approx:fe:exer:mesh1'),
+              (u'Problem 12: Define vertices, cells, and dof maps',
+               2,
+               u'fem:approx:fe:exer:mesh2',
+               u'fem:approx:fe:exer:mesh2'),
+              (u'Problem 13: Construct matrix sparsity patterns',
+               2,
+               u'fem:approx:fe:exer:defmesh:sparsity',
+               u'fem:approx:fe:exer:defmesh:sparsity'),
+              (u'Problem 14: Perform symbolic finite element computations',
+               2,
+               u'fem:approx:fe:exer:Asinwt:symbolic',
+               u'fem:approx:fe:exer:Asinwt:symbolic'),
+              (u'Problem 15: Approximate a steep function by P1 and P2 elements',
+               2,
+               u'fem:approx:exer:tanh:P1P2',
+               u'fem:approx:exer:tanh:P1P2'),
+              (u'Problem 16: Approximate a steep function by P3 and P4 elements',
+               2,
+               u'fem:approx:exer:tanh:P3P4',
+               u'fem:approx:exer:tanh:P3P4'),
+              (u'Exercise 17: Investigate the approximation error in finite elements',
+               2,
+               u'fem:approx:fe:exer:Asinwt:interpol:error',
+               u'fem:approx:fe:exer:Asinwt:interpol:error'),
+              (u'Problem 18: Approximate a step function by finite elements',
+               2,
+               u'fem:approx:fe:exer:Heaviside',
+               u'fem:approx:fe:exer:Heaviside'),
+              (u'Exercise 19: 2D approximation with orthogonal functions',
+               2,
+               u'fem:approx:fe:exer:2Dsines:symbolic',
+               u'fem:approx:fe:exer:2Dsines:symbolic'),
+              (u'Exercise 20: Use the Trapezoidal rule and P1 elements',
+               2,
+               u'fem:approx:fe:exer:1D:trapez',
+               u'fem:approx:fe:exer:1D:trapez'),
+              (u'Exercise 21: Compare P1 elements and interpolation',
+               2,
+               u'fem:approx:fe:exer:1D:P1:vs:interp',
+               u'fem:approx:fe:exer:1D:P1:vs:interp'),
+              (u'Exercise 22: Implement 3D computations with global basis functions',
+               2,
+               u'fem:approx:fe:exer:3D:approx3D',
+               u'fem:approx:fe:exer:3D:approx3D'),
+              (u"Exercise 23: Use Simpson's rule and P2 elements",
+               2,
+               u'fem:approx:fe:exer:1D:simpson',
+               u'fem:approx:fe:exer:1D:simpson'),
+              (u'Exercise 24: Make a 3D code for Lagrange elements of arbitrary order',
+               2,
+               None,
+               '___sec138'),
+              (u'Variational formulations with global basis functions',
+               0,
+               u'ch:varform:global',
+               u'ch:varform:global'),
+              (u'Basic principles for approximating differential equations',
+               1,
+               u'fem:deq:1D:principles',
+               u'fem:deq:1D:principles'),
+              (u'Differential equation models',
+               2,
+               u'fem:deq:1D:models',
+               u'fem:deq:1D:models'),
+              (u'Simple model problems and their solutions',
+               2,
+               u'fem:deq:1D:models:simple',
+               u'fem:deq:1D:models:simple'),
+              (u'Forming the residual',
+               2,
+               u'fem:deq:1D:residual:min',
+               u'fem:deq:1D:residual:min'),
+              (u'The least squares method', 2, None, '___sec144'),
+              (u'The Galerkin method', 2, None, '___sec145'),
+              (u'The method of weighted residuals', 2, None, '___sec146'),
+              (u'Test and trial functions', 2, None, '___sec147'),
+              (u'The collocation method', 2, None, '___sec148'),
+              (u'The subdomain collocation method', 3, None, '___sec149'),
+              (u'Examples on using the principles',
+               2,
+               u'fem:deq:1D:ex:sines',
+               u'fem:deq:1D:ex:sines'),
+              (u'The model problem', 3, None, '___sec151'),
+              (u'Basis functions', 3, None, '___sec152'),
+              (u'The residual', 3, None, '___sec153'),
+              (u'The least squares method', 3, None, '___sec154'),
+              (u'The Galerkin method', 3, None, '___sec155'),
+              (u'The collocation method', 3, None, '___sec156'),
+              (u'Comparison', 3, None, '___sec157'),
+              (u'Integration by parts',
+               2,
+               u'fem:deq:1D:varform',
+               u'fem:deq:1D:varform'),
+              (u'Weak form', 3, None, '___sec159'),
+              (u'Boundary function',
+               2,
+               u'fem:deq:1D:essBC:Bfunc',
+               u'fem:deq:1D:essBC:Bfunc'),
+              (u'Computing with global polynomials', 1, None, '___sec161'),
+              (u'Computing with Dirichlet and Neumann conditions',
+               2,
+               u'fem:deq:1D:varform:ex:DN:case',
+               u'fem:deq:1D:varform:ex:DN:case'),
+              (u'When the numerical method is exact', 2, None, '___sec163'),
+              (u'Abstract notation for variational formulations',
+               2,
+               u'fem:deq:1D:varform:abstract',
+               u'fem:deq:1D:varform:abstract'),
+              (u'Variational problems and minimization of functionals',
+               2,
+               u'fem:deq:1D:optimization',
+               u'fem:deq:1D:optimization'),
+              (u'Example', 3, None, '___sec166'),
+              (u'The general minimization problem', 3, None, '___sec167'),
+              (u'Derivation', 3, None, '___sec168'),
+              (u'Minimization of the discretized functional',
+               3,
+               None,
+               '___sec169'),
+              (u'Calculus of variations', 3, None, '___sec170'),
+              (u'Examples on variational formulations',
+               1,
+               u'fem:deq:1D:varform:ex',
+               u'fem:deq:1D:varform:ex'),
+              (u'Variable coefficient', 2, None, '___sec172'),
+              (u'First-order derivative in the equation and boundary condition',
+               2,
+               None,
+               '___sec173'),
+              (u'Nonlinear coefficient', 2, None, '___sec174'),
+              (u'Implementation of the algorithms',
+               1,
+               u'fem:global:deq:1D:code',
+               u'fem:global:deq:1D:code'),
+              (u'Extensions of the code for approximation',
+               2,
+               u'fem:deq:1D:code:global',
+               u'fem:deq:1D:code:global'),
+              (u'Fallback on numerical methods', 2, None, '___sec177'),
+              (u'Example with constant right-hand side',
+               2,
+               None,
+               '___sec178'),
+              (u'Approximations may fail: convection-diffusion',
+               1,
+               u'ch:convdiff',
+               u'ch:convdiff'),
+              (u'Exercises', 1, None, '___sec180'),
+              (u'Exercise 25: Refactor functions into a more general class',
+               2,
+               u'fem:deq:exer:BVP1D:class',
+               u'fem:deq:exer:BVP1D:class'),
+              (u'Exercise 26: Compute the deflection of a cable with sine functions',
+               2,
+               u'fem:deq:exer:tension:cable',
+               u'fem:deq:exer:tension:cable'),
+              (u'Exercise 27: Compute the deflection of a cable with power functions',
+               2,
+               u'fem:deq:exer:tension:cable_xn',
+               u'fem:deq:exer:tension:cable_xn'),
+              (u'Exercise 28: Check integration by parts',
+               2,
+               u'fem:deq:exer:intg:parts',
+               u'fem:deq:exer:intg:parts'),
+              (u'Variational formulations with finite elements',
+               0,
+               u'ch:varform:fe',
+               u'ch:varform:fe'),
+              (u'Computing with finite elements',
+               1,
+               u'fem:deq:1D:fem1',
+               u'fem:deq:1D:fem1'),
+              (u'Finite element mesh and basis functions',
+               2,
+               None,
+               '___sec187'),
+              (u'Computation in the global physical domain',
+               2,
+               u'fem:deq:1D:comp:global',
+               u'fem:deq:1D:comp:global'),
+              (u'Comparison with a finite difference discretization',
+               2,
+               u'fem:deq:1D:fdm_vs_fem',
+               u'fem:deq:1D:fdm_vs_fem'),
+              (u'Cellwise computations',
+               2,
+               u'fem:deq:1D:comp:elmwise',
+               u'fem:deq:1D:comp:elmwise'),
+              (u'The integral for the element matrix', 3, None, '___sec191'),
+              (u'The integral for the element vector', 3, None, '___sec192'),
+              (u'Detailed calculations of the element matrix and vector',
+               3,
+               None,
+               '___sec193'),
+              (u'Contributions from the first and last cell',
+               3,
+               None,
+               '___sec194'),
+              (u'Assembly', 3, None, '___sec195'),
+              (u'Boundary conditions: specified nonzero value',
+               1,
+               u'fem:deq:1D:essBC',
+               u'fem:deq:1D:essBC'),
+              (u'General construction of a boundary function',
+               2,
+               u'fem:deq:1D:fem:essBC:Bfunc',
+               u'fem:deq:1D:fem:essBC:Bfunc'),
+              (u'Example on computing with a finite element-based boundary function',
+               2,
+               None,
+               '___sec198'),
+              (u'Computations in physical coordinates', 3, None, '___sec199'),
+              (u'Cellwise computations on the reference element',
+               3,
+               None,
+               '___sec200'),
+              (u'Modification of the linear system',
+               2,
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys',
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys'),
+              (u'Computations in the physical system', 3, None, '___sec202'),
+              (u'Symmetric modification of the linear system',
+               2,
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys:symm',
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys:symm'),
+              (u'Modification of the element matrix and vector',
+               2,
+               None,
+               '___sec204'),
+              (u'Boundary conditions: specified derivative',
+               1,
+               u'fem:deq:1D:BC:nat',
+               u'fem:deq:1D:BC:nat'),
+              (u'The variational formulation', 2, None, '___sec206'),
+              (u'Boundary term vanishes because of the test functions',
+               2,
+               u'fem:deq:1D:BC:nat:uLtest',
+               u'fem:deq:1D:BC:nat:uLtest'),
+              (u'Boundary term vanishes because of linear system modifications',
+               2,
+               u'fem:deq:1D:BC:nat:uLmod',
+               u'fem:deq:1D:BC:nat:uLmod'),
+              (u'Direct computation of the global linear system',
+               2,
+               u'fem:deq:1D:BC:nat:Aub',
+               u'fem:deq:1D:BC:nat:Aub'),
+              (u'Cellwise computations', 2, None, '___sec210'),
+              (u'Implementation of finite element algorithms',
+               1,
+               u'fem:deq:1D:code',
+               u'fem:deq:1D:code'),
+              (u'Extensions of the code for approximation',
+               2,
+               u'fem:deq:1D:code:fe',
+               u'fem:deq:1D:code:fe'),
+              (u'Utilizing a sparse matrix',
+               2,
+               u'fem:deq:1D:code:fe_sparse',
+               u'fem:deq:1D:code:fe_sparse'),
+              (u'Application to our model problem', 2, None, '___sec214'),
+              (u'Variational formulations in 2D and 3D',
+               1,
+               u'fem:deq:2D:varform',
+               u'fem:deq:2D:varform'),
+              (u'Integration by parts', 2, None, '___sec216'),
+              (u'Example on a multi-dimensional variational problem',
+               2,
+               u'sec:varform:general:convdiff',
+               u'sec:varform:general:convdiff'),
+              (u'Transformation to a reference cell in 2D and 3D',
+               2,
+               None,
+               '___sec218'),
+              (u'Numerical integration', 2, None, '___sec219'),
+              (u'Convenient formulas for P1 elements in 2D',
+               2,
+               None,
+               '___sec220'),
+              (u'A glimpse of the mathematical theory of the finite element method',
+               2,
+               None,
+               '___sec221'),
+              (u'Abstract variational forms', 3, None, '___sec222'),
+              (u'Example on an abstract variational form and associated spaces',
+               3,
+               None,
+               '___sec223'),
+              (u'Assumptions', 3, None, '___sec224'),
+              (u'Existence and uniqueness', 3, None, '___sec225'),
+              (u'Stability', 3, None, '___sec226'),
+              (u'Equivalent minimization problem', 3, None, '___sec227'),
+              (u'Best approximation principle', 3, None, '___sec228'),
+              (u'Best approximation property in the norm of the space',
+               3,
+               None,
+               '___sec229'),
+              (u'Symmetric, positive definite coefficient matrix',
+               3,
+               None,
+               '___sec230'),
+              (u'Equivalent matrix minimization problem',
+               3,
+               None,
+               '___sec231'),
+              (u'A priori error estimate for the derivative',
+               3,
+               None,
+               '___sec232'),
+              (u'A priori error estimate for the solution',
+               3,
+               None,
+               '___sec233'),
+              (u'Implementation in 2D and 3D via FEniCS',
+               1,
+               u'fem:varform:fenics',
+               u'fem:varform:fenics'),
+              (u'Mathematical problem',
+               2,
+               u'fem:varform:fenics:problem',
+               u'fem:varform:fenics:problem'),
+              (u'Symmetry', 3, None, '___sec236'),
+              (u'Variational formulation',
+               2,
+               u'fem:varform:fenics:varform',
+               u'fem:varform:fenics:varform'),
+              (u'The FEniCS solver', 2, None, '___sec238'),
+              (u'Making the mesh', 2, None, '___sec239'),
+              (u'Solving a problem', 2, None, '___sec240'),
+              (u'Convection-diffusion and Petrov-Galerkin methods',
+               1,
+               None,
+               '___sec241'),
+              (u'Summary', 1, None, '___sec242'),
+              (u'Exercises', 1, None, '___sec243'),
+              (u'Exercise 29: Compute the deflection of a cable with 2 P1 elements',
+               2,
+               u'fem:deq:exer:cable:2P1',
+               u'fem:deq:exer:cable:2P1'),
+              (u'Exercise 30: Compute the deflection of a cable with 1 P2 element',
+               2,
+               u'fem:deq:exer:cable:1P2',
+               u'fem:deq:exer:cable:1P2'),
+              (u'Exercise 31: Compute the deflection of a cable with a step load',
+               2,
+               u'fem:deq:exer:cable:stepload',
+               u'fem:deq:exer:cable:stepload'),
+              (u'Exercise 32: Compute with a non-uniform mesh',
+               2,
+               u'fem:deq:exer:1D:mesh:nonuniform',
+               u'fem:deq:exer:1D:mesh:nonuniform'),
+              (u'Problem 33: Solve a 1D finite element problem by hand',
+               2,
+               u'fem:deq:exer:1D:gen:problem1',
+               u'fem:deq:exer:1D:gen:problem1'),
+              (u'Exercise 34: Investigate exact finite element solutions',
+               2,
+               u'fem:deq:exer:1D:exact_numerics',
+               u'fem:deq:exer:1D:exact_numerics'),
+              (u'Exercise 35: Compare finite elements and differences for a radially symmetric Poisson equation',
+               2,
+               u'fem:deq:exer:1D:Poisson:polar',
+               u'fem:deq:exer:1D:Poisson:polar'),
+              (u'Exercise 36: Compute with variable coefficients and P1 elements by hand',
+               2,
+               u'fem:deq:exer:1D:gen:problem2',
+               u'fem:deq:exer:1D:gen:problem2'),
+              (u'Exercise 37: Solve a 2D Poisson equation using polynomials and sines',
+               2,
+               u'fem:deq:exer:2D:torsion:xy:sin',
+               u'fem:deq:exer:2D:torsion:xy:sin'),
+              (u'Time-dependent variational forms',
+               0,
+               u'ch:femtime',
+               u'ch:femtime'),
+              (u'Discretization in time by a Forward Euler scheme',
+               1,
+               u'fem:deq:diffu:FE',
+               u'fem:deq:diffu:FE'),
+              (u'Time discretization', 2, None, '___sec255'),
+              (u'Space discretization', 2, None, '___sec256'),
+              (u'Variational forms', 2, None, '___sec257'),
+              (u'Notation for the solution at recent time levels',
+               2,
+               None,
+               '___sec258'),
+              (u'Deriving the linear systems', 2, None, '___sec259'),
+              (u'Computational algorithm', 2, None, '___sec260'),
+              (u'Example using sinusoidal basis functions',
+               2,
+               u'fem:deq:diffu:FE:cosex',
+               u'fem:deq:diffu:FE:cosex'),
+              (u'Comparing P1 elements with the finite difference method',
+               2,
+               u'fem:deq:diffu:FE:fdvsP1fe',
+               u'fem:deq:diffu:FE:fdvsP1fe'),
+              (u'Lumping the mass matrix', 3, None, '___sec263'),
+              (u'Discretization in time by a Backward Euler scheme',
+               1,
+               u'fem:deq:diffu:BE',
+               u'fem:deq:diffu:BE'),
+              (u'Time discretization', 2, None, '___sec265'),
+              (u'Variational forms', 2, None, '___sec266'),
+              (u'Linear systems', 2, None, '___sec267'),
+              (u'Finite difference operators corresponding to P1 elements',
+               3,
+               None,
+               '___sec268'),
+              (u'Dirichlet boundary conditions',
+               1,
+               u'fem:deq:diffu:Dirichlet',
+               u'fem:deq:diffu:Dirichlet'),
+              (u'Boundary function', 2, None, '___sec270'),
+              (u'Finite element basis functions', 2, None, '___sec271'),
+              (u'Modification of the linear system', 2, None, '___sec272'),
+              (u'Example: Oscillating Dirichlet boundary condition',
+               2,
+               u'fem:deq:diffu:Dirichlet:ex',
+               u'fem:deq:diffu:Dirichlet:ex'),
+              (u'Accuracy of the finite element solution',
+               1,
+               u'fem:deq:diffu:anal',
+               u'fem:deq:diffu:anal'),
+              (u'Illustrating example', 2, None, '___sec275'),
+              (u'Methods of analysis', 2, None, '___sec276'),
+              (u'Fourier components and dispersion relations',
+               2,
+               None,
+               '___sec277'),
+              (u'Forward Euler discretization', 2, None, '___sec278'),
+              (u'Backward Euler discretization', 2, None, '___sec279'),
+              (u'Comparing amplification factors', 2, None, '___sec280'),
+              (u'Exercises', 1, None, '___sec281'),
+              (u'Exercise 38: Analyze a Crank-Nicolson scheme for the diffusion equation',
+               2,
+               u'fem:deq:exer:diffu:analysis:CN',
+               u'fem:deq:exer:diffu:analysis:CN'),
+              (u'Variational forms for systems of PDEs',
+               0,
+               u'ch:femsys',
+               u'ch:femsys'),
+              (u'Variational forms', 1, u'fem:sys:vform', u'fem:sys:vform'),
+              (u'Sequence of scalar PDEs formulation', 2, None, '___sec285'),
+              (u'Vector PDE formulation', 2, None, '___sec286'),
+              (u'A worked example', 1, u'fem:sys:uT:ex', u'fem:sys:uT:ex'),
+              (u'Identical function spaces for the unknowns',
+               1,
+               None,
+               '___sec288'),
+              (u'Variational form of each individual PDE',
+               2,
+               None,
+               '___sec289'),
+              (u'Compound scalar variational form', 2, None, '___sec290'),
+              (u'Decoupled linear systems', 2, None, '___sec291'),
+              (u'Coupled linear systems', 2, None, '___sec292'),
+              (u'Different function spaces for the unknowns',
+               1,
+               None,
+               '___sec293'),
+              (u'Computations in 1D',
+               1,
+               u'femsys:cooling:1D',
+               u'femsys:cooling:1D'),
+              (u'Another example in 1D',
+               2,
+               u'fem:sys:up:1D',
+               u'fem:sys:up:1D'),
+              (u'Exercises', 1, None, '___sec296'),
+              (u'Problem 39: Estimate order of convergence for the Cooling law',
+               2,
+               u'femsys:exer:cooling:1',
+               u'femsys:exer:cooling:1'),
+              (u'Problem 40: Estimate order of convergence for the Cooling law',
+               2,
+               u'femsys:exer:cooling:2',
+               u'femsys:exer:cooling:2'),
+              (u'Flexible implementations of boundary conditions',
+               0,
+               u'ch:nitsche',
+               u'ch:nitsche'),
+              (u'Optimization with constraint',
+               1,
+               u'nitsche:fxy:opt',
+               u'nitsche:fxy:opt'),
+              (u'Elimination of variables', 2, None, '___sec301'),
+              (u'Lagrange multiplier method',
+               2,
+               u'nitsche:fxy:opt:Lagrange',
+               u'nitsche:fxy:opt:Lagrange'),
+              (u'Penalty method',
+               2,
+               u'nitsche:fxy:opt:penalty',
+               u'nitsche:fxy:opt:penalty'),
+              (u'Optimization of functionals',
+               1,
+               u'nitsche:pde:opt',
+               u'nitsche:pde:opt'),
+              (u'Classical calculus of variations',
+               2,
+               u'nitsche:pde:opt:varcalculus',
+               u'nitsche:pde:opt:varcalculus'),
+              (u'Penalty method for optimization with constraints',
+               2,
+               u'nitsche:pde:opt:penalty',
+               u'nitsche:pde:opt:penalty'),
+              (u'Lagrange multiplier method for optimization with constraints',
+               2,
+               u'nitsche:pde:opt:Lagrange',
+               u'nitsche:pde:opt:Lagrange'),
+              (u'Example: 1D problem',
+               2,
+               u'nitsche:pde:opt:1Dex',
+               u'nitsche:pde:opt:1Dex'),
+              (u'Example: adding a constraint in a Neumann problem',
+               2,
+               None,
+               '___sec309'),
+              (u'Nonlinear problems', 0, u'ch:nonlin', u'ch:nonlin'),
+              (u'Introduction of basic concepts',
+               1,
+               u'nonlin:timediscrete:logistic',
+               u'nonlin:timediscrete:logistic'),
+              (u'Linear versus nonlinear equations', 2, None, '___sec312'),
+              (u'Algebraic equations', 3, None, '___sec313'),
+              (u'Differential equations', 3, None, '___sec314'),
+              (u'A simple model problem', 2, None, '___sec315'),
+              (u'Linearization by explicit time discretization',
+               2,
+               u'nonlin:timediscrete:logistic:FE',
+               u'nonlin:timediscrete:logistic:FE'),
+              (u'Exact solution of nonlinear algebraic equations',
+               2,
+               u'nonlin:timediscrete:logistic:roots',
+               u'nonlin:timediscrete:logistic:roots'),
+              (u'Linearization', 2, None, '___sec318'),
+              (u'Picard iteration',
+               2,
+               u'nonlin:timediscrete:logistic:Picard',
+               u'nonlin:timediscrete:logistic:Picard'),
+              (u'Stopping criteria', 3, None, '___sec320'),
+              (u'A single Picard iteration', 3, None, '___sec321'),
+              (u'Linearization by a geometric mean',
+               2,
+               u'nonlin:timediscrete:logistic:geometric:mean',
+               u'nonlin:timediscrete:logistic:geometric:mean'),
+              (u"Newton's method",
+               2,
+               u'nonlin:timediscrete:logistic:Newton',
+               u'nonlin:timediscrete:logistic:Newton'),
+              (u'Relaxation',
+               2,
+               u'nonlin:timediscrete:logistic:relaxation',
+               u'nonlin:timediscrete:logistic:relaxation'),
+              (u'Implementation and experiments',
+               2,
+               u'nonlin:timediscrete:logistic:impl',
+               u'nonlin:timediscrete:logistic:impl'),
+              (u'Generalization to a general nonlinear ODE',
+               2,
+               u'nonlin:ode:generic',
+               u'nonlin:ode:generic'),
+              (u'Explicit time discretization', 3, None, '___sec327'),
+              (u'Backward Euler discretization', 3, None, '___sec328'),
+              (u'Crank-Nicolson discretization', 3, None, '___sec329'),
+              (u'Systems of ODEs',
+               2,
+               u'nonlin:ode:generic:sys:pendulum',
+               u'nonlin:ode:generic:sys:pendulum'),
+              (u'Example', 3, None, '___sec331'),
+              (u'Systems of nonlinear algebraic equations',
+               1,
+               u'nonlin:systems:alg',
+               u'nonlin:systems:alg'),
+              (u'Picard iteration',
+               2,
+               u'nonlin:systems:alg:Picard',
+               u'nonlin:systems:alg:Picard'),
+              (u"Newton's method",
+               2,
+               u'nonlin:systems:alg:Newton',
+               u'nonlin:systems:alg:Newton'),
+              (u'Stopping criteria',
+               2,
+               u'nonlin:systems:alg:terminate',
+               u'nonlin:systems:alg:terminate'),
+              (u'Example: A nonlinear ODE model from epidemiology',
+               2,
+               u'nonlin:systems:alg:SI',
+               u'nonlin:systems:alg:SI'),
+              (u'Implicit time discretization', 3, None, '___sec337'),
+              (u'A Picard iteration', 3, None, '___sec338'),
+              (u"Newton's method", 3, None, '___sec339'),
+              (u'Linearization at the differential equation level',
+               1,
+               u'nonlin:pdelevel',
+               u'nonlin:pdelevel'),
+              (u'Explicit time integration',
+               2,
+               u'nonlin:pdelevel:explicit',
+               u'nonlin:pdelevel:explicit'),
+              (u'Backward Euler scheme and Picard iteration',
+               2,
+               u'nonlin:pdelevel:Picard',
+               u'nonlin:pdelevel:Picard'),
+              (u"Backward Euler scheme and Newton's method",
+               2,
+               u'nonlin:pdelevel:Newton',
+               u'nonlin:pdelevel:Newton'),
+              (u'Linearization via Taylor expansions', 3, None, '___sec344'),
+              (u'Similarity with Picard iteration', 3, None, '___sec345'),
+              (u'Implementation', 3, None, '___sec346'),
+              (u'Derivation with alternative notation', 3, None, '___sec347'),
+              (u'Crank-Nicolson discretization',
+               2,
+               u'nonlin:pdelevel:Picard:CN',
+               u'nonlin:pdelevel:Picard:CN'),
+              (u'1D stationary nonlinear differential equations',
+               1,
+               u'nonlin:alglevel:1D',
+               u'nonlin:alglevel:1D'),
+              (u'Finite difference discretization',
+               2,
+               u'nonlin:alglevel:1D:fd',
+               u'nonlin:alglevel:1D:fd'),
+              (u'Solution of algebraic equations', 2, None, '___sec351'),
+              (u'The structure of the equation system', 3, None, '___sec352'),
+              (u'Picard iteration', 3, None, '___sec353'),
+              (u'Mesh with two cells', 3, None, '___sec354'),
+              (u"Newton's method", 3, None, '___sec355'),
+              (u'Multi-dimensional PDE problems', 1, None, '___sec356'),
+              (u'Finite difference discretization',
+               2,
+               u'nonlin:alglevel:dD:fd',
+               u'nonlin:alglevel:dD:fd'),
+              (u'Picard iteration', 3, None, '___sec358'),
+              (u"Newton's method", 3, None, '___sec359'),
+              (u'Continuation methods', 2, None, '___sec360'),
+              (u'Exercises', 1, u'nonlin:exer', u'nonlin:exer'),
+              (u'Problem 41: Determine if equations are nonlinear or not',
+               2,
+               u'nonlin:exer:lin:vs:nonlin',
+               u'nonlin:exer:lin:vs:nonlin'),
+              (u'Exercise 42: Derive and investigate a generalized logistic model',
+               2,
+               u'nonlin:exer:logistic:gen',
+               u'nonlin:exer:logistic:gen'),
+              (u"Problem 43: Experience the behavior of Newton's method",
+               2,
+               u'nonlin:exer:Newton:problems1',
+               u'nonlin:exer:Newton:problems1'),
+              (u'Problem 44: Compute the Jacobian of a $2\\times 2$ system',
+               2,
+               u'nonlin:exer:vib:Jacobian',
+               u'nonlin:exer:vib:Jacobian'),
+              (u'Problem 45: Solve nonlinear equations arising from a vibration ODE',
+               2,
+               u'nonlin:exer:vib:geometric:mean',
+               u'nonlin:exer:vib:geometric:mean'),
+              (u'Exercise 46: Find the truncation error of arithmetic mean of products',
+               2,
+               u'nonlin:exer:products:arith:mean',
+               u'nonlin:exer:products:arith:mean'),
+              (u"Problem 47: Newton's method for linear problems",
+               2,
+               u'nonlin:exer:Newton:linear',
+               u'nonlin:exer:Newton:linear'),
+              (u'Exercise 48: Discretize a 1D problem with a nonlinear coefficient',
+               2,
+               u'nonlin:exer:1D:1pu2:fem',
+               u'nonlin:exer:1D:1pu2:fem'),
+              (u'Exercise 49: Linearize a 1D problem with a nonlinear coefficient',
+               2,
+               u'nonlin:exer:1D:1pu2:PicardNewton',
+               u'nonlin:exer:1D:1pu2:PicardNewton'),
+              (u'Problem 50: Finite differences for the 1D Bratu problem',
+               2,
+               u'nonlin:exer:1D:fu:discretize:fd',
+               u'nonlin:exer:1D:fu:discretize:fd'),
+              (u'Exercise 51: Discretize a nonlinear 1D heat conduction PDE by finite differences',
+               2,
+               u'nonlin:exer:1D:heat:nonlinear:fdm',
+               u'nonlin:exer:1D:heat:nonlinear:fdm'),
+              (u'Exercise 52: Differentiate a highly nonlinear term',
+               2,
+               u'nonlin:exer:grad:pow:term',
+               u'nonlin:exer:grad:pow:term'),
+              (u'Exercise 53: Crank-Nicolson for a nonlinear 3D diffusion equation',
+               2,
+               u'nonlin:exer:2D:heat:nonlinear:fd',
+               u'nonlin:exer:2D:heat:nonlinear:fd'),
+              (u'Exercise 54: Find the sparsity of the Jacobian',
+               2,
+               u'nonlin:exer:sparsity:Jacobian',
+               u'nonlin:exer:sparsity:Jacobian'),
+              (u'Problem 55: Investigate a 1D problem with a continuation method',
+               2,
+               u'nonlin:exer:continuation:1DnNflow',
+               u'nonlin:exer:continuation:1DnNflow'),
+              (u'Symbolic nonlinear finite element equations',
+               1,
+               u'nonlin:app:fem_vs_fdm',
+               u'nonlin:app:fem_vs_fdm'),
+              (u'Finite element basis functions',
+               2,
+               u'nonlin:alglevel:1D:fe_basis',
+               u'nonlin:alglevel:1D:fe_basis'),
+              (u'The group finite element method',
+               2,
+               u'nonlin:alglevel:1D:fe:group',
+               u'nonlin:alglevel:1D:fe:group'),
+              (u'Finite element approximation of functions of $u$',
+               3,
+               None,
+               '___sec380'),
+              (u'Simplified problem', 3, None, '___sec381'),
+              (u'Integrating nonlinear functions', 3, None, '___sec382'),
+              (u'Application of the group finite element method',
+               3,
+               None,
+               '___sec383'),
+              (u'Numerical integration of nonlinear terms by hand',
+               2,
+               u'nonlin:alglevel:1D:fe:f',
+               u'nonlin:alglevel:1D:fe:f'),
+              (u'Discretization of a variable coefficient Laplace term',
+               2,
+               u'nonlin:alglevel:1D:fe:Laplace',
+               u'nonlin:alglevel:1D:fe:Laplace'),
+              (u'Group finite element method', 3, None, '___sec386'),
+              (u'Numerical integration at the nodes', 3, None, '___sec387'),
+              (u'Uncertainty quantification and polynomial chaos expansions',
+               0,
+               u'ch:pc',
+               u'ch:pc'),
+              (u'Sample problems', 1, None, '___sec389'),
+              (u'ODE for decay processes', 2, None, '___sec390'),
+              (u'The stochastic Poisson equation', 2, None, '___sec391'),
+              (u'Basic principles', 1, None, '___sec392'),
+              (u'Basic statistical results', 2, None, '___sec393'),
+              (u'Least-squares methods', 2, None, '___sec394'),
+              (u'Example: Least squares applied to the decay ODE',
+               2,
+               None,
+               '___sec395'),
+              (u'Modeling the response', 2, None, '___sec396'),
+              (u'Numerical integration', 2, None, '___sec397'),
+              (u'Stochastic collocation', 2, None, '___sec398'),
+              (u'The Chaospy software', 1, u'pc:chaospy', u'pc:chaospy'),
+              (u'Intrusive polynomial chaos methods',
+               1,
+               u'pc:intrusive',
+               u'pc:intrusive'),
+              (u'Variational methods for linear systems',
+               0,
+               u'ch:cg',
+               u'ch:cg'),
+              (u'Conjugate gradient-like iterative methods',
+               1,
+               u'ch:linalg:CGmethods',
+               u'ch:linalg:CGmethods'),
+              (u'The Galerkin method', 2, None, '___sec403'),
+              (u'The least squares method', 2, None, '___sec404'),
+              (u'Krylov subspaces', 2, None, '___sec405'),
+              (u'Computation of the basis vectors', 2, None, '___sec406'),
+              (u'Computation of a new solution vector', 2, None, '___sec407'),
+              (u'Summary of the least squares method', 2, None, '___sec408'),
+              (u'Remark', 3, None, '___sec409'),
+              (u'Truncation and restart', 2, None, '___sec410'),
+              (u'Summary of the Galerkin method', 2, None, '___sec411'),
+              (u'A framework based on the error', 2, None, '___sec412'),
+              (u'Preconditioning',
+               1,
+               u'ch:linalg2:preconditioning',
+               u'ch:linalg2:preconditioning'),
+              (u'Motivation and Basic Principles', 2, None, '___sec414'),
+              (u'Use of the preconditioning matrix in the iterative methods',
+               2,
+               None,
+               '___sec415'),
+              (u'Classical iterative methods as preconditioners',
+               2,
+               u'ch:linalg:SORprecond',
+               u'ch:linalg:SORprecond'),
+              (u'Incomplete factorization preconditioners',
+               2,
+               u'linalg:ILU',
+               u'linalg:ILU'),
+              (u'Appendix: Useful formulas',
+               0,
+               u'ch:formulas',
+               u'ch:formulas'),
+              (u'Finite difference operator notation',
+               1,
+               u'sec:form:fdop',
+               u'sec:form:fdop'),
+              (u'Truncation errors of finite difference approximations',
+               1,
+               u'sec:form:truncerr',
+               u'sec:form:truncerr'),
+              (u'Finite differences of exponential functions',
+               1,
+               u'sec:form:fdexp',
+               u'sec:form:fdexp'),
+              (u'Complex exponentials', 3, None, '___sec422'),
+              (u'Real exponentials', 3, None, '___sec423'),
+              (u'Finite differences of $t^n$',
+               1,
+               u'sec:form:fdtn',
+               u'sec:form:fdtn'),
+              (u'Software', 2, None, '___sec425'),
+              (u'References', 1, None, '___sec426')]}
+end of tocinfo -->
+
+<body>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+     equationNumbers: {  autoNumber: "none"  },
+     extensions: ["AMSmath.js", "AMSsymbols.js", "autobold.js", "color.js"]
+  }
+});
+</script>
+<script type="text/javascript"
+ src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<!-- newcommands_keep.tex -->
+$$
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\halfi}{{1/2}}
+\newcommand{\tp}{\thinspace .}
+\newcommand{\uex}{{u_{\small\mbox{e}}}}
+\newcommand{\Aex}{{A_{\small\mbox{e}}}}
+\newcommand{\E}[1]{\hbox{E}\lbrack #1 \rbrack}
+\newcommand{\Var}[1]{\hbox{Var}\lbrack #1 \rbrack}
+\newcommand{\normalvec}{\boldsymbol{n}}
+\newcommand{\Oof}[1]{\mathcal{O}(#1)}
+\newcommand{\x}{\boldsymbol{x}}
+\newcommand{\X}{\boldsymbol{X}}
+\renewcommand{\u}{\boldsymbol{u}}
+\renewcommand{\v}{\boldsymbol{v}}
+\newcommand{\w}{\boldsymbol{w}}
+\newcommand{\V}{\boldsymbol{V}}
+\newcommand{\e}{\boldsymbol{e}}
+\newcommand{\f}{\boldsymbol{f}}
+\newcommand{\q}{{q}}
+\newcommand{\residual}{r}
+\newcommand{\dfc}{\alpha}  % diffusion coefficient
+\newcommand{\Ix}{\mathcal{I}_x}
+\newcommand{\Iy}{\mathcal{I}_y}
+\newcommand{\Iz}{\mathcal{I}_z}
+\newcommand{\If}{\mathcal{I}_s}     % for FEM
+\newcommand{\Ifd}{{I_d}}  % for FEM
+\newcommand{\Ifb}{{I_b}}  % for FEM
+\newcommand{\sequencei}[1]{\left\{ {#1}_i \right\}_{i\in\If}}
+\newcommand{\sequencej}[1]{\left\{ {#1}_j \right\}_{j\in\If}}
+\newcommand{\basphi}{\varphi}
+\newcommand{\baspsi}{\psi}
+\newcommand{\refphi}{\tilde\basphi}
+\newcommand{\psib}{\boldsymbol{\psi}}
+\newcommand{\sinL}[1]{\sin\left((#1+1)\pi\frac{x}{L}\right)}
+\newcommand{\xno}[1]{x_{#1}}
+\newcommand{\Xno}[1]{X_{(#1)}}
+\newcommand{\yno}[1]{y_{#1}}
+\newcommand{\xdno}[1]{\boldsymbol{x}_{#1}}
+\newcommand{\dX}{\, \mathrm{d}X}
+\newcommand{\dx}{\, \mathrm{d}x}
+\newcommand{\ds}{\, \mathrm{d}s}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Integer}{\mathbb{Z}}
+$$
+
+
+
+
+    
+<a name="part0010"></a>
+<p>
+<!-- begin top navigation -->
+<table style="width: 100%"><tr><td>
+<div style="text-align: left;"><a href="._fem-book-solarized009.html">&laquo; Previous</a></div>
+</td><td>
+<div style="text-align: right;"><a href="._fem-book-solarized011.html">Next &raquo;</a></div>
+</td></tr></table>
+<!-- end top navigation -->
+</p>
+
+<p>
+<!-- !split -->
+
+<center><h1 id="ch:approx:fe">Function approximation by finite elements</h1></center> <hr>
+
+<p>
+The purpose of this chapter is to use the ideas from the previous
+chapter to approximate functions, but the basis functions are now
+of finite element type.
+
+<h1 id="fem:approx:fe">Finite element basis functions</h1>
+
+<p>
+The specific basis functions exemplified in the section <a href="._fem-book-solarized005.html#fem:approx:global">Approximation principles</a> are in general nonzero on the entire domain
+\( \Omega \), as can be seen in Figure <a href="#fem:approx:fe:fig:u:sin">27</a>, where
+we plot two sinusoidal basis functions \( \psi_0(x)=\sin\half\pi x \) and
+\( \psi_1(x)=\sin 2\pi x \) together with the sum \( u(x)=4\psi_0(x) -
+\half\psi_1(x) \). We shall now turn our attention to basis functions
+that have <em>compact support</em>, meaning that they are nonzero on a small
+portion of \( \Omega \) only. Moreover, we shall restrict the functions to
+be <em>piecewise polynomials</em>. This means that the domain is split into
+subdomains and each basis function is a polynomial on one or more of
+these subdomains, see Figure <a href="#fem:approx:fe:fig:u:fe">28</a> for a sketch
+involving locally defined hat functions that make
+\( u=\sum_jc_j\baspsi_j \) piecewise linear. At the boundaries between
+subdomains, one normally just forces continuity of \( u \), so that when
+connecting two polynomials from two subdomains, the derivative becomes
+discontinuous. This type of basis functions is fundamental in the
+finite element method.  (One may wonder why continuity of derivatives
+is not desired, and it is, but it turns out to be mathematically
+challenging in 2D and 3D, and it is not strictly needed.)
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:u:sin"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 27:  A function resulting from a weighted sum of two sine basis functions.  <!-- caption label: fem:approx:fe:fig:u:sin --> </p></center>
+<p><img src="fig/u_example_sin.png" align="bottom" width=600></p>
+</center>
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:u:fe"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 28:  A function resulting from a weighted sum of three local piecewise linear (hat) functions.  <!-- caption label: fem:approx:fe:fig:u:fe --> </p></center>
+<p><img src="fig/u_example_P1.png" align="bottom" width=600></p>
+</center>
+
+<p>
+We first introduce the concepts of elements and nodes in a simplistic fashion.
+Later, we shall generalize the concept
+of an element, which is a necessary step before treating a wider class of
+approximations within the family of finite element methods.
+The generalization is also compatible with
+the concepts used in the <a href="http://fenicsproject.org" target="_self">FEniCS</a> finite
+element software.
+
+<h2 id="fem:approx:fe:def:elements:nodes">Elements and nodes</h2>
+
+<p>
+Let \( u \) and \( f \) be defined on an interval \( \Omega \). We divide \( \Omega \)
+into \( N_e \) non-overlapping subintervals \( \Omega^{(e)} \),
+\( e=0,\ldots,N_e-1 \):
+
+$$
+\begin{equation}
+\Omega = \Omega^{(0)}\cup \cdots \cup \Omega^{(N_e)}\tp   \tag{74}
+\end{equation}
+$$
+
+We shall for now refer to \( \Omega^{(e)} \) as an <em>element</em>, identified
+by the unique number \( e \).  On each element we introduce a set of
+points called <em>nodes</em>.  For now we assume that the nodes are uniformly
+spaced throughout the element and that the boundary points of the
+elements are also nodes.  The nodes are given numbers both within an
+element and in the global domain. These are referred to as <em>local</em> and
+<em>global</em> node numbers, respectively.  Local nodes are numbered with an
+index \( r=0,\ldots,d \), while the \( N_n \) global nodes are numbered as
+\( i=0,\ldots,N_n-1 \).  Figure
+<a href="#fem:approx:fe:def:elements:nodes:fig:P1">29</a> shows nodes as small
+circular disks and element boundaries as small vertical lines.  Global
+node numbers appear under the nodes, but local node numbers are not
+shown. Since there are two nodes in each elements, the local nodes are
+numbered 0 (left) and 1 (right) in each element.
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:def:elements:nodes:fig:P1"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 29:  Finite element mesh with 5 elements and 6 nodes.  <!-- caption label: fem:approx:fe:def:elements:nodes:fig:P1 --> </p></center>
+<p><img src="fig/fe_mesh1D_P1.png" align="bottom" width=500></p>
+</center>
+
+<p>
+Nodes and elements uniquely define a <em>finite element mesh</em>, which is
+our discrete representation of the domain in the computations.  A
+common special case is that of a <em>uniformly partitioned mesh</em> where
+each element has the same length and the distance between nodes is
+constant.  Figure <a href="#fem:approx:fe:def:elements:nodes:fig:P1">29</a> shows
+an example on a uniformly partitioned mesh. The strength of the finite
+element method (in contrast to the finite difference method) is that
+it is equally easy to work with a non-uniformly partitioned mesh as a
+uniformly partitioned one.
+
+<h3 id="___sec62">Example </h3>
+
+<p>
+On \( \Omega =[0,1] \) we may introduce two elements,
+\( \Omega^{(0)}=[0,0.4] \) and \( \Omega^{(1)}=[0.4,1] \). Furthermore, let us
+introduce three nodes per element, equally spaced within each element.
+Figure <a href="#fem:approx:fe:def:elements:nodes:fig:P2">30</a> shows the mesh
+with \( N_e=2 \) elements and \( N_n=2N_e+1=5 \) nodes.  A node's coordinate
+is denoted by \( x_i \), where \( i \) is either a global node number or a
+local one. In the latter case we also need to know the element number
+to uniquely define the node.
+
+<p>
+The three nodes in element number 0 are \( x_0=0 \), \( x_1=0.2 \), and
+\( x_2=0.4 \).  The local and global node numbers are here equal.  In
+element number 1, we have the local nodes \( x_0=0.4 \), \( x_1=0.7 \), and
+\( x_2=1 \) and the corresponding global nodes \( x_2=0.4 \), \( x_3=0.7 \), and
+\( x_4=1 \). Note that the global node \( x_2=0.4 \) is shared by the two
+elements.
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:def:elements:nodes:fig:P2"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 30:  Finite element mesh with 2 elements and 5 nodes.  <!-- caption label: fem:approx:fe:def:elements:nodes:fig:P2 --> </p></center>
+<p><img src="fig/fe_mesh1D_P2.png" align="bottom" width=500></p>
+</center>
+
+<p>
+For the purpose of implementation, we introduce two lists or arrays:
+<code>nodes</code> for storing the coordinates of the nodes, with the global node
+numbers as indices, and <code>elements</code> for holding the global node numbers
+in each element. By defining <code>elements</code> as a list of lists, where each
+sublist contains the global node numbers of one particular element,
+the indices of each sublist will correspond to local node numbers for
+that element.  The <code>nodes</code> and <code>elements</code> lists for the sample mesh
+above take the form
+
+<p>
+<!-- begin verbatim block  pycod-->
+<pre><code>nodes = [0, 0.2, 0.4, 0.7, 1]
+elements = [[0, 1, 2], [2, 3, 4]]
+</code></pre>
+<!-- end verbatim block -->
+Looking up the coordinate of, e.g., local node number 2 in element 1,
+is done by <code>nodes[elements[1][2]]</code> (recall that nodes and
+elements start their numbering at 0). The corresponding global node number
+is 4, so we could alternatively look up the coordinate as <code>nodes[4]</code>.
+
+<p>
+The numbering of elements and nodes does not need to be regular.
+Figure <a href="#fem:approx:fe:def:elements:nodes:fig:P1:irregular">31</a> shows
+and example corresponding to
+
+<p>
+<!-- begin verbatim block  pycod-->
+<pre><code>nodes = [1.5, 5.5, 4.2, 0.3, 2.2, 3.1]
+elements = [[2, 1], [4, 5], [0, 4], [3, 0], [5, 2]]
+</code></pre>
+<!-- end verbatim block -->
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:def:elements:nodes:fig:P1:irregular"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 31:  Example on irregular numbering of elements and nodes.  <!-- caption label: fem:approx:fe:def:elements:nodes:fig:P1:irregular --> </p></center>
+<p><img src="fig/fe_mesh1D_random_numbering.png" align="bottom" width=500></p>
+</center>
+
+<h2 id="___sec63">The basis functions </h2>
+
+<h3 id="___sec64">Construction principles </h3>
+
+<p>
+Finite element basis functions are in this text recognized by
+the notation \( \basphi_i(x) \), where the index (now in the beginning)
+corresponds to
+a global node number. Since \( \baspsi_i \) is the symbol for basis
+functions in general in this text, the particular choice of
+finite element basis functions means that we take
+\( \baspsi_i = \basphi_i \).
+
+<p>
+Let \( i \) be the global node number corresponding to local node \( r \) in
+element number \( e \) with \( d+1 \) local nodes. We distinguish between
+<em>internal</em> nodes in an element and <em>shared</em> nodes. The latter are
+nodes that are shared with the neighboring elements.
+The finite element basis functions \( \basphi_i \)
+are now defined as follows.
+
+<ul>
+  <li> For an internal node, with global number \( i \) and local number \( r \),
+    take \( \basphi_i(x) \) to be the Lagrange
+    polynomial that is 1 at the local node \( r \) and zero
+    at all other nodes in the element.
+    The degree of the polynomial is \( d \), according to <a href="._fem-book-solarized007.html#mjx-eqn-62">(62)</a>.
+    On all other elements, \( \basphi_i=0 \).</li>
+  <li> For a shared node,
+    let \( \basphi_i \) be made up of the Lagrange polynomial on this element
+    that is 1 at node \( i \), combined with the Lagrange polynomial over
+    the neighboring element that is also 1 at node \( i \).
+    On all other elements, \( \basphi_i=0 \).</li>
+</ul>
+
+A visual impression of three such basis functions is given in
+Figure <a href="#fem:approx:fe:fig:P2">32</a>.
+The domain \( \Omega = [0,1] \) is divided into four equal-sized elements,
+each having three local nodes.
+The element boundaries are
+marked by vertical dashed lines and the nodes by small circles.
+The function \( \basphi_2(x) \)
+is composed of a quadratic Lagrange polynomial over element 0 and 1,
+\( \basphi_3(x) \) corresponds to an internal node in element 1 and
+is therefore nonzero on this element only, while \( \basphi_4(x) \)
+is like \( \basphi_2(x) \) composed to two Lagrange polynomials over two
+elements. Also observe that the basis function \( \basphi_i \) is zero at
+all nodes, except at global node number \( i \).
+We also remark that
+the shape of a basis function over an element is completely determined
+by the coordinates of the local nodes in the element.
+
+<p>
+<!-- Sometimes we refer to a Lagrange polynomial on an element \( e \), which -->
+<!-- means the basis function \( \basphi_i(x) \) when \( x\in\Omega^{(e)} \), and -->
+<!-- \( \basphi_i(x)=0 \) when \( x\notin\Omega^{(e)} \). -->
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:P2"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 32:  Illustration of the piecewise quadratic basis functions associated with nodes in an element.   <!-- caption label: fem:approx:fe:fig:P2 --> </p></center>
+<p><img src="fig/phi/mpl_fe_basis_p2_4e_lab.png" align="bottom" width=600></p>
+</center>
+
+<h3 id="___sec65">Properties of \( \basphi_i \) </h3>
+
+<p>
+The construction of basis functions according to the principles above
+lead to two important properties of \( \basphi_i(x) \). First,
+
+$$
+\begin{equation}
+\basphi_i(\xno{j}) =\delta_{ij},\quad \delta_{ij} =
+\left\lbrace\begin{array}{ll}
+1, & i=j,\\ 
+0, & i\neq j,
+\end{array}\right.
+\tag{75}
+\end{equation}
+$$
+
+when \( \xno{j} \) is a node in the mesh with global node number \( j \).
+The
+result \( \basphi_i(\xno{j}) =\delta_{ij} \) is obtained as
+the Lagrange polynomials are constructed to have
+exactly this property.
+The property also implies a convenient interpretation of \( c_i \)
+as the value of \( u \) at node \( i \). To show this, we expand \( u \)
+in the usual way as \( \sum_jc_j\baspsi_j \) and choose \( \baspsi_i = \basphi_i \):
+
+$$
+u(\xno{i}) = \sum_{j\in\If} c_j \baspsi_j (\xno{i}) =
+\sum_{j\in\If} c_j \basphi_j (\xno{i}) = c_i \basphi_i (\xno{i}) = c_i
+\tp
+$$
+
+Because of this interpretation,
+the coefficient \( c_i \) is by many named \( u_i \) or \( U_i \).
+
+<p>
+<!-- 2DO: switch to U_j? -->
+
+<p>
+Second,
+\( \basphi_i(x) \) is mostly zero throughout the domain:
+
+<ul>
+ <li> \( \basphi_i(x) \neq 0 \) only on those elements that contain global node \( i \),</li>
+ <li> \( \basphi_i(x)\basphi_j(x) \neq 0 \) if and only if \( i \) and \( j \) are global node
+   numbers in the same element.</li>
+</ul>
+
+Since \( A_{i,j} \) is the integral of
+\( \basphi_i\basphi_j \) it means that
+<em>most of the elements in the coefficient matrix will be zero</em>.
+We will come back to these properties and use
+them actively in computations to save memory and CPU time.
+
+<p>
+In our example so far, each element has \( d+1 \) nodes, resulting in
+local Lagrange polynomials of degree \( d \) (according to the section <a href="._fem-book-solarized007.html#fem:approx:global:Lagrange">Lagrange polynomials</a>), but it is not a requirement to have
+the same \( d \) value in each element.
+
+<h2 id="___sec66">Example on quadratic finite element functions </h2>
+
+<p>
+Let us set up the <code>nodes</code> and <code>elements</code> lists corresponding to the
+mesh implied by Figure <a href="#fem:approx:fe:fig:P2">32</a>.
+Figure <a href="#fem:approx:fe:fig:P2:mesh">33</a> sketches the mesh and the
+numbering. We have
+
+<p>
+<!-- begin verbatim block  pycod-->
+<pre><code>nodes = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
+elements = [[0, 1, 2], [2, 3, 4], [4, 5, 6], [6, 7, 8]]
+</code></pre>
+<!-- end verbatim block -->
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:P2:mesh"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 33:  Sketch of mesh with 4 elements and 3 nodes per element.   <!-- caption label: fem:approx:fe:fig:P2:mesh --> </p></center>
+<p><img src="fig/fe_mesh1D_P2_4e.png" align="bottom" width=500></p>
+</center>
+
+<p>
+Let us explain mathematically how the basis functions are constructed
+according to the principles.
+Consider element number 1 in Figure <a href="#fem:approx:fe:fig:P2:mesh">33</a>,
+\( \Omega^{(1)}=[0.25, 0.5] \), with local nodes
+0, 1, and 2 corresponding to global nodes 2, 3, and 4.
+The coordinates of these nodes are
+\( 0.25 \), \( 0.375 \), and \( 0.5 \), respectively.
+We define three Lagrange
+polynomials on this element:
+
+<ol>
+<li> The polynomial that is 1 at local node 1
+   (global node 3) makes up the basis function
+   \( \basphi_3(x) \) over this element,
+   with \( \basphi_3(x)=0 \) outside the element.</li>
+<li> The polynomial that is 1 at local node 0 (global node 2) is the &quot;right
+   part&quot; of the global basis function
+   \( \basphi_2(x) \). The &quot;left part&quot; of \( \basphi_2(x) \) consists of
+   a Lagrange polynomial associated with local node 2 in
+   the neighboring element \( \Omega^{(0)}=[0, 0.25] \).</li>
+<li> Finally, the polynomial that is 1 at local node 2 (global node 4)
+   is the &quot;left part&quot; of the global basis function \( \basphi_4(x) \).
+   The &quot;right part&quot; comes from the Lagrange polynomial that is 1 at
+   local node 0 in the neighboring element \( \Omega^{(2)}=[0.5, 0.75] \).</li>
+</ol>
+
+The specific mathematical form of the polynomials <em>over element</em> 1 is
+given by the formula <a href="._fem-book-solarized007.html#mjx-eqn-62">(62)</a>:
+
+$$
+\begin{align*}
+\basphi_3(x) &= \frac{(x-0.25)(x-0.5)}{(0.375-0.25)(0.375-0.5)},\quad x\in\Omega^{(1)}\\ 
+\basphi_2(x) &= \frac{(x-0.375)(x-0.5)}{(0.25-0.375)(0.25-0.5)},\quad x\in\Omega^{(1)}\\ 
+\basphi_4(x) &= \frac{(x-0.25)(x-0.375)}{(0.5-0.25)(0.5-0.25)},\quad x\in\Omega^{(1)}
+\end{align*}
+$$
+
+<p>
+As mentioned earlier, any global basis function \( \basphi_i(x) \) is zero
+on elements that do not contain the node with global node number \( i \).
+Clearly, the property <a href="#mjx-eqn-75">(75)</a> is easily
+verified, see for instance that \( \basphi_3(0.375) = 1 \) while
+\( \basphi_3(0.25) = 0 \) and \( \basphi_3(0.5) = 0 \).
+
+<p>
+The other global functions associated with internal nodes,
+\( \basphi_1 \), \( \basphi_5 \), and \( \basphi_7 \), are all of the same shape
+as the drawn \( \basphi_3 \) in Figure <a href="#fem:approx:fe:fig:P2">32</a>, while
+the global basis functions associated with shared nodes have the same
+shape as shown \( \basphi_2 \) and \( \basphi_4 \). If the elements were of
+different length, the basis functions would be stretched according to
+the element size and hence be different.
+
+<p>
+<!-- This was difficult to follow: -->
+<!-- The basis function \( \basphi_2(x) \), corresponding to a node on the -->
+<!-- boundary of element 0 and 1, is made up of two pieces: (i) the Lagrange -->
+<!-- polynomial on element 1 that is 1 at local node 0 (global node 2) -->
+<!-- and zero at all other nodes in element 1, and (ii) -->
+<!-- the Lagrange -->
+<!-- polynomial on element 1 that is 1 at local node 2 (global node 2) -->
+<!-- and zero at all other nodes in element 0. Outside the elements that -->
+<!-- share global node 2, \( \basphi_2(x)=0 \). The same reasoning is applied to -->
+<!-- the construction of \( \basphi_4(x) \) and \( \basphi_6(x) \). -->
+
+<h2 id="___sec67">Example on linear finite element functions </h2>
+
+<p>
+Figure <a href="#fem:approx:fe:fig:P1">34</a> shows
+piecewise linear basis functions (\( d=1 \)). These are mathematically
+simpler than the quadratic functions in the previous section, and one would
+therefore think that it is easier to understand the linear functions
+first. However, linear basis functions do not involve internal nodes
+and are therefore a special case of the general situation. That is why
+we think it is better to understand the construction of quadratic functions
+first, which easily generalize to any \( d > 2 \), and then look at the
+special case \( d=1 \).
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:P1"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 34:  Illustration of the piecewise linear basis functions associated with nodes in an element.   <!-- caption label: fem:approx:fe:fig:P1 --> </p></center>
+<p><img src="fig/phi/mpl_fe_basis_p1_4e_lab.png" align="bottom" width=600></p>
+</center>
+
+<p>
+We have the same four elements on \( \Omega = [0,1] \).  Now there are no
+internal nodes in the elements so that all basis functions are
+associated with shared nodes and hence made up of two Lagrange
+polynomials, one from each of the two neighboring elements.  For
+example, \( \basphi_1(x) \) results from the Lagrange polynomial in
+element 0 that is 1 at local node 1 and 0 at local node 0, combined
+with the Lagrange polynomial in element 1 that is 1 at local node 0
+and 0 at local node 1.  The other basis functions are constructed
+similarly.
+
+<p>
+Explicit mathematical formulas are needed for \( \basphi_i(x) \) in
+computations.  In the piecewise linear case, the formula
+<a href="._fem-book-solarized007.html#mjx-eqn-62">(62)</a> leads to
+
+$$
+\begin{equation}
+\basphi_i(x) = \left\lbrace\begin{array}{ll}
+0, & x < \xno{i-1},\\ 
+(x - \xno{i-1})/(\xno{i} - \xno{i-1}),
+& \xno{i-1} \leq x < \xno{i},\\ 
+1 -
+(x - x_{i})/(\xno{i+1} - x_{i}),
+& \xno{i} \leq x < \xno{i+1},\\ 
+0, & x\geq \xno{i+1}\tp  \end{array}
+\right.
+\tag{76}
+\end{equation}
+$$
+
+Here, \( \xno{j} \), \( j=i-1,i,i+1 \), denotes the coordinate of node \( j \).
+For elements of equal length \( h \) the formulas can be simplified to
+
+$$
+\begin{equation}
+\basphi_i(x) = \left\lbrace\begin{array}{ll}
+0, & x < \xno{i-1},\\ 
+(x - \xno{i-1})/h,
+& \xno{i-1} \leq x < \xno{i},\\ 
+1 -
+(x - x_{i})/h,
+& \xno{i} \leq x < \xno{i+1},\\ 
+0, & x\geq \xno{i+1}
+\end{array}
+\right.
+\tag{77}
+\end{equation}
+$$
+
+<h2 id="___sec68">Example on cubic finite element functions </h2>
+
+<p>
+Piecewise cubic basis functions can be defined by introducing four
+nodes per element. Figure <a href="#fem:approx:fe:fig:P3">35</a> shows
+examples on \( \basphi_i(x) \), \( i=3,4,5,6 \), associated with element number 1.
+Note that \( \basphi_4 \) and \( \basphi_5 \) are nonzero only on element number 1,
+while
+\( \basphi_3 \) and \( \basphi_6 \) are made up of Lagrange polynomials on two
+neighboring elements.
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:P3"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 35:  Illustration of the piecewise cubic basis functions associated with nodes in an element.   <!-- caption label: fem:approx:fe:fig:P3 --> </p></center>
+<p><img src="fig/phi/mpl_fe_basis_p3_4e.png" align="bottom" width=600></p>
+</center>
+
+<p>
+We see that all the piecewise linear basis functions have the same
+&quot;hat&quot; shape. They are naturally referred to as <em>hat functions</em>,
+also called <em>chapeau functions</em>.
+The piecewise quadratic functions in Figure <a href="#fem:approx:fe:fig:P2">32</a>
+are seen to be of two types. &quot;Rounded hats&quot; associated with internal
+nodes in the elements and some more &quot;sombrero&quot; shaped hats associated
+with element boundary nodes. Higher-order basis functions also have
+hat-like shapes, but the functions have pronounced oscillations in addition,
+as illustrated in Figure <a href="#fem:approx:fe:fig:P3">35</a>.
+
+<p>
+A common terminology is to speak about <em>linear elements</em> as
+elements with two local nodes associated with
+piecewise linear basis functions. Similarly, <em>quadratic elements</em> and
+<em>cubic elements</em> refer to piecewise quadratic or cubic functions
+over elements with three or four local nodes, respectively.
+Alternative names, frequently used in the following, are P1 elements for linear
+elements, P2 for quadratic elements, and so forth: P$d$ signifies
+degree \( d \) of the polynomial basis functions.
+
+<h2 id="fem:approx:global:linearsystem">Calculating the linear system</h2>
+
+<p>
+The elements in the coefficient matrix and right-hand side are given
+by the formulas <a href="._fem-book-solarized005.html#mjx-eqn-34">(34)</a> and <a href="._fem-book-solarized005.html#mjx-eqn-35">(35)</a>, but
+now the choice of \( \baspsi_i \) is \( \basphi_i \).  Consider P1 elements
+where \( \basphi_i(x) \) is piecewise linear.  Nodes and elements numbered
+consecutively from left to right in a uniformly partitioned mesh imply
+the nodes
+
+$$ x_i=i h,\quad i=0,\ldots,N_n-1,$$
+
+and the elements
+
+$$
+\begin{equation}
+\Omega^{(i)} = [\xno{i},\xno{i+1}] = [i h, (i+1)h],\quad
+i=0,\ldots,N_e-1
+\tp
+\tag{78}
+\end{equation}
+$$
+
+We have in this case \( N_e \) elements and \( N_n=N_e+1 \) nodes.
+The parameter \( N \) denotes the number of unknowns in the expansion
+for \( u \), and with the P1 elements, \( N=N_n \).
+The domain is \( \Omega=[\xno{0},\xno{N}] \).
+The formula for \( \basphi_i(x) \) is given by
+<a href="#mjx-eqn-77">(77)</a> and a graphical illustration is
+provided in Figures <a href="#fem:approx:fe:fig:P1">34</a> and
+<a href="#fem:approx:fe:fig:phi:i:im1">37</a>.
+
+<p>
+<!-- We clearly see -->
+<!-- from the figures the very important property -->
+<!-- \( \basphi_i(x)\basphi_j(x)\neq 0 \) if and only if \( j=i-1 \), \( j=i \), or -->
+<!-- \( j=i+1 \), or alternatively expressed, if and only if \( i \) and \( j \) are -->
+<!-- nodes in the same element. Otherwise, \( \basphi_i \) and \( \basphi_j \) are -->
+<!-- too distant to have an overlap and consequently their product vanishes. -->
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:phi:2:3"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 36:  Illustration of the piecewise linear basis functions corresponding to global node 2 and 3.   <!-- caption label: fem:approx:fe:fig:phi:2:3 --> </p></center>
+<p><img src="fig/fe_mesh1D_phi_2_3.png" align="bottom" width=500></p>
+</center>
+
+<h3 id="___sec70">Calculating specific matrix entries </h3>
+
+<p>
+Let us calculate the specific matrix entry \( A_{2,3} = \int_\Omega
+\basphi_2\basphi_3\dx \). Figure <a href="#fem:approx:fe:fig:phi:2:3">36</a>
+shows what \( \basphi_2 \) and \( \basphi_3 \) look like. We realize
+from this figure that the product \( \basphi_2\basphi_3\neq 0 \)
+only over element 2, which contains node 2 and 3.
+The particular formulas for \( \basphi_{2}(x) \) and \( \basphi_3(x) \) on
+\( [\xno{2},\xno{3}] \) are found from <a href="#mjx-eqn-77">(77)</a>.
+The function
+\( \basphi_3 \) has positive slope over \( [\xno{2},\xno{3}] \) and corresponds
+to the interval \( [\xno{i-1},\xno{i}] \) in
+<a href="#mjx-eqn-77">(77)</a>. With \( i=3 \) we get
+
+$$ \basphi_3(x) = (x-x_2)/h,$$
+
+while \( \basphi_2(x) \) has negative slope over \( [\xno{2},\xno{3}] \)
+and corresponds to setting \( i=2 \) in <a href="#mjx-eqn-77">(77)</a>,
+
+$$ \basphi_2(x) = 1- (x-x_2)/h\tp$$
+
+We can now easily integrate,
+
+$$
+A_{2,3} = \int_\Omega \basphi_2\basphi_{3}\dx =
+\int_{\xno{2}}^{\xno{3}}
+\left(1 - \frac{x - \xno{2}}{h}\right) \frac{x - x_{2}}{h}
+ \dx = \frac{h}{6}\tp
+$$
+
+<p>
+The diagonal entry in the coefficient matrix becomes
+
+$$ A_{2,2} =
+\int_{\xno{1}}^{\xno{2}}
+\left(\frac{x - \xno{1}}{h}\right)^2\dx +
+\int_{\xno{2}}^{\xno{3}}
+\left(1 - \frac{x - \xno{2}}{h}\right)^2\dx
+= \frac{2h}{3}\tp
+$$
+
+The entry \( A_{2,1} \) has an
+integral that is geometrically similar to the situation in
+Figure <a href="#fem:approx:fe:fig:phi:2:3">36</a>, so we get
+\( A_{2,1}=h/6 \).
+
+<h3 id="___sec71">Calculating a general row in the matrix </h3>
+
+<p>
+We can now generalize the calculation of matrix entries to
+a general row number \( i \). The entry
+\( A_{i,i-1}=\int_\Omega\basphi_i\basphi_{i-1}\dx \) involves
+hat functions as depicted in
+Figure <a href="#fem:approx:fe:fig:phi:i:im1">37</a>. Since the integral
+is geometrically identical to the situation with specific nodes
+2 and 3, we realize that \( A_{i,i-1}=A_{i,i+1}=h/6 \) and
+\( A_{i,i}=2h/3 \). However, we can compute the integral directly
+too:
+
+$$
+\begin{align*}
+A_{i,i-1} &= \int_\Omega \basphi_i\basphi_{i-1}\dx\\ 
+&=
+\underbrace{\int_{\xno{i-2}}^{\xno{i-1}} \basphi_i\basphi_{i-1}\dx}_{\basphi_i=0} +
+\int_{\xno{i-1}}^{\xno{i}} \basphi_i\basphi_{i-1}\dx +
+\underbrace{\int_{\xno{i}}^{\xno{i+1}} \basphi_i\basphi_{i-1}\dx}_{\basphi_{i-1}=0}\\ 
+&= \int_{\xno{i-1}}^{\xno{i}}
+\underbrace{\left(\frac{x - x_{i}}{h}\right)}_{\basphi_i(x)}
+\underbrace{\left(1 - \frac{x - \xno{i-1}}{h}\right)}_{\basphi_{i-1}(x)} \dx =
+\frac{h}{6}
+\tp
+\end{align*}
+$$
+
+The particular formulas for \( \basphi_{i-1}(x) \) and \( \basphi_i(x) \) on
+\( [\xno{i-1},\xno{i}] \) are found from <a href="#mjx-eqn-77">(77)</a>:
+\( \basphi_i \) is the linear function with positive slope, corresponding
+to the interval \( [\xno{i-1},\xno{i}] \) in
+<a href="#mjx-eqn-77">(77)</a>, while \( \phi_{i-1} \) has a
+negative slope so the definition in interval
+\( [\xno{i},\xno{i+1}] \) in <a href="#mjx-eqn-77">(77)</a> must be
+used.
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:phi:i:im1"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 37:  Illustration of two neighboring linear (hat) functions with general node numbers.   <!-- caption label: fem:approx:fe:fig:phi:i:im1 --> </p></center>
+<p><img src="fig/fe_mesh1D_phi_i_im1.png" align="bottom" width=500></p>
+</center>
+
+<p>
+The first and last row of the coefficient matrix lead to slightly
+different integrals:
+
+$$ A_{0,0} = \int_\Omega \basphi_0^2\dx = \int_{\xno{0}}^{\xno{1}}
+\left(1 - \frac{x-x_0}{h}\right)^2\dx = \frac{h}{3}\tp
+$$
+
+Similarly, \( A_{N,N} \) involves an integral over only one element
+and hence equals \( h/3 \).
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:phi:i:f"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 38:  Right-hand side integral with the product of a basis function and the given function to approximate.   <!-- caption label: fem:approx:fe:fig:phi:i:f --> </p></center>
+<p><img src="fig/fe_mesh1D_phi_i_f.png" align="bottom" width=500></p>
+</center>
+
+<p>
+The general formula for \( b_i \),
+see Figure <a href="#fem:approx:fe:fig:phi:i:f">38</a>, is now easy to set up
+
+$$
+\begin{equation}
+b_i = \int_\Omega\basphi_i(x)f(x)\dx
+= \int_{\xno{i-1}}^{\xno{i}} \frac{x - \xno{i-1}}{h} f(x)\dx
++ \int_{x_{i}}^{\xno{i+1}} \left(1 - \frac{x - x_{i}}{h}\right) f(x)
+\dx\tp
+\tag{79}
+\end{equation}
+$$
+
+We remark that the above formula applies to internal nodes (living at the interface between two elements)
+and that for the nodes on the boundaries only one integral needs to be computed.
+
+<p>
+We need a specific \( f(x) \) function to compute these integrals.
+With \( f(x)=x(1-x) \) and
+two equal-sized elements in \( \Omega=[0,1] \), one gets
+
+$$
+\begin{equation*}
+A = \frac{h}{6}\left(\begin{array}{ccc}
+2 & 1 & 0\\ 
+1 & 4 & 1\\ 
+0 & 1 & 2
+\end{array}\right),\quad
+b = \frac{h^2}{12}\left(\begin{array}{c}
+2 - h\\ 
+12 - 14h\\ 
+10 -17h
+\end{array}\right)\tp
+\end{equation*}
+$$
+
+The solution becomes
+
+$$
+\begin{equation*} c_0 = \frac{h^2}{6},\quad c_1 = h - \frac{5}{6}h^2,\quad
+c_2 = 2h - \frac{23}{6}h^2\tp  \end{equation*}
+$$
+
+The resulting function
+
+$$
+\begin{equation*} u(x)=c_0\basphi_0(x) + c_1\basphi_1(x) + c_2\basphi_2(x)\end{equation*}
+$$
+
+is displayed in Figure <a href="#fem:approx:fe:fig:ls:P1:2:4">39</a> (left).
+Doubling the number of elements to four leads to the improved
+approximation in the right part of Figure <a href="#fem:approx:fe:fig:ls:P1:2:4">39</a>.
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:ls:P1:2:4"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 39:  Least squares approximation of a parabola using 2 (left) and 4 (right) P1 elements.  <!-- caption label: fem:approx:fe:fig:ls:P1:2:4 --> </p></center>
+<p><img src="fig/fe_p1_x2_2e_4e.png" align="bottom" width=800></p>
+</center>
+
+<h2 id="fem:approx:fe:elementwise">Assembly of elementwise computations</h2>
+
+<p>
+Our integral computations so far have been straightforward. However,
+with higher-degree polynomials and in higher dimensions (2D and 3D),
+integrating in the physical domain gets increasingly complicated. Instead,
+integrating over one element at a time, and transforming each element
+to a common standardized geometry in a new reference coordinate system,
+is technically easier. Almost all computer codes employ a finite element
+algorithm that calculates the linear system by integrating over one
+element at a time. We shall therefore explain this algorithm next.
+The amount of details might be overwhelming during a first reading, but
+once all those details are done right, one has a general
+finite element algorithm that can be applied to all sorts of elements,
+in any space dimension, no matter how geometrically complicated the domain
+is.
+
+<h3 id="___sec73">The element matrix </h3>
+
+<p>
+We start by splitting
+the integral over \( \Omega \) into a sum of contributions from
+each element:
+
+$$
+\begin{equation}
+A_{i,j} = \int_\Omega\basphi_i\basphi_j \dx = \sum_{e} A^{(e)}_{i,j},\quad
+A^{(e)}_{i,j}=\int_{\Omega^{(e)}} \basphi_i\basphi_j \dx
+\tp
+\tag{80}
+\end{equation}
+$$
+
+Now, \( A^{(e)}_{i,j}\neq 0 \), if and only if, \( i \) and \( j \) are nodes in element
+\( e \) (look at Figure <a href="#fem:approx:fe:fig:phi:i:im1">37</a> to realize this
+property, but the result also holds for all types of elements).
+Introduce \( i=q(e,r) \) as the mapping of local node number \( r \) in element
+\( e \) to the global node number \( i \). This is just a short mathematical notation
+for the expression <code>i=elements[e][r]</code> in a program.
+Let \( r \) and \( s \) be the local node numbers corresponding to the global
+node numbers \( i=q(e,r) \) and
+\( j=q(e,s) \). With \( d+1 \) nodes per element, all the nonzero matrix entries
+in \( A^{(e)}_{i,j} \) arise from the integrals involving basis functions with
+indices corresponding to the global node numbers in element number \( e \):
+
+$$
+\begin{equation*}
+\int_{\Omega^{(e)}}\basphi_{q(e,r)}\basphi_{q(e,s)} \dx,
+\quad r,s=0,\ldots, d\tp
+\end{equation*}
+$$
+
+These contributions can be collected in a \( (d+1)\times (d+1) \) matrix known as
+the <em>element matrix</em>. Let \( \Ifd=\{0,\ldots,d\} \) be the valid indices
+of \( r \) and \( s \).
+We introduce the notation
+
+$$
+\begin{equation*}
+\tilde A^{(e)} = \{ \tilde A^{(e)}_{r,s}\},\quad
+r,s\in\Ifd,
+\end{equation*}
+$$
+
+for the element matrix. For P1 elements (\( d=2 \)) we have
+
+$$
+\begin{equation*}
+\tilde A^{(e)} = \left\lbrack\begin{array}{ll}
+\tilde A^{(e)}_{0,0} & \tilde A^{(e)}_{0,1}\\ 
+\tilde A^{(e)}_{1,0} & \tilde A^{(e)}_{1,1}
+\end{array}\right\rbrack
+\tp
+\end{equation*}
+$$
+
+while P2 elements have a \( 3\times 3 \) element matrix:
+
+$$
+\begin{equation*}
+\tilde A^{(e)} = \left\lbrack\begin{array}{lll}
+\tilde A^{(e)}_{0,0} & \tilde A^{(e)}_{0,1} & \tilde A^{(e)}_{0,2}\\ 
+\tilde A^{(e)}_{1,0} & \tilde A^{(e)}_{1,1} & \tilde A^{(e)}_{1,2}\\ 
+\tilde A^{(e)}_{2,0} & \tilde A^{(e)}_{2,1} & \tilde A^{(e)}_{2,2}
+\end{array}\right\rbrack
+\tp
+\end{equation*}
+$$
+
+<h3 id="___sec74">Assembly of element matrices </h3>
+
+<p>
+Given the numbers \( \tilde A^{(e)}_{r,s} \),
+we should, according to <a href="#mjx-eqn-80">(80)</a>,
+add the contributions to the global coefficient matrix by
+
+$$
+\begin{equation}
+ A_{q(e,r),q(e,s)} := A_{q(e,r),q(e,s)} + \tilde A^{(e)}_{r,s},\quad
+r,s\in\Ifd\tp
+\tag{81}
+\end{equation}
+$$
+
+This process of adding in elementwise contributions to the global matrix
+is called <em>finite element assembly</em> or simply <em>assembly</em>.
+
+<p>
+Figure <a href="#fem:approx:fe:fig:assembly:2x2">40</a> illustrates how element matrices
+for elements with two nodes are added into the global matrix.
+More specifically, the figure shows how the element matrix associated with
+elements 1 and 2 assembled, assuming that global nodes are numbered
+from left to right in the domain. With regularly numbered P3 elements, where
+the element matrices have size \( 4\times 4 \), the assembly of elements 1 and 2
+are sketched in Figure <a href="#fem:approx:fe:fig:assembly:4x4">41</a>.
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:assembly:2x2"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 40:  Illustration of matrix assembly: regularly numbered P1 elements.   <!-- caption label: fem:approx:fe:fig:assembly:2x2 --> </p></center>
+<p><img src="mov/fe_assembly_regular_2x2/fe_assembly_regular_2x2.png" align="bottom" width=500></p>
+</center>
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:assembly:4x4"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 41:  Illustration of matrix assembly: regularly numbered P3 elements.   <!-- caption label: fem:approx:fe:fig:assembly:4x4 --> </p></center>
+<p><img src="mov/fe_assembly_regular_4x4/fe_assembly_regular_4x4.png" align="bottom" width=500></p>
+</center>
+
+<h3 id="___sec75">Assembly of irregularly numbered elements and nodes </h3>
+
+<p>
+After assembly of element matrices corresponding to regularly numbered elements
+and nodes are understood, it is wise to study the assembly process for
+irregularly numbered elements and nodes. Figure <a href="#fem:approx:fe:def:elements:nodes:fig:P1:irregular">31</a> shows a mesh where the <code>elements</code> array, or \( q(e,r) \)
+mapping in mathematical notation, is given as
+
+<p>
+<!-- begin verbatim block  pycod-->
+<pre><code>elements = [[2, 1], [4, 5], [0, 4], [3, 0], [5, 2]]
+</code></pre>
+<!-- end verbatim block -->
+The associated assembly of element matrices 1 and 2 is sketched in
+Figure <a href="#fem:approx:fe:fig:assembly:irr2x2">42</a>.
+
+<p>
+We have created <a href="http://hplgit.github.io/fem-book/doc/pub/book//mov/fe_assembly.html" target="_self">animations</a> to illustrate the assembly of
+P1 and P3 elements with regular numbering as well as P1 elements with
+irregular numbering. The reader is encouraged to develop a
+&quot;geometric&quot; understanding of how element matrix entries are added to
+the global matrix. This understanding is crucial for hand
+computations with the finite element method.
+
+<p>
+<!-- <a href="http://hplgit.github.io/fem-book/doc/pub/book//mov/fe_assembly_regular_2x2/index.html" target="_self">P1 assembly movie</a>. -->
+<!-- <a href="http://hplgit.github.io/fem-book/doc/pub/book//mov/fe_assembly_regular_4x4/index.html" target="_self">P3 assembly movie</a>. -->
+<!-- <a href="http://hplgit.github.io/fem-book/doc/pub/book//mov/fe_assembly_irregular/index.html" target="_self">P1 irregular numbering</a>. -->
+
+<p>
+<center> <!-- figure label: --> <div id="fem:approx:fe:fig:assembly:irr2x2"></div> <!-- FIGURE -->
+<hr class="figure">
+<center><p class="caption">Figure 42:  Illustration of matrix assembly: irregularly numbered P1 elements.   <!-- caption label: fem:approx:fe:fig:assembly:irr2x2 --> </p></center>
+<p><img src="mov/fe_assembly_irregular/fe_assembly_irregular.png" align="bottom" width=500></p>
+</center>
+
+<p>
+<!-- old: -->
+<!-- FIGURE: [fig/matrix-assembly, width=600]  Illustration of matrix assembly.  <div id="fem:approx:fe:fig:assembly"></div> -->
+
+<h3 id="___sec76">The element vector </h3>
+
+<p>
+The right-hand side of the linear system is also computed elementwise:
+
+$$
+\begin{equation}
+b_i = \int_\Omega f(x)\basphi_i(x) \dx = \sum_{e} b^{(e)}_{i},\quad
+b^{(e)}_{i}=\int_{\Omega^{(e)}} f(x)\basphi_i(x)\dx
+\tp   \tag{82}
+\end{equation}
+$$
+
+We observe that
+\( b_i^{(e)}\neq 0 \) if and only if global node \( i \) is a node in element \( e \)
+(look at Figure <a href="#fem:approx:fe:fig:phi:i:f">38</a> to realize this property).
+With \( d \) nodes per element we can collect the \( d+1 \) nonzero contributions
+\( b_i^{(e)} \), for \( i=q(e,r) \), \( r\in\Ifd \), in an <em>element vector</em>
+
+$$
+\begin{equation*}
+\tilde b_r^{(e)}=\{ \tilde b_r^{(e)}\},\quad r\in\Ifd\tp
+\end{equation*}
+$$
+
+These contributions are added to the
+global right-hand side by an assembly process similar to that for the
+element matrices:
+
+$$
+\begin{equation}
+b_{q(e,r)} := b_{q(e,r)} + \tilde b^{(e)}_{r},\quad
+r\in\Ifd\tp   \tag{83}
+\end{equation}
+$$
+
+<h2 id="fem:approx:fe:mapping">Mapping to a reference element</h2>
+
+<p>
+Instead of computing the integrals
+
+$$
+\begin{equation*} \tilde A^{(e)}_{r,s} = \int_{\Omega^{(e)}}\basphi_{q(e,r)}(x)\basphi_{q(e,s)}(x)\dx\end{equation*}
+$$
+
+over some element
+\( \Omega^{(e)} = [x_L, x_R] \) in the physical coordinate system,
+it turns out that it is considerably easier and more convenient
+to map the element domain \( [x_L, x_R] \)
+to a standardized reference element domain \( [-1,1] \) and compute all
+integrals over the same domain \( [-1,1] \).
+We have now introduced
+\( x_L \) and \( x_R \) as the left and right boundary points of an arbitrary element.
+With a natural, regular numbering of nodes and elements from left to right
+through the domain, we have \( x_L=\xno{e} \) and \( x_R=\xno{e+1} \) for P1 elements.
+
+<h3 id="___sec78">The coordinate transformation </h3>
+
+<p>
+Let \( X\in [-1,1] \) be the coordinate
+in the reference element. A linear mapping, also known as an affine mapping,
+from \( X \) to \( x \) can be written
+
+$$
+\begin{equation}
+x = \half (x_L + x_R) + \half (x_R - x_L)X\tp
+\tag{84}
+\end{equation}
+$$
+
+This relation can alternatively be expressed as
+
+$$
+\begin{equation}
+x = x_m + {\half}hX,
+\tag{85}
+\end{equation}
+$$
+
+where we have introduced the element midpoint \( x_m=(x_L+x_R)/2 \) and
+the element length \( h=x_R-x_L \).
+
+<h3 id="___sec79">Formulas for the element matrix and vector entries </h3>
+
+<p>
+Integrating on the reference element is a matter of just changing the
+integration variable from \( x \) to \( X \). Let
+
+$$
+\begin{equation}
+\refphi_r(X) = \basphi_{q(e,r)}(x(X))
+\tag{86}
+\end{equation}
+$$
+
+be the basis function associated with local node number \( r \) in the
+reference element. Switching from \( x \) to \( X \) as integration variable,
+using the rules from calculus, results in
+
+$$
+\begin{equation}
+\tilde A^{(e)}_{r,s} =
+\int_{\Omega^{(e)}}\basphi_{q(e,r)}(x)\basphi_{q(e,s)}(x)\dx
+= \int_{-1}^1 \refphi_r(X)\refphi_s(X)\frac{\dx}{\dX}\dX
+\tp
+\tag{87}
+\end{equation}
+$$
+
+<p>
+In 2D and 3D, \( \dx \) is transformed to \( \hbox{det} J\dX \), where \( J \) is
+the Jacobian of the mapping from \( x \) to \( X \). In 1D,
+\( \hbox{det} J\dX = \dx/\dX = h/2 \). To obtain a uniform
+notation for 1D, 2D, and 3D problems we therefore replace
+\( \dx/\dX \) by \( \det J \) already now.
+The integration over the reference element is then written as
+
+$$
+\begin{equation}
+\tilde A^{(e)}_{r,s}
+= \int_{-1}^1 \refphi_r(X)\refphi_s(X)\det J\,\dX
+\tag{88}
+\tp
+\end{equation}
+$$
+
+The corresponding formula for the element vector entries becomes
+
+$$
+\begin{equation}
+\tilde b^{(e)}_{r} = \int_{\Omega^{(e)}}f(x)\basphi_{q(e,r)}(x)\dx
+= \int_{-1}^1 f(x(X))\refphi_r(X)\det J\,\dX
+\tag{89}
+\tp
+\end{equation}
+$$
+
+<p>
+<div class="alert alert-block alert-notice alert-text-normal">
+<b>Why reference elements?</b>
+<p>
+The great advantage of using reference elements is that
+the formulas for the basis functions, \( \refphi_r(X) \), are the
+same for all elements and independent of the element geometry
+(length and location in the mesh). The geometric information
+is &quot;factored out&quot; in the simple mapping formula and the associated
+\( \det J \) quantity. Also, the integration domain is the same for
+all elements. All these features contribute to simplify computer
+codes and make them more general.
+</div>
+
+
+<p>
+<!-- Since we from now on will work in the reference -->
+<!-- element, we need explicit mathematical formulas for the basis -->
+<!-- functions \( \basphi_i(x) \) in the reference element only, i.e., we only need -->
+<!-- to specify formulas for \( \refphi_r(X) \). -->
+<!-- This is a very convenient simplification compared to specifying -->
+<!-- piecewise polynomials in the physical domain. -->
+<!-- , and perhaps the primary -->
+<!-- reason why almost all computer codes -->
+<!-- integrate over reference elements and assemble element -->
+<!-- contributions. -->
+
+<h3 id="___sec80">Formulas for local basis functions </h3>
+
+<p>
+The \( \refphi_r(x) \) functions are simply the Lagrange
+polynomials defined through the local nodes in the reference element.
+For \( d=1 \) and two nodes per element, we have the linear Lagrange
+polynomials
+
+$$
+\begin{align}
+\refphi_0(X) &= \half (1 - X)
+\tag{90}\\ 
+\refphi_1(X) &= \half (1 + X)
+\tag{91}
+\end{align}
+$$
+
+Quadratic polynomials, \( d=2 \), have the formulas
+
+$$
+\begin{align}
+\refphi_0(X) &= \half (X-1)X
+\tag{92}\\ 
+\refphi_1(X) &= 1 - X^2
+\tag{93}\\ 
+\refphi_2(X) &= \half (X+1)X
+\tag{94}
+\end{align}
+$$
+
+In general,
+
+$$
+\begin{equation}
+\refphi_r(X) = \prod_{s=0,s\neq r}^d \frac{X-\Xno{s}}{\Xno{r}-\Xno{s}},
+\tag{95}
+\end{equation}
+$$
+
+where \( \Xno{0},\ldots,\Xno{d} \) are the coordinates of the local nodes in
+the reference element.
+These are normally uniformly spaced: \( \Xno{r} = -1 + 2r/d \),
+\( r\in\Ifd \).
+
+<h2 id="fem:approx:fe:intg:ref">Example on integration over a reference element</h2>
+
+<p>
+To illustrate the concepts from the previous section in a specific
+example, we now
+consider calculation of the element matrix and vector for a specific choice of
+\( d \) and \( f(x) \). A simple choice is \( d=1 \) (P1 elements) and \( f(x)=x(1-x) \)
+on \( \Omega =[0,1] \). We have the general expressions
+<a href="#mjx-eqn-88">(88)</a> and <a href="#mjx-eqn-89">(89)</a>
+for \( \tilde A^{(e)}_{r,s} \) and \( \tilde b^{(e)}_{r} \).
+Writing these out for the choices <a href="#mjx-eqn-90">(90)</a>
+and <a href="#mjx-eqn-91">(91)</a>, and using that \( \det J = h/2 \),
+we can do the following calculations of the element matrix entries:
+
+$$
+\begin{align}
+\tilde A^{(e)}_{0,0}
+&= \int_{-1}^1 \refphi_0(X)\refphi_0(X)\frac{h}{2} \dX\nonumber\\ 
+&=\int_{-1}^1 \half(1-X)\half(1-X) \frac{h}{2} \dX =
+\frac{h}{8}\int_{-1}^1 (1-X)^2 \dX = \frac{h}{3},
+\tag{96}\\ 
+\tilde A^{(e)}_{1,0}
+&= \int_{-1}^1 \refphi_1(X)\refphi_0(X)\frac{h}{2} \dX\nonumber\\ 
+&=\int_{-1}^1 \half(1+X)\half(1-X) \frac{h}{2} \dX =
+\frac{h}{8}\int_{-1}^1 (1-X^2) \dX = \frac{h}{6},
+\tag{97}\\ 
+\tilde A^{(e)}_{0,1} &= \tilde A^{(e)}_{1,0},
+\tag{98}\\ 
+\tilde A^{(e)}_{1,1}
+&= \int_{-1}^1 \refphi_1(X)\refphi_1(X)\frac{h}{2} \dX\nonumber\\ 
+&=\int_{-1}^1 \half(1+X)\half(1+X) \frac{h}{2} \dX =
+\frac{h}{8}\int_{-1}^1 (1+X)^2 \dX = \frac{h}{3}
+\tag{99}
+\tp
+\end{align}
+$$
+
+<p>
+The corresponding entries in the element vector becomes
+using <a href="#mjx-eqn-85">(85)</a>)
+
+$$
+\begin{align}
+\tilde b^{(e)}_{0}
+&= \int_{-1}^1 f(x(X))\refphi_0(X)\frac{h}{2} \dX\nonumber\\ 
+&= \int_{-1}^1 (x_m + \half hX)(1-(x_m + \half hX))
+\half(1-X)\frac{h}{2} \dX \nonumber\\ 
+&= - \frac{1}{24} h^{3} + \frac{1}{6} h^{2} x_{m} - \frac{1}{12} h^{2} - \half h x_{m}^{2} + \half h x_{m}
+\tag{100}\\ 
+\tilde b^{(e)}_{1}
+&= \int_{-1}^1 f(x(X))\refphi_1(X)\frac{h}{2} \dX\nonumber\\ 
+&= \int_{-1}^1 (x_m + \half hX)(1-(x_m + \half hX))
+\half(1+X)\frac{h}{2} \dX \nonumber\\ 
+&= - \frac{1}{24} h^{3} - \frac{1}{6} h^{2} x_{m} + \frac{1}{12} h^{2} -
+\half h x_{m}^{2} + \half h x_{m}
+\tp
+\tag{101}
+\end{align}
+$$
+
+In the last two expressions we have used the element midpoint \( x_m \).
+
+<p>
+Integration of lower-degree polynomials above is tedious,
+and higher-degree polynomials involve much more algebra, but <code>sympy</code>
+may help. For example, we can easily calculate
+<a href="#mjx-eqn-96">(96)</a>,
+<a href="#mjx-eqn-97">(97)</a>,
+and <a href="#mjx-eqn-100">(100)</a> by
+
+<p>
+<!-- begin verbatim block  ipy-->
+<pre><code>&gt;&gt;&gt; import sympy as sym
+&gt;&gt;&gt; x, x_m, h, X = sym.symbols('x x_m h X')
+&gt;&gt;&gt; sym.integrate(h/8*(1-X)**2, (X, -1, 1))
+h/3
+&gt;&gt;&gt; sym.integrate(h/8*(1+X)*(1-X), (X, -1, 1))
+h/6
+&gt;&gt;&gt; x = x_m + h/2*X
+&gt;&gt;&gt; b_0 = sym.integrate(h/4*x*(1-x)*(1-X), (X, -1, 1))
+&gt;&gt;&gt; print b_0
+-h**3/24 + h**2*x_m/6 - h**2/12 - h*x_m**2/2 + h*x_m/2
+</code></pre>
+<!-- end verbatim block -->
+
+<p>
+<p>
+<!-- begin bottom navigation -->
+<table style="width: 100%"><tr><td>
+<div style="text-align: left;"><a href="._fem-book-solarized009.html">&laquo; Previous</a></div>
+</td><td>
+<div style="text-align: right;"><a href="._fem-book-solarized011.html">Next &raquo;</a></div>
+</td></tr></table>
+<!-- end bottom navigation -->
+</p>
+
+<!-- ------------------- end of main content --------------- -->
+
+
+<center style="font-size:80%">
+<!-- copyright only on the titlepage -->
+</center>
+
+
+</body>
+</html>
+    
+

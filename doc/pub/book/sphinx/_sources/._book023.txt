@@ -1,0 +1,1252 @@
+.. !split
+
+.. _fem:deq:2D:varform:
+
+Variational formulations in 2D and 3D
+=====================================
+
+The major difference between deriving variational formulations in 2D
+and 3D compared to 1D is the rule for integrating by parts.  The cells
+have shapes different from an interval, so basis functions look a bit
+different, and there is a technical difference in actually calculating
+the integrals over cells. Otherwise, going to 2D and 3D is not a big
+step from 1D. All the fundamental ideas still apply.
+
+Integration by parts          (2)
+---------------------------------
+
+A typical second-order term in a PDE may be written in dimension-independent
+notation as
+
+.. math::
+         \nabla^2 u \quad\hbox{or}\quad \nabla\cdot\left( {\alpha}(\boldsymbol{x})\nabla u\right)
+        {\thinspace .}
+        
+
+The explicit forms in a 2D problem become
+
+.. math::
+         \nabla^2 u = \nabla\cdot\nabla u =
+        \frac{\partial^2 u}{\partial x^2} +
+        \frac{\partial^2 u}{\partial y^2},
+        
+
+and
+
+.. math::
+        
+        \nabla\cdot\left( a(\boldsymbol{x})\nabla u\right) =
+        \frac{\partial}{\partial x}\left( {\alpha}(x,y)\frac{\partial u}{\partial x}\right) +
+        \frac{\partial}{\partial y}\left( {\alpha}(x,y)\frac{\partial u}{\partial y}\right)
+        {\thinspace .}
+        
+
+We shall continue with the latter operator as the former arises from
+just setting :math:`{\alpha} =1`.
+
+
+.. admonition:: The integration by parts formula for :math:`\int\nabla\cdot({\alpha}\nabla)`
+
+   The general rule for integrating by parts is often referred to as
+   `Green's first identity <http://en.wikipedia.org/wiki/Green's_identities>`__:
+   
+   .. _Eq:fem:deq:2D:int:by:parts:
+
+.. math::
+
+    \tag{225}
+    -\int_{\Omega} \nabla\cdot ({\alpha}(\boldsymbol{x})\nabla u) v{\, \mathrm{d}x} =
+           \int_{\Omega} {\alpha}(\boldsymbol{x})\nabla u\cdot\nabla v {\, \mathrm{d}x} -
+           \int_{\partial\Omega} a\frac{\partial u}{\partial n} v {\, \mathrm{d}s},
+           
+           
+   
+   where :math:`\partial\Omega` is the boundary of :math:`\Omega` and
+   :math:`\partial u/\partial n = \boldsymbol{n}\cdot\nabla u` is the derivative
+   of :math:`u` in the outward normal direction, :math:`\boldsymbol{n}` being an outward
+   unit normal to :math:`\partial\Omega`. The integrals :math:`\int_\Omega (){\, \mathrm{d}x}` are
+   area integrals in 2D and volume integrals in 3D, while
+   :math:`\int_{\partial\Omega} (){\, \mathrm{d}s}` is a line integral in 2D and a surface
+   integral in 3D.
+
+
+
+
+It will be convenient to divide the boundary into two parts:
+
+ * :math:`\partial\Omega_N`, where we have Neumann conditions
+   :math:`-a\frac{\partial u}{\partial n} = g`, and
+
+ * :math:`\partial\Omega_D`, where we have Dirichlet conditions
+   :math:`u = u_0`.
+
+The test functions :math:`v` are (as usual) required to vanish on
+:math:`\partial\Omega_D`.
+
+.. _sec:varform:general:convdiff:
+
+Example on a multi-dimensional variational problem
+--------------------------------------------------
+
+Here is a quite general, stationary, linear PDE arising in many problems:
+
+.. _Eq:varform:conv:diff:pde:pre:
+
+.. math::
+
+    \tag{226}
+    \boldsymbol{v}\cdot\nabla u + \beta u = \nabla\cdot\left( {\alpha}\nabla u\right) + f,
+        \quad\boldsymbol{x}\in\Omega,
+        
+
+.. _Eq:varform:conv:diff:bc1:pre:
+
+.. math::
+
+    \tag{227}
+    u = u_0,\quad\boldsymbol{x}\in\partial\Omega_D,
+        
+
+.. _Eq:varform:conv:diff:bc2:pre:
+
+.. math::
+
+    \tag{228}
+    -{\alpha}\frac{\partial u}{\partial n} = g,\quad\boldsymbol{x}\in\partial\Omega_N
+        {\thinspace .}
+        
+
+The vector field :math:`\boldsymbol{v}` and the scalar functions :math:`a`, :math:`\alpha`, :math:`f`, :math:`u_0`, and
+:math:`g` may vary with the spatial coordinate :math:`\boldsymbol{x}` and must be known.
+
+Such a second-order PDE needs exactly one boundary condition at each
+point of the boundary, so :math:`\partial\Omega_N\cup\partial\Omega_D`
+must be the complete boundary :math:`\partial\Omega`.
+
+Assume that the boundary function :math:`u_0(\boldsymbol{x})` is defined for all :math:`\boldsymbol{x}\in\Omega`.
+The unknown function can then be expanded as
+
+.. math::
+         u = B + \sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j,\quad B = u_0 {\thinspace .} 
+
+As long as any :math:`{\psi}_j=0` on :math:`\partial\Omega_D`, we realize that :math:`u=u_0`
+on :math:`\partial\Omega_D`.
+
+The variational formula is obtained from Galerkin's method, which
+technically means multiplying the PDE by a test
+function :math:`v` and integrating over :math:`\Omega`:
+
+.. math::
+        
+        \int_{\Omega} (\boldsymbol{v}\cdot\nabla u + \beta u)v{\, \mathrm{d}x} =
+        \int_{\Omega} \nabla\cdot\left( {\alpha}\nabla u\right){\, \mathrm{d}x} + \int_{\Omega}fv {\, \mathrm{d}x}
+        {\thinspace .}
+        
+
+The second-order term is integrated by parts, according to the formula
+:ref:`(225) <Eq:fem:deq:2D:int:by:parts>`:
+
+.. math::
+        
+        \int_{\Omega} \nabla\cdot\left( {\alpha}\nabla u\right)v {\, \mathrm{d}x} =
+        -\int_{\Omega} {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x}
+        + \int_{\partial\Omega} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s}
+        {\thinspace .}
+        
+
+Galerkin's method therefore leads to
+
+.. math::
+        
+        \int_{\Omega} (\boldsymbol{v}\cdot\nabla u + \beta u)v{\, \mathrm{d}x} =
+        -\int_{\Omega} {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x}
+        + \int_{\partial\Omega} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s}
+        + \int_{\Omega} fv {\, \mathrm{d}x}
+        {\thinspace .}
+        
+
+The boundary term can be developed further by noticing that :math:`v\neq 0`
+only on :math:`\partial\Omega_N`,
+
+.. math::
+         \int_{\partial\Omega} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s}
+        = \int_{\partial\Omega_N} {\alpha}\frac{\partial u}{\partial n} v{\, \mathrm{d}s},
+        
+
+and that on :math:`\partial\Omega_N`, we have the condition
+:math:`a\frac{\partial u}{\partial n}=-g`, so the term becomes
+
+.. math::
+        
+        -\int_{\partial\Omega_N} gv{\, \mathrm{d}s}{\thinspace .}
+        
+
+The final variational form is then
+
+.. math::
+        
+        \int_{\Omega} (\boldsymbol{v}\cdot\nabla u + \beta u)v{\, \mathrm{d}x} =
+        -\int_{\Omega} {\alpha}\nabla u\cdot\nabla v {\, \mathrm{d}x}
+        - \int_{\partial\Omega_N} g v{\, \mathrm{d}s}
+        + \int_{\Omega} fv {\, \mathrm{d}x}
+        {\thinspace .}
+        
+
+Instead of using the integral signs, we may use the inner product
+notation:
+
+.. math::
+        
+        (\boldsymbol{v}\cdot\nabla u, v) + (\beta u,v) =
+        - ({\alpha}\nabla u,\nabla v) - (g,v)_{N} + (f,v)
+        {\thinspace .}
+        
+
+The subscript :math:`\,{}_N` in :math:`(g,v)_{N}` is a notation for a line or surface
+integral over :math:`\partial\Omega_N`, while :math:`(\cdot,\cdot)` is the area/volume
+integral over :math:`\Omega`.
+
+We can derive explicit expressions for the linear system for :math:`\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}`
+that arises from the variational formulation.
+Inserting the :math:`u` expansion results in
+
+.. math::
+        \begin{align*}
+        \sum_{j\in{\mathcal{I}_s}} ((\boldsymbol{v}\cdot\nabla {\psi}_j, {\psi}_i) &+ (\beta {\psi}_j ,{\psi}_i) + ({\alpha}\nabla {\psi}_j,\nabla {\psi}_i))c_j = \\ 
+        & (g,{\psi}_i)_{N} + (f,{\psi}_i) -
+        (\boldsymbol{v}\cdot\nabla u_0, {\psi}_i) + (\beta u_0 ,{\psi}_i) +
+        ({\alpha}\nabla u_0,\nabla {\psi}_i)
+        {\thinspace .}
+        \end{align*}
+
+This is a linear system with matrix entries
+
+.. math::
+        
+        A_{i,j} = (\boldsymbol{v}\cdot\nabla {\psi}_j, {\psi}_i) + (\beta {\psi}_j ,{\psi}_i) + ({\alpha}\nabla {\psi}_j,\nabla {\psi}_i)
+        
+
+and right-hand side entries
+
+.. math::
+        
+        b_i = (g,{\psi}_i)_{N} + (f,{\psi}_i) -
+        (\boldsymbol{v}\cdot\nabla u_0, {\psi}_i) + (\beta u_0 ,{\psi}_i) +
+        ({\alpha}\nabla u_0,\nabla {\psi}_i),
+        
+
+for :math:`i,j\in{\mathcal{I}_s}`.
+
+In the finite element method, we usually express :math:`u_0` in terms of
+basis functions and restrict :math:`i` and :math:`j` to run over the degrees of
+freedom that are not prescribed as Dirichlet conditions.
+However, we can also keep all the :math:`\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}` as unknowns,
+drop the :math:`u_0` in the expansion for :math:`u`, and incorporate all the
+known :math:`c_j` values in the linear system. This has been explained
+in detail in the 1D case, and the technique is the same for 2D and
+3D problems.
+
+Transformation to a reference cell in 2D and 3D
+-----------------------------------------------
+
+The real power of the finite element method first becomes evident when
+we want to solve partial differential equations posed on two- and
+three-dimensional domains of non-trivial geometric shape.  As in 1D,
+the domain :math:`\Omega` is divided into :math:`N_e` non-overlapping cells. The
+elements have simple shapes: triangles and quadrilaterals are popular
+in 2D, while tetrahedra and box-shapes elements dominate in 3D.  The
+finite element basis functions :math:`{\varphi}_i` are, as in 1D, polynomials
+over each cell.  The integrals in the variational formulation are, as
+in 1D, split into contributions from each cell, and these
+contributions are calculated by mapping a physical cell, expressed in
+physical coordinates :math:`\boldsymbol{x}`, to a reference cell in a local coordinate
+system :math:`\boldsymbol{X}`. This mapping will now be explained in detail.
+
+We consider an integral of the type
+
+.. _Eq:_auto106:
+
+.. math::
+
+    \tag{229}
+    \int_{{\Omega}^{(e)}} {\alpha}(\boldsymbol{x})\nabla{\varphi}_i\cdot\nabla{\varphi}_j{\, \mathrm{d}x},
+        
+        
+
+where the :math:`{\varphi}_i` functions are finite element basis functions in
+2D or 3D, defined in the physical domain.
+Suppose we want to calculate this integral over a reference cell,
+denoted by :math:`\tilde\Omega^r`, in a coordinate system with coordinates
+:math:`\boldsymbol{X} = (X_0, X_1)` (2D) or :math:`\boldsymbol{X} = (X_0, X_1, X_2)` (3D).
+The mapping between a point :math:`\boldsymbol{X}` in the reference coordinate system  and
+the corresponding point :math:`\boldsymbol{x}` in the physical coordinate system is
+given by a vector relation :math:`\boldsymbol{x}(\boldsymbol{X})`.
+The corresponding Jacobian, :math:`J`, of this mapping has entries
+
+.. math::
+         J_{i,j}=\frac{\partial x_j}{\partial X_i}{\thinspace .} 
+
+The change of variables requires :math:`{\, \mathrm{d}x}` to be replaced by :math:`\det J{\, \mathrm{d}X}`.
+The derivatives in the :math:`\nabla` operator in the variational form are
+with respect to :math:`\boldsymbol{x}`, which we may denote by :math:`\nabla_{\boldsymbol{x}}`.
+The :math:`{\varphi}_i(\boldsymbol{x})` functions in the integral
+are replaced by local basis functions :math:`{\tilde{\varphi}}_r(\boldsymbol{X})` so
+the integral features :math:`\nabla_{\boldsymbol{x}}{\tilde{\varphi}}_r(\boldsymbol{X})`. We readily have
+:math:`\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r(\boldsymbol{X})` from formulas for the basis functions in
+the reference cell, but
+the desired quantity :math:`\nabla_{\boldsymbol{x}}{\tilde{\varphi}}_r(\boldsymbol{X})` requires some efforts
+to compute. All the details are provided below.
+
+Let :math:`i=q(e,r)` and consider two space dimensions. By the chain rule,
+
+.. math::
+        
+        \frac{\partial {\tilde{\varphi}}_r}{\partial X} =
+        \frac{\partial {\varphi}_i}{\partial X} =
+        \frac{\partial {\varphi}_i}{\partial x}\frac{\partial x}{\partial X} +
+        \frac{\partial {\varphi}_i}{\partial y}\frac{\partial y}{\partial X},
+        
+
+and
+
+.. math::
+        
+        \frac{\partial {\tilde{\varphi}}_r}{\partial Y} =
+        \frac{\partial {\varphi}_i}{\partial Y} =
+        \frac{\partial {\varphi}_i}{\partial x}\frac{\partial x}{\partial Y} +
+        \frac{\partial {\varphi}_i}{\partial y}\frac{\partial y}{\partial Y}
+        {\thinspace .}
+        
+
+We can write these two equations as a vector equation
+
+.. math::
+        
+        \left[\begin{array}{c}
+        \frac{\partial {\tilde{\varphi}}_r}{\partial X}\\ 
+        \frac{\partial {\tilde{\varphi}}_r}{\partial Y}
+        \end{array}\right]
+        =
+        \left[\begin{array}{cc}
+        \frac{\partial x}{\partial X} & \frac{\partial y}{\partial X}\\ 
+        \frac{\partial x}{\partial Y} & \frac{\partial y}{\partial Y}
+        \end{array}\right]
+        \left[\begin{array}{c}
+        \frac{\partial {\varphi}_i}{\partial x}\\ 
+        \frac{\partial {\varphi}_i}{\partial y}
+        \end{array}\right]
+        
+
+Identifying
+
+.. math::
+         \nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r = \left[\begin{array}{c}
+        \frac{\partial {\tilde{\varphi}}_r}{\partial X}\\ 
+        \frac{\partial {\tilde{\varphi}}_r}{\partial Y}
+        \end{array}\right],
+        \quad
+        J =
+        \left[\begin{array}{cc}
+        \frac{\partial x}{\partial X} & \frac{\partial y}{\partial X}\\ 
+        \frac{\partial x}{\partial Y} & \frac{\partial y}{\partial Y}
+        \end{array}\right],
+        \quad
+        \nabla_{\boldsymbol{x}}{\varphi}_r =
+        \left[\begin{array}{c}
+        \frac{\partial {\varphi}_i}{\partial x}\\ 
+        \frac{\partial {\varphi}_i}{\partial y}
+        \end{array}\right],
+        
+
+we have the relation
+
+.. math::
+         \nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r = J\cdot\nabla_{\boldsymbol{x}}{\varphi}_i,
+
+which we can solve with respect to :math:`\nabla_{\boldsymbol{x}}{\varphi}_i`:
+
+.. _Eq:_auto107:
+
+.. math::
+
+    \tag{230}
+    \nabla_{\boldsymbol{x}}{\varphi}_i = J^{-1}\cdot\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r{\thinspace .}
+        
+        
+
+On the reference cell, :math:`{\varphi}_i(\boldsymbol{x}) = {\tilde{\varphi}}_r(\boldsymbol{X})`, so
+
+.. _Eq:_auto108:
+
+.. math::
+
+    \tag{231}
+    \nabla_{\boldsymbol{x}}{\tilde{\varphi}}_r(\boldsymbol{X}) = J^{-1}(\boldsymbol{X})\cdot\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r(\boldsymbol{X}){\thinspace .}
+        
+        
+
+This means that we have the following transformation of the
+integral in the physical domain to its counterpart over the reference cell:
+
+.. _Eq:_auto109:
+
+.. math::
+
+    \tag{232}
+    \int_{\Omega^{(e)}} {\alpha}(\boldsymbol{x})\nabla_{\boldsymbol{x}}{\varphi}_i\cdot\nabla_{\boldsymbol{x}}{\varphi}_j{\, \mathrm{d}x} =
+        \int_{\tilde\Omega^r} {\alpha}(\boldsymbol{x}(\boldsymbol{X}))(J^{-1}\cdot\nabla_{\boldsymbol{X}}{\tilde{\varphi}}_r)\cdot
+        (J^{-1}\cdot\nabla{\tilde{\varphi}}_s)\det J{\, \mathrm{d}X}
+        
+        
+
+Numerical integration          (2)
+----------------------------------
+
+Integrals are normally computed by numerical integration rules.
+For multi-dimensional cells, various families of rules exist.
+All of them are similar to what is shown in 1D:
+:math:`\int f {\, \mathrm{d}x}\approx \sum_jw_if(\boldsymbol{x}_j)`, where :math:`w_j` are weights and
+:math:`\boldsymbol{x}_j` are corresponding points.
+
+The file `numint.py <http://tinyurl.com/znpudbt/numint.py>`__ contains the functions
+``quadrature_for_triangles(n)`` and ``quadrature_for_tetrahedra(n)``,
+which returns lists of points and weights corresponding to integration
+rules with ``n`` points over the reference triangle
+with vertices :math:`(0,0)`, :math:`(1,0)`, :math:`(0,1)`, and the reference tetrahedron
+with vertices :math:`(0,0,0)`, :math:`(1,0,0)`, :math:`(0,1,0)`, :math:`(0,0,1)`,
+respectively. For example, the first two rules for integration over
+a triangle have 1 and 3 points:
+
+.. code-block:: ipy
+
+    >>> import numint
+    >>> x, w = numint.quadrature_for_triangles(num_points=1)
+    >>> x
+    [(0.3333333333333333, 0.3333333333333333)]
+    >>> w
+    [0.5]
+    >>> x, w = numint.quadrature_for_triangles(num_points=3)
+    >>> x
+    [(0.16666666666666666, 0.16666666666666666),
+     (0.66666666666666666, 0.16666666666666666),
+     (0.16666666666666666, 0.66666666666666666)]
+    >>> w
+    [0.16666666666666666, 0.16666666666666666, 0.16666666666666666]
+
+Rules with 1, 3, 4, and 7 points over the triangle will exactly integrate
+polynomials of degree 1, 2, 3, and 4, respectively.
+In 3D, rules with 1, 4, 5, and 11 points over the tetrahedron will
+exactly integrate polynomials of degree 1, 2, 3, and 4, respectively.
+
+Convenient formulas for P1 elements in 2D
+-----------------------------------------
+
+We shall now provide some formulas for piecewise linear :math:`{\varphi}_i` functions
+and their integrals *in the physical coordinate system*.
+These formulas make it convenient to compute with P1 elements without
+the need to work in the reference coordinate system and deal with mappings
+and Jacobians.
+A lot of computational and algorithmic details are hidden by this approach.
+
+Let :math:`\Omega^{(e)}` be cell number :math:`e`, and let the three vertices
+have global vertex numbers :math:`I`, :math:`J`, and :math:`K`.
+The corresponding coordinates are
+:math:`(x_{I},y_{I})`, :math:`(x_{J},y_{J})`, and :math:`(x_{K},y_{K})`.
+The basis function :math:`{\varphi}_I` over :math:`\Omega^{(e)}` have the explicit
+formula
+
+.. _Eq:fem:approx:fe:2D:phi:I:
+
+.. math::
+
+    \tag{233}
+    {\varphi}_I (x,y) = \frac{1}{2}\Delta \left( \alpha_I + \beta_Ix
+        + \gamma_Iy\right),
+        
+        
+
+where
+
+.. must split align in two because we need an array with & and \\
+
+.. (sphinx, ipynb, pandoc requires splitting of align and & in the
+
+.. array confuses the splitting)
+
+.. _Eq:fem:approx:fe:2D:phi:alpha:I:
+
+.. math::
+
+    \tag{234}
+    \alpha_I = x_{J}y_{K} - x_{K}y_{J},
+        
+        
+
+.. _Eq:fem:approx:fe:2D:phi:beta:I:
+
+.. math::
+
+    \tag{235}
+    \beta_I = y_{J} - y_{K},
+        
+        
+
+.. _Eq:fem:approx:fe:2D:phi:gamma:I:
+
+.. math::
+
+    \tag{236}
+    \gamma_I = x_{K} - x_{J},
+        ,
+        
+
+and
+
+.. _Eq:fem:approx:fe:2D:phi:Delta:
+
+.. math::
+
+    \tag{237}
+    2\Delta = \det\left(\begin{array}{rrr}
+        1 & x_{I} & y_{I} \\ 
+        1 & x_{J} & y_{J} \\ 
+        1 & x_{K} & y_{K} \end{array}\right)
+        {\thinspace .}
+        
+        
+
+The quantity :math:`\Delta` is the area of the cell.
+
+The following formula is often convenient when computing element matrices
+and vectors:
+
+.. _Eq:fem:approx:fe:2D:phi:integral:
+
+.. math::
+
+    \tag{238}
+    \int_{\Omega^{(e)}} {\varphi}_I^{p}{\varphi}_J^{q}{\varphi}_K^{r} dx dy =
+        {p!q!r!\over (p+q+r+2)!}2\Delta
+        
+        {\thinspace .}
+        
+
+(Note that the :math:`q` in this formula is not to be mixed with the :math:`q(e,r)`
+mapping of degrees of freedom.)
+
+As an example, the element matrix entry
+:math:`\int_{\Omega^{(e)}} {\varphi}_I{\varphi}_J{\, \mathrm{d}x}`
+can be computed by setting
+:math:`p=q=1` and :math:`r=0`, when :math:`I\neq J`, yielding :math:`\Delta/12`, and
+:math:`p=2` and :math:`q=r=0`, when :math:`I=J`, resulting in :math:`\Delta/6`.
+We collect these numbers in a local element matrix:
+
+.. math::
+        
+        \frac{\Delta}{12}
+        \left[\begin{array}{ccc}
+        2 & 1 & 1\\ 
+        1 & 2 & 1\\ 
+        1 & 1 & 2
+        \end{array}\right]
+        
+
+The common element matrix entry :math:`\int_{\Omega^{(e)}} \nabla{\varphi}_I\cdot\nabla{\varphi}_J{\, \mathrm{d}x}`, arising from a Laplace term :math:`\nabla^2u`, can also easily be
+computed by the formulas above. We have
+
+.. math::
+         \nabla{\varphi}_I\cdot\nabla{\varphi}_J =
+        \frac{\Delta^2}{4}(\beta_I\beta_J + \gamma_I\gamma_J) = \hbox{const},
+
+so that the element matrix entry becomes
+:math:`\frac{1}{4}\Delta^3(\beta_I\beta_J + \gamma_I\gamma_J)`.
+
+From an implementational point of view, one will work with local vertex
+numbers :math:`r=0,1,2`, parameterize the coefficients in the basis
+functions by :math:`r`, and look up vertex coordinates through :math:`q(e,r)`.
+
+Similar formulas exist for integration of P1 elements in 3D.
+
+A glimpse of the mathematical theory of the finite element method
+-----------------------------------------------------------------
+
+Almost all books on the finite element method that introduces the
+abstract variational problem :math:`a(u,v)=L(v)` spend considerable pages on
+deriving error estimates and other properties of the approximate
+solution. The machinery with function spaces and bilinear and linear
+forms has the great advantage that a very large class of PDE problems
+can be analyzed in a unified way.  This feature is often taken as an
+advantage of finite element methods over finite difference and volume
+methods.  Since there are so many excellent textbooks on the
+mathematical properties of finite element methods
+[Ref06]_ [Ref04]_ [Ref03]_ [Ref01]_ [Ref09]_ [Ref02]_, this text
+will not repeat the theory, but give a glimpse of typical assumptions
+and general results for elliptic PDEs.
+
+**Remark.**
+The mathematical theory of finite element methods is primarily
+developed for to stationary PDE problems of elliptic nature whose
+solutions are smooth. However, such problems can be solved with the
+desired accuracy by most numerical methods and pose no difficulties.
+Time-dependent problems, on the other hand, easily lead to
+non-physical features in the numerical solutions and therefore
+requires more care and knowledge by the user.  Our focus on the
+accuracy of the finite element method will of this reason be centered
+around time-dependent problems, but then we need a different set of
+tools for the analysis. These tools are based on converting finite
+element equations to finite difference form and studying Fourier wave
+components.
+
+[**kam 15**: This is really two remarks in one and we can split and put them in more appropriate place. Time is dealt with later.]
+
+Abstract variational forms
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To list the main results from the mathematical theory of finite elements,
+we consider linear PDEs with an abstract variational form
+
+.. math::
+         a(u,v) = L(v)\quad\forall v\in V{\thinspace .}
+
+This is the discretized problem (as usual in this book) where we
+seek :math:`u\in V`.
+The weak formulation of the corresponding continuous problem,
+fulfilled by the exact solution :math:`{u_{\small\mbox{e}}}\in\Vex` is here written as
+
+.. math::
+         a({u_{\small\mbox{e}}}, v) = L(v)\quad\forall v\in\Vex{\thinspace .}
+
+The space :math:`V` is finite dimensional (with dimension :math:`N+1`),
+while :math:`\Vex` is infinite dimensional.
+Normally
+The hope is that :math:`u\rightarrow{u_{\small\mbox{e}}}` as :math:`N\rightarrow\infty` and
+:math:`V\rightarrow\Vex`.
+
+Example on an abstract variational form and associated spaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Consider the problem :math:`-u''(x)=f(x)` on :math:`\Omega=[0,1]`, with :math:`u(0)=0` and
+:math:`u'(1)=\beta`. The weak form is
+
+.. math::
+         a(u,v) = \int_0^1 u'v'dx,\quad L(v)=\int_0^1fvdx + \beta v(1){\thinspace .}
+
+The space :math:`V` for the approximate solution :math:`u` can be chosen in many
+ways as previously described.
+The exact solution :math:`{u_{\small\mbox{e}}}` fulfills :math:`a(u,v)=L(v)` for all :math:`v` in :math:`\Vex`,
+and to specify what :math:`\Vex` is, we need to introduce *Hilbert spaces*.
+The Hilbert
+space :math:`L^2(\Omega)` consists of all functions that are square-integrable
+on :math:`\Omega`:
+
+.. math::
+         L^2(\Omega) = \left\lbrace\int_\Omega v^2dx < \infty\right\rbrace{\thinspace .}
+
+The space :math:`\Vex` is the space of all functions whose first-order
+derivative is also square-integrable:
+
+.. math::
+         \Vex = H^1_0(\Omega) = \left\lbrace v\in L^2(\Omega)\,\vert\,
+        \frac{dv}{dx}\in L^2(\Omega),\hbox{ and }v(0)=0\right\rbrace{\thinspace .}
+
+The requirements of square-integrable zeroth- and first-order derivatives
+are motivated from the formula for :math:`a(u,v)` where products of the
+first-order derivatives are to be integrated on :math:`\Omega`.
+We remark that it is common that  :math:`H^1_0` denote the
+space of :math:`H^1` functions that are zero everywhere on the boundary, but
+here we use it for functions that are zero only at :math:`x=0`.
+
+The Sobolev space :math:`H^1_0(\Omega)` has an inner product
+
+.. math::
+         (u,v)_{H^1} = \int_\Omega (uv + \frac{du}{dx}\frac{dv}{dx})dx,
+
+and associated norm
+
+.. math::
+         ||v||_{H^1} = \sqrt{(v,v)_{H^1}}{\thinspace .}
+
+Assumptions
+~~~~~~~~~~~
+
+A set of general results builds on the following
+assumptions. Let :math:`\Vex` be an infinite-dimensional inner-product space
+such that :math:`{u_{\small\mbox{e}}}\in\Vex`. The space has an associated norm :math:`||v||`
+(e.g., :math:`||v||_{H^1}` in the example above with :math:`\Vex=H^1_0(\Omega)`).
+
+1. :math:`L(v)` is linear in its argument.
+
+2. :math:`a(u,v)` is a bilinear in its arguments.
+
+3. :math:`L(v)` is bounded (also called continuous) if there exists a positive
+   constant :math:`c_0` such that :math:`|L(v)|\leq c_0||v||` $\forall v\in \Vex$.
+
+4. :math:`a(u,v)` is bounded (or continuous) if there exists a positive constant
+   :math:`c_1` such that :math:`|a(u,v)|\leq c_1||u|| ||v||\ \forall u,v\in\Vex`.
+
+5. :math:`a(u,v`) is elliptic (or coercive) if there exists a positive
+   constant :math:`c_2` such that :math:`a(v,v)\geq c_2||v||^2\ \forall v\in\Vex`.
+
+6. :math:`a(u,v)` is symmetric: :math:`a(u,v)=a(v,u)`.
+
+Based on the above assumptions, which must be verified in each specific
+problem, one can derive some general results that are listed below.
+
+Existence and uniqueness
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+There exists a unique solution of the problem: find :math:`{u_{\small\mbox{e}}}\in\Vex`
+such that
+
+.. math::
+         a({u_{\small\mbox{e}}},v)=L(v)\quad\forall v\in\Vex{\thinspace .}
+
+(This result is known as the Lax-Milgram Theorem.
+We remark that symmetry is not strictly needed for this theorem.)
+
+Stability
+~~~~~~~~~
+
+The solution :math:`{u_{\small\mbox{e}}}\in\Vex` obeys the stability estimate
+
+.. math::
+         ||u||\leq \frac{c_0}{c_2}{\thinspace .}
+
+Equivalent minimization problem
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The solution :math:`{u_{\small\mbox{e}}}\in\Vex` also fulfills the minimization problem
+
+.. math::
+         \min_{v\in\Vex} F(v),\quad F(v)=\frac{1}{2}a(v,v) - L(v){\thinspace .}
+
+Best approximation principle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *energy norm* is defined as
+
+.. math::
+         ||v||_a = \sqrt{a(v,v)}{\thinspace .}
+
+The discrete solution :math:`u\in V` is the best approximation in energy norm,
+
+.. math::
+         ||{u_{\small\mbox{e}}} -  u||_a \leq ||{u_{\small\mbox{e}}} - v||_a\quad\forall v\in V{\thinspace .}
+
+This is quite remarkable: once we have :math:`V` (i.e., a mesh and a finite element), the Galerkin
+method finds the best approximation in this space.
+In the example above, we have :math:`||v||_a=\int_0^1 (v')^2dx`, so
+the derivative :math:`u'` is closer to :math:`{u_{\small\mbox{e}}}'` than any other possible
+function in :math:`V`:
+
+.. math::
+         \int_0^1 ({u_{\small\mbox{e}}}' - u')^2dx \leq \int_0^1(u' - v')dx\quad\forall v\in V{\thinspace .}
+
+Best approximation property in the norm of the space
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If :math:`||v||` is the norm associated with :math:`\Vex`, we have another
+best approximation property:
+
+.. math::
+         ||{u_{\small\mbox{e}}} - u||\leq\left(\frac{c_1}{c_2}\right)^{\frac{1}{2}}||{u_{\small\mbox{e}}} - v||\quad\forall v\in\boldsymbol{V}{\thinspace .}
+
+Symmetric, positive definite coefficient matrix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The discrete problem :math:`a(u,v)=L(v)` $\forall v\in V$ leads to a linear
+system :math:`Ac=b`, where the coefficient matrix :math:`A` is symmetric (:math:`A^T=A`)
+and positive definite (:math:`x^TAx > 0` for all vectors :math:`x\neq 0`).  One
+can then use solution methods that demand less storage and that are
+faster and more reliable than solvers for general linear systems. One
+is also guaranteed the existence and uniqueness of the discrete
+solution :math:`u`.
+
+Equivalent matrix minimization problem
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The solution :math:`c` of the linear system :math:`Ac=b` also solves the minimization
+problem :math:`\min_w(\frac{1}{2} w^TAw - b^Tw` in the vector space :math:`\mathbb{R}^{N+1}`.
+
+A priori error estimate for the derivative
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In our sample problem, :math:`-u''=f` on :math:`\Omega=[0,1]`, :math:`u(0)=0`, :math:`u'(1)=\beta`,
+one can derive the following error estimate for Lagrange finite element
+approximations of degree :math:`s`:
+
+.. math::
+        
+        \left(\int_0^1 ({u_{\small\mbox{e}}}' - u')^2dx\right)^{\frac{1}{2}} \leq Ch^s||{u_{\small\mbox{e}}}||_{H^{s+1}},\\ 
+        
+
+where :math:`||u||_{H^{s+1}}` is a norm that integrates the sum of the square of all
+derivatives up to order :math:`s+1`,
+:math:`C` is a constant, and :math:`h` is the maximum
+cell length.
+The estimate shows that choosing
+elements with higher-degree polynomials (large :math:`s`) requires more
+smoothness in :math:`{u_{\small\mbox{e}}}` since higher-order derivatives need to be square-integrable.
+
+A consequence of the error estimate is that :math:`u'\rightarrow {u_{\small\mbox{e}}}'`
+as :math:`h\rightarrow 0`, i.e., the approximate solution converges to
+the exact one.
+
+The constant :math:`C` in  depends on the shape
+of triangles in 2D and tetrahedra in 3D: squeezed elements with a
+small angle lead to a large :math:`C`, and such deformed elements are
+not favorable for the accuracy.
+
+One can generalize the above estimate to the general problem class
+:math:`a(u,v)=L(v)`: the error in the derivative is proportional
+to :math:`h^s`. Note that the expression :math:`||{u_{\small\mbox{e}}} - u||` in the example
+is :math:`||{u_{\small\mbox{e}}} - u||_{H^1}` so it involves the sum of the zeroth and
+first derivative. The appearance of the derivative makes the error
+proportional to :math:`h^s` - if we only look at the solution it
+converges as :math:`h^{s+1}` (see below).
+
+The above estimate is called an *a priori* estimate because the bound
+contains the exact solution, which is not computable. There are also
+*a posteriori* estimates where the bound involves the approximation
+:math:`u`, which is available in computations.
+
+A priori error estimate for the solution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The finite element solution of our sample problem  fulfills
+
+.. math::
+        
+        ||{u_{\small\mbox{e}}} - u|| \leq Ch^{s+1} ||{u_{\small\mbox{e}}}||_{H^{s+1}},
+        
+
+This estimate shows that the error converges as :math:`h^2` for P1 elements.
+An equivalent finite difference method, see the section :ref:`fem:deq:1D:fdm_vs_fem`, is known to have an error proportional to :math:`h^2`, so the above estimate
+is expected.
+In general, the convergence is :math:`h^{s+1}` for elements with polynomials
+of degree :math:`s`. Note that the estimate for :math:`u'` is proportional to
+:math:`h` raised to one power less.
+We remark that the second estimate strictly speaking requires extra smoothness (regularity).
+
+.. _fem:varform:fenics:
+
+Implementation in 2D and 3D via FEniCS
+======================================
+
+From a principle of view, we have seen that variational forms of the
+type: find :math:`a(u,v)=L\ \forall v\in V` (and even general nonlinear problems
+:math:`F(u;v)=0`), can apply the computational machinery of introduced for
+the approximation problem :math:`u=f`. We actually need two extensions only:
+
+1. specify Dirichlet boundary conditions as part of :math:`V`
+
+2. incorporate Neumann flux boundary conditions in the variational form
+
+The algorithms are all the same in any space dimension, we only need to
+choose the element type and associated integration rule. Once we know
+how to compute things in 1D, and made the computer code sufficiently
+flexible, the method and code should work for any variational form in
+any number of space dimensions! This fact is exactly the idea behind
+the `FEniCS <http://fenicsproject.org>`__ finite element software.
+
+Therefore, if we know how to set up an approximation problem in any
+dimension in FEniCS, and know how to derive variational forms in higher
+dimensions, we are (in principle!) very close to solving a
+PDE problem in FEniCS. Building on the the section :ref:`fe:approx:fenics`,
+we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
+There is very much more FEniCS programming than this example, but it
+illustrates our fact that when we go beyond 1D, there is exists
+software which leverage the full power of the finite element method as
+a method for solving "any" problem in any number of
+space dimensions.
+
+.. _fem:varform:fenics:problem:
+
+Mathematical problem          (2)
+---------------------------------
+
+The following model describes the pressure :math:`u` in the flow around a
+bore hole of radius :math:`a` in a porous medium. If the hole is long in the
+vertical direction, we can model it by a 2D domain in the cross section.
+
+.. _Eq:fem:varform:fenics:problem:pde:
+
+.. math::
+
+    \tag{239}
+    \nabla\cdot \left( {\alpha}\nabla u\right) = 0,  \quad a < ||\boldsymbol{x}|| < b,
+        
+        
+
+.. _Eq:fem:varform:fenics:problem:ua:
+
+.. math::
+
+    \tag{240}
+    u(\boldsymbol{x}) = U_a, \quad   ||\boldsymbol{x}|| = a,
+        
+        
+
+.. _Eq:fem:varform:fenics:problem:ub:
+
+.. math::
+
+    \tag{241}
+    u(\boldsymbol{x}) = U_b  \quad   ||\boldsymbol{x}|| = b{\thinspace .}
+        
+        
+
+That is, we have a hollow circular 2D domain with inner radius :math:`a` and
+outer radius :math:`b`. The pressure is known on these two boundaries, so
+this is a pure Dirichlet problem.
+
+Symmetry
+~~~~~~~~
+
+The first thing we should observe is that the problem is radially
+symmetric, so we can change to polar coordinates and obtain a 1D
+problem in the radial direction:
+
+.. math::
+         (r{\alpha} u')' = 0,\quad u(a)=U_a, u(b)=U_b{\thinspace .}
+
+This is not very exciting beyond being able to find an analytical solution
+and compute the true error of a finite element approximation.
+
+However, many software packages solve problems in Cartesian coordinates, and
+FEniCS basically do this, so we want to take advantage of symmetry in
+Cartesian coordinates and reformulate the problem in a smaller
+domain.
+
+Looking at the domain as a cake with a hole, any piece of the
+cake will be a candidate for a reduced-size domain.  The solution is
+symmetric about any line :math:`\theta = \hbox{const}` in polar coordinates,
+so at such lines we have the symmetry boundary condition :math:`\partial
+u/\partial n=0`, i.e., a homogeneous Neumann condition.  In Figure
+:ref:`fem:varform:fenics:problem:meshfig` we have plotted a possible
+mesh of cells as triangles, here with dense refinement toward the bore
+hole, because we know the solution will decay most rapidly toward the
+origin.  This mesh is a piece of the cake with four sides: Dirichlet
+conditions on the inner and outer boundary, named :math:`\Gamma_{D_a}` and
+:math:`\Gamma_{D_b}`, and :math:`\partial u/\partial n=0`
+on the two other sides, named :math:`\Gamma_N`.
+In this particular example, the arc of the piece
+of the cake is 45 degrees, but any value of the arc will work.
+
+.. _fem:varform:fenics:problem:meshfig:
+
+.. figure:: borehole_mesh1.png
+   :width: 700
+
+   *Mesh of a hollow cylinder, with refinement and utilizing symmetry*
+
+The boundary problem can then be expressed as
+
+.. _Eq:fem:varform:fenics:problem:pde2:
+
+.. math::
+
+    \tag{242}
+    \nabla\cdot \left( {\alpha}\nabla u\right) = 0,  \quad \boldsymbol{x}\in\Omega,
+        
+        
+
+.. _Eq:fem:varform:fenics:problem:Ga:
+
+.. math::
+
+    \tag{243}
+    u(\boldsymbol{x}) = U_a,  \quad   \boldsymbol{x}\in\Gamma_{D_a},
+        
+        
+
+.. _Eq:fem:varform:fenics:problem:Gb:
+
+.. math::
+
+    \tag{244}
+    u(\boldsymbol{x}) = U_b,  \quad   \boldsymbol{x}\in\Gamma_{D_b},
+        
+        
+
+.. _Eq:fem:varform:fenics:problem:GN:
+
+.. math::
+
+    \tag{245}
+    \frac{\partial u}{\partial n} =0,\quad  \boldsymbol{x}\in\Gamma_N{\thinspace .}
+        
+        
+
+.. _fem:varform:fenics:varform:
+
+Variational formulation
+-----------------------
+
+To obtain the variational formulation, we multiply the PDE by a test
+function :math:`v` and integrate the second-order derivatives by part:
+
+.. math::
+        \begin{align*}
+        \int_\Omega \nabla\cdot ({\alpha}\nabla u) v {\, \mathrm{d}x} &= 0,\quad \forall v\in V\\ 
+        &= -\int_\Omega {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x} + \int_{\Gamma_N}{\alpha}
+        \frac{\partial u}{\partial n}v{\, \mathrm{d}s}\\ 
+        &= -\int_\Omega {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x}{\thinspace .}
+        \end{align*}
+
+We are left with a problem of the form: find :math:`u` such that
+:math:`a(u,v)=L(v)\ \forall v\in V`, with
+
+.. _Eq:_auto110:
+
+.. math::
+
+    \tag{246}
+    a(u,v) = \int_\Omega {\alpha}\nabla u\cdot\nabla v{\, \mathrm{d}x},
+        
+        
+
+.. _Eq:_auto111:
+
+.. math::
+
+    \tag{247}
+    L(v) = \int_\Omega 0v{\, \mathrm{d}x} {\thinspace .}
+        
+        
+
+We write the integrand as :math:`0v{\, \mathrm{d}x}` even though :math:`L=0`, because it is necessary
+in FEniCS to specify :math:`L` as a linear form and not the number zero.
+The Dirichlet conditions make a nonzero solution.
+
+The FEniCS solver
+-----------------
+
+Suppose we have a function ``make_mesh`` that can make the mesh for us.
+All we need to do in the solver and that has not been exemplified
+before, is to define :math:`V` with proper Dirichlet conditions.
+It is easy to do so as long as the Neumann conditions are zero. Otherwise,
+we will have to do a line integral along the boundary and that brings in
+quite some concepts in FEniCS about how to mark boundaries [Ref07]_.
+Fortunately, a lot of problems have homogeneous Neumann conditions (thanks
+to symmetries!), so the example here can be extended and become useful
+in many contexts.
+
+We have to write functions for testing whether a point is on a Dirichlet
+boundary or not:
+
+.. code-block:: python
+
+    V = FunctionSpace(mesh, 'P', degree)
+    
+    # Define Dirichlet boundary conditions
+    from math import sqrt
+    def inner(x, on_boundary):
+        """Return True if x on r=a with tolerance."""
+        r = on_boundary and \ 
+            abs(sqrt(x[0]**2 + x[1]**2) - x_a) < 1E-2
+        print 'XXXa', r, x[0], x[1], abs(sqrt(x[0]**2 + x[1]**2) - x_a), on_boundary
+        return r
+    
+    def outer(x, on_boundary):
+        """Return True if x on r=b with tolerance."""
+        r = on_boundary and \ 
+            abs(sqrt(x[0]**2 + x[1]**2) - x_b) < 1E-2
+        print 'XXXb', r, x[0], x[1], abs(sqrt(x[0]**2 + x[1]**2) - x_b), on_boundary
+        return r
+
+Note here that we test with a tolerance since the points on the boundary
+may be subject to rounding errors when making the mesh coordinates.
+
+We then use the ``DirichletBC`` object to make different kinds of
+Dirichlet conditions, here two, and collect them in a list `bcs:
+
+.. code-block:: python
+
+    bc_inner = DirichletBC(V, u_a, inner)
+    bc_outer = DirichletBC(V, u_b, outer)
+    bcs = [bc_inner, bc_outer]
+
+The next step is to define the variational problem and solve it:
+
+.. code-block:: python
+
+    # Define variational problem
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    a = alpha*dot(grad(u), grad(v))*dx
+    L = Constant(0)*v*dx  # L = 0*v*dx = 0 does not work...
+    
+    # Compute solution
+    u = Function(V)
+    solve(a == L, u, bcs)
+    
+    f = File("mesh.xml")
+    f << mesh
+
+In order to avoid ``L=0`` (``L`` equal to the float zero), we have to
+tell FEniCS that is a linear form, so zero must be specified as ``Constant(0)``.
+
+Note that everything is the same as for the approximation problem,
+except for the Dirichlet conditions and the formulas for ``a`` and
+``L``. FEniCS has, of course, access to very efficient solution methods,
+so we could add arguments to the ``solve`` call to apply
+state-of-the-art iterative methods and preconditioners for large-scale
+problems. However, for this little 2D case a standard sparse Gaussian
+elimination, as implied by ``solve(a = L, u, bcs)`` is the most
+efficient and reliable approach.
+
+Finally, we can save the solution to file for using professional
+visualization software and, if desired, add a quick plotting using the
+built-in FEniCS tool ``plot``:
+
+.. code-block:: python
+
+    # Save solution to file in VTK format
+    vtkfile = File(filename + '.pvd')
+    vtkfile << u
+    
+    u.rename('u', 'u'); plot(u); plot(mesh)
+    interactive()
+
+(The ``u.rename`` call is just for getting a more readable title in the plot.)
+
+The above statements are collected in a function ``solver`` in the
+file `borehole_fenics.py <http://tinyurl.com/znpudbt/borehole_fenics.py>`__:
+
+.. code-block:: python
+
+    def solver(alpha,    # Diffusion coefficient
+               u_a,      # Inner pressure
+               u_b,      # Outer pressure
+               Theta,    # Arc size
+               x_a,      # Inner boundary
+               x_b,      # Outer boundary
+               nr,       # Resolution r direction
+               nt,       # Resolution azimuthal direction
+               degree,   # Element polynomial degree
+               filename, # Name of VTK file
+               ):
+
+
+.. admonition:: Be careful with name clashes
+
+   It is easy when coding mathematics to use variable names that correspond
+   to one-letter names in the mathematics. For example, in the mathematics
+   of this problem there are to :math:`a` variables: the radius of the inner
+   boundary and the bilinear form in the variational formulation.
+   Using ``a`` for the inner boundary in ``solver`` does not work: it is
+   quickly overwritten by the bilinear form. We therefore have to introduce
+   ``x_a``. Long variable names are to be preferred for safe programming,
+   though short names corresponding to the mathematics are nicer...
+
+
+
+
+Making the mesh
+---------------
+
+The hardest part of a finite element problem is very often to make the mesh.
+Here the idea is to first make a rectangle, then make the denser toward the
+left end, and then bend it to get the form of the part of a hole.
+
+Let :math:`x` and :math:`y` be the coordinates of a vertex in the mesh that is
+a rectangle :math:`(0,a)\times (0,b)`.
+The stretching towards :math:`x=a` is done by mapping
+
+.. _Eq:_auto112:
+
+.. math::
+
+    \tag{248}
+    \bar x = a + (b-a)\left({x-a\over b-a}\right)^s{\thinspace .}
+        
+        
+
+A stretching towards :math:`x=b` is given by
+
+.. _Eq:_auto113:
+
+.. math::
+
+    \tag{249}
+    \bar x = a + (b-a)\left({x-a\over b-a}\right)^{1/s}{\thinspace .}
+        
+        
+
+The parameter :math:`s` controls the amount of stretching.
+The code below shows the details of mapping the coordinates of FEniCS mesh.
+
+Mapping of a rectangle onto a our geometry is done by
+
+.. math::
+        
+        \hat x = \bar x\cos (\Theta \bar y),\quad \hat y = \bar x\sin (\Theta \bar y){\thinspace .}
+        
+
+We are now ready for the Python code that codes these formulas and manipulates
+the FEniCS mesh:
+
+.. code-block:: python
+
+    def make_mesh(Theta, a, b, nr, nt):
+        mesh = RectangleMesh(Point(a, 0), Point(b, 1), nr, nt, 'crossed')
+    
+        # First make a denser mesh towards r=a
+        x = mesh.coordinates()[:,0]
+        y = mesh.coordinates()[:,1]
+        s = 3.5
+    
+        def denser(x, y):
+            return [a + (b-a)*((x-a)/(b-a))**s, y]
+    
+        x_bar, y_bar = denser(x, y)
+        xy_bar_coor = np.array([x_bar, y_bar]).transpose()
+        mesh.coordinates()[:] = xy_bar_coor
+    
+        # Map onto to a "piece of cake"
+    
+        def cylinder(r, s):
+            return [r*np.cos(Theta*s), r*np.sin(Theta*s)]
+    
+        x_hat, y_hat = cylinder(x_bar, y_bar)
+        xy_hat_coor = np.array([x_hat, y_hat]).transpose()
+        mesh.coordinates()[:] = xy_hat_coor
+        return mesh
+
+We could also have used the mesh tool ``mshr`` in FEniCS, but with our
+approach here we have full control of the refinement towards the hole.
+
+Solving a problem
+-----------------
+
+We assume that :math:`{\alpha}` is constant.
+Before solving such
+a specific problem, it can be wise to scale the problem since
+it often reduces the amount of input data in the model. Here, the variation
+in :math:`u` is typically :math:`|u_a-u_b|` so we use that as characteristic
+pressure. The coordinates may be naturally scaled by the bore hole radius,
+so we have new, scaled variables
+
+.. math::
+         \bar u = \frac{u-u_a}{u_a-u_b},\quad \bar x = \frac{x}{a},\quad
+        \bar y = \frac{y}{a}{\thinspace .}
+
+Now, we expect :math:`\bar u\in [0,1]`, which is a goal of scaling.
+Inserting this in the problem gives the PDE
+
+.. math::
+         \nabla^2 \bar u = 0 
+
+in a domain with inner radius 1 and :math:`\bar u=0`, and outer radius
+
+.. math::
+         \beta = \frac{a}{b},
+
+with :math:`\bar u = 1`. Our solver can solve this problem by setting
+``alpha=1``, ``u_a=0``, ``u_b=0``, ``x_a=1``, ``x_b=beta``.
+
+[**hpl 16**: Show plots from paraview.]
+[**hpl 17**: Do 3D automatically.]
+[**hpl 18**: Do 1D Dirichlet model problem from previous sections (exercise!).]
+

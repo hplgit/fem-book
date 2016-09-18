@@ -1,0 +1,1865 @@
+<!--
+Automatically generated HTML file from DocOnce source
+(https://github.com/hplgit/doconce/)
+-->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="DocOnce: https://github.com/hplgit/doconce/" />
+<meta name="description" content="Introduction to Numerical Methods for Variational Problems">
+<meta name="keywords" content="trial function,test function,approximation of vectors in the plane,basis vector,norm,least squreas method vectors,Galerkin method vectors,projection vectors,approximation of general vectors,Galerkin method vectors,projection vectors,approximation of functions,Galerkin method functions,projection functions,normal equations,$A^TA=A^Tb$ (normal equations),approximation by sines,collocation method (approximation),approximation collocation,interpolation method (approximation),approximation interpolation,Lagrange (interpolating) polynomial,Kronecker delta,Runge's phenomenon,Chebyshev nodes,Bernstein(interpolating) polynomial,tensor product,finite element mesh,mesh finite elements,internal node,shared node,Kronecker delta,chapeau function,hat function,finite element basis function,linear elements,quadratic elements,P1 element,P2 element,element matrix,assembly,affine mapping,mapping of reference cells affine mapping,sparse matrices,mass matrix,mass lumping,lumped mass matrix,cell,vertex,degree of freedom,reference cell,finite element, definition,dof map,finite element expansion reference element,Hermite polynomials,numerical integration Midpoint rule,numerical integration Trapezoidal rule,numerical integration Simpson's rule,numerical integration Newton-Cotes formulas,Midpoint rule,Trapezoidal rule,Simpson's rule,Newton-Cotes rules,Gauss-Legendre quadrature,simplex elements,simplices,faces,edges,affine mapping,isoparametric mapping,mapping of reference cells isoparametric mapping,FEniCS,residual,weighted residuals,method of weighted residuals,variational formulation,weak formulation,trial function,test function,trial space,test space,integration by parts,weak form,strong form,natural boundary condition,essential boundary condition,convection-diffusion,convection-diffusion,Petrov-Galerkin methods,mass matrix,stiffness matrix,mass matrix,mass lumping,lumped mass matrix,mixed finite elements,linearization explicit time integration,linearization,Picard iteration,successive substitutions,fixed-point iteration,linearization Picard iteration,linearization successive substitutions,linearization fixed-point iteration,stopping criteria (nonlinear problems),single Picard iteration technique,relaxation (nonlinear equations),stopping criteria (nonlinear problems),continuation method,continuation method,group finite element method,product approximation technique,polynomial chaos,Chaospy software,intrusive polynomial chaos,non-intrusive polynomial chaos,Krylov space,linear solvers GMRES,linear solvers GCR,linear solvers minimum residuals,linear solvers generalized conjugate residuals,search (direction) vectors,linear solvers conjugate gradients,linear systems preconditioned,linear solvers preconditioning,preconditioning,preconditioning classical iterations,MILU,ILU,incomplete factorization">
+
+<title>Introduction to Numerical Methods for Variational Problems</title>
+
+
+<link href="https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_styles/style_solarized_box/css/solarized_light_code.css" rel="stylesheet" type="text/css" title="light"/>
+<script src="https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_styles/style_solarized_box/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<link href="http://thomasf.github.io/solarized-css/solarized-light.min.css" rel="stylesheet">
+<style type="text/css">
+h1 {color: #b58900;}  /* yellow */
+/* h1 {color: #cb4b16;}  orange */
+/* h1 {color: #d33682;}  magenta, the original choice of thomasf */
+code { padding: 0px; background-color: inherit; }
+pre {
+  border: 0pt solid #93a1a1;
+  box-shadow: none;
+}
+.alert-text-small   { font-size: 80%;  }
+.alert-text-large   { font-size: 130%; }
+.alert-text-normal  { font-size: 90%;  }
+.alert {
+  padding:8px 35px 8px 14px; margin-bottom:18px;
+  text-shadow:0 1px 0 rgba(255,255,255,0.5);
+  border:1px solid #93a1a1;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  color: #555;
+  background-color: #eee8d5;
+  background-position: 10px 5px;
+  background-repeat: no-repeat;
+  background-size: 38px;
+  padding-left: 55px;
+  width: 75%;
+ }
+.alert-block {padding-top:14px; padding-bottom:14px}
+.alert-block > p, .alert-block > ul {margin-bottom:1em}
+.alert li {margin-top: 1em}
+.alert-block p+p {margin-top:5px}
+.alert-notice { background-image: url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_notice.png); }
+.alert-summary  { background-image:url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_summary.png); }
+.alert-warning { background-image: url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_warning.png); }
+.alert-question {background-image:url(https://cdn.rawgit.com/hplgit/doconce/master/bundled/html_images/small_yellow_question.png); }
+
+div { text-align: justify; text-justify: inter-word; }
+</style>
+
+
+</head>
+
+<!-- tocinfo
+{'highest level': 0,
+ 'sections': [('Table of contents',
+               0,
+               'table_of_contents',
+               'table_of_contents'),
+              (u'Preface', 0, u'ch:preface', u'ch:preface'),
+              (u'Contents', 3, None, '___sec1'),
+              (u'Supplementary materials', 3, None, '___sec2'),
+              (u'Quick overview of the finite element method',
+               0,
+               u'ch:overview',
+               u'ch:overview'),
+              (u'Function approximation by global functions',
+               0,
+               u'ch:approx:global',
+               u'ch:approx:global'),
+              (u'Approximation of vectors',
+               1,
+               u'fem:approx:vec',
+               u'fem:approx:vec'),
+              (u'Approximation of planar vectors',
+               2,
+               u'fem:approx:vec:plane',
+               u'fem:approx:vec:plane'),
+              (u'The least squares method', 3, None, '___sec7'),
+              (u'The projection method', 3, None, '___sec8'),
+              (u'Approximation of general vectors',
+               2,
+               u'fem:approx:vec:Np1dim',
+               u'fem:approx:vec:Np1dim'),
+              (u'The least squares method', 3, None, '___sec10'),
+              (u'The Galerkin or projection method', 3, None, '___sec11'),
+              (u'Approximation principles',
+               1,
+               u'fem:approx:global',
+               u'fem:approx:global'),
+              (u'The least squares method',
+               2,
+               u'fem:approx:LS',
+               u'fem:approx:LS'),
+              (u'The projection (or Galerkin) method', 2, None, '___sec14'),
+              (u'Example on linear approximation',
+               2,
+               u'fem:approx:global:linear',
+               u'fem:approx:global:linear'),
+              (u'Implementation of the least squares method',
+               2,
+               u'fem:approx:global:LS:code',
+               u'fem:approx:global:LS:code'),
+              (u'Symbolic integration', 3, None, '___sec17'),
+              (u'Fall back on numerical integration', 3, None, '___sec18'),
+              (u'Plotting the approximation', 3, None, '___sec19'),
+              (u'Perfect approximation',
+               2,
+               u'fem:approx:global:exact1',
+               u'fem:approx:global:exact1'),
+              (u'The regression method',
+               2,
+               u'fem:approx:global:regression',
+               u'fem:approx:global:regression'),
+              (u'Overdetermined equation system', 3, None, '___sec22'),
+              (u'The normal equations derived from a least squares principle',
+               3,
+               None,
+               '___sec23'),
+              (u'Implementation', 3, None, '___sec24'),
+              (u'Example', 3, None, '___sec25'),
+              (u'Orthogonal basis functions', 1, None, '___sec26'),
+              (u'Ill-conditioning',
+               2,
+               u'fem:approx:global:illconditioning',
+               u'fem:approx:global:illconditioning'),
+              (u'Fourier series',
+               2,
+               u'fem:approx:global:Fourier',
+               u'fem:approx:global:Fourier'),
+              (u'Orthogonal basis functions',
+               2,
+               u'fem:approx:global:orth',
+               u'fem:approx:global:orth'),
+              (u'Numerical computations', 2, None, '___sec30'),
+              (u'Interpolation', 1, None, '___sec31'),
+              (u'The interpolation (or collocation) principle',
+               2,
+               u'fem:approx:global:interp',
+               u'fem:approx:global:interp'),
+              (u'Example', 3, None, '___sec33'),
+              (u'Lagrange polynomials',
+               2,
+               u'fem:approx:global:Lagrange',
+               u'fem:approx:global:Lagrange'),
+              (u'Approximation of a polynomial', 3, None, '___sec35'),
+              (u'Successful example', 3, None, '___sec36'),
+              (u'Less successful example', 3, None, '___sec37'),
+              (u'Remedy for strong oscillations', 3, None, '___sec38'),
+              (u'Bernstein polynomials',
+               2,
+               u'fem:approx:global:Bernstein',
+               u'fem:approx:global:Bernstein'),
+              (u'Approximation properties and convergence rates',
+               1,
+               None,
+               '___sec40'),
+              (u'Approximation of functions in higher dimensions',
+               1,
+               u'fem:approx:2D',
+               u'fem:approx:2D'),
+              (u'2D basis functions as tensor products of 1D functions',
+               2,
+               u'fem:approx:2D:global',
+               u'fem:approx:2D:global'),
+              (u'Example on polynomial basis in 2D', 2, None, '___sec43'),
+              (u'Implementation',
+               2,
+               u'fem:approx:2D:global:code',
+               u'fem:approx:2D:global:code'),
+              (u'Extension to 3D',
+               2,
+               u'fem:approx:3D:global',
+               u'fem:approx:3D:global'),
+              (u'Exercises', 1, None, '___sec46'),
+              (u'Problem 1: Linear algebra refresher',
+               2,
+               u'fem:approx:exer:linalg1',
+               u'fem:approx:exer:linalg1'),
+              (u'Problem 2: Approximate a three-dimensional vector in a plane',
+               2,
+               u'fem:approx:exer:vec:3Dby2D',
+               u'fem:approx:exer:vec:3Dby2D'),
+              (u'Problem 3: Approximate a parabola by a sine',
+               2,
+               u'fem:approx:exer:parabola_sine',
+               u'fem:approx:exer:parabola_sine'),
+              (u'Problem 4: Approximate the exponential function by power functions',
+               2,
+               u'fem:approx:exer:exp:powers',
+               u'fem:approx:exer:exp:powers'),
+              (u'Problem 5: Approximate the sine function by power functions',
+               2,
+               u'fem:approx:exer:sin:powers',
+               u'fem:approx:exer:sin:powers'),
+              (u'Problem 6: Approximate a steep function by sines',
+               2,
+               u'fem:approx:exer:tanh:sine1',
+               u'fem:approx:exer:tanh:sine1'),
+              (u'Remarks', 3, None, '___sec53'),
+              (u'Problem 7: Approximate a steep function by sines with boundary adjustment',
+               2,
+               u'fem:approx:exer:tanh:sine3',
+               u'fem:approx:exer:tanh:sine3'),
+              (u'Remarks', 3, None, '___sec55'),
+              (u'Exercise 8: Fourier series as a least squares approximation',
+               2,
+               u'fem:approx:exer:Fourier',
+               u'fem:approx:exer:Fourier'),
+              (u'Problem 9: Approximate a steep function by Lagrange polynomials',
+               2,
+               u'fem:approx:exer:tanh:Lagrange',
+               u'fem:approx:exer:tanh:Lagrange'),
+              (u'Problem 10: Approximate a steep function by Lagrange polynomials and regression',
+               2,
+               u'fem:approx:exer:tanh:Lagrange:regression',
+               u'fem:approx:exer:tanh:Lagrange:regression'),
+              (u'Function approximation by finite elements',
+               0,
+               u'ch:approx:fe',
+               u'ch:approx:fe'),
+              (u'Finite element basis functions',
+               1,
+               u'fem:approx:fe',
+               u'fem:approx:fe'),
+              (u'Elements and nodes',
+               2,
+               u'fem:approx:fe:def:elements:nodes',
+               u'fem:approx:fe:def:elements:nodes'),
+              (u'Example', 3, None, '___sec62'),
+              (u'The basis functions', 2, None, '___sec63'),
+              (u'Construction principles', 3, None, '___sec64'),
+              (u'Properties of $\\basphi_i$', 3, None, '___sec65'),
+              (u'Example on quadratic finite element functions',
+               2,
+               None,
+               '___sec66'),
+              (u'Example on linear finite element functions',
+               2,
+               None,
+               '___sec67'),
+              (u'Example on cubic finite element functions',
+               2,
+               None,
+               '___sec68'),
+              (u'Calculating the linear system',
+               2,
+               u'fem:approx:global:linearsystem',
+               u'fem:approx:global:linearsystem'),
+              (u'Calculating specific matrix entries', 3, None, '___sec70'),
+              (u'Calculating a general row in the matrix',
+               3,
+               None,
+               '___sec71'),
+              (u'Assembly of elementwise computations',
+               2,
+               u'fem:approx:fe:elementwise',
+               u'fem:approx:fe:elementwise'),
+              (u'The element matrix', 3, None, '___sec73'),
+              (u'Assembly of element matrices', 3, None, '___sec74'),
+              (u'Assembly of irregularly numbered elements and nodes',
+               3,
+               None,
+               '___sec75'),
+              (u'The element vector', 3, None, '___sec76'),
+              (u'Mapping to a reference element',
+               2,
+               u'fem:approx:fe:mapping',
+               u'fem:approx:fe:mapping'),
+              (u'The coordinate transformation', 3, None, '___sec78'),
+              (u'Formulas for the element matrix and vector entries',
+               3,
+               None,
+               '___sec79'),
+              (u'Formulas for local basis functions', 3, None, '___sec80'),
+              (u'Example on integration over a reference element',
+               2,
+               u'fem:approx:fe:intg:ref',
+               u'fem:approx:fe:intg:ref'),
+              (u'Implementation',
+               1,
+               u'fem:approx:fe:impl',
+               u'fem:approx:fe:impl'),
+              (u'Integration',
+               2,
+               u'fem:approx:fe:impl:intg',
+               u'fem:approx:fe:impl:intg'),
+              (u'Linear system assembly and solution',
+               2,
+               u'fem:approx:fe:impl:linsys',
+               u'fem:approx:fe:impl:linsys'),
+              (u'Example on computing symbolic approximations',
+               2,
+               u'fem:approx:fe:impl:ex1:symbolic',
+               u'fem:approx:fe:impl:ex1:symbolic'),
+              (u'Using interpolation instead of least squares',
+               2,
+               u'fem:approx:fe:impl:ex1:collocation',
+               u'fem:approx:fe:impl:ex1:collocation'),
+              (u'Example on computing numerical approximations',
+               2,
+               u'fem:approx:fe:impl:ex1:numeric',
+               u'fem:approx:fe:impl:ex1:numeric'),
+              (u'The structure of the coefficient matrix',
+               2,
+               u'fem:approx:fe:A:structure',
+               u'fem:approx:fe:A:structure'),
+              (u'Applications',
+               2,
+               u'fem:approx:fe:impl:ex2',
+               u'fem:approx:fe:impl:ex2'),
+              (u'Sparse matrix storage and solution',
+               2,
+               u'fem:approx:fe:impl:sparse',
+               u'fem:approx:fe:impl:sparse'),
+              (u'Comparison of finite elements and finite differences',
+               1,
+               u'fem:approx:fe:fd',
+               u'fem:approx:fe:fd'),
+              (u'Finite difference approximation of given functions',
+               2,
+               u'fem:approx:fe:fd:fdproj',
+               u'fem:approx:fe:fd:fdproj'),
+              (u'Interpretation of a finite element approximation in terms of finite difference operators',
+               2,
+               u'fem:approx:fe:fd:feproj',
+               u'fem:approx:fe:fd:feproj'),
+              (u'Making finite elements behave as finite differences',
+               2,
+               u'fem:deq:1D:approx:fem_vs_fdm',
+               u'fem:deq:1D:approx:fem_vs_fdm'),
+              (u'Computations in physical space', 3, None, '___sec95'),
+              (u'Elementwise computations', 3, None, '___sec96'),
+              (u'Terminology', 3, None, '___sec97'),
+              (u'A generalized element concept',
+               1,
+               u'fem:approx:fe:element',
+               u'fem:approx:fe:element'),
+              (u'Cells, vertices, and degrees of freedom',
+               2,
+               u'fem:approx:fe:element:terminology',
+               u'fem:approx:fe:element:terminology'),
+              (u'Extended finite element concept',
+               2,
+               u'fem:approx:fe:element:def',
+               u'fem:approx:fe:element:def'),
+              (u'Implementation',
+               2,
+               u'fem:approx:fe:element:impl',
+               u'fem:approx:fe:element:impl'),
+              (u'Computing the error of the approximation',
+               2,
+               u'fem:approx:fe:error',
+               u'fem:approx:fe:error'),
+              (u'Example on cubic Hermite polynomials',
+               2,
+               u'fem:approx:fe:element:impl:Hermite',
+               u'fem:approx:fe:element:impl:Hermite'),
+              (u'Numerical integration', 1, None, '___sec104'),
+              (u'Newton-Cotes rules',
+               2,
+               u'fem:approx:fe:numint1',
+               u'fem:approx:fe:numint1'),
+              (u'Gauss-Legendre rules with optimized points',
+               2,
+               None,
+               '___sec106'),
+              (u'Finite elements in 2D and 3D', 1, None, '___sec107'),
+              (u'Basis functions over triangles in the physical domain',
+               2,
+               None,
+               '___sec108'),
+              (u'Element matrices and vectors', 3, None, '___sec109'),
+              (u'Basis functions over triangles in the reference cell',
+               2,
+               None,
+               '___sec110'),
+              (u'Affine mapping of the reference cell', 2, None, '___sec111'),
+              (u'Isoparametric mapping of the reference cell',
+               2,
+               None,
+               '___sec112'),
+              (u'Computing integrals', 2, None, '___sec113'),
+              (u'Implementation',
+               1,
+               u'fe:approx:fenics',
+               u'fe:approx:fenics'),
+              (u'Example on approximation in 2D using FEniCS',
+               2,
+               u'fem:approx:fenics:2D',
+               u'fem:approx:fenics:2D'),
+              (u'Mathematical problem', 3, None, '___sec116'),
+              (u'The code', 3, None, '___sec117'),
+              (u'Dissection of the code', 3, None, '___sec118'),
+              (u'Integrating SymPy and FEniCS', 3, None, '___sec119'),
+              (u'Refined code with curve plotting',
+               2,
+               u'fem:approx:fenics:2D:2',
+               u'fem:approx:fenics:2D:2'),
+              (u'Interpolation and projection', 3, None, '___sec121'),
+              (u'Plotting the solution along a line', 3, None, '___sec122'),
+              (u'Integrating plotting and computations',
+               3,
+               None,
+               '___sec123'),
+              (u'Exercises', 1, None, '___sec124'),
+              (u'Problem 11: Define nodes and elements',
+               2,
+               u'fem:approx:fe:exer:mesh1',
+               u'fem:approx:fe:exer:mesh1'),
+              (u'Problem 12: Define vertices, cells, and dof maps',
+               2,
+               u'fem:approx:fe:exer:mesh2',
+               u'fem:approx:fe:exer:mesh2'),
+              (u'Problem 13: Construct matrix sparsity patterns',
+               2,
+               u'fem:approx:fe:exer:defmesh:sparsity',
+               u'fem:approx:fe:exer:defmesh:sparsity'),
+              (u'Problem 14: Perform symbolic finite element computations',
+               2,
+               u'fem:approx:fe:exer:Asinwt:symbolic',
+               u'fem:approx:fe:exer:Asinwt:symbolic'),
+              (u'Problem 15: Approximate a steep function by P1 and P2 elements',
+               2,
+               u'fem:approx:exer:tanh:P1P2',
+               u'fem:approx:exer:tanh:P1P2'),
+              (u'Problem 16: Approximate a steep function by P3 and P4 elements',
+               2,
+               u'fem:approx:exer:tanh:P3P4',
+               u'fem:approx:exer:tanh:P3P4'),
+              (u'Exercise 17: Investigate the approximation error in finite elements',
+               2,
+               u'fem:approx:fe:exer:Asinwt:interpol:error',
+               u'fem:approx:fe:exer:Asinwt:interpol:error'),
+              (u'Problem 18: Approximate a step function by finite elements',
+               2,
+               u'fem:approx:fe:exer:Heaviside',
+               u'fem:approx:fe:exer:Heaviside'),
+              (u'Exercise 19: 2D approximation with orthogonal functions',
+               2,
+               u'fem:approx:fe:exer:2Dsines:symbolic',
+               u'fem:approx:fe:exer:2Dsines:symbolic'),
+              (u'Exercise 20: Use the Trapezoidal rule and P1 elements',
+               2,
+               u'fem:approx:fe:exer:1D:trapez',
+               u'fem:approx:fe:exer:1D:trapez'),
+              (u'Exercise 21: Compare P1 elements and interpolation',
+               2,
+               u'fem:approx:fe:exer:1D:P1:vs:interp',
+               u'fem:approx:fe:exer:1D:P1:vs:interp'),
+              (u'Exercise 22: Implement 3D computations with global basis functions',
+               2,
+               u'fem:approx:fe:exer:3D:approx3D',
+               u'fem:approx:fe:exer:3D:approx3D'),
+              (u"Exercise 23: Use Simpson's rule and P2 elements",
+               2,
+               u'fem:approx:fe:exer:1D:simpson',
+               u'fem:approx:fe:exer:1D:simpson'),
+              (u'Exercise 24: Make a 3D code for Lagrange elements of arbitrary order',
+               2,
+               None,
+               '___sec138'),
+              (u'Variational formulations with global basis functions',
+               0,
+               u'ch:varform:global',
+               u'ch:varform:global'),
+              (u'Basic principles for approximating differential equations',
+               1,
+               u'fem:deq:1D:principles',
+               u'fem:deq:1D:principles'),
+              (u'Differential equation models',
+               2,
+               u'fem:deq:1D:models',
+               u'fem:deq:1D:models'),
+              (u'Simple model problems and their solutions',
+               2,
+               u'fem:deq:1D:models:simple',
+               u'fem:deq:1D:models:simple'),
+              (u'Forming the residual',
+               2,
+               u'fem:deq:1D:residual:min',
+               u'fem:deq:1D:residual:min'),
+              (u'The least squares method', 2, None, '___sec144'),
+              (u'The Galerkin method', 2, None, '___sec145'),
+              (u'The method of weighted residuals', 2, None, '___sec146'),
+              (u'Test and trial functions', 2, None, '___sec147'),
+              (u'The collocation method', 2, None, '___sec148'),
+              (u'The subdomain collocation method', 3, None, '___sec149'),
+              (u'Examples on using the principles',
+               2,
+               u'fem:deq:1D:ex:sines',
+               u'fem:deq:1D:ex:sines'),
+              (u'The model problem', 3, None, '___sec151'),
+              (u'Basis functions', 3, None, '___sec152'),
+              (u'The residual', 3, None, '___sec153'),
+              (u'The least squares method', 3, None, '___sec154'),
+              (u'The Galerkin method', 3, None, '___sec155'),
+              (u'The collocation method', 3, None, '___sec156'),
+              (u'Comparison', 3, None, '___sec157'),
+              (u'Integration by parts',
+               2,
+               u'fem:deq:1D:varform',
+               u'fem:deq:1D:varform'),
+              (u'Weak form', 3, None, '___sec159'),
+              (u'Boundary function',
+               2,
+               u'fem:deq:1D:essBC:Bfunc',
+               u'fem:deq:1D:essBC:Bfunc'),
+              (u'Computing with global polynomials', 1, None, '___sec161'),
+              (u'Computing with Dirichlet and Neumann conditions',
+               2,
+               u'fem:deq:1D:varform:ex:DN:case',
+               u'fem:deq:1D:varform:ex:DN:case'),
+              (u'When the numerical method is exact', 2, None, '___sec163'),
+              (u'Abstract notation for variational formulations',
+               2,
+               u'fem:deq:1D:varform:abstract',
+               u'fem:deq:1D:varform:abstract'),
+              (u'Variational problems and minimization of functionals',
+               2,
+               u'fem:deq:1D:optimization',
+               u'fem:deq:1D:optimization'),
+              (u'Example', 3, None, '___sec166'),
+              (u'The general minimization problem', 3, None, '___sec167'),
+              (u'Derivation', 3, None, '___sec168'),
+              (u'Minimization of the discretized functional',
+               3,
+               None,
+               '___sec169'),
+              (u'Calculus of variations', 3, None, '___sec170'),
+              (u'Examples on variational formulations',
+               1,
+               u'fem:deq:1D:varform:ex',
+               u'fem:deq:1D:varform:ex'),
+              (u'Variable coefficient', 2, None, '___sec172'),
+              (u'First-order derivative in the equation and boundary condition',
+               2,
+               None,
+               '___sec173'),
+              (u'Nonlinear coefficient', 2, None, '___sec174'),
+              (u'Implementation of the algorithms',
+               1,
+               u'fem:global:deq:1D:code',
+               u'fem:global:deq:1D:code'),
+              (u'Extensions of the code for approximation',
+               2,
+               u'fem:deq:1D:code:global',
+               u'fem:deq:1D:code:global'),
+              (u'Fallback on numerical methods', 2, None, '___sec177'),
+              (u'Example with constant right-hand side',
+               2,
+               None,
+               '___sec178'),
+              (u'Approximations may fail: convection-diffusion',
+               1,
+               u'ch:convdiff',
+               u'ch:convdiff'),
+              (u'Exercises', 1, None, '___sec180'),
+              (u'Exercise 25: Refactor functions into a more general class',
+               2,
+               u'fem:deq:exer:BVP1D:class',
+               u'fem:deq:exer:BVP1D:class'),
+              (u'Exercise 26: Compute the deflection of a cable with sine functions',
+               2,
+               u'fem:deq:exer:tension:cable',
+               u'fem:deq:exer:tension:cable'),
+              (u'Exercise 27: Compute the deflection of a cable with power functions',
+               2,
+               u'fem:deq:exer:tension:cable_xn',
+               u'fem:deq:exer:tension:cable_xn'),
+              (u'Exercise 28: Check integration by parts',
+               2,
+               u'fem:deq:exer:intg:parts',
+               u'fem:deq:exer:intg:parts'),
+              (u'Variational formulations with finite elements',
+               0,
+               u'ch:varform:fe',
+               u'ch:varform:fe'),
+              (u'Computing with finite elements',
+               1,
+               u'fem:deq:1D:fem1',
+               u'fem:deq:1D:fem1'),
+              (u'Finite element mesh and basis functions',
+               2,
+               None,
+               '___sec187'),
+              (u'Computation in the global physical domain',
+               2,
+               u'fem:deq:1D:comp:global',
+               u'fem:deq:1D:comp:global'),
+              (u'Comparison with a finite difference discretization',
+               2,
+               u'fem:deq:1D:fdm_vs_fem',
+               u'fem:deq:1D:fdm_vs_fem'),
+              (u'Cellwise computations',
+               2,
+               u'fem:deq:1D:comp:elmwise',
+               u'fem:deq:1D:comp:elmwise'),
+              (u'The integral for the element matrix', 3, None, '___sec191'),
+              (u'The integral for the element vector', 3, None, '___sec192'),
+              (u'Detailed calculations of the element matrix and vector',
+               3,
+               None,
+               '___sec193'),
+              (u'Contributions from the first and last cell',
+               3,
+               None,
+               '___sec194'),
+              (u'Assembly', 3, None, '___sec195'),
+              (u'Boundary conditions: specified nonzero value',
+               1,
+               u'fem:deq:1D:essBC',
+               u'fem:deq:1D:essBC'),
+              (u'General construction of a boundary function',
+               2,
+               u'fem:deq:1D:fem:essBC:Bfunc',
+               u'fem:deq:1D:fem:essBC:Bfunc'),
+              (u'Example on computing with a finite element-based boundary function',
+               2,
+               None,
+               '___sec198'),
+              (u'Computations in physical coordinates', 3, None, '___sec199'),
+              (u'Cellwise computations on the reference element',
+               3,
+               None,
+               '___sec200'),
+              (u'Modification of the linear system',
+               2,
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys',
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys'),
+              (u'Computations in the physical system', 3, None, '___sec202'),
+              (u'Symmetric modification of the linear system',
+               2,
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys:symm',
+               u'fem:deq:1D:fem:essBC:Bfunc:modsys:symm'),
+              (u'Modification of the element matrix and vector',
+               2,
+               None,
+               '___sec204'),
+              (u'Boundary conditions: specified derivative',
+               1,
+               u'fem:deq:1D:BC:nat',
+               u'fem:deq:1D:BC:nat'),
+              (u'The variational formulation', 2, None, '___sec206'),
+              (u'Boundary term vanishes because of the test functions',
+               2,
+               u'fem:deq:1D:BC:nat:uLtest',
+               u'fem:deq:1D:BC:nat:uLtest'),
+              (u'Boundary term vanishes because of linear system modifications',
+               2,
+               u'fem:deq:1D:BC:nat:uLmod',
+               u'fem:deq:1D:BC:nat:uLmod'),
+              (u'Direct computation of the global linear system',
+               2,
+               u'fem:deq:1D:BC:nat:Aub',
+               u'fem:deq:1D:BC:nat:Aub'),
+              (u'Cellwise computations', 2, None, '___sec210'),
+              (u'Implementation of finite element algorithms',
+               1,
+               u'fem:deq:1D:code',
+               u'fem:deq:1D:code'),
+              (u'Extensions of the code for approximation',
+               2,
+               u'fem:deq:1D:code:fe',
+               u'fem:deq:1D:code:fe'),
+              (u'Utilizing a sparse matrix',
+               2,
+               u'fem:deq:1D:code:fe_sparse',
+               u'fem:deq:1D:code:fe_sparse'),
+              (u'Application to our model problem', 2, None, '___sec214'),
+              (u'Variational formulations in 2D and 3D',
+               1,
+               u'fem:deq:2D:varform',
+               u'fem:deq:2D:varform'),
+              (u'Integration by parts', 2, None, '___sec216'),
+              (u'Example on a multi-dimensional variational problem',
+               2,
+               u'sec:varform:general:convdiff',
+               u'sec:varform:general:convdiff'),
+              (u'Transformation to a reference cell in 2D and 3D',
+               2,
+               None,
+               '___sec218'),
+              (u'Numerical integration', 2, None, '___sec219'),
+              (u'Convenient formulas for P1 elements in 2D',
+               2,
+               None,
+               '___sec220'),
+              (u'A glimpse of the mathematical theory of the finite element method',
+               2,
+               None,
+               '___sec221'),
+              (u'Abstract variational forms', 3, None, '___sec222'),
+              (u'Example on an abstract variational form and associated spaces',
+               3,
+               None,
+               '___sec223'),
+              (u'Assumptions', 3, None, '___sec224'),
+              (u'Existence and uniqueness', 3, None, '___sec225'),
+              (u'Stability', 3, None, '___sec226'),
+              (u'Equivalent minimization problem', 3, None, '___sec227'),
+              (u'Best approximation principle', 3, None, '___sec228'),
+              (u'Best approximation property in the norm of the space',
+               3,
+               None,
+               '___sec229'),
+              (u'Symmetric, positive definite coefficient matrix',
+               3,
+               None,
+               '___sec230'),
+              (u'Equivalent matrix minimization problem',
+               3,
+               None,
+               '___sec231'),
+              (u'A priori error estimate for the derivative',
+               3,
+               None,
+               '___sec232'),
+              (u'A priori error estimate for the solution',
+               3,
+               None,
+               '___sec233'),
+              (u'Implementation in 2D and 3D via FEniCS',
+               1,
+               u'fem:varform:fenics',
+               u'fem:varform:fenics'),
+              (u'Mathematical problem',
+               2,
+               u'fem:varform:fenics:problem',
+               u'fem:varform:fenics:problem'),
+              (u'Symmetry', 3, None, '___sec236'),
+              (u'Variational formulation',
+               2,
+               u'fem:varform:fenics:varform',
+               u'fem:varform:fenics:varform'),
+              (u'The FEniCS solver', 2, None, '___sec238'),
+              (u'Making the mesh', 2, None, '___sec239'),
+              (u'Solving a problem', 2, None, '___sec240'),
+              (u'Convection-diffusion and Petrov-Galerkin methods',
+               1,
+               None,
+               '___sec241'),
+              (u'Summary', 1, None, '___sec242'),
+              (u'Exercises', 1, None, '___sec243'),
+              (u'Exercise 29: Compute the deflection of a cable with 2 P1 elements',
+               2,
+               u'fem:deq:exer:cable:2P1',
+               u'fem:deq:exer:cable:2P1'),
+              (u'Exercise 30: Compute the deflection of a cable with 1 P2 element',
+               2,
+               u'fem:deq:exer:cable:1P2',
+               u'fem:deq:exer:cable:1P2'),
+              (u'Exercise 31: Compute the deflection of a cable with a step load',
+               2,
+               u'fem:deq:exer:cable:stepload',
+               u'fem:deq:exer:cable:stepload'),
+              (u'Exercise 32: Compute with a non-uniform mesh',
+               2,
+               u'fem:deq:exer:1D:mesh:nonuniform',
+               u'fem:deq:exer:1D:mesh:nonuniform'),
+              (u'Problem 33: Solve a 1D finite element problem by hand',
+               2,
+               u'fem:deq:exer:1D:gen:problem1',
+               u'fem:deq:exer:1D:gen:problem1'),
+              (u'Exercise 34: Investigate exact finite element solutions',
+               2,
+               u'fem:deq:exer:1D:exact_numerics',
+               u'fem:deq:exer:1D:exact_numerics'),
+              (u'Exercise 35: Compare finite elements and differences for a radially symmetric Poisson equation',
+               2,
+               u'fem:deq:exer:1D:Poisson:polar',
+               u'fem:deq:exer:1D:Poisson:polar'),
+              (u'Exercise 36: Compute with variable coefficients and P1 elements by hand',
+               2,
+               u'fem:deq:exer:1D:gen:problem2',
+               u'fem:deq:exer:1D:gen:problem2'),
+              (u'Exercise 37: Solve a 2D Poisson equation using polynomials and sines',
+               2,
+               u'fem:deq:exer:2D:torsion:xy:sin',
+               u'fem:deq:exer:2D:torsion:xy:sin'),
+              (u'Time-dependent variational forms',
+               0,
+               u'ch:femtime',
+               u'ch:femtime'),
+              (u'Discretization in time by a Forward Euler scheme',
+               1,
+               u'fem:deq:diffu:FE',
+               u'fem:deq:diffu:FE'),
+              (u'Time discretization', 2, None, '___sec255'),
+              (u'Space discretization', 2, None, '___sec256'),
+              (u'Variational forms', 2, None, '___sec257'),
+              (u'Notation for the solution at recent time levels',
+               2,
+               None,
+               '___sec258'),
+              (u'Deriving the linear systems', 2, None, '___sec259'),
+              (u'Computational algorithm', 2, None, '___sec260'),
+              (u'Example using sinusoidal basis functions',
+               2,
+               u'fem:deq:diffu:FE:cosex',
+               u'fem:deq:diffu:FE:cosex'),
+              (u'Comparing P1 elements with the finite difference method',
+               2,
+               u'fem:deq:diffu:FE:fdvsP1fe',
+               u'fem:deq:diffu:FE:fdvsP1fe'),
+              (u'Lumping the mass matrix', 3, None, '___sec263'),
+              (u'Discretization in time by a Backward Euler scheme',
+               1,
+               u'fem:deq:diffu:BE',
+               u'fem:deq:diffu:BE'),
+              (u'Time discretization', 2, None, '___sec265'),
+              (u'Variational forms', 2, None, '___sec266'),
+              (u'Linear systems', 2, None, '___sec267'),
+              (u'Finite difference operators corresponding to P1 elements',
+               3,
+               None,
+               '___sec268'),
+              (u'Dirichlet boundary conditions',
+               1,
+               u'fem:deq:diffu:Dirichlet',
+               u'fem:deq:diffu:Dirichlet'),
+              (u'Boundary function', 2, None, '___sec270'),
+              (u'Finite element basis functions', 2, None, '___sec271'),
+              (u'Modification of the linear system', 2, None, '___sec272'),
+              (u'Example: Oscillating Dirichlet boundary condition',
+               2,
+               u'fem:deq:diffu:Dirichlet:ex',
+               u'fem:deq:diffu:Dirichlet:ex'),
+              (u'Accuracy of the finite element solution',
+               1,
+               u'fem:deq:diffu:anal',
+               u'fem:deq:diffu:anal'),
+              (u'Illustrating example', 2, None, '___sec275'),
+              (u'Methods of analysis', 2, None, '___sec276'),
+              (u'Fourier components and dispersion relations',
+               2,
+               None,
+               '___sec277'),
+              (u'Forward Euler discretization', 2, None, '___sec278'),
+              (u'Backward Euler discretization', 2, None, '___sec279'),
+              (u'Comparing amplification factors', 2, None, '___sec280'),
+              (u'Exercises', 1, None, '___sec281'),
+              (u'Exercise 38: Analyze a Crank-Nicolson scheme for the diffusion equation',
+               2,
+               u'fem:deq:exer:diffu:analysis:CN',
+               u'fem:deq:exer:diffu:analysis:CN'),
+              (u'Variational forms for systems of PDEs',
+               0,
+               u'ch:femsys',
+               u'ch:femsys'),
+              (u'Variational forms', 1, u'fem:sys:vform', u'fem:sys:vform'),
+              (u'Sequence of scalar PDEs formulation', 2, None, '___sec285'),
+              (u'Vector PDE formulation', 2, None, '___sec286'),
+              (u'A worked example', 1, u'fem:sys:uT:ex', u'fem:sys:uT:ex'),
+              (u'Identical function spaces for the unknowns',
+               1,
+               None,
+               '___sec288'),
+              (u'Variational form of each individual PDE',
+               2,
+               None,
+               '___sec289'),
+              (u'Compound scalar variational form', 2, None, '___sec290'),
+              (u'Decoupled linear systems', 2, None, '___sec291'),
+              (u'Coupled linear systems', 2, None, '___sec292'),
+              (u'Different function spaces for the unknowns',
+               1,
+               None,
+               '___sec293'),
+              (u'Computations in 1D',
+               1,
+               u'femsys:cooling:1D',
+               u'femsys:cooling:1D'),
+              (u'Another example in 1D',
+               2,
+               u'fem:sys:up:1D',
+               u'fem:sys:up:1D'),
+              (u'Exercises', 1, None, '___sec296'),
+              (u'Problem 39: Estimate order of convergence for the Cooling law',
+               2,
+               u'femsys:exer:cooling:1',
+               u'femsys:exer:cooling:1'),
+              (u'Problem 40: Estimate order of convergence for the Cooling law',
+               2,
+               u'femsys:exer:cooling:2',
+               u'femsys:exer:cooling:2'),
+              (u'Flexible implementations of boundary conditions',
+               0,
+               u'ch:nitsche',
+               u'ch:nitsche'),
+              (u'Optimization with constraint',
+               1,
+               u'nitsche:fxy:opt',
+               u'nitsche:fxy:opt'),
+              (u'Elimination of variables', 2, None, '___sec301'),
+              (u'Lagrange multiplier method',
+               2,
+               u'nitsche:fxy:opt:Lagrange',
+               u'nitsche:fxy:opt:Lagrange'),
+              (u'Penalty method',
+               2,
+               u'nitsche:fxy:opt:penalty',
+               u'nitsche:fxy:opt:penalty'),
+              (u'Optimization of functionals',
+               1,
+               u'nitsche:pde:opt',
+               u'nitsche:pde:opt'),
+              (u'Classical calculus of variations',
+               2,
+               u'nitsche:pde:opt:varcalculus',
+               u'nitsche:pde:opt:varcalculus'),
+              (u'Penalty method for optimization with constraints',
+               2,
+               u'nitsche:pde:opt:penalty',
+               u'nitsche:pde:opt:penalty'),
+              (u'Lagrange multiplier method for optimization with constraints',
+               2,
+               u'nitsche:pde:opt:Lagrange',
+               u'nitsche:pde:opt:Lagrange'),
+              (u'Example: 1D problem',
+               2,
+               u'nitsche:pde:opt:1Dex',
+               u'nitsche:pde:opt:1Dex'),
+              (u'Example: adding a constraint in a Neumann problem',
+               2,
+               None,
+               '___sec309'),
+              (u'Nonlinear problems', 0, u'ch:nonlin', u'ch:nonlin'),
+              (u'Introduction of basic concepts',
+               1,
+               u'nonlin:timediscrete:logistic',
+               u'nonlin:timediscrete:logistic'),
+              (u'Linear versus nonlinear equations', 2, None, '___sec312'),
+              (u'Algebraic equations', 3, None, '___sec313'),
+              (u'Differential equations', 3, None, '___sec314'),
+              (u'A simple model problem', 2, None, '___sec315'),
+              (u'Linearization by explicit time discretization',
+               2,
+               u'nonlin:timediscrete:logistic:FE',
+               u'nonlin:timediscrete:logistic:FE'),
+              (u'Exact solution of nonlinear algebraic equations',
+               2,
+               u'nonlin:timediscrete:logistic:roots',
+               u'nonlin:timediscrete:logistic:roots'),
+              (u'Linearization', 2, None, '___sec318'),
+              (u'Picard iteration',
+               2,
+               u'nonlin:timediscrete:logistic:Picard',
+               u'nonlin:timediscrete:logistic:Picard'),
+              (u'Stopping criteria', 3, None, '___sec320'),
+              (u'A single Picard iteration', 3, None, '___sec321'),
+              (u'Linearization by a geometric mean',
+               2,
+               u'nonlin:timediscrete:logistic:geometric:mean',
+               u'nonlin:timediscrete:logistic:geometric:mean'),
+              (u"Newton's method",
+               2,
+               u'nonlin:timediscrete:logistic:Newton',
+               u'nonlin:timediscrete:logistic:Newton'),
+              (u'Relaxation',
+               2,
+               u'nonlin:timediscrete:logistic:relaxation',
+               u'nonlin:timediscrete:logistic:relaxation'),
+              (u'Implementation and experiments',
+               2,
+               u'nonlin:timediscrete:logistic:impl',
+               u'nonlin:timediscrete:logistic:impl'),
+              (u'Generalization to a general nonlinear ODE',
+               2,
+               u'nonlin:ode:generic',
+               u'nonlin:ode:generic'),
+              (u'Explicit time discretization', 3, None, '___sec327'),
+              (u'Backward Euler discretization', 3, None, '___sec328'),
+              (u'Crank-Nicolson discretization', 3, None, '___sec329'),
+              (u'Systems of ODEs',
+               2,
+               u'nonlin:ode:generic:sys:pendulum',
+               u'nonlin:ode:generic:sys:pendulum'),
+              (u'Example', 3, None, '___sec331'),
+              (u'Systems of nonlinear algebraic equations',
+               1,
+               u'nonlin:systems:alg',
+               u'nonlin:systems:alg'),
+              (u'Picard iteration',
+               2,
+               u'nonlin:systems:alg:Picard',
+               u'nonlin:systems:alg:Picard'),
+              (u"Newton's method",
+               2,
+               u'nonlin:systems:alg:Newton',
+               u'nonlin:systems:alg:Newton'),
+              (u'Stopping criteria',
+               2,
+               u'nonlin:systems:alg:terminate',
+               u'nonlin:systems:alg:terminate'),
+              (u'Example: A nonlinear ODE model from epidemiology',
+               2,
+               u'nonlin:systems:alg:SI',
+               u'nonlin:systems:alg:SI'),
+              (u'Implicit time discretization', 3, None, '___sec337'),
+              (u'A Picard iteration', 3, None, '___sec338'),
+              (u"Newton's method", 3, None, '___sec339'),
+              (u'Linearization at the differential equation level',
+               1,
+               u'nonlin:pdelevel',
+               u'nonlin:pdelevel'),
+              (u'Explicit time integration',
+               2,
+               u'nonlin:pdelevel:explicit',
+               u'nonlin:pdelevel:explicit'),
+              (u'Backward Euler scheme and Picard iteration',
+               2,
+               u'nonlin:pdelevel:Picard',
+               u'nonlin:pdelevel:Picard'),
+              (u"Backward Euler scheme and Newton's method",
+               2,
+               u'nonlin:pdelevel:Newton',
+               u'nonlin:pdelevel:Newton'),
+              (u'Linearization via Taylor expansions', 3, None, '___sec344'),
+              (u'Similarity with Picard iteration', 3, None, '___sec345'),
+              (u'Implementation', 3, None, '___sec346'),
+              (u'Derivation with alternative notation', 3, None, '___sec347'),
+              (u'Crank-Nicolson discretization',
+               2,
+               u'nonlin:pdelevel:Picard:CN',
+               u'nonlin:pdelevel:Picard:CN'),
+              (u'1D stationary nonlinear differential equations',
+               1,
+               u'nonlin:alglevel:1D',
+               u'nonlin:alglevel:1D'),
+              (u'Finite difference discretization',
+               2,
+               u'nonlin:alglevel:1D:fd',
+               u'nonlin:alglevel:1D:fd'),
+              (u'Solution of algebraic equations', 2, None, '___sec351'),
+              (u'The structure of the equation system', 3, None, '___sec352'),
+              (u'Picard iteration', 3, None, '___sec353'),
+              (u'Mesh with two cells', 3, None, '___sec354'),
+              (u"Newton's method", 3, None, '___sec355'),
+              (u'Multi-dimensional PDE problems', 1, None, '___sec356'),
+              (u'Finite difference discretization',
+               2,
+               u'nonlin:alglevel:dD:fd',
+               u'nonlin:alglevel:dD:fd'),
+              (u'Picard iteration', 3, None, '___sec358'),
+              (u"Newton's method", 3, None, '___sec359'),
+              (u'Continuation methods', 2, None, '___sec360'),
+              (u'Exercises', 1, u'nonlin:exer', u'nonlin:exer'),
+              (u'Problem 41: Determine if equations are nonlinear or not',
+               2,
+               u'nonlin:exer:lin:vs:nonlin',
+               u'nonlin:exer:lin:vs:nonlin'),
+              (u'Exercise 42: Derive and investigate a generalized logistic model',
+               2,
+               u'nonlin:exer:logistic:gen',
+               u'nonlin:exer:logistic:gen'),
+              (u"Problem 43: Experience the behavior of Newton's method",
+               2,
+               u'nonlin:exer:Newton:problems1',
+               u'nonlin:exer:Newton:problems1'),
+              (u'Problem 44: Compute the Jacobian of a $2\\times 2$ system',
+               2,
+               u'nonlin:exer:vib:Jacobian',
+               u'nonlin:exer:vib:Jacobian'),
+              (u'Problem 45: Solve nonlinear equations arising from a vibration ODE',
+               2,
+               u'nonlin:exer:vib:geometric:mean',
+               u'nonlin:exer:vib:geometric:mean'),
+              (u'Exercise 46: Find the truncation error of arithmetic mean of products',
+               2,
+               u'nonlin:exer:products:arith:mean',
+               u'nonlin:exer:products:arith:mean'),
+              (u"Problem 47: Newton's method for linear problems",
+               2,
+               u'nonlin:exer:Newton:linear',
+               u'nonlin:exer:Newton:linear'),
+              (u'Exercise 48: Discretize a 1D problem with a nonlinear coefficient',
+               2,
+               u'nonlin:exer:1D:1pu2:fem',
+               u'nonlin:exer:1D:1pu2:fem'),
+              (u'Exercise 49: Linearize a 1D problem with a nonlinear coefficient',
+               2,
+               u'nonlin:exer:1D:1pu2:PicardNewton',
+               u'nonlin:exer:1D:1pu2:PicardNewton'),
+              (u'Problem 50: Finite differences for the 1D Bratu problem',
+               2,
+               u'nonlin:exer:1D:fu:discretize:fd',
+               u'nonlin:exer:1D:fu:discretize:fd'),
+              (u'Exercise 51: Discretize a nonlinear 1D heat conduction PDE by finite differences',
+               2,
+               u'nonlin:exer:1D:heat:nonlinear:fdm',
+               u'nonlin:exer:1D:heat:nonlinear:fdm'),
+              (u'Exercise 52: Differentiate a highly nonlinear term',
+               2,
+               u'nonlin:exer:grad:pow:term',
+               u'nonlin:exer:grad:pow:term'),
+              (u'Exercise 53: Crank-Nicolson for a nonlinear 3D diffusion equation',
+               2,
+               u'nonlin:exer:2D:heat:nonlinear:fd',
+               u'nonlin:exer:2D:heat:nonlinear:fd'),
+              (u'Exercise 54: Find the sparsity of the Jacobian',
+               2,
+               u'nonlin:exer:sparsity:Jacobian',
+               u'nonlin:exer:sparsity:Jacobian'),
+              (u'Problem 55: Investigate a 1D problem with a continuation method',
+               2,
+               u'nonlin:exer:continuation:1DnNflow',
+               u'nonlin:exer:continuation:1DnNflow'),
+              (u'Symbolic nonlinear finite element equations',
+               1,
+               u'nonlin:app:fem_vs_fdm',
+               u'nonlin:app:fem_vs_fdm'),
+              (u'Finite element basis functions',
+               2,
+               u'nonlin:alglevel:1D:fe_basis',
+               u'nonlin:alglevel:1D:fe_basis'),
+              (u'The group finite element method',
+               2,
+               u'nonlin:alglevel:1D:fe:group',
+               u'nonlin:alglevel:1D:fe:group'),
+              (u'Finite element approximation of functions of $u$',
+               3,
+               None,
+               '___sec380'),
+              (u'Simplified problem', 3, None, '___sec381'),
+              (u'Integrating nonlinear functions', 3, None, '___sec382'),
+              (u'Application of the group finite element method',
+               3,
+               None,
+               '___sec383'),
+              (u'Numerical integration of nonlinear terms by hand',
+               2,
+               u'nonlin:alglevel:1D:fe:f',
+               u'nonlin:alglevel:1D:fe:f'),
+              (u'Discretization of a variable coefficient Laplace term',
+               2,
+               u'nonlin:alglevel:1D:fe:Laplace',
+               u'nonlin:alglevel:1D:fe:Laplace'),
+              (u'Group finite element method', 3, None, '___sec386'),
+              (u'Numerical integration at the nodes', 3, None, '___sec387'),
+              (u'Uncertainty quantification and polynomial chaos expansions',
+               0,
+               u'ch:pc',
+               u'ch:pc'),
+              (u'Sample problems', 1, None, '___sec389'),
+              (u'ODE for decay processes', 2, None, '___sec390'),
+              (u'The stochastic Poisson equation', 2, None, '___sec391'),
+              (u'Basic principles', 1, None, '___sec392'),
+              (u'Basic statistical results', 2, None, '___sec393'),
+              (u'Least-squares methods', 2, None, '___sec394'),
+              (u'Example: Least squares applied to the decay ODE',
+               2,
+               None,
+               '___sec395'),
+              (u'Modeling the response', 2, None, '___sec396'),
+              (u'Numerical integration', 2, None, '___sec397'),
+              (u'Stochastic collocation', 2, None, '___sec398'),
+              (u'The Chaospy software', 1, u'pc:chaospy', u'pc:chaospy'),
+              (u'Intrusive polynomial chaos methods',
+               1,
+               u'pc:intrusive',
+               u'pc:intrusive'),
+              (u'Variational methods for linear systems',
+               0,
+               u'ch:cg',
+               u'ch:cg'),
+              (u'Conjugate gradient-like iterative methods',
+               1,
+               u'ch:linalg:CGmethods',
+               u'ch:linalg:CGmethods'),
+              (u'The Galerkin method', 2, None, '___sec403'),
+              (u'The least squares method', 2, None, '___sec404'),
+              (u'Krylov subspaces', 2, None, '___sec405'),
+              (u'Computation of the basis vectors', 2, None, '___sec406'),
+              (u'Computation of a new solution vector', 2, None, '___sec407'),
+              (u'Summary of the least squares method', 2, None, '___sec408'),
+              (u'Remark', 3, None, '___sec409'),
+              (u'Truncation and restart', 2, None, '___sec410'),
+              (u'Summary of the Galerkin method', 2, None, '___sec411'),
+              (u'A framework based on the error', 2, None, '___sec412'),
+              (u'Preconditioning',
+               1,
+               u'ch:linalg2:preconditioning',
+               u'ch:linalg2:preconditioning'),
+              (u'Motivation and Basic Principles', 2, None, '___sec414'),
+              (u'Use of the preconditioning matrix in the iterative methods',
+               2,
+               None,
+               '___sec415'),
+              (u'Classical iterative methods as preconditioners',
+               2,
+               u'ch:linalg:SORprecond',
+               u'ch:linalg:SORprecond'),
+              (u'Incomplete factorization preconditioners',
+               2,
+               u'linalg:ILU',
+               u'linalg:ILU'),
+              (u'Appendix: Useful formulas',
+               0,
+               u'ch:formulas',
+               u'ch:formulas'),
+              (u'Finite difference operator notation',
+               1,
+               u'sec:form:fdop',
+               u'sec:form:fdop'),
+              (u'Truncation errors of finite difference approximations',
+               1,
+               u'sec:form:truncerr',
+               u'sec:form:truncerr'),
+              (u'Finite differences of exponential functions',
+               1,
+               u'sec:form:fdexp',
+               u'sec:form:fdexp'),
+              (u'Complex exponentials', 3, None, '___sec422'),
+              (u'Real exponentials', 3, None, '___sec423'),
+              (u'Finite differences of $t^n$',
+               1,
+               u'sec:form:fdtn',
+               u'sec:form:fdtn'),
+              (u'Software', 2, None, '___sec425'),
+              (u'References', 1, None, '___sec426')]}
+end of tocinfo -->
+
+<body>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+     equationNumbers: {  autoNumber: "none"  },
+     extensions: ["AMSmath.js", "AMSsymbols.js", "autobold.js", "color.js"]
+  }
+});
+</script>
+<script type="text/javascript"
+ src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<!-- newcommands_keep.tex -->
+$$
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\halfi}{{1/2}}
+\newcommand{\tp}{\thinspace .}
+\newcommand{\uex}{{u_{\small\mbox{e}}}}
+\newcommand{\Aex}{{A_{\small\mbox{e}}}}
+\newcommand{\E}[1]{\hbox{E}\lbrack #1 \rbrack}
+\newcommand{\Var}[1]{\hbox{Var}\lbrack #1 \rbrack}
+\newcommand{\normalvec}{\boldsymbol{n}}
+\newcommand{\Oof}[1]{\mathcal{O}(#1)}
+\newcommand{\x}{\boldsymbol{x}}
+\newcommand{\X}{\boldsymbol{X}}
+\renewcommand{\u}{\boldsymbol{u}}
+\renewcommand{\v}{\boldsymbol{v}}
+\newcommand{\w}{\boldsymbol{w}}
+\newcommand{\V}{\boldsymbol{V}}
+\newcommand{\e}{\boldsymbol{e}}
+\newcommand{\f}{\boldsymbol{f}}
+\newcommand{\q}{{q}}
+\newcommand{\residual}{r}
+\newcommand{\dfc}{\alpha}  % diffusion coefficient
+\newcommand{\Ix}{\mathcal{I}_x}
+\newcommand{\Iy}{\mathcal{I}_y}
+\newcommand{\Iz}{\mathcal{I}_z}
+\newcommand{\If}{\mathcal{I}_s}     % for FEM
+\newcommand{\Ifd}{{I_d}}  % for FEM
+\newcommand{\Ifb}{{I_b}}  % for FEM
+\newcommand{\sequencei}[1]{\left\{ {#1}_i \right\}_{i\in\If}}
+\newcommand{\sequencej}[1]{\left\{ {#1}_j \right\}_{j\in\If}}
+\newcommand{\basphi}{\varphi}
+\newcommand{\baspsi}{\psi}
+\newcommand{\refphi}{\tilde\basphi}
+\newcommand{\psib}{\boldsymbol{\psi}}
+\newcommand{\sinL}[1]{\sin\left((#1+1)\pi\frac{x}{L}\right)}
+\newcommand{\xno}[1]{x_{#1}}
+\newcommand{\Xno}[1]{X_{(#1)}}
+\newcommand{\yno}[1]{y_{#1}}
+\newcommand{\xdno}[1]{\boldsymbol{x}_{#1}}
+\newcommand{\dX}{\, \mathrm{d}X}
+\newcommand{\dx}{\, \mathrm{d}x}
+\newcommand{\ds}{\, \mathrm{d}s}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Integer}{\mathbb{Z}}
+$$
+
+
+
+
+    
+<a name="part0034"></a>
+<p>
+<!-- begin top navigation -->
+<table style="width: 100%"><tr><td>
+<div style="text-align: left;"><a href="._fem-book-solarized033.html">&laquo; Previous</a></div>
+</td><td>
+<div style="text-align: right;"><a href="._fem-book-solarized035.html">Next &raquo;</a></div>
+</td></tr></table>
+<!-- end top navigation -->
+</p>
+
+<p>
+<!-- !split -->
+
+<center><h1 id="ch:pc">Uncertainty quantification and polynomial chaos expansions</h1></center> <hr>
+
+<p>
+<div id="ch:pce"></div>
+
+<p>
+Differential equations often contain unknown parameters, but
+mathematically these must be prescribed to run the solution method.
+If some parameters are uncertain, how uncertain is then the answer?
+The simplest <em>conceptual</em> approach to this question is to let each
+parameter vary in an interval and use <em>interval arithmetics</em> to
+compute the interval of solution at the vertices of the
+mesh. Unfortunately, this approach is terribly inaccurate and not
+feasible. Also, any deterministic approach to the question hides fact
+that uncertainty is strongly connected to statistical
+variations. Therefore, a more sound approach is to prescribe some
+statistics of the input parameters and then compute some statistics of
+the output. This is called <em>stochastic uncertainty quantification</em>, or
+just the name uncertainty quantification, abbreviated UQ, implies a
+stochastic description of the input of the model. There has been a
+heavy development of the UQ field during the last couple of decades.
+
+<p>
+One of the most exciting and promising methods of UQ for differential
+equation is <em>polynomial chaos expansions</em>. The literature on this method
+might seem complicated unless one has firm background in probability
+theory. However, it turns out that all the seemingly different variations
+of this method are all strongly connected if one knows the approximation
+framework of the chapter <a href="._fem-book-solarized003.html#ch:approx:global">Function approximation by global functions</a> of this book and some very basic
+probability theory. It is therefore natural to present polynomial chaos
+expansions from perspective and make the ideas more accessible to a larger
+audience. This is exactly the purpose of the present chapter.
+
+<p>
+There are some excellent expositions of polynomial chaos in the recent
+literature by Dongbin Xiu <a href="._fem-book-solarized037.html#Xiu_2009">[12]</a> <a href="._fem-book-solarized037.html#Xiu_2010">[13]</a>. However, for the reader
+with an understanding of the chapter <a href="._fem-book-solarized003.html#ch:approx:global">Function approximation by global functions</a> in this book, the authors
+think the <em>ideas</em> can be conveyed much faster using those approximation
+concepts rather than the more traditional exposition in the literature.
+
+<p>
+<b>Remark on a major probabilistic simplification.</b>
+
+<p>
+We assume that we have some function \( u(\x,t;\zeta) \), where \( \zeta \) is
+a vector of <em>random parameters</em> \( (\zeta_0,\ldots,\zeta_N) \) that
+introduces uncertainty in the problem. Note that the uncertainty is
+described by \( M+1 \) stochastic scalar parameters and is therefore
+<em>discretized</em> from a statistical point of view.  If we have temporal
+or spatial stochastic processes or stochastic space-time fields, these
+are continuous, and the mathematical formulations become considerably
+more complicated. Assuming the uncertainty to be described by a set of
+discrete stochastic <em>variables</em> represents the same simplification as
+we introduced in earlier chapters where we assumed the solution to be
+discrete, \( u(\x)\approx\sum_ic_i\baspsi_i(\x) \), and worked with
+variational forms in finite-dimensional spaces. We could, as briefly
+shown in the chapter <a href="._fem-book-solarized003.html#ch:approx:global">Function approximation by global functions</a>, equally well worked with
+variational forms in <em>infinite-dimensional</em> spaces, but the theory
+would involve Sobolev spaces rather than the far more intuitive vector
+spaces. In the same manner, stochastic processes and fields and their
+mathematical theory are avoided when assuming the uncertainty to be
+already discretized in terms of random variables.
+
+<h1 id="___sec389">Sample problems </h1>
+
+<p>
+We shall look at two driving examples to illustrate the methods.
+
+<h2 id="___sec390">ODE for decay processes </h2>
+
+<p>
+A simple ODE, governing decay processes <a href="._fem-book-solarized037.html#Langtangen_decay">[14]</a>
+in space or time, reads
+
+$$
+\begin{equation}
+u'(t) = a(t)u(t),\quad u(0)=I,
+\tag{461}
+\end{equation}
+$$
+
+where \( a \) and \( I \) can be uncertain input parameter, making \( u \) an
+uncertain output parameter for each \( t \).
+
+<p>
+If \( a \) is uncertain, we assume that it
+consists of uncertain piecewise constants: \( a=a_i \) is a random variable
+in some time interval \( [t_i,t_{i+1}] \). Typically, we can write
+\( a(t) = \sum_{i=0}^M a_i\hat\baspsi_i(\x) \), with \( \hat\baspsi_i \) being P0
+elements in time, and \( a_i \) are the unknown coefficients (in this case we
+count to \( i \) from 0 to \( M \) and consider \( I \) as certain).
+
+<p>
+<div class="alert alert-block alert-notice alert-text-normal">
+<b>Stochastic ODE.</b>
+<p>
+To be specific, we let \( a \) be a scalar uncertain constant and let also
+\( I \) be uncertain. Then
+we have two stochastic variables, \( M=2 \): \( \zeta_0=a \) and \( \zeta_1=I \).
+
+<p>
+The analytical solution to this ODE is \( u(t)=Ie^{-at} \), regardless of
+which variables that are random or not. With only \( I \) as
+random variable, we see that the solution is simply a linear function
+of \( I \), so if \( I \) has a Gaussian probability distribution, \( u \) is for
+any \( t \), the well-known transformation of expectation and variance
+a normally distributed random variable:
+
+$$
+\begin{align*}
+\E{u} &= \E{I}e^{-at},\\ 
+\Var{u} &= \Var{I}e^{2at}\tp
+\end{align*}
+$$
+
+However, as soon as \( a \) is stochastic, the problem is, from a stochastic
+view point <em>nonlinear</em>, so there is no simple transformation of the
+probability distribution for \( a \) nor its statistics.
+
+<p>
+The basic statistics of expectance and variance for a random variable \( x \)
+varying continuously on the interval \( \Omega_X \) is as
+
+$$
+\begin{align*}
+\E{u(x)} &= \int_\Omega u(x)p(x)\dx,\\ 
+\Var{u} &= \int_\Omega (u(x)-\E{u})^2 p(x)\dx\tp
+\end{align*}
+$$
+</div>
+
+
+<h2 id="___sec391">The stochastic Poisson equation </h2>
+
+<p>
+We also address the stationary PDE
+
+$$
+\begin{equation}
+-\nabla\cdot(\dfc(\x)\nabla u(\x)) = f(\x)\mbox{in }\Omega,
+\tag{462}
+\end{equation}
+$$
+
+with appropriate Dirichlet, Neumann, or Robin conditions at the
+boundary, The coefficients \( \dfc \) and \( f \) are assumed to be stochastic
+quantities discretized in terms of expansions, e.g., \( \dfc =
+\sum_{i=0}^M\dfc_i\hat\baspsi_i(\x) \), where \( \hat\baspsi_i(\x) \) is
+some spatial discretization &ndash; think of, for instance, of piecewise
+constant P0 finite elements or global sine functions, and the
+parameters \( \dfc_i \) as the random uncertain variables in the
+problem. We form some final vector \( (\zeta_0,\ldots,\zeta_M) \) with all
+the random parameters, from \( \dfc(\x) \) only, from \( f(\x) \) only, or as
+a combination of randomness in \( \dfc \) and \( f \). Here, one can obviously
+include randomness in boundary conditions as well.
+
+<p>
+<div class="alert alert-block alert-notice alert-text-normal">
+<b>1D model problem.</b>
+<p>
+A specific 1D problem for heat conduction,
+
+$$ \frac{\partial}{\partial x}\left(\dfc(x)\frac{\partial u}{\partial x}
+\right) = 0,\quad x\in\Omega = [0,L],$$
+
+may have two materials with \( \dfc \) as an uncertain constant in each
+material. Let \( \Omega = \Omega_0 = [0,\hat L] \cup\Omega_1 = [\hat L,
+0] \), where \( \Omega_i \) is material number \( i \). Let \( \dfc_i \) be the
+corresponding uncertain heat conduction coefficient value.  Now we
+have \( M=2 \), and \( \zeta_0=\dfc_0 \) and \( \zeta_1=\dfc_1 \).
+
+
+</div>
+
+
+<h1 id="___sec392">Basic principles </h1>
+
+<p>
+The <em>fundamental idea</em> in polynomial chaos theory is that we now
+assume the mapping from an input parameter
+\( \boldsymbol{\zeta}=(\zeta_0,\ldots,\zeta_M) \in W \) to \( u \), to be <em>smooth</em>,
+because we known that smooth mappings can efficiently be approximated
+by <em>the sum</em>
+
+$$
+\begin{equation}
+u(\x;\boldsymbol{\zeta}) = \sum_{i=0}^{N} c_i\baspsi_i(\boldsymbol{\zeta})
+=\ \sum_{j\in\If} c_j\baspsi_j \in V \tp
+\tag{463}
+\end{equation}
+$$
+
+This is the same formula as we used for approximation in Chapter
+<a href="#mjx-eqn-463">(463)</a>.
+Note that \( \hbox{dim} W = M+1 \), while \( \hbox{dim} V = N+1 \).
+
+<p>
+Another basic principle in polynomial chaos theory is to choose the
+basis functions in \( V \), \( \baspsi_i(\x) \), as <em>orthogonal
+polynomials</em>. The reason is that this choice has the potential that
+the sum <a href="#mjx-eqn-463">(463)</a> may converge very fast so \( N \) can
+be kept small.  
+<!-- begin inline comment -->
+<font color="red">(<b>kam 46</b>: I don't get this. I arrested Jonathan also on this earlier and he did not provide an answer. I think orthogonality leads to easy or direct computations of moments such as E and Var.)</font>
+<!-- end inline comment -->
+
+<p>
+<div class="alert alert-block alert-notice alert-text-normal">
+<b>Polynomial chaos expansions may involve many unknowns!</b>
+<p>
+
+<p>
+We have \( M+1 \) uncertain parameters so the approximation problem
+takes place in an \( N+1 \) dimensional space, contrary to previous chapters
+where \( N \) would be physical space, \( N=1,2,3 \). For each variable, we
+will need a set of basis functions to represent the variation in that
+variable. Suppose we use polynomials of order \( Q \) and lower in each
+variable \( \zeta_i \), \( i=0,\ldots,M \). The total number of terms in the
+expansion is then
+
+$$
+\begin{equation}
+N + 1 = \frac{(Q + M)!}{Q!M!}\tp
+\tag{464}
+\end{equation}
+$$
+
+<p>
+Suppose we have 10 uncertain input variables (\( M+1=10 \)) and want to
+approximate each variable by a cubic polynomial (\( Q=3 \)). This results
+in \( N+1=220 \) terms in the expansion. And a cubic variation is modest,
+so going to degree 10, demands 92,378 terms. Consequently, for the
+polynomial chaos method to be effective, we need very fast convergence
+and that lower-order polynomial variation is sufficient. First of all
+this demands that the mapping from \( \boldsymbol{\zeta} \) to \( u \) is smooth, but
+the parameter is very often smooth even though the solution \( u(\x) \) in
+physical space is non-smooth.
+
+
+</div>
+
+
+<p>
+<div class="alert alert-block alert-notice alert-text-normal">
+<b>Remark on terminology.</b>
+<p>
+
+<p>
+The development of the theory in this chapter builds on the seminal
+work on polynomial chaos theory by Roger Ghanem and co-workers. This
+theory expands functions in Hermite polynomials, which was a great
+success for a range of linear Gaussian engineering safety problems.
+To obtain faster convergence in non-Gaussian problems, functions were
+expanded in other families of orthogonal polynomials, which is the
+view we take here, but that method is known as <em>generalized</em>
+polynomial chaos, often abbreviated gPC.  In this text, however, we
+use the shorter term polynomial chaos for all expansions of stochastic
+parameter dependence in terms of global orthogonal polynomials.
+
+
+</div>
+
+
+<h2 id="___sec393">Basic statistical results </h2>
+
+<p>
+Our task is to compute the coefficients \( c_i \). When these are known, we
+can easily compute the statistics of the response \( u \) of the differential
+equation, or any other quantity derived from \( u \). For example, the
+expectation of \( u \) is
+
+$$
+\begin{equation}
+\E{u} = \E{\sum_{j\in\If} c_j\baspsi_j} = \sum_{j\in\If} \E{c_j}\baspsi_j
+\tag{465}
+\end{equation}
+$$
+
+<p>
+A third pillar among assumption for the polynomial chaos method is that
+the <em>random input variables are stochastically independent</em>. There are
+methods to come around this problem, but these are very recent and we
+keep the traditional assumption in the present of the theory here.
+
+<p>
+There are four methods that have been used to compute \( c_i \):
+
+<ol>
+<li> Least squares minimization or Galerkin projection with exact
+   computation of integrals</li>
+<li> Least-squares minimization or Galerkin projection with numerical
+   computation of integrals</li>
+<li> Interpolation or collocation</li>
+<li> Regression</li>
+</ol>
+
+Method 2 and 4 are the dominating ones. These go under the names
+pseudo-spectral methods and stochastic collocation methods, respectively.
+
+<h2 id="___sec394">Least-squares methods </h2>
+
+<p>
+A major difference for deterministic approximation methods and
+polynomial chaos based on least squares is that we introduce
+probabilistic information in the inner product in the latter case.
+This means that <em>we must know the joint probability distribution</em>
+\( p(\boldsymbol{\zeta}) \) for the input parameters! Then we define the
+inner product between two elements \( u \) and \( w \) in \( V \) as
+
+$$
+\begin{equation}
+(u,v) = \E{uv} = \int_\Omega u(\boldsymbol{\zeta})v(\boldsymbol{\zeta}) p(\boldsymbol{\zeta})d\boldsymbol{\zeta}
+\tag{466}
+\end{equation}
+$$
+
+with the associated norm
+
+$$ || u ||^2 = (u,u)\tp$$
+
+The domain \( \Omega \) is the hypercube of input parameters:
+
+$$ \Omega = [\zeta_{0,\min},\zeta_{0,\max}]\times
+[\zeta_{1,\min},\zeta_{1,\max}]\times\cdots\times
+[\zeta_{N,\min},\zeta_{N,\max}]\tp$$
+
+Since the random input variables are independent, we can factorize
+the joint probability distribution as
+
+$$ p(\boldsymbol{\zeta}) = \Pi_{i=0}^N p_i(\zeta_i)\tp$$
+
+We then have
+
+$$
+\E{\boldsymbol{\zeta}} = \E{\zeta_0}\E{\zeta_1}\cdots\E{\zeta_0}
+= \Pi_{i=0}^N
+\int\limits_{\zeta_{i,\,min}}^{\zeta_{i,max}}\zeta_i p_i(\zeta_0)d\zeta_i\tp
+$$
+
+<p>
+Requiring that the polynomials are orthogonal means that
+
+$$ (u,v) = {\delta_{ij}}||u||,$$
+
+where \( \delta_{ij} \) is the Kronecker delta: \( \delta_{ij}=1 \) if and only if
+\( i=j \), otherwise \( \delta_{ij}=0 \).
+
+<p>
+Let \( f \) be the solution computed by our mathematical model, either
+approximately by a numerical method or exact.
+When we do the least squares minimization, we know from the chapter <a href="._fem-book-solarized003.html#ch:approx:global">Function approximation by global functions</a> that the associated linear system is diagonal
+and its solution is
+
+$$
+\begin{equation}
+c_i = \frac{(\baspsi_i, f)}{||\baspsi||^2} =
+         \frac{\E{f\baspsi_i}}{\E{\baspsi^2}}\tp
+\tag{467}
+\end{equation}
+$$
+
+In case of orthonormal polynomials \( \baspsi_i \) we simply have
+\( c_i = \E{f\baspsi_i} \).
+
+<p>
+Galerkin's method or project gives
+
+$$ (f-\sum_i c_i \baspsi_i, v) = 0,\quad\forall v\in V,$$
+
+which is equivalent to
+
+$$ (f-\sum_i c_i \baspsi_i, \baspsi_j) = 0,\quad j=0,\ldots,N,$$
+
+and consequently the formula <a href="#mjx-eqn-467">(467)</a> for \( c_i \).
+
+<p>
+The major question, from a computational point of view, is how to
+evaluate the integrals in the formula for \( c_i \). Let us look at our
+two primary examples.
+
+<h2 id="___sec395">Example: Least squares applied to the decay ODE </h2>
+
+<p>
+In this model problem, we are interested in the statistics of the
+solution \( u(t) \). The response is \( u(t)=Ie^{-at} =
+\zeta_0e^{-\zeta_1 t} \) as our \( f(\zeta) \) function.
+Consequently,
+
+$$ u(\x) = \sum_{i\in\If} c_i(t)\baspsi_i(\zeta_0,\zeta_1)\tp$$
+
+Furthermore,
+
+$$ c_i(t) =
+\frac{(\zeta_0e^{-\zeta_1 t},\baspsi_i)}{||\baspsi_i||^2}
+= ||\baspsi_i||^{-2}\int\limits_{\zeta_{0,\min}}^{\zeta_{0,\max}}
+\int\limits_{\zeta_{1,\min}}^{\zeta_{1,\max}}
+\zeta_0e^{-\zeta_1 t}\baspsi_i(\zeta_0,\zeta_1) p_0(\zeta_0)p_1(\zeta_1)
+d\zeta_0 d\zeta_1\tp
+$$
+
+This is a quite heavy integral to perform by hand; it really depends on
+the complexity of the probability density function \( p_0 \) for \( I \) and
+\( p_1 \) for \( a \). A tool like SymPy or Mathematica is indispensable,
+but even these will soon give up when \( i \) grows.
+
+<p>
+Uniform distributions!
+
+<h2 id="___sec396">Modeling the response </h2>
+
+<p>
+Our aim is to approximate the mapping from input to output in a
+simulation program. The output will often require solving a
+differential equation. Let \( f \) be the output response as a result of
+solving the differential equation. We then want to find the mapping
+
+$$ u(\x;\boldsymbol{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\boldsymbol{\zeta}),$$
+
+or if the response is some operation (functional) on the solution \( u \),
+say \( f(u) \), we seek the mapping
+
+$$ f(\boldsymbol{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\boldsymbol{\zeta}),$$
+
+Normally, \( c_i \) will depend on the spatial coordinate \( \x \) as here,
+but in some cases it
+
+<p>
+Give examples with flux etc!
+
+<h2 id="___sec397">Numerical integration </h2>
+
+<p>
+Clenshaw-Curtis quadrature,
+Gauss-Legendre quadrature,
+Gauss-Patterson quadrature,
+Genz-Keister quadrature,
+Leja quadrature,
+Monte Carlo integration,
+Optimal Gaussian quadrature,
+
+<h2 id="___sec398">Stochastic collocation </h2>
+
+<p>
+The stochastic collocation method is nothing but what we called
+regression in the chapter <a href="._fem-book-solarized003.html#ch:approx:global">Function approximation by global functions</a>.  We simply choose a large
+number \( P \) of evaluation points in the parameter space \( W \) and compute
+the response at these points.  Then we fit an orthogonal polynomial
+expansion to these points using the principle of least squares. Here,
+in this educational text, the principle of least squares suffices,
+but one should that for real-life computations a lot of difficulties
+may happen, especially in large-scale problems. We then need to
+stabilize the least squares computations in various ways, and for this
+purpose, one needs tailored software like Chaospy to be briefly
+introduced in the section <a href="#pc:chaospy">The Chaospy software</a>. Chaospy offers, for example, a
+wide range of regression schemes.
+
+<p>
+Also, the choice of collocation points should make use of point families
+that suit this kind of problems. Again, Chaospy offers many collections
+of point families, and not surprisingly, numerical integration points
+constitute popular families.
+
+<h1 id="pc:chaospy">The Chaospy software</h1>
+
+<p>
+Refer to our ref for comparison with Dakota and Turns.
+
+<h1 id="pc:intrusive">Intrusive polynomial chaos methods</h1>
+
+<p>
+So far we have described <em>non-intrusive</em> polynomial chaos theory, which means
+that the stochastic solution method can use the underlying differential
+equation solver &quot;as is&quot; without any modifications. This is a great
+advantage, and it also makes the theory easier to understand.
+However, one may construct <em>intrusive</em> methods that applies the mapping
+()
+in the <em>solution process</em> of the differential equation model.
+
+<p>
+Let us address the decay ODE, \( u'=-au \), where we have the mapping
+\( u=\sum_i c_i\baspsi_i \) for \( u \) which can be inserted in the ODE,
+giving rise to a residual \( R \):
+
+$$ R = \sum_i c_i'(t)\baspsi_i(\boldsymbol{\zeta}) -
+\sum_i c_i\baspsi_i(\boldsymbol{\zeta})\tp$$
+
+Galerkin's method is a common choice for incorporating the polynomial
+chaos expansion when solving differential equations, so we require
+as usual \( (R,v)=0 \) for all \( v\in V \), or expressed via basis functions:
+
+$$ \sum_j (\baspsi_i,\baspsi_j) c_i'(t) = -a (\baspsi_i,\baspsi_i)\,\quad
+i=0,\ldots,N tp$$
+
+This is now a differential equation system in \( c_i \), which can be solved
+by any ODE solver. However, the size of this system is \( (N+1)\times (N+1) \)
+rather than just a scalar ODE in the original model and the non-intrusive
+method. This is characteristic for non-intrusive methods: the size of
+the underlying system grows exponentially with the number of uncertain
+parameters, and one always ends up in high-dimensional spaces for the ODEs
+or the coordinates for PDEs.
+
+<p>
+For the Poisson equation we insert the mapping
+
+$$ u(\x; \boldsymbol{\zeta}) = \sum_{i\in\If} c_i(\x)\baspsi_i(\boldsymbol{\zeta}),$$
+
+and get a residual
+
+$$
+\begin{equation}
+R = -\sum_{j\in\If}
+\nabla\cdot(\dfc(\x)\nabla c_j(\x))\baspsi_j(\boldsymbol{\zeta}) +
+f(\x)\tp
+\tag{468}
+\end{equation}
+$$
+
+Now we can apply Galerkin's method to get equations for \( c_i(\x) \):
+
+$$ \sum_{i\in\If} (\baspsi_j(\boldsymbol{\zeta}), \baspsi_i(\boldsymbol{\zeta}))
+\nabla\cdot(\dfc(\x)\nabla c_j(\x)) = (f(\x),\baspsi_i(\boldsymbol{\zeta})),\quad
+i=0,\ldots,N\tp$$
+
+Here, we think that we solve the Poisson equation by some finite difference
+or element method on some mesh, so for each node \( \x \) in the mesh, we get
+the above system for \( c_j \).
+
+<!-- begin inline comment -->
+<font color="red">(<b>hpl 47</b>: Integration by parts?)</font>
+<!-- end inline comment -->
+
+<p>
+<p>
+<!-- begin bottom navigation -->
+<table style="width: 100%"><tr><td>
+<div style="text-align: left;"><a href="._fem-book-solarized033.html">&laquo; Previous</a></div>
+</td><td>
+<div style="text-align: right;"><a href="._fem-book-solarized035.html">Next &raquo;</a></div>
+</td></tr></table>
+<!-- end bottom navigation -->
+</p>
+
+<!-- ------------------- end of main content --------------- -->
+
+
+<center style="font-size:80%">
+<!-- copyright only on the titlepage -->
+</center>
+
+
+</body>
+</html>
+    
+

@@ -1,0 +1,389 @@
+.. !split
+
+.. _ch:overview:
+
+Quick overview of the finite element method
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+.. _overview:meshex:
+
+.. figure:: dolfin_mesh.png
+   :width: 500
+
+   *Example on a complicated domain for solving PDEs*
+
+The finite element method is a versatile approach to construct
+computational schemes to solve any partial differential equation on
+any domain in any dimension. The method may at first glance appear
+cumbersome and even unnatural as it relies on variational formulations
+and polynomial spaces. However, the study of these somewhat abstract
+concepts pays off as the finite element method provides a general
+recipe for efficient and accurate simulations.
+
+Let us start by outlining the concepts briefly.
+Consider the following PDE in 2D:
+
+.. math::
+        
+        -\nabla^2 u = -u_{xx} - u_{yy} = f,
+        
+
+equipped with suitable boundary conditions.
+A finite difference scheme to solve the current PDE
+would in the simplest case be described by the stencil
+
+.. _Eq:overview:2d:fdm0:
+
+.. math::
+
+    \tag{1}
+    -\frac{u_{i-1,j} - 2 u_{i,j} + u_{i+1,j}}{h^2}
+        -\frac{u_{i,j-1} - 2 u_{i,j} + u_{i,j+1}}{h^2}
+         = f_{i}
+        
+
+or reordered to the more famous
+
+.. _Eq:overview:2d:fdm:
+
+.. math::
+
+    \tag{2}
+    \frac{-u_{i-1,j} -u_{i,j-1} + 4 u_{i,j} - u_{i+1,j} -u_{i,j+1}}{h^2}  = f_{i}
+        {\thinspace .}
+        
+
+On a structured mesh, the stencil appears natural and
+is convenient to implement.
+However, for a unstructured, "complicated"domain
+as shown in Figure :ref:`overview:meshex`,
+we would need to be careful when placing
+points and evaluating stencils and functions.  Both accuracy and efficiency
+may easily be sacrificed by a reckless implementation.
+
+In general, a domain like the one represented in Figure
+:ref:`overview:meshex` will be representation by a triangulation. The
+finite element method (and the finite volume method which often is a
+special case of the finite element method) is a methodology for
+creating stencils like :ref:`(2) <Eq:overview:2d:fdm>` in a structured manner
+that adapt to the underlying triangulation.
+
+The triangulation in Figure :ref:`overview:meshex` is a mesh that
+consists of cells that are connected and defined in terms of
+vertices. The fundamental idea of the finite element method is
+to construct a procedure to compute a stencil on a general element and
+then apply this procedure to each element of the mesh. Let
+us therefore denote the mesh as :math:`\Omega` while :math:`\Omega_e` is the domain
+of a generic element such that :math:`\Omega=\cup_e \Omega_e`.
+
+This is exactly the point where the challenges of the finite element
+method starts and where we need some new concepts.  The basic question
+is: How should we create a stencil like :ref:`(2) <Eq:overview:2d:fdm>` for a
+general element and a general PDE that has the maximal accuracy and
+minimal computational complexity at the current triangulation?  The
+two basic building blocks of the finite element method are
+
+1. the solution is represented in terms of a polynomial expression on the
+   given general element, and
+
+2. a variational formulation of the PDE
+   where element-wise integration enables the PDE to be transformed to a
+   stencil.
+
+Step 1 is, as will be explained later, conveniently represented
+both implementation-wise and mathematically as a solution
+
+.. _Eq:overview:u:fem:
+
+.. math::
+
+    \tag{3}
+    u = \sum_{i=0}^N c_i {\psi}_i(x,y),
+        
+
+where :math:`\{c_i\}` are the coefficients to be determined
+(often called the degrees of freedom)
+and :math:`{\psi}_i(x,y)` are prescribed polynomials.
+The next step is the variational formulation. This step
+may seem like a trick of magic or a cumbersome
+mathematical exercise at first glance.
+We take the PDE and multiply by a function :math:`v` (usually called a
+the test function)
+and integrate over an element :math:`\Omega_e` and obtain the expression
+
+.. _Eq:overview:poisson:
+
+.. math::
+
+    \tag{4}
+    \int_{\Omega_e} -\nabla^2 u \, v {\, \mathrm{d}x} =  \int_{\Omega_e} f \, v {\, \mathrm{d}x}
+        
+
+A perfectly natural question at this point is: Why multiply
+with a test function :math:`v`? The simple answer is that
+there are :math:`N+1` unknowns that needs to be determined in :math:`u`
+in :ref:`(3) <Eq:overview:u:fem>`
+and for this we need :math:`N+1` equations. The equations are
+obtained by using  :math:`N+1` different test functions which when used
+in  :ref:`(5) <Eq:overview:fem:a>`
+give rise to :math:`N+1` linearly independent equations.
+
+.. index:: trial function
+
+.. index:: test function
+
+While :ref:`(4) <Eq:overview:poisson>` is a variational formulation of
+our PDE problem, it is not the most common form.
+It is common to re-write
+
+.. _Eq:overview:fem:a:
+
+.. math::
+
+    \tag{5}
+    \int_{\Omega_e} -\nabla^2 u \, v {\, \mathrm{d}x}
+        
+
+to weaken the requirement of the polynomial space used for the
+trial function (that here needs to be twice differentiable)
+and write this term on its corresponding weak form.
+That
+is, the term is rewritten in terms of first-derivatives only (of
+both the trial and the test function)  with the aid of Gauss-Green's lemma:
+
+.. _Eq:overview:fem:a:weak:
+
+.. math::
+
+    \tag{6}
+    \int_{\Omega_e} -\nabla^2 u \, v {\, \mathrm{d}x}  =
+        \int_{\Omega_e} \nabla u \cdot \nabla v {\, \mathrm{d}x}   - \int_{\partial \Omega_e} \frac{\partial u}{\partial n} \,  v \,  dS
+        
+
+The reasons behind this alternative formulation is rather mathematical and will
+not be a major subject of this book as it is well described elsewhere.
+In fact, a precise explanation would need tools from functional analysis.
+
+With the above rewrite assuming now that the boundary term vanish due to
+boundary conditions (why this is possible will be dealt with in detail
+later in this book) the
+stencil, corresponding to :ref:`(2) <Eq:overview:2d:fdm>`,  is represented by
+
+.. math::
+        
+        \int_{\Omega_e} \nabla u \cdot \nabla v {\, \mathrm{d}x}
+        
+
+where :math:`u` is called the *trial function*, :math:`v` is called a *test function*,
+and :math:`\Omega` is an element of
+a triangulated mesh. The idea of software like FEniCS is that this
+piece of mathematics can be directly expressed in terms of Python code as
+
+.. code-block:: python
+
+    mesh = Mesh("some_file")
+    V = FunctionSpace(mesh, "some polynomial")
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    a = dot(grad(u), grad(v))*dx
+
+The methodology and code in this example is not tied to a particular
+equation, except the formula for ``a``, holding the derivatives of our
+sample PDE, but any other PDE terms could be expressed via ``u``, ``v``,
+``grad``, and other symbolic operators in this line of code.  In fact,
+finite element packages like FEniCS are typically structured as
+general toolboxes that can be adapted to any PDE as soon as the
+derivation of variational formulations is mastered.  The main obstacle
+here for a novice FEM user is then to understand the concept of trial
+functions and test functions realised in terms of polynomial spaces.
+
+Hence, a finite element formulation (or a weak formulation) of
+the Poisson problem that works on any mesh :math:`\Omega` can be written
+in terms of solving the problem:
+
+.. math::
+         \int_\Omega\nabla u\cdot\nabla vd{\, \mathrm{d}x} = \int_\Omega fv{\, \mathrm{d}x}{\thinspace .}
+
+By varying the trial and test spaces we obtain different stencils,
+some of which will be identical to finite difference schemes on
+particular meshes. We will now show a complete FEniCS program to
+illustrate how a typical finite element code may be structured
+
+.. code-block:: python
+
+    mesh = Mesh("some_file")
+    V = FunctionSpace(mesh, "some polynomial")
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    a = dot(grad(u), grad(v))*dx
+    L = f*v*dx
+    
+    bc = DirichletBC(V, "some_function", "some_domain")
+    solution = Function(V)  # unknown FEM function
+    solve(a == L, solution, bc)
+    plot(solution)
+
+While the finite element method is versatile and may be adapted to any
+PDE on any domain in any dimension, the different methods that are
+derived by using different trial and test functions may vary
+significantly in terms of accuracy and efficiency. In fact, even
+though the process of deriving at a variational formulation is
+general, a bad choice of polynomial space may in some cases lead to a
+completely wrong result. This is particularly the case for complicated
+PDEs. For this reason, it is dangerous to regard the method as a black
+box and not do proper verification of the method for a particular
+application.
+
+In this book we will put focus on verification in the sense
+that we provide the reader with explicit calculations as
+well as demonstrations of how such computations can be performed
+by using symbolic or numerical calculations to control the
+various parts of the computational framework. In our view, there
+are three important tests that should be frequently employed
+during verification:
+
+1. reducing the model problem to 1D and carefully check the calculations involved in the variational formulation on a small 1D mesh
+
+2. perform the calculation involved on one general or random element
+
+3. test whether convergence is obtained and to what order the method converge by refining the mesh
+
+The two first task here should ideally be performed by independent calculations
+outside the framework used for the simulations. In our view ``sympy`` is a
+convenient tool that can be used to assist hand calculations.
+
+So far, we have outlined how the finite element method handles derivatives
+in a PDE, but we also had a right-hand side :math:`f`. This term is multiplied
+by the test function :math:`v` as well, such that the entire Poisson equation
+is transformed to
+
+.. math::
+         \int_\Omega\nabla u\cdot\nabla vd{\, \mathrm{d}x} = \int_\Omega fv{\, \mathrm{d}x}{\thinspace .}
+
+This statement is assumed valid for all test functions :math:`v` in some
+function space :math:`V` of polynomials. The right-hand side expression is
+coded in FEniCS as
+
+.. code-block:: python
+
+    L = f*v*dx
+
+and the problem is then solved by the statements
+
+.. code-block:: python
+
+    u = Function(V)  # unknown FEM function
+    solve(a == L, u, bc)
+
+where ``bc`` holds information about boundary conditions. This information
+is connected to information about the triangulation, the *mesh*.
+Assuming :math:`u=0` on the boundary, we can in FEniCS generate a triangular
+mesh over a rectangular domain :math:`[-1,-1]\times [-1,1]` as follows:
+
+.. code-block:: python
+
+    mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+    bc = DirichletBC(V, 0, 'on_boundary')
+
+Mathematically, the finite element method transforms our PDE to
+a sparse linear system. The ``solve`` step performs two tasks:
+construction of the linear system based on the given information about
+the domain and its elements, and then solution of the linear system by
+either an iterative or direct method.
+
+We are now in a position to summarize all the parts of a FEniCS program
+that solves the Poisson equation by the finite element method:
+
+.. code-block:: python
+
+    from fenics import *
+    mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+    V = FunctionSpace(mesh, 'P', 2)  # quadratic polynomials
+    bc = DirichletBC(V, 0, 'on_boundary')
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    a = dot(grad(u), grad(v))*dx
+    L = f*v*dx
+    u = Function(V)  # unknown FEM function to be computed
+    solve(a == L, u, bc)
+    vtkfile = File('poisson.pvd'); vtkfile << u  # store solution
+
+Solving a different PDE is a matter of changing ``a`` and ``L``. We refer to
+the FEniCS tutorial [Ref07]_ [Ref08]_ for lots of examples.
+
+Although we assert here that the finite element method is a tool that
+can solve any PDE problem on any domain of any complexity, the
+fundamental ideas of the method are in fact even more general. This
+book will emphasize this general framework and show how the finite
+element method is actually just one way to choose the expansion
+functions :math:`{\psi}`, but there are many others, giving rise to other
+frameworks for other problems, such as uncertainty quantification via
+polynomial chaos theory in the chapter :ref:`ch:pc`. By understanding the
+general framework of approximations of the form :ref:`(3) <Eq:overview:u:fem>`,
+i.e, understanding how :math:`{\psi}_i` are constructed and how :math:`c_i` are
+computed, we believe the reader can develop a better intuitive
+understanding the finite element method in particular and its
+foundation in general.
+
+.. _ch:approx:global:
+
+Function approximation by global functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Many successful numerical solution methods for differential equations,
+including the finite element method,
+aim at approximating the unknown function by a sum
+
+.. _Eq:fem:u:
+
+.. math::
+
+    \tag{7}
+    u(x) \approx \sum_{i=0}^N c_i{\psi}_i(x),
+        
+        
+
+where :math:`{\psi}_i(x)` are prescribed functions and :math:`c_0,\ldots,c_N`
+are unknown coefficients to be determined.
+Solution methods for differential equations
+utilizing :ref:`(7) <Eq:fem:u>` must
+have a *principle* for constructing :math:`N+1` equations to
+determine :math:`c_0,\ldots,c_N`. Then there is a *machinery* regarding
+the actual constructions of the equations for :math:`c_0,\ldots,c_N`, in a
+particular problem. Finally, there is a *solve* phase for computing
+the solution :math:`c_0,\ldots,c_N` of the :math:`N+1` equations.
+
+Especially in the finite element method, the machinery for
+constructing the discrete equations to be implemented on a computer is
+quite comprehensive, with many mathematical and implementational
+details entering the scene at the same time. From an ease-of-learning
+perspective it can therefore be wise to follow an idea of Larson and
+Bengzon [Ref06]_ and introduce the computational machinery
+for a trivial equation: :math:`u=f`. Solving this equation with :math:`f` given
+and :math:`u` on the form :ref:`(7) <Eq:fem:u>`, means that we seek an approximation
+:math:`u` to :math:`f`.  This approximation problem has the advantage of
+introducing most of the finite element toolbox, but without involving
+demanding topics related to differential equations (e.g., integration
+by parts, boundary conditions, and coordinate mappings).  This is the
+reason why we shall first become familiar with finite element
+*approximation* before addressing finite element methods for
+differential equations.
+
+First, we refresh some linear algebra concepts about approximating
+vectors in vector spaces. Second, we extend these concepts to
+approximating functions in function spaces, using the same principles
+and the same notation.  We present examples on approximating functions
+by global basis functions with support throughout the entire
+domain. That is, the functions are in general nonzero on the entire
+domain.  Third, we introduce the finite element type of basis
+functions globally.  These basis functions will later,
+in ref {ch:approx:fe},
+be used with local support
+(meaning that each function is nonzero except in a small part of the domain)
+to enhance stability and efficiency.
+We explain all details of the
+computational algorithms involving such functions.  Four types of
+approximation principles are covered: 1) the least squares method, 2)
+the :math:`L_2` projection or Galerkin method, 3) interpolation or
+collocation, and 4) the regression method.
+

@@ -1,0 +1,394 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Exercises</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+
+        <script src="http://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="http://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+
+        <script>sagecell.makeSagecell({inputLocation: ".sage"});</script>
+
+        <style type="text/css">
+                .sagecell .CodeMirror-scroll {
+                        overflow-y: hidden;
+                        overflow-x: auto;
+                }
+                .sagecell .CodeMirror {
+                        height: auto;
+                }
+        </style>
+
+    
+    <link rel="top" title="Introduction to Numerical Methods for Variational Problems" href="index.html" />
+    <link rel="next" title="Function approximation by finite elements" href="._book009.html" />
+    <link rel="prev" title="Approximation of functions in higher dimensions" href="._book007.html" />
+ 
+  
+       <style type="text/css">
+         div.admonition {
+           background-color: whiteSmoke;
+           border: 1px solid #bababa;
+         }
+       </style>
+      </head>
+    
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="._book009.html" title="Function approximation by finite elements"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="._book007.html" title="Approximation of functions in higher dimensions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="exercises-1">
+<h1>Exercises<a class="headerlink" href="#exercises-1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="problem-1-linear-algebra-refresher">
+<span id="fem-approx-exer-linalg1"></span><h2>Problem 1: Linear algebra refresher<a class="headerlink" href="#problem-1-linear-algebra-refresher" title="Permalink to this headline">¶</a></h2>
+<p>Look up the topic of <em>vector space</em> in your favorite linear algebra
+book or search for the term at Wikipedia.</p>
+<p><strong>a)</strong>
+Prove that vectors in the plane spanned by the vector <span class="math">\((a,b)\)</span>  form a vector space
+by showing that all the axioms of a vector space are satisfied.</p>
+<p><strong>b)</strong>
+Prove that all linear functions of the form <span class="math">\(ax+b\)</span> constitute a vector space,
+<span class="math">\(a,b\in\mathbb{R}\)</span>.</p>
+<p><strong>c)</strong>
+Show that all quadratic functions of the form <span class="math">\(1 + ax^2 + bx\)</span> <em>do not</em>
+constitute a vector space.</p>
+<p><strong>d)</strong>
+Check out
+the topic of <em>inner product spaces</em>. Suggest a possible inner product
+for the space of all linear functions of the form <span class="math">\(ax+b\)</span>, <span class="math">\(a,b\in\mathbb{R}\)</span>,
+defined on some interval <span class="math">\(\Omega=[A,B]\)</span>.
+Show that this particular inner product satisfies the
+general requirements of an inner product in a vector space.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">linalg1</span></code>.</p>
+</div>
+<div class="section" id="problem-2-approximate-a-three-dimensional-vector-in-a-plane">
+<span id="fem-approx-exer-vec-3dby2d"></span><h2>Problem 2: Approximate a three-dimensional vector in a plane<a class="headerlink" href="#problem-2-approximate-a-three-dimensional-vector-in-a-plane" title="Permalink to this headline">¶</a></h2>
+<p>Given <span class="math">\(\boldsymbol{f} = (1,1,1)\)</span> in <span class="math">\(\mathbb{R}^3\)</span>, find the best approximation vector
+<span class="math">\(\boldsymbol{u}\)</span> in the plane spanned by the unit vectors <span class="math">\((1,0)\)</span> and <span class="math">\((0,1)\)</span>.
+Repeat the calculations using the vectors <span class="math">\((2,1)\)</span> and <span class="math">\((1,2)\)</span>.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">vec111_approx</span></code>.</p>
+</div>
+<div class="section" id="problem-3-approximate-a-parabola-by-a-sine">
+<span id="fem-approx-exer-parabola-sine"></span><h2>Problem 3: Approximate a parabola by a sine<a class="headerlink" href="#problem-3-approximate-a-parabola-by-a-sine" title="Permalink to this headline">¶</a></h2>
+<p>Given the function <span class="math">\(f(x)=1 + 2x(1-x)\)</span> on <span class="math">\(\Omega=[0,1]\)</span>, we want to
+find an approximation in the function space</p>
+<div class="math">
+\[V = \hbox{span}\{1, \sin(\pi x)\}{\thinspace .}\]</div>
+<p><strong>a)</strong>
+Sketch or plot <span class="math">\(f(x)\)</span>. Think intuitively how an expansion in terms
+of the basis functions of <span class="math">\(V\)</span>, <span class="math">\({\psi}_0(x)=1\)</span>, <span class="math">\({\psi}_1(x)=\sin(\pi x)\)</span>,
+can be construction to yield a best approximation to <span class="math">\(f\)</span>. Or
+phrased differently, see if you can guess the coefficients <span class="math">\(c_0\)</span> and <span class="math">\(c_1\)</span>
+in the expansion</p>
+<div class="math">
+\[u(x) = c_0{\psi}_0 + c_1{\psi}_1 = c_0 + c_1\sin (\pi x){\thinspace .}\]</div>
+<p>Compute the <span class="math">\(L^2\)</span> error <span class="math">\(||f-u||_{L^2}=(\int_0^1(f-u)^2{\, \mathrm{d}x})^{1/2}\)</span>.</p>
+<p><strong>Hint.</strong>
+If you make a mesh function <code class="docutils literal"><span class="pre">e</span></code> of the error
+on some mesh with uniformly spaced coordinates in
+the array <code class="docutils literal"><span class="pre">xc</span></code>, the integral can be approximated as <code class="docutils literal"><span class="pre">np.sqrt(dx*np.sum(e**2))</span></code>,
+where <code class="docutils literal"><span class="pre">dx=xc[0]-xc[1]</span></code> is the mesh spacing and <code class="docutils literal"><span class="pre">np</span></code> is an alias for the
+<code class="docutils literal"><span class="pre">numpy</span></code> module in Python.</p>
+<p><strong>b)</strong>
+Perform the hand calculations for a least squares approximation.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">parabola_sin</span></code>.</p>
+</div>
+<div class="section" id="problem-4-approximate-the-exponential-function-by-power-functions">
+<span id="fem-approx-exer-exp-powers"></span><h2>Problem 4: Approximate the exponential function by power functions<a class="headerlink" href="#problem-4-approximate-the-exponential-function-by-power-functions" title="Permalink to this headline">¶</a></h2>
+<p>Let <span class="math">\(V\)</span> be a function space with basis functions <span class="math">\(x^i\)</span>,
+<span class="math">\(i=0,1,\ldots,N\)</span>.  Find the best approximation to <span class="math">\(f(x)=\exp(-x)\)</span> on
+<span class="math">\(\Omega =[0,8]\)</span> among all functions in <span class="math">\(V\)</span> for <span class="math">\(N=2,4,6\)</span>. Illustrate
+the three approximations in three separate plots.</p>
+<p><strong>Hint.</strong>
+Apply the <code class="docutils literal"><span class="pre">lest_squares</span></code> and
+<code class="docutils literal"><span class="pre">comparison_plot</span></code> functions in the <code class="docutils literal"><span class="pre">approx1D.py</span></code> module as these
+make the exercise easier to solve.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">exp_powers</span></code>.</p>
+</div>
+<div class="section" id="problem-5-approximate-the-sine-function-by-power-functions">
+<span id="fem-approx-exer-sin-powers"></span><h2>Problem 5: Approximate the sine function by power functions<a class="headerlink" href="#problem-5-approximate-the-sine-function-by-power-functions" title="Permalink to this headline">¶</a></h2>
+<p>In this exercise we want to approximate the sine function by polynomials
+of order <span class="math">\(N+1\)</span>. Consider two bases:</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+V_1 &amp;= \{x, x^3, x^5, \ldots, x^{N-2}, x^N \}, \\
+V_2 &amp;= \{1,x,x^2,x^3,\ldots, x^N\}{\thinspace .}
+\end{align*}\end{split}\]</div>
+<p>The basis <span class="math">\(V_1\)</span> is motivated by the fact that the Taylor polynomial
+approximation to the sine function has only odd powers, while <span class="math">\(V_2\)</span>
+is motivated by the assumption that also the even powers could
+improve the approximation in a least-squares setting.</p>
+<p>Compute the best approximation to <span class="math">\(f(x)=\sin(x)\)</span> among all functions
+in <span class="math">\(V_1\)</span> and <span class="math">\(V_2\)</span> on two domains of increasing sizes: <span class="math">\(\Omega_{1,k} =
+[0, k\pi]\)</span>, <span class="math">\(k=2,3\ldots,6\)</span> and <span class="math">\(\Omega_{2,k} = [-k\pi /2, k\pi/2]\)</span>,
+<span class="math">\(k=2,3,4,5\)</span>.  Make plots for all combinations of <span class="math">\(V_1\)</span>, <span class="math">\(V_2\)</span>,
+<span class="math">\(\Omega_1\)</span>, <span class="math">\(\Omega_2\)</span>, <span class="math">\(k=2,3,\ldots,6\)</span>.</p>
+<p>Add a plot of the <span class="math">\(N\)</span>-th degree Taylor polynomial approximation of
+<span class="math">\(\sin(x)\)</span> around <span class="math">\(x=0\)</span>.</p>
+<p><strong>Hint.</strong>
+You can make a loop over <span class="math">\(V_1\)</span> and <span class="math">\(V_2\)</span>, a loop over
+<span class="math">\(\Omega_1\)</span> and <span class="math">\(\Omega_2\)</span>, and a loop over <span class="math">\(k\)</span>. Inside the loops,
+call the functions <code class="docutils literal"><span class="pre">least_squares</span></code> and
+<code class="docutils literal"><span class="pre">comparison_plot</span></code> from the <code class="docutils literal"><span class="pre">approx1D</span></code> module.
+<span class="math">\(N=7\)</span> is a suggested value.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">sin_powers</span></code>.</p>
+</div>
+<div class="section" id="problem-6-approximate-a-steep-function-by-sines">
+<span id="fem-approx-exer-tanh-sine1"></span><h2>Problem 6: Approximate a steep function by sines<a class="headerlink" href="#problem-6-approximate-a-steep-function-by-sines" title="Permalink to this headline">¶</a></h2>
+<p>Find the best approximation of <span class="math">\(f(x) = \tanh (s(x-\pi))\)</span> on
+<span class="math">\([0, 2\pi]\)</span> in the space <span class="math">\(V\)</span> with basis
+<span class="math">\({\psi}_i(x) = \sin((2i+1)x)\)</span>, <span class="math">\(i\in{\mathcal{I}_s} = \{0,\ldots,N\}\)</span>.
+Make a movie showing how <span class="math">\(u=\sum_{j\in{\mathcal{I}_s}}c_j{\psi}_j(x)\)</span>
+approximates <span class="math">\(f(x)\)</span> as <span class="math">\(N\)</span> grows. Choose <span class="math">\(s\)</span> such that <span class="math">\(f\)</span> is
+steep (<span class="math">\(s=20\)</span> is appropriate).</p>
+<p><strong>Hint 1.</strong>
+One may naively call the <code class="docutils literal"><span class="pre">least_squares_orth</span></code> and <code class="docutils literal"><span class="pre">comparison_plot</span></code>
+from the <code class="docutils literal"><span class="pre">approx1D</span></code> module in a loop and extend the basis with
+one new element in each pass. This approach
+implies a lot of recomputations.
+A more efficient strategy is to let <code class="docutils literal"><span class="pre">least_squares_orth</span></code>
+compute with only one basis function at a time and accumulate
+the corresponding <code class="docutils literal"><span class="pre">u</span></code> in the total solution.</p>
+<p><strong>Hint 2.</strong>
+<code class="docutils literal"><span class="pre">ffmpeg</span></code> or <code class="docutils literal"><span class="pre">avconv</span></code> may skip frames when plot files are combined to
+a movie. Since there are few files and we want to see each of them,
+use <code class="docutils literal"><span class="pre">convert</span></code> to make an animated GIF file (<code class="docutils literal"><span class="pre">-delay</span> <span class="pre">200</span></code> is
+suitable).</p>
+<p>Filename: <code class="docutils literal"><span class="pre">tanh_sines</span></code>.</p>
+<div class="section" id="remarks-1">
+<h3>Remarks<a class="headerlink" href="#remarks-1" title="Permalink to this headline">¶</a></h3>
+<p>Approximation of a discontinuous (or steep) <span class="math">\(f(x)\)</span> by sines,
+results in slow convergence and oscillatory behavior of the
+approximation close to the abrupt changes in <span class="math">\(f\)</span>.
+This is known as the <a class="reference external" href="http://en.wikipedia.org/wiki/Gibbs_phenomenon">Gibb&#8217;s phenomenon</a>.</p>
+</div>
+</div>
+<div class="section" id="problem-7-approximate-a-steep-function-by-sines-with-boundary-adjustment">
+<span id="fem-approx-exer-tanh-sine3"></span><h2>Problem 7: Approximate a steep function by sines with boundary adjustment<a class="headerlink" href="#problem-7-approximate-a-steep-function-by-sines-with-boundary-adjustment" title="Permalink to this headline">¶</a></h2>
+<p>We study the same approximation problem as in
+<a class="reference internal" href="#fem-approx-exer-tanh-sine1"><span class="std std-ref">Problem 6: Approximate a steep function by sines</span></a>. Since <span class="math">\({\psi}_i(0)={\psi}_i(2\pi)=0\)</span>
+for all <span class="math">\(i\)</span>, <span class="math">\(u=0\)</span> at the boundary points <span class="math">\(x=0\)</span> and <span class="math">\(x=2\pi\)</span>, while
+<span class="math">\(f(0)=-1\)</span> and <span class="math">\(f(2\pi)=1\)</span>. This discrepancy at the boundary can be
+removed by adding a boundary function <span class="math">\(B(x)\)</span>:</p>
+<div class="math">
+\[u(x) = B(x) + \sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j(x),\]</div>
+<p>where <span class="math">\(B(x)\)</span> has the right boundary values: <span class="math">\(B(x_L)=f(x_L)\)</span> and
+<span class="math">\(B(x_R)=f(x_R)\)</span>, with <span class="math">\(x_L=0\)</span> and <span class="math">\(x_R=2\pi\)</span> as the boundary points.
+A linear choice of <span class="math">\(B(x)\)</span> is</p>
+<div class="math">
+\[B(x) = \frac{(x_R-x)f(x_L) + (x-x_L)f(x_R)}{x_R-x_L}{\thinspace .}\]</div>
+<p><strong>a)</strong>
+Use the basis
+<span class="math">\({\psi}_i(x) = \sin((i+1)x)\)</span>, <span class="math">\(i\in{\mathcal{I}_s} = \{0,\ldots,N\}\)</span>
+and plot <span class="math">\(u\)</span> and <span class="math">\(f\)</span> for <span class="math">\(N=16\)</span>. (It suffices to make plots for even <span class="math">\(i\)</span>.)</p>
+<p><strong>b)</strong>
+Use the basis from <a class="reference internal" href="#fem-approx-exer-tanh-sine1"><span class="std std-ref">Problem 6: Approximate a steep function by sines</span></a>,
+<span class="math">\({\psi}_i(x) = \sin((2i+1)x)\)</span>, <span class="math">\(i\in{\mathcal{I}_s} = \{0,\ldots,N\}\)</span>.
+(It suffices to make plots for even <span class="math">\(i\)</span>.)
+Observe that the approximation converges to a piecewise
+linear function!</p>
+<p><strong>c)</strong>
+Use the basis
+<span class="math">\({\psi}_i(x) = \sin(2(i+1)x)\)</span>, <span class="math">\(i\in{\mathcal{I}_s} = \{0,\ldots,N\}\)</span>,
+and observe that the approximation converges to a piecewise
+constant function.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">tanh_sines_boundary_term</span></code>.</p>
+<div class="section" id="remarks-2">
+<h3>Remarks<a class="headerlink" href="#remarks-2" title="Permalink to this headline">¶</a></h3>
+<p>The strange results in b) and c) are due to the choice of
+basis. In b), <span class="math">\({\varphi}_i(x)\)</span> is an odd function around
+<span class="math">\(x=\pi/2\)</span> and <span class="math">\(x=3\pi/2\)</span>. No combination of basis functions
+is able to approximate the flat regions of <span class="math">\(f\)</span>.
+All basis functions in c) are even around <span class="math">\(x=\pi/2\)</span> and <span class="math">\(x=3\pi/2\)</span>,
+but odd at <span class="math">\(x=0,\pi,2\pi\)</span>. With all the sines represented, as in a),
+the approximation is not constrained with a particular symmetry
+behavior.</p>
+</div>
+</div>
+<div class="section" id="exercise-8-fourier-series-as-a-least-squares-approximation">
+<span id="fem-approx-exer-fourier"></span><h2>Exercise 8: Fourier series as a least squares approximation<a class="headerlink" href="#exercise-8-fourier-series-as-a-least-squares-approximation" title="Permalink to this headline">¶</a></h2>
+<p><strong>a)</strong>
+Given a function <span class="math">\(f(x)\)</span> on an interval <span class="math">\([0,L]\)</span>, look up the formula
+for the coefficients <span class="math">\(a_j\)</span> and <span class="math">\(b_j\)</span> in the Fourier series of <span class="math">\(f\)</span>:</p>
+<div class="math">
+\[f(x) = \frac{1}{2}a_0 +
+\sum_{j=1}^\infty a_j\cos \left(j\frac{2\pi x}{L}\right)
++ \sum_{j=1}^\infty b_j\sin \left(j\frac{2\pi x}{L}\right){\thinspace .}\]</div>
+<p><strong>b)</strong>
+Let an infinite-dimensional vector space <span class="math">\(V\)</span> have the basis functions
+<span class="math">\(\cos j\frac{2\pi x}{L}\)</span> for <span class="math">\(j=0,1,\dots,\infty\)</span> and
+<span class="math">\(\sin j\frac{2\pi x}{L}\)</span> for <span class="math">\(j=1,\dots,\infty\)</span>.  Show that the least squares
+approximation method from the section <a class="reference internal" href="._book004.html#fem-approx-global"><span class="std std-ref">Approximation principles</span></a> leads to a
+linear system whose solution coincides with the standard formulas for
+the coefficients in a Fourier series of <span class="math">\(f(x)\)</span> (see also
+the section <a class="reference internal" href="._book005.html#fem-approx-global-fourier"><span class="std std-ref">Fourier series</span></a>).</p>
+<p><strong>Hint.</strong>
+You may choose</p>
+<div class="math" id="eq-fem-approx-exer-fourier-basis">
+\[\tag{73}
+{\psi}_{2i} = \cos\left( i\frac{2\pi}{L}x\right),\quad
+    {\psi}_{2i+1} = \sin\left( i\frac{2\pi}{L}x\right),\]</div>
+<p>for <span class="math">\(i=0,1,\ldots,N\rightarrow\infty\)</span>.</p>
+<p><strong>c)</strong>
+Choose <span class="math">\(f(x) = H(x-\frac{1}{2})\)</span> on <span class="math">\(\Omega=[0,1]\)</span>, where <span class="math">\(H\)</span> is the
+Heaviside function: <span class="math">\(H(x)=0\)</span> for <span class="math">\(x&lt;0\)</span>, <span class="math">\(H(x)=1\)</span> for <span class="math">\(x&gt;0\)</span> and
+<span class="math">\(H(0)=\frac{1}{2}\)</span>. Find the coefficients <span class="math">\(a_j\)</span> and <span class="math">\(b_j\)</span> in the
+Fourier series for <span class="math">\(f(x)\)</span>. Plot the sum for <span class="math">\(j=2N+1\)</span>, where <span class="math">\(N=5\)</span> and
+<span class="math">\(N=100\)</span>.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">Fourier_ls</span></code>.</p>
+</div>
+<div class="section" id="problem-9-approximate-a-steep-function-by-lagrange-polynomials">
+<span id="fem-approx-exer-tanh-lagrange"></span><h2>Problem 9: Approximate a steep function by Lagrange polynomials<a class="headerlink" href="#problem-9-approximate-a-steep-function-by-lagrange-polynomials" title="Permalink to this headline">¶</a></h2>
+<p>Use interpolation with uniformly distributed
+points and Chebychev nodes to approximate</p>
+<div class="math">
+\[f(x) = -\tanh(s(x-\frac{1}{2})),\quad x\in [0,1],\]</div>
+<p>by Lagrange polynomials for <span class="math">\(s=5\)</span> and <span class="math">\(s=20\)</span>, and <span class="math">\(N=3,7,11,15\)</span>.
+Combine <span class="math">\(2\times 2\)</span> plots of the approximation for the four
+<span class="math">\(N\)</span> values, and create such figures for the four combinations of
+<span class="math">\(s\)</span> values and point types.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">tanh_Lagrange</span></code>.</p>
+</div>
+<div class="section" id="problem-10-approximate-a-steep-function-by-lagrange-polynomials-and-regression">
+<span id="fem-approx-exer-tanh-lagrange-regression"></span><h2>Problem 10: Approximate a steep function by Lagrange polynomials and regression<a class="headerlink" href="#problem-10-approximate-a-steep-function-by-lagrange-polynomials-and-regression" title="Permalink to this headline">¶</a></h2>
+<p>Redo <a class="reference internal" href="#fem-approx-exer-tanh-lagrange"><span class="std std-ref">Problem 9: Approximate a steep function by Lagrange polynomials</span></a>, but apply a regression
+method with <span class="math">\(N\)</span>-degree Lagrange polynomials and <span class="math">\(2N+1\)</span>
+data points. Recall that
+<a class="reference internal" href="#fem-approx-exer-tanh-lagrange"><span class="std std-ref">Problem 9: Approximate a steep function by Lagrange polynomials</span></a> applies <span class="math">\(N+1\)</span> points and
+the resulting approximation interpolates <span class="math">\(f\)</span> at these points, while
+a regression method with more points does not interpolate <span class="math">\(f\)</span> at the
+data points.
+Do more points and a regression method help reduce
+the oscillatory behavior of Lagrange polynomial approximations?</p>
+<p>Filename: <code class="docutils literal"><span class="pre">tanh_Lagrange_regression</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <center>
+            <p class="logo"><a href="http://cbc.simula.no/" title="Go to Center for Biomedical Computing">
+              <img class="logo" src="_static/cbc_logo.png" alt="Logo"/>
+            </a></p>
+            </center>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Exercises</a><ul>
+<li><a class="reference internal" href="#problem-1-linear-algebra-refresher">Problem 1: Linear algebra refresher</a></li>
+<li><a class="reference internal" href="#problem-2-approximate-a-three-dimensional-vector-in-a-plane">Problem 2: Approximate a three-dimensional vector in a plane</a></li>
+<li><a class="reference internal" href="#problem-3-approximate-a-parabola-by-a-sine">Problem 3: Approximate a parabola by a sine</a></li>
+<li><a class="reference internal" href="#problem-4-approximate-the-exponential-function-by-power-functions">Problem 4: Approximate the exponential function by power functions</a></li>
+<li><a class="reference internal" href="#problem-5-approximate-the-sine-function-by-power-functions">Problem 5: Approximate the sine function by power functions</a></li>
+<li><a class="reference internal" href="#problem-6-approximate-a-steep-function-by-sines">Problem 6: Approximate a steep function by sines</a><ul>
+<li><a class="reference internal" href="#remarks-1">Remarks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#problem-7-approximate-a-steep-function-by-sines-with-boundary-adjustment">Problem 7: Approximate a steep function by sines with boundary adjustment</a><ul>
+<li><a class="reference internal" href="#remarks-2">Remarks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exercise-8-fourier-series-as-a-least-squares-approximation">Exercise 8: Fourier series as a least squares approximation</a></li>
+<li><a class="reference internal" href="#problem-9-approximate-a-steep-function-by-lagrange-polynomials">Problem 9: Approximate a steep function by Lagrange polynomials</a></li>
+<li><a class="reference internal" href="#problem-10-approximate-a-steep-function-by-lagrange-polynomials-and-regression">Problem 10: Approximate a steep function by Lagrange polynomials and regression</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="._book007.html"
+                        title="previous chapter">Approximation of functions in higher dimensions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="._book009.html"
+                        title="next chapter">Function approximation by finite elements</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/._book008.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="._book009.html" title="Function approximation by finite elements"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="._book007.html" title="Approximation of functions in higher dimensions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>
+<div class="wrapper">
+  <div class="footer">
+    <a href="http://cbc.simula.no"><img src="_static/cbc_banner.png" width="100%"><a>
+    <br />
+    <br />
+      &copy;2016, Hans Petter Langtangen, Kent-Andre Mardal. Released under CC Attribution 4.0 license.
+  </div>
+</div>
+
+  </body>
+</html>

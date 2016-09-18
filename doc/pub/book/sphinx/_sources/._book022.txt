@@ -1,0 +1,372 @@
+.. !split
+
+.. _fem:deq:1D:code:
+
+Implementation of finite element algorithms
+===========================================
+
+At this point, it is sensible to create a program with symbolic
+calculations to perform all the steps in the computational machinery,
+both for automating the work and for documenting the complete
+algorithms.  As we have seen, there are quite many details involved
+with finite element computations and incorporation of boundary
+conditions.  An implementation will also act as a structured summary
+of all these details.
+
+.. _fem:deq:1D:code:fe:
+
+Extensions of the code for approximation          (2)
+-----------------------------------------------------
+
+Implementation of the finite element algorithms for differential
+equations follows closely the algorithm for approximation of functions.
+The new additional ingredients are
+
+1. other types of integrands (as implied by the variational formulation)
+
+2. additional boundary terms in the variational formulation for
+   Neumann boundary conditions
+
+3. modification of element matrices and vectors due to Dirichlet
+   boundary conditions
+
+Point 1 and 2 can be taken care of by letting the user supply
+functions defining the integrands and boundary terms on the
+left- and right-hand side of the equation system:
+
+ * Integrand on the left-hand side: ``ilhs(e, phi, r, s, X, x, h)``
+
+ * Integrand on the right-hand side: ``irhs(e, phi, r, X, x, h)``
+
+ * Boundary term on the left-hand side: ``blhs (e, phi, r, s, X, x, h)``
+
+ * Boundary term on the right-hand side: ``brhs (e, phi, r, s, X, x, h)``
+
+Here, ``phi`` is a dictionary where ``phi[q]`` holds a list of the
+derivatives of order ``q`` of the basis functions with respect to the
+physical coordinate :math:`x`.  The derivatives are available as Python
+functions of ``X``.  For example, ``phi[0][r](X)`` means :math:`{\tilde{\varphi}}_r(X)`,
+and ``phi[1][s](X, h)`` means :math:`d{\tilde{\varphi}}_s (X)/dx` (we refer to
+the file `fe1D.py <http://tinyurl.com/znpudbt/fe1D.py>`__ for details
+regarding the function ``basis`` that computes the ``phi``
+dictionary).  The ``r`` and ``s``
+arguments in the above functions correspond to the index in the
+integrand contribution from an integration point to :math:`\tilde
+A^{(e)}_{r,s}` and :math:`\tilde b^{(e)}_r`. The variables ``e`` and ``h`` are
+the current element number and the length of the cell, respectively.
+Specific examples below will make it clear how to construct these
+Python functions.
+
+Given a mesh represented by ``vertices``, ``cells``, and ``dof_map`` as
+explained before, we can write a pseudo Python code to list all
+the steps in the computational algorithm for finite element solution
+of a differential equation.
+
+.. code-block:: python
+
+    <Declare global matrix and rhs: A, b>
+    
+    for e in range(len(cells)):
+    
+        # Compute element matrix and vector
+        n = len(dof_map[e])  # no of dofs in this element
+        h = vertices[cells[e][1]] - vertices[cells[e][1]]
+        <Initialize element matrix and vector: A_e, b_e>
+    
+        # Integrate over the reference cell
+        points, weights = <numerical integration rule>
+        for X, w in zip(points, weights):
+            phi = <basis functions and derivatives at X>
+            detJ = h/2
+            dX = detJ*w
+    
+            x = <affine mapping from X>
+            for r in range(n):
+                for s in range(n):
+                    A_e[r,s] += ilhs(e, phi, r, s, X, x, h)*dX
+                b_e[r] += irhs(e, phi, r, X, x, h)*dX
+    
+        # Add boundary terms
+        for r in range(n):
+            for s in range(n):
+                A_e[r,s] += blhs(e, phi, r, s, X, x)*dX
+            b_e[r] += brhs(e, phi, r, X, x, h)*dX
+    
+        # Incorporate essential boundary conditions
+        for r in range(n):
+            global_dof = dof_map[e][r]
+            if global_dof in essbc:
+                # local dof r is subject to an essential condition
+                value = essbc[global_dof]
+                # Symmetric modification
+                b_e -= value*A_e[:,r]
+                A_e[r,:] = 0
+                A_e[:,r] = 0
+                A_e[r,r] = 1
+                b_e[r] = value
+    
+        # Assemble
+        for r in range(n):
+            for s in range(n):
+                A[dof_map[e][r], dof_map[e][s]] += A_e[r,s]
+            b[dof_map[e][r] += b_e[r]
+    
+    <solve linear system>
+
+Having implemented this function, the user only has supply the ``ilhs``,
+``irhs``, ``blhs``, and ``brhs`` functions that specify the PDE and boundary
+conditions. The rest of the implementation forms a generic
+computational engine. The big finite element packages Diffpack and FEniCS
+are structured exactly the same way. A sample implementation of ``ilhs``
+for the 1D Poisson problem is:
+
+.. code-block:: python
+
+       def integrand_lhs(phi, i, j):
+            return phi[1][i]*phi[1][j]
+
+which returns  :math:`d{\tilde{\varphi}}_i (X)/dx d{\tilde{\varphi}}_j (X)/dx`.  Reducing the
+amount of code the user has to supply and making the code as close as
+possible to the mathematical formulation makes the software user-friendly and
+easy to debug.
+
+A complete function ``finite_element1D_naive`` for the 1D finite
+algorithm above, is found in the file `fe1D.py <http://tinyurl.com/znpudbt/fe1D.py>`__. The term "naive" refers to a version of the
+algorithm where we use a standard dense square matrix as global matrix
+``A``. The implementation also has a verbose mode for printing out the
+element matrices and vectors as they are computed.  Below is the
+complete function without the print statements.  You should study in
+detail since it contains all the steps in the finite element
+algorithm.
+
+.. code-block:: python
+
+    def finite_element1D_naive(
+        vertices, cells, dof_map,     # mesh
+        essbc,                        # essbc[globdof]=value
+        ilhs,                         # integrand left-hand side
+        irhs,                         # integrand right-hand side
+        blhs=lambda e, phi, r, s, X, x, h: 0,
+        brhs=lambda e, phi, r, X, x, h: 0,
+        intrule='GaussLegendre',      # integration rule class
+        verbose=False,                # print intermediate results?
+        ):
+        N_e = len(cells)
+        N_n = np.array(dof_map).max() + 1
+    
+        A = np.zeros((N_n, N_n))
+        b = np.zeros(N_n)
+    
+        for e in range(N_e):
+            Omega_e = [vertices[cells[e][0]], vertices[cells[e][1]]]
+            h = Omega_e[1] - Omega_e[0]
+    
+            d = len(dof_map[e]) - 1  # Polynomial degree
+            # Compute all element basis functions and their derivatives
+            phi = basis(d)
+    
+            # Element matrix and vector
+            n = d+1  # No of dofs per element
+            A_e = np.zeros((n, n))
+            b_e = np.zeros(n)
+    
+            # Integrate over the reference cell
+            if intrule == 'GaussLegendre':
+                points, weights = GaussLegendre(d+1)
+            elif intrule == 'NewtonCotes':
+                points, weights = NewtonCotes(d+1)
+    
+            for X, w in zip(points, weights):
+                detJ = h/2
+                x = affine_mapping(X, Omega_e)
+                dX = detJ*w
+    
+                # Compute contribution to element matrix and vector
+                for r in range(n):
+                    for s in range(n):
+                        A_e[r,s] += ilhs(phi, r, s, X, x, h)*dX
+                    b_e[r] += irhs(phi, r, X, x, h)*dX
+    
+            # Add boundary terms
+            for r in range(n):
+                for s in range(n):
+                    A_e[r,s] += blhs(phi, r, s, X, x, h)
+                b_e[r] += brhs(phi, r, X, x, h)
+    
+            # Incorporate essential boundary conditions
+            modified = False
+            for r in range(n):
+                global_dof = dof_map[e][r]
+                if global_dof in essbc:
+                    # dof r is subject to an essential condition
+                    value = essbc[global_dof]
+                    # Symmetric modification
+                    b_e -= value*A_e[:,r]
+                    A_e[r,:] = 0
+                    A_e[:,r] = 0
+                    A_e[r,r] = 1
+                    b_e[r] = value
+                    modified = True
+    
+            # Assemble
+            for r in range(n):
+                for s in range(n):
+                    A[dof_map[e][r], dof_map[e][s]] += A_e[r,s]
+                b[dof_map[e][r]] += b_e[r]
+    
+        c = np.linalg.solve(A, b)
+        return c, A, b, timing
+
+The ``timing`` object is a dictionary holding the CPU spent on computing
+``A`` and the CPU time spent on solving the linear system. (We have
+left out the timing statements.)
+
+.. _fem:deq:1D:code:fe_sparse:
+
+Utilizing a sparse matrix
+-------------------------
+
+A potential efficiency problem with the ``finite_element1D_naive`` function
+is that it uses dense :math:`(N+1)\times (N+1)` matrices, while we know that
+only :math:`2d+1` diagonals around the main diagonal are different from zero.
+Switching to a sparse matrix is very easy. Using the DOK (dictionary of
+keys) format, we declare ``A`` as
+
+.. code-block:: python
+
+    import scipy.sparse
+    A = scipy.sparse.dok_matrix((N_n, N_n))
+
+Assignments or in-place arithmetics are done as for a dense matrix,
+
+.. code-block:: text
+
+    A[i,j] += term
+    A[i,j]  = term
+
+but only the index pairs ``(i,j)`` we have used in assignments or
+in-place arithmetics are actually stored.
+A tailored solution algorithm is needed. The most reliable is
+sparse Gaussian elimination. SciPy gives access to the
+`UMFPACK <https://en.wikipedia.org/wiki/UMFPACK>`__ algorithm
+for this purpose:
+
+.. code-block:: python
+
+    import scipy.sparse.linalg
+    c = scipy.sparse.linalg.spsolve(A.tocsr(), b, use_umfpack=True)
+
+The declaration of ``A`` and the solve statement are the only
+changes needed in the ``finite_element1D_naive`` to utilize
+sparse matrices. The resulting modification is found in the
+function ``finite_element1D``.
+
+Application to our model problem
+--------------------------------
+
+Let us demonstrate the finite element software on
+
+.. math::
+         -u''(x)=f(x),\quad x\in (0,L),\quad u'(0)=C,\ u(L)=D{\thinspace .}
+
+This problem can be analytically solved by the
+``model2`` function from the section :ref:`fem:deq:1D:models:simple`.
+Let :math:`f(x)=x^2`. Calling ``model2(x**2, L, C, D)`` gives
+
+.. math::
+         u(x) = D + C(x-L) + \frac{1}{12}(L^4 - x^4) 
+
+The variational formulation reads
+
+.. math::
+         (u', v) = (x^2, v) - Cv(0){\thinspace .}
+
+The entries in the element matrix and vector,
+which we need to set up the ``ilhs``, ``irhs``,
+``blhs``, and ``brhs`` functions, becomes
+
+.. math::
+        \begin{align*}
+        A^{(e)}_{r,s} &= \int_{-1}^1 \frac{d{\tilde{\varphi}}_r}{dx}\frac{{\tilde{\varphi}}_s}{dx}(\det J{\, \mathrm{d}X}),\\ 
+        b^{(e)} &= \int_{-1}^1 x^2{\tilde{\varphi}}_r\det J{\, \mathrm{d}X} - C{\tilde{\varphi}}_r(-1)I(e,0),
+        \end{align*}
+
+where :math:`I(e)` is an indicator function: :math:`I(e,q)=1` if :math:`e=q`, otherwise :math:`I(e)=0`.
+We use this indicator function to formulate that the boundary term
+:math:`Cv(0)`, which in the local element coordinate system becomes :math:`C{\tilde{\varphi}}_r(-1)`,
+is only included for the element :math:`e=0`.
+
+The functions for specifying the element matrix and vector entries
+must contain the integrand, but without the :math:`\det J{\, \mathrm{d}X}` term
+as this term is taken care of by the quadrature loop, and
+the derivatives :math:`d{\tilde{\varphi}}_r(X)/dx`
+with respect to the physical :math:`x` coordinates are
+contained in ``phi[1][r](X)``, computed by the function ``basis``.
+
+.. code-block:: python
+
+    def ilhs(e, phi, r, s, X, x, h):
+        return phi[1][r](X, h)*phi[1][s](X, h)
+    
+    def irhs(e, phi, r, X, x, h):
+        return x**2*phi[0][r](X)
+    
+    def blhs(e, phi, r, s, X, x, h):
+        return 0
+    
+    def brhs(e, phi, r, X, x, h):
+        return -C*phi[0][r](-1) if e == 0 else 0
+
+We can then make the call to ``finite_element1D_naive`` or ``finite_element1D``
+to solve the problem with two P1 elements:
+
+.. code-block:: python
+
+    from fe1D import finite_element1D_naive, mesh_uniform
+    C = 5;  D = 2;  L = 4
+    d = 1
+    
+    vertices, cells, dof_map = mesh_uniform(
+        N_e=2, d=d, Omega=[0,L], symbolic=False)
+    essbc = {}
+    essbc[dof_map[-1][-1]] = D
+    
+    c, A, b, timing = finite_element1D(
+        vertices, cells, dof_map, essbc,
+        ilhs=ilhs, irhs=irhs, blhs=blhs, brhs=brhs,
+        intrule='GaussLegendre')
+
+It remains to plot the solution (with high resolution in each element).
+To this end, we use the ``u_glob`` function imported from
+``fe1D``, which imports it from ``fe_approx1D_numit`` (the
+``u_glob`` function in ``fe_approx1D.py``
+works with ``elements`` and ``nodes``, while ``u_glob`` in
+``fe_approx1D_numint`` works with ``cells``, ``vertices``,
+and ``dof_map``):
+
+.. code-block:: python
+
+    u_exact = lambda x: D + C*(x-L) + (1./6)*(L**3 - x**3)
+    from fe1D import u_glob
+    x, u, nodes = u_glob(c, cells, vertices, dof_map)
+    u_e = u_exact(x, C, D, L)
+    print u_exact(nodes, C, D, L) - c  # difference at the nodes
+    
+    import matplotlib.pyplot as plt
+    plt.plot(x, u, 'b-', x, u_e, 'r--')
+    plt.legend(['finite elements, d=%d' %d, 'exact'], loc='upper left')
+    plt.show()
+
+The result is shown in Figure :ref:`fem:deq:1D:code:fe:fig1`. We see
+that the solution using P1 elements is exact at the nodes, but
+feature considerable discrepancy between the nodes.
+:ref:`fem:deq:exer:1D:exact_numerics` asks you to explore
+this problem further using other :math:`m` and :math:`d` values.
+
+.. _fem:deq:1D:code:fe:fig1:
+
+.. figure:: uxx_x2.png
+   :width: 500
+
+   *Finite element and exact solution using two cells*
+

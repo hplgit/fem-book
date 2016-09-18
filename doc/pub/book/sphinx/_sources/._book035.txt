@@ -1,0 +1,601 @@
+.. !split
+
+.. _ch:formulas:
+
+Appendix: Useful formulas
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+.. _sec:form:fdop:
+
+Finite difference operator notation
+===================================
+
+All the finite differences here, and their corresponding operator notation.
+take place on a time mesh for a function of time.
+The same formulas apply in space too (just replace
+:math:`t` by a spatial coordinate and add spatial coordinates in :math:`u`).
+
+[**kam 51**: trenger å sette navn ved de forskjellge formlene.        Noen steder er det :math:`"="` og andre steder er det        $"\approx"$]
+
+.. _Eq:Dop:fd1:center:
+
+.. math::
+
+    \tag{488}
+    u'(t_n) \approx
+        \lbrack D_tu\rbrack^n = \frac{u^{n+\frac{1}{2}} - u^{n-\frac{1}{2}}}{\Delta t} 
+        
+
+.. _Eq:Dop:fd1:center2:
+
+.. math::
+
+    \tag{489}
+    u'(t_n) \approx
+        \lbrack D_{2t}u\rbrack^n = \frac{u^{n+1} - u^{n-1}}{2\Delta t}
+        
+        
+
+.. _Eq:Dop:fd1:bw:
+
+.. math::
+
+    \tag{490}
+    u'(t_n) =
+        \lbrack D_t^-u\rbrack^n = \frac{u^{n} - u^{n-1}}{\Delta t}
+        
+        
+
+.. _Eq:Dop:fd1:fw:
+
+.. math::
+
+    \tag{491}
+    u'(t_n) \approx
+        \lbrack D_t^+u\rbrack^n = \frac{u^{n+1} - u^{n}}{\Delta t}
+        
+        
+
+.. _Eq:Dop:fd1:theta:
+
+.. math::
+
+    \tag{492}
+    u'(t_{n+\theta}) =
+        \lbrack \bar D_tu\rbrack^{n+\theta} = \frac{u^{n+1} - u^{n}}{\Delta t}
+        
+        
+
+.. _Eq:Dop:fd1:bw2:
+
+.. math::
+
+    \tag{493}
+    u'(t_n) \approx
+        \lbrack D_t^{2-}u\rbrack^n = \frac{3u^{n} - 4u^{n-1} + u^{n-2}}{2\Delta t}
+        
+        
+
+.. _Eq:Dop:fd2:center:
+
+.. math::
+
+    \tag{494}
+    u''(t_n) \approx
+        \lbrack D_tD_t u\rbrack^n = \frac{u^{n+1} - 2u^{n} + u^{n-1}}{\Delta t^2}
+        
+        
+
+.. _Eq:Dop:avg:arith:
+
+.. math::
+
+    \tag{495}
+    u(t_{n+\frac{1}{2}}) \approx \lbrack \overline{u}^{t}\rbrack^{n+\frac{1}{2}}
+        = \frac{1}{2}(u^{n+1} + u^n)
+        
+        
+
+.. _Eq:Dop:avg:geom:
+
+.. math::
+
+    \tag{496}
+    u(t_{n+\frac{1}{2}})^2 \approx \lbrack \overline{u^2}^{t,g}\rbrack^{n+\frac{1}{2}}
+        = u^{n+1}u^n
+        
+        
+
+.. _Eq:Dop:avg:harm:
+
+.. math::
+
+    \tag{497}
+    u(t_{n+\frac{1}{2}}) \approx \lbrack \overline{u}^{t,h}\rbrack^{n+\frac{1}{2}}
+        = \frac{2}{\frac{1}{u^{n+1}} + \frac{1}{u^n}}
+        
+        
+
+.. _Eq:Dop:avg:theta:
+
+.. math::
+
+    \tag{498}
+    u(t_{n+\theta}) \approx \lbrack \overline{u}^{t,\theta}\rbrack^{n+\theta}
+        = \theta u^{n+1} + (1-\theta)u^n ,
+        
+        
+
+.. _Eq:_auto203:
+
+.. math::
+
+    \tag{499}
+    \qquad t_{n+\theta}=\theta t_{n+1} + (1-\theta)t_{n-1}
+        
+        
+
+.. _sec:form:truncerr:
+
+Truncation errors of finite difference approximations
+=====================================================
+
+.. math::
+        
+        {u_{\small\mbox{e}}}'(t_n) =
+        [D_t{u_{\small\mbox{e}}}]^n + R^n = \frac{{u_{\small\mbox{e}}}^{n+\frac{1}{2}} - {u_{\small\mbox{e}}}^{n-\frac{1}{2}}}{\Delta t} +R^n\nonumber,
+        
+
+.. _Eq:form:trunc:fd1:center:
+
+.. math::
+
+    \tag{500}
+    R^n = -\frac{1}{24}{u_{\small\mbox{e}}}'''(t_n)\Delta t^2 + {\cal O}(\Delta t^4)
+        
+        
+
+.. math::
+          
+        {u_{\small\mbox{e}}}'(t_n) =
+        [D_{2t}{u_{\small\mbox{e}}}]^n +R^n = \frac{{u_{\small\mbox{e}}}^{n+1} - {u_{\small\mbox{e}}}^{n-1}}{2\Delta t} +
+        R^n\nonumber,
+        
+
+.. _Eq:form:trunc:fd1:center2:
+
+.. math::
+
+    \tag{501}
+    R^n = -\frac{1}{6}{u_{\small\mbox{e}}}'''(t_n)\Delta t^2 + {\cal O}(\Delta t^4)
+        
+        
+
+.. math::
+          
+        {u_{\small\mbox{e}}}'(t_n) =
+        [D_t^-{u_{\small\mbox{e}}}]^n +R^n = \frac{{u_{\small\mbox{e}}}^{n} - {u_{\small\mbox{e}}}^{n-1}}{\Delta t}
+        +R^n\nonumber,
+        
+
+.. _Eq:form:trunc:fd1:bw:
+
+.. math::
+
+    \tag{502}
+    R^n = -\frac{1}{2}{u_{\small\mbox{e}}}''(t_n)\Delta t + {\cal O}(\Delta t^2)
+        
+        
+
+.. math::
+          
+        {u_{\small\mbox{e}}}'(t_n) =
+        [D_t^+{u_{\small\mbox{e}}}]^n +R^n = \frac{{u_{\small\mbox{e}}}^{n+1} - {u_{\small\mbox{e}}}^{n}}{\Delta t}
+        +R^n\nonumber,
+        
+
+.. _Eq:form:trunc:fd1:fw:
+
+.. math::
+
+    \tag{503}
+    R^n = -\frac{1}{2}{u_{\small\mbox{e}}}''(t_n)\Delta t + {\cal O}(\Delta t^2)
+        
+        
+
+.. math::
+          
+        {u_{\small\mbox{e}}}'(t_{n+\theta}) =
+        [\bar D_t{u_{\small\mbox{e}}}]^{n+\theta} +R^{n+\theta} = \frac{{u_{\small\mbox{e}}}^{n+1} - {u_{\small\mbox{e}}}^{n}}{\Delta t}
+        +R^{n+\theta}\nonumber,
+        
+
+.. math::
+          
+        R^{n+\theta} = -\frac{1}{2}(1-2\theta){u_{\small\mbox{e}}}''(t_{n+\theta})\Delta t +
+        \frac{1}{6}((1 - \theta)^3 - \theta^3){u_{\small\mbox{e}}}'''(t_{n+\theta})\Delta t^2 +
+        \nonumber
+        
+
+.. _Eq:form:trunc:fd1:theta:
+
+.. math::
+
+    \tag{504}
+    \quad {\cal O}(\Delta t^3)
+        
+        
+
+.. math::
+          
+        {u_{\small\mbox{e}}}'(t_n) =
+        [D_t^{2-}{u_{\small\mbox{e}}}]^n +R^n = \frac{3{u_{\small\mbox{e}}}^{n} - 4{u_{\small\mbox{e}}}^{n-1} + {u_{\small\mbox{e}}}^{n-2}}{2\Delta t}
+        +R^n\nonumber,
+        
+
+.. _Eq:form:trunc:fd1:bw2:
+
+.. math::
+
+    \tag{505}
+    R^n = \frac{1}{3}{u_{\small\mbox{e}}}'''(t_n)\Delta t^2 + {\cal O}(\Delta t^3)
+        
+        
+
+.. math::
+          
+        {u_{\small\mbox{e}}}''(t_n) =
+        [D_tD_t {u_{\small\mbox{e}}}]^n +R^n = \frac{{u_{\small\mbox{e}}}^{n+1} - 2{u_{\small\mbox{e}}}^{n} + {u_{\small\mbox{e}}}^{n-1}}{\Delta t^2}
+        +R^n\nonumber,
+        
+
+.. _Eq:form:trunc:fd2:center:
+
+.. math::
+
+    \tag{506}
+    R^n = -\frac{1}{12}{u_{\small\mbox{e}}}''''(t_n)\Delta t^2 + {\cal O}(\Delta t^4)
+        
+        
+
+.. math::
+        
+        {u_{\small\mbox{e}}}(t_{n+\theta}) = [\overline{{u_{\small\mbox{e}}}}^{t,\theta}]^{n+\theta} +R^{n+\theta}
+        = \theta {u_{\small\mbox{e}}}^{n+1} + (1-\theta){u_{\small\mbox{e}}}^n +R^{n+\theta},\nonumber
+        
+
+.. _Eq:form:trunc:avg:theta:
+
+.. math::
+
+    \tag{507}
+    R^{n+\theta} = -\frac{1}{2}{u_{\small\mbox{e}}}''(t_{n+\theta})\Delta t^2\theta (1-\theta) +
+        {\cal O}(\Delta t^3)
+        {\thinspace .}
+        
+        
+
+.. _sec:form:fdexp:
+
+Finite differences of exponential functions
+===========================================
+
+Complex exponentials
+~~~~~~~~~~~~~~~~~~~~
+
+Let :math:`u^n = \exp{(i\omega n\Delta t)} = e^{i\omega t_n}`.
+
+.. _Eq:form:exp:fd2:center:
+
+.. math::
+
+    \tag{508}
+    [D_tD_t u]^n = u^n \frac{2}{\Delta t}(\cos \omega\Delta t - 1) =
+        -\frac{4}{\Delta t}\sin^2\left(\frac{\omega\Delta t}{2}\right),
+        
+        
+
+.. _Eq:form:exp:fd1:fw:
+
+.. math::
+
+    \tag{509}
+    [D_t^+ u]^n = u^n\frac{1}{\Delta t}(\exp{(i\omega\Delta t)} - 1),
+        
+        
+
+.. _Eq:form:exp:fd1:bw:
+
+.. math::
+
+    \tag{510}
+    [D_t^- u]^n = u^n\frac{1}{\Delta t}(1 - \exp{(-i\omega\Delta t)}),
+        
+        
+
+.. _Eq:form:exp:fd1:center:
+
+.. math::
+
+    \tag{511}
+    [D_t u]^n = u^n\frac{2}{\Delta t}i\sin{\left(\frac{\omega\Delta t}{2}\right)},
+        
+        
+
+.. _Eq:form:exp:fd1c:center:
+
+.. math::
+
+    \tag{512}
+    [D_{2t} u]^n = u^n\frac{1}{\Delta t}i\sin{(\omega\Delta t)}
+        
+        {\thinspace .}
+        
+
+Real exponentials
+~~~~~~~~~~~~~~~~~
+
+Let :math:`u^n = \exp{(\omega n\Delta t)} = e^{\omega t_n}`.
+
+.. _Eq:form:rexp:fd2:center:
+
+.. math::
+
+    \tag{513}
+    [D_tD_t u]^n = u^n \frac{2}{\Delta t}(\cos \omega\Delta t - 1) =
+        -\frac{4}{\Delta t}\sin^2\left(\frac{\omega\Delta t}{2}\right),
+        
+        
+
+.. _Eq:form:rexp:fd1:fw:
+
+.. math::
+
+    \tag{514}
+    [D_t^+ u]^n = u^n\frac{1}{\Delta t}(\exp{(i\omega\Delta t)} - 1),
+        
+        
+
+.. _Eq:form:rexp:fd1:bw:
+
+.. math::
+
+    \tag{515}
+    [D_t^- u]^n = u^n\frac{1}{\Delta t}(1 - \exp{(-i\omega\Delta t)}),
+        
+        
+
+.. _Eq:form:rexp:fd1:center:
+
+.. math::
+
+    \tag{516}
+    [D_t u]^n = u^n\frac{2}{\Delta t}i\sin{\left(\frac{\omega\Delta t}{2}\right)},
+        
+        
+
+.. _Eq:form:rexp:fd1c:center:
+
+.. math::
+
+    \tag{517}
+    [D_{2t} u]^n = u^n\frac{1}{\Delta t}i\sin{(\omega\Delta t)}
+        
+        {\thinspace .}
+        
+
+.. _sec:form:fdtn:
+
+Finite differences of :math:`t^n`
+=================================
+
+The following results are useful when checking if a polynomial term in a
+solution fulfills the discrete equation for the numerical method.
+
+.. _Eq:form:Dop:tn:fw:
+
+.. math::
+
+    \tag{518}
+    \lbrack D_t^+ t\rbrack^n = 1,
+        
+        
+
+.. _Eq:form:Dop:tn:bw:
+
+.. math::
+
+    \tag{519}
+    \lbrack D_t^- t\rbrack^n = 1,
+        
+        
+
+.. _Eq:form:Dop:tn:cn:
+
+.. math::
+
+    \tag{520}
+    \lbrack D_t t\rbrack^n = 1,
+        
+        
+
+.. _Eq:form:Dop:tn:2cn:
+
+.. math::
+
+    \tag{521}
+    \lbrack D_{2t} t\rbrack^n = 1,
+        
+        
+
+.. _Eq:form:Dop2:tn:cn:
+
+.. math::
+
+    \tag{522}
+    \lbrack D_{t}D_t t\rbrack^n = 0
+        
+        {\thinspace .}
+        
+
+The next formulas concern the action of difference operators on a :math:`t^2` term.
+
+.. _Eq:form:Dop:tn2:fw:
+
+.. math::
+
+    \tag{523}
+    \lbrack D_t^+ t^2\rbrack^n = (2n+1)\Delta t,
+        
+        
+
+.. _Eq:form:Dop:tn2:bw:
+
+.. math::
+
+    \tag{524}
+    \lbrack D_t^- t^2\rbrack^n = (2n-1)\Delta t,
+        
+        
+
+.. _Eq:form:Dop:tn2:cn:
+
+.. math::
+
+    \tag{525}
+    \lbrack D_t t^2\rbrack^n = 2n\Delta t,
+        
+        
+
+.. _Eq:form:Dop:tn2:2cn:
+
+.. math::
+
+    \tag{526}
+    \lbrack D_{2t} t^2\rbrack^n = 2n\Delta t,
+        
+        
+
+.. _Eq:form:Dop2:tn2:cn:
+
+.. math::
+
+    \tag{527}
+    \lbrack D_{t}D_t t^2\rbrack^n = 2,
+        
+        
+
+Finally, we present formulas for a :math:`t^3` term: **These must be controlled**
+against ``lib.py``. Use :math:`t_n` instead of :math:`n\Delta t`??
+
+.. _Eq:form:Dop:tn3:fw:
+
+.. math::
+
+    \tag{528}
+    \lbrack D_t^+ t^3\rbrack^n = 3(n\Delta t)^2 + 3n\Delta t^2 + \Delta t^2,
+        
+        
+
+.. _Eq:form:Dop:tn3:bw:
+
+.. math::
+
+    \tag{529}
+    \lbrack D_t^- t^3\rbrack^n = 3(n\Delta t)^2 - 3n\Delta t^2 + \Delta t^2,
+        
+        
+
+.. _Eq:form:Dop:tn3:cn:
+
+.. math::
+
+    \tag{530}
+    \lbrack D_t t^3\rbrack^n = 3(n\Delta t)^2 + \frac{1}{4}\Delta t^2,
+        
+        
+
+.. _Eq:form:Dop:tn3:2cn:
+
+.. math::
+
+    \tag{531}
+    \lbrack D_{2t} t^3\rbrack^n = 3(n\Delta t)^2 + \Delta t^2,
+        
+        
+
+.. _Eq:form:Dop2:tn3:cn:
+
+.. math::
+
+    \tag{532}
+    \lbrack D_{t}D_t t^3\rbrack^n = 6n\Delta t,
+        
+        
+
+Software
+--------
+
+Application of finite difference operators to polynomials and exponential
+functions, resulting in the formulas above, can easily be computed by
+some ``sympy`` code:
+
+.. code-block:: python
+
+    from sympy import *
+    t, dt, n, w = symbols('t dt n w', real=True)
+    
+    # Finite difference operators
+    
+    def D_t_forward(u):
+        return (u(t + dt) - u(t))/dt
+    
+    def D_t_backward(u):
+        return (u(t) - u(t-dt))/dt
+    
+    def D_t_centered(u):
+        return (u(t + dt/2) - u(t-dt/2))/dt
+    
+    def D_2t_centered(u):
+        return (u(t + dt) - u(t-dt))/(2*dt)
+    
+    def D_t_D_t(u):
+        return (u(t + dt) - 2*u(t) + u(t-dt))/(dt**2)
+    
+    
+    op_list = [D_t_forward, D_t_backward,
+               D_t_centered, D_2t_centered, D_t_D_t]
+    
+    def ft1(t):
+        return t
+    
+    def ft2(t):
+        return t**2
+    
+    def ft3(t):
+        return t**3
+    
+    def f_expiwt(t):
+        return exp(I*w*t)
+    
+    def f_expwt(t):
+        return exp(w*t)
+    
+    func_list = [ft1, ft2, ft3, f_expiwt, f_expwt]
+
+To see the results, one can now make a simple loop  like
+
+.. code-block:: python
+
+    for func in func_list:
+        for op in op_list:
+            f = func
+            e = op(f)
+            e = simplify(expand(e))
+            print e
+            if func in [f_expiwt, f_expwt]:
+                e = e/f(t)
+            e = e.subs(t, n*dt)
+            print expand(e)
+            print factor(simplify(expand(e)))
+

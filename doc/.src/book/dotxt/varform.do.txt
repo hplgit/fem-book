@@ -9,11 +9,9 @@
 
 # no (au')', have (\alpha u')' - it solves all the problems with a and a(.,.)
 
+!split
 ========= Variational formulations with global basis functions =========
 label{ch:varform:global}
-
-======= Basic principles for approximating differential equations =======
-label{fem:deq:1D:principles}
 
 The finite element method is a very flexible approach for solving partial
 differential equations. Its two most attractive features are the ease
@@ -26,15 +24,22 @@ larger $d$ creates methods that are much more computationally efficient
 than standard finite difference methods (and equally efficient finite
 difference methods are technically much harder to construct).
 
+However, before we attack finite element methods, with localized basis
+functions, it can be easier from a pedagogical point of view to study
+approximations by global functions because the mathematics in this
+case gets simpler.
+
+======= Basic principles for approximating differential equations =======
+label{fem:deq:1D:principles}
+
 The finite element method is usually applied for discretization in
 space, and therefore spatial problems will be our focus in the coming
 sections.  Extensions to time-dependent problems usually employs
 finite difference approximations in time.
 
-Before studying how finite element methods are used to tackle
-differential equations, we first look at how global basis functions
-and the least squares, Galerkin, and collocation principles can be
-used to solve differential equations.
+The coming sections address at how global basis functions and the least
+squares, Galerkin, and collocation principles can be used to solve
+differential equations.
 
 ===== Differential equation models =====
 label{fem:deq:1D:models}
@@ -969,7 +974,7 @@ $V$.
 
 [kam: in the below, I cannot really find where it is stated that
 we need to adjust the right-hand side as well]
-[hpl: I don't understand.]
+[hpl: I don't understand what you mean.]
 
 !bsummary How to deal with nonzero Dirichlet conditions
 The general procedure of incorporating Dirichlet boundary
@@ -6318,7 +6323,7 @@ on a coarse mesh of 10 elements for $\mu=0.01$. Clearly, the finite
 element method has the same problem as was observed earlier in global
 functions in Section ref{sec:varform:general:convdiff}.
 
-FIGURE: [fig/fenics_conv_diff, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
+#FIGURE: [fig/fenics_conv_diff, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 For finite differences, the cure for these oscillations is *upwinding*.
 That is, instead
@@ -6326,10 +6331,10 @@ of using a central difference scheme, we employ the following difference
 scheme:
 
 !bt
-\begin{eqnarray*}
-\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0, \\
-\frac{du}{dx} (x_i) = \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0 .
-\end{eqnarray*}
+\begin{align*}
+\frac{du}{dx} (x_i) &= \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0,\\
+\frac{du}{dx} (x_i) &= \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0\tp
+\end{align*}
 !et
 Using this scheme, oscillations will disappear as can be seen in
 Figure ref{varform:fe:convdiffstab:plot}.
@@ -6339,14 +6344,15 @@ If we discretize $u_x$ with a central difference and add diffusion as
 $\epsilon =h/2 \Delta $ we get
 
 !bt
-\begin{eqnarray*}
- \frac{u_{i+1}  -  u_{i-1}}{2 h}    &  \textrm{central scheme, first order derivative}  \\
+\begin{align*}
+ \frac{u_{i+1}  -  u_{i-1}}{2 h}    &
+ \textrm{central scheme, first order derivative}  \\
 + \frac{h}{2} \, \frac{-u_{i+1}   + 2 u_{i}    -u_{i-1}}{h^2}  &  \textrm{central scheme, second order derivate}   \\
-= \frac{u_{i} -u_{i-1}}{h} &  \textrm{upwind scheme}
-\end{eqnarray*}
+& = \frac{u_{i} -u_{i-1}}{h} &  \textrm{upwind scheme}
+\end{align*}
 !et
 
-FIGURE: [fig/fenics_conv_diff_stab, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+#FIGURE: [fig/fenics_conv_diff_stab, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
 Hence, upwinding is equivalent to adding artificial diffusion with
 $\epsilon=h/2$; that is, in both cases we actually solve the problem
@@ -6385,20 +6391,19 @@ the number of basis functions in   $V$ and $W$ must be the same. Let
 
 !bt
 \begin{align*}
-A_{ij} &=& a(\baspsi_i, \baspsi_j + \beta v\cdot\nabla \baspsi_j )\\
-&=& \int_\Omega\mu\nabla \baspsi_i\cdot\nabla (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx + \int_\Omega v\nabla \baspsi_i\cdot (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx\\
-&=&\underbrace{
+A_{ij} &= a(\baspsi_i, \baspsi_j + \beta v\cdot\nabla \baspsi_j )\\
+&= \int_\Omega\mu\nabla \baspsi_i\cdot\nabla (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx + \int_\Omega v\nabla \baspsi_i\cdot (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx\\
+&=\underbrace{
 \int_\Omega\mu\nabla \baspsi_i \cdot \nabla \baspsi_j \dx + \int_\Omega v \cdot \nabla \baspsi_i\, \baspsi_j \dx}_
 {\textrm{standard Galerkin}}
 \\
-&&\lefteqn{
+&\quad
 +\underbrace{
 \beta\int_\Omega\mu\nabla \baspsi_i\cdot\nabla(v \cdot \nabla \baspsi_j) \dx
 }_
 {=0\ \textrm{for linear elements}}+
 \underbrace{\beta\int_\Omega (v\cdot\nabla \baspsi_i) (v\cdot\nabla \baspsi_j) \dx}
 _{\textrm{artificial diffusion in $v$ direction}}
-}
 \end{align*}
 !et
 
@@ -6822,7 +6827,7 @@ Now the load is discontinuous:
 
 !bt
 \[ \ell (x) =\left\lbrace\begin{array}{ll}
-\ell_1, & x <L/2,\\
+\ell_1, & x < L/2,\\
 \ell_2, & x \geq L/2
 \end{array}\right.\quad x\in [0,L]
 \tp
@@ -6840,7 +6845,7 @@ for convenience):
 
 !bt
 \[ u'' = \bar\ell(x) = \left\lbrace\begin{array}{ll}
-1, & x <1,\\
+1, & x < 1,\\
 0, & x \geq 1
 \end{array}\right.
 \quad x\in (0,1),\quad u(0)=0,\ u(2)=0
@@ -6851,12 +6856,12 @@ for convenience):
 Find the analytical solution of the problem.
 
 !bhint
-Integrate the equation separately for $x<1$ and $x>1$. Use
+Integrate the equation separately for $x < 1$ and $x>1$. Use
 the conditions that $u$ and $u'$ must be continuous at $x=1$.
 !ehint
 
 !bsol
-For $x<1$ we get $u_1(x) = C_1x + C_2$, and the boundary condition
+For $x < 1$ we get $u_1(x) = C_1x + C_2$, and the boundary condition
 $u_1(0)=0$ implies $C_2=0$. For $x>1$ we get $u_2(x)=\half x^2 + C_3x + C_4$.
 Continuity of $u'(1)$ leads to
 

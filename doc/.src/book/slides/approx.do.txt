@@ -491,7 +491,7 @@ def comparison_plot(f, u, Omega, filename='tmp.pdf'):
     savefig(filename)
 !ec
 
-All code in module "`approx1D.py`": "${src_approx}/approx1D.py"
+All code in module "`approx1D.py`": "${fem_src}/approx1D.py"
 
 !split
 ===== Application of the software: fit a parabola by a straight line =====
@@ -1429,7 +1429,7 @@ FIGURE: [mov/fe_assembly_regular_2x2/fe_assembly_regular_2x2, width=400 frac=0.7
 # #if FORMAT == "html"
 "Animation": "mov/fe_assembly.html"
 # #else
-"Animation": "${doc_notes}/mov/fe_assembly.html"
+"Animation": "${fem_doc}/mov/fe_assembly.html"
 # #endif
 
 !split
@@ -1440,7 +1440,7 @@ FIGURE: [mov/fe_assembly_regular_4x4/fe_assembly_regular_4x4, width=400 frac=0.7
 # #if FORMAT == "html"
 "Animation": "mov/fe_assembly.html"
 # #else
-"Animation": "${doc_notes}/mov/fe_assembly.html"
+"Animation": "${fem_doc}/mov/fe_assembly.html"
 # #endif
 
 !split
@@ -1451,7 +1451,7 @@ FIGURE: [mov/fe_assembly_irregular/fe_assembly_irregular, width=400 frac=0.7]
 # #if FORMAT == "html"
 "Animation": "mov/fe_assembly.html"
 # #else
-"Animation": "${doc_notes}/mov/fe_assembly.html"
+"Animation": "${fem_doc}/mov/fe_assembly.html"
 # #endif
 
 !split
@@ -1668,7 +1668,7 @@ Can print out in LaTeX too (convenient for copying into reports):
 !split
 ======= Implementation =======
 
- * Coming functions appear in "`fe_approx1D.py`": "${src_approx}/fe_approx1D.py"
+ * Coming functions appear in "`fe_approx1D.py`": "${fem_src}/fe_approx1D.py"
  * Functions can operate in symbolic or numeric mode
  * The code documents all steps in finite element calculations!
 
@@ -2509,7 +2509,7 @@ M=2&:\quad \bar X_0=-\sqrt{\frac{3}{{5}}},\ \bar X_0=0,\
  * In general, $M$-point rule integrates a polynomial
    of degree $2M+1$ exactly.
 
-See "`numint.py`": "${src_approx}/numint.py" for a large collection of Gauss-Legendre rules.
+See "`numint.py`": "${fem_src}/numint.py" for a large collection of Gauss-Legendre rules.
 
 
 !split
@@ -2694,7 +2694,7 @@ def sines(x, y, Nx, Ny):
             for i in range(Nx+1) for j in range(Ny+1)]
 !ec
 Complete code in
-"`approx2D.py`": "${src_approx}/fe_approx2D.py"
+"`approx2D.py`": "${fem_src}/fe_approx2D.py"
 
 !split
 ===== Implementation; application =====

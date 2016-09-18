@@ -1,0 +1,819 @@
+.. !split
+
+.. _ch:cg:
+
+Variational methods for linear systems
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A successful family of methods, usually referred to as Conjugate
+Gradient-like algorithms, or Krylov subspace methods, can be viewed as
+Galerkin or least-squares methods applied to a linear system :math:`Ax =b`.
+This view is different from the standard approaches to deriving the
+classical Conjugate Gradient method in the literature. Nevertheless,
+the fundamental ideas of least squares and Galerkin approximations
+from the section :ref:`ch:approx:global` can be used to derive the most
+popular and successful methods for linear systems, and this is the
+topic of the present chapter.  Such a view may increase the general
+understanding of variational methods and their applicability.
+
+Our exposition focuses on the basic reasoning behind the methods, and
+a natural continuation of the material here is provided by several
+review texts. Bruaset [Ref15]_ gives an accessible
+theoretical overview of a wide range of Conjugate Gradient-like
+methods.  Barrett et al. [Ref16]_ present a collection of
+computational algorithms and give valuable information about the
+practical use of the methods.  Saad [Ref17]_ and Axelsson
+[Ref18]_ have evolved as modern, classical text books on
+iterative methods in general for linear systems.
+
+Given a linear system
+
+.. _Eq:_auto193:
+
+.. math::
+
+    \tag{469}
+    Ax = b,\quad x,b\in\mathbb{R}^n,\ A\in\mathbb{R}^{n,n}
+        
+        
+
+and a start vector :math:`x^0`,
+we want to construct an iterative solution method that produces approximations
+:math:`x^1,x^2,\ldots`, which hopefully converge to the exact solution :math:`x`.
+In iteration no. :math:`k` we seek an approximation
+
+.. _Eq:linalg:xk:update:
+
+.. math::
+
+    \tag{470}
+    x^{k+1} = x^{k} + u,\quad u = \sum_{j=0}^k c_j{q}_j
+        
+        
+
+where :math:`{q}_j\in\mathbb{R}^n` are known vectors
+
+.. spanning the space :math:`V_{k+1}`,
+
+and :math:`c_j` are constants to be determined.
+To be specific, let :math:`q_0,\ldots,q_k` be basis vectors for :math:`V_{k+1}`:
+
+.. math::
+         V_{k+1} = \hbox{span}\{q_0,\ldots,q_k\}{\thinspace .}
+
+The associated inner product :math:`(\cdot,\cdot )` is here
+the standard Euclidean inner product on :math:`\mathbb{R}^n`.
+
+The corresponding error in the equation :math:`Ax =b`, the residual, becomes
+
+.. math::
+        
+        r^{k+1} = b -Ax^{k+1} =
+        r^{k} -\sum_{j=0}^kc_jA{q}_j {\thinspace .}
+        
+
+.. _ch:linalg:CGmethods:
+
+Conjugate gradient-like iterative methods
+=========================================
+
+The Galerkin method          (3)
+--------------------------------
+
+Galerkin's method states that the error in the equation, the residual,
+is orthogonal to the space :math:`V_{k+1}` where we seek the approximation to
+the problem.
+
+The Galerkin (or projection) method aims at finding :math:`u=\sum_jc_jq_j\in V_{k+1}`
+such that
+
+.. math::
+         (r^{k+1},v)=0,\quad\forall v\in V_{k+1}{\thinspace .}
+        
+
+This statement is
+equivalent to the residual being orthogonal to each basis vector:
+
+.. _Eq:linalg2:cg:eq1:
+
+.. math::
+
+    \tag{471}
+    (r^{k+1},{q}_i )=0,\quad i=0,\ldots,k{\thinspace .}
+        
+        
+
+Inserting the expression for :math:`r^{k+1}` in :ref:`(471) <Eq:linalg2:cg:eq1>`
+gives a linear system
+for :math:`c_j`:
+
+.. _Eq:_auto194:
+
+.. math::
+
+    \tag{472}
+    \sum_{j=0}^k (A{q}_i,{q}_j )c_j = (r^{k},{q}_i),\quad i=0,\ldots,k
+        {\thinspace .}
+        
+        
+
+The least squares method          (6)
+-------------------------------------
+
+The idea of the least-squares method is to
+minimize the square of the norm of the
+residual with respect to the free parameters :math:`c_0,\ldots,c_k`.
+That is, we minimize :math:`(r^{k+1},r^{k+1})`:
+
+.. math::
+        
+        {\partial\over\partial c_i} (r^{k+1},r^{k+1}) =
+        2({\partialr^{k+1}\over
+        \partial c_i},r^{k+1}) =0,\quad i=0,\ldots,k{\thinspace .}
+        
+
+Since :math:`\partialr^{k+1} /\partial c_i = -A{q}_i`, this approach leads to
+the following linear system:
+
+.. _Eq:ch:linalg:ls:eq1:
+
+.. math::
+
+    \tag{473}
+    \sum_{j=0}^k (A{q}_i,A{q}_j)c_j = (r^{k+1},A{q}_i),\quad i=0,\ldots,k{\thinspace .}
+        
+        
+
+Krylov subspaces
+----------------
+
+.. index:: Krylov space
+
+To obtain a complete algorithm, we need to establish a rule to update
+the basis :math:`\mathcal{B}=\{q_0,\ldots,{q}_k\}` for the next iteration.
+That is, we need to
+compute a new basis vector :math:`{q}_{k+1}\in V_{k+2}` such that
+
+.. _Eq:linalg2:cg:Basis:
+
+.. math::
+
+    \tag{474}
+    \mathcal{B} =\{ {q}_0,\ldots,{q}_{k+1}\}
+        
+        
+
+is a basis for the space :math:`V_{k+2}` that is used in the next iteration.
+The present family of methods applies the *Krylov space*, where :math:`V_k`
+is defined as
+
+.. _Eq:_auto195:
+
+.. math::
+
+    \tag{475}
+    V_{k} = \mbox{span} \left\lbrace r^0,Ar^0,A^2r^0,\ldots
+        A^{k-1}r^0 \right\rbrace {\thinspace .}
+        
+        
+
+Some frequent names
+of the associated iterative methods are therefore
+{Krylov subspace iterations}, Krylov projection methods,
+or simply Krylov methods.
+It is a fact that :math:`V_{k} \subset V_{k+1}` and that :math:`r^0
+Ar^0,\ldots A^{k-1}r^0` are linearly independent
+vectors.
+
+Computation of the basis vectors
+--------------------------------
+
+A potential formula for updating :math:`{q}_{k+1}`, such that
+:math:`{q}_{k+1}\in V_{k+2}`, is
+
+.. _Eq:linalg:q:update1:
+
+.. math::
+
+    \tag{476}
+    {q}_{k+1} =  r^{k+1} + \sum_{j=0}^k\beta_j{q}_j{\thinspace .}
+        
+        
+
+(Since :math:`r^{k+1}` involves :math:`Aq_k`, and :math:`q_k\in V_{k+1}`, multiplying
+by :math:`A` raises the dimension of the Krylov space by 1, so :math:`Aq_k\in V_{k+2}`.)
+The free parameters :math:`\beta_j` can be used to enforce desirable
+orthogonality properties of :math:`{q}_0,\ldots,{q}_{k+1}`. For example,
+it is convenient to require that the coefficient matrices in the linear
+systems for :math:`c_0,\ldots,c_k` are diagonal.
+Otherwise, we must solve a :math:`(k+1)\times (k+1)` linear system in each iteration.
+If :math:`k` should approach
+:math:`n`, the systems for the coefficients :math:`c_i` are of
+the same size as our original system :math:`Ax =b`!
+A diagonal matrix, however, ensures an efficient closed form solution for
+:math:`c_0,\ldots,c_k`.
+
+To obtain a diagonal coefficient matrix, we require in Galerkin's method
+that
+
+.. math::
+         (A{q}_i,{q}_j)=0\quad \mbox{when}\ i\neq j, 
+
+whereas we in the least-squares method require
+
+.. math::
+         (A{q}_i,A{q}_j)=0\quad \mbox{when}\ i\neq j{\thinspace .} 
+
+We can define
+the inner product
+
+.. _Eq:_auto196:
+
+.. math::
+
+    \tag{477}
+    \langle u,v\rangle\equiv (Au,v ) =u^TAv,
+        
+        
+
+provided :math:`A` is symmetric and positive definite. Another
+useful inner product is
+
+.. _Eq:_auto197:
+
+.. math::
+
+    \tag{478}
+    [u,v ]\equiv (Au,Av) = u^TA^TAv {\thinspace .}
+        
+        
+
+These inner products will be referred to as the :math:`A` product, with the
+associated :math:`A` norm, and the :math:`A^TA` product, with the associated
+:math:`A^TA` norm.
+
+The orthogonality condition on the :math:`{q}_i` vectors are then
+:math:`\langle {q}_{k+1},{q}_i\rangle =0` in the Galerkin method
+and  :math:`[{q}_{k+1},{q}_i]=0` in the least-squares method, where :math:`i`
+runs from 0 to :math:`k`.
+A standard Gram-Schmidt process can be used for constructing
+:math:`{q}_{k+1}` orthogonal to :math:`{q}_0,\ldots,{q}_k`. This leads to the determination
+of the :math:`\beta_0,\ldots,\beta_k` constants as
+
+.. _Eq:linsys:betaiG:
+
+.. math::
+
+    \tag{479}
+    \beta_i = { \langler^{k+1},{q}_i\rangle\over\langle{q}_i,{q}_i\rangle}
+        \quad\hbox{(Galerkin)} 
+        
+
+.. _Eq:_auto198:
+
+.. math::
+
+    \tag{480}
+    \beta_i = { [r^{k+1},{q}_i]\over [{q}_i,{q}_i] }
+        \quad\hbox{(least squares)}
+        
+        
+
+for :math:`i=0,\ldots,k`.
+
+Computation of a new solution vector
+------------------------------------
+
+The orthogonality condition on the basis vectors :math:`{q}_i` leads to
+the following solution for :math:`c_0,\ldots,c_k`:
+
+.. _Eq:linsys:alpha:G:
+
+.. math::
+
+    \tag{481}
+    c_i = { (r^{k},{q}_i)\over \langle {q}_i,{q}_i\rangle}
+        \quad\hbox{(Galerkin)} 
+        
+
+.. _Eq:linsys:alpha:LS:
+
+.. math::
+
+    \tag{482}
+    c_i = { (r^{k},A{q}_i)\over [ {q}_i,{q}_i]}
+        \quad\hbox{(least squares)} 
+        
+
+In iteration :math:`k`, :math:`(r^{k},{q}_i)=0` and
+:math:`(r^{k},A{q}_i)=0`, for :math:`i=0,\ldots,k-1`, in the Galerkin and
+least squares case, respectively.  Hence, :math:`c_i =0`, for :math:`i=0,\ldots,
+k-1`. In other words,
+
+.. math::
+         x^{k+1} = x^{k} + c_k{q}_k {\thinspace .}
+
+When :math:`A` is symmetric and positive definite, one can show that also
+:math:`\beta_i=0`, for :math:`0=1,\ldots,k-1`, in both the Galerkin and least
+squares methods [Ref15]_.  This means that :math:`x^k` and
+:math:`{q}_{k+1}` can be updated using only :math:`{q}_k` and not the previous
+:math:`{q}_0,\ldots,{q}_{k-1}` vectors.  This property has of course dramatic
+effects on the storage requirements of the algorithms as the number of
+iterations increases.
+
+For the suggested algorithms to work, we must require that the
+denominators in :ref:`(481) <Eq:linsys:alpha:G>` and :ref:`(482) <Eq:linsys:alpha:LS>` do
+not vanish.  This is always fulfilled for the least-squares method,
+while a (positive or negative) definite matrix :math:`A` avoids break-down
+of the Galerkin-based iteration (provided :math:`{q}_i \neq 0`).
+
+The Galerkin solution method for linear systems was originally devised
+as a *direct method* in the 1950s.  After :math:`n` iterations the exact
+solution is found in exact arithmetic, but at a higher cost than when
+using Gaussian elimination. Naturally, the method did not receive
+significant popularity before researchers discovered (in the beginning
+of the 1970s) that the method could produce a good approximation to
+:math:`x` for :math:`k\ll n` iterations.  The method, called the Conjugate
+Gradient method, has from then on caught considerable interest as an
+iterative scheme for solving linear systems arising from PDEs
+discretized such that the coefficient matrix becomes sparse.
+
+Finally, we mention how to terminate the iteration.
+The simplest criterion is :math:`||r^{k+1}||\leq\epsilon_r`, where
+:math:`\epsilon_r` is a small prescribed tolerance.
+Sometimes it is more appropriate to use a relative residual,
+:math:`||r^{k+1}||/||r^0||\leq\epsilon_r`.
+Termination criteria for Conjugate Gradient-like methods is a subject
+on its own [Ref15]_.
+
+Summary of the least squares method
+-----------------------------------
+
+In the algorithm below, we have summarized
+the computational steps in the least-squares method.
+Notice that we update the residual recursively instead of using
+:math:`r^k=b - Ax^k` in each iteration since we then avoid a possibly
+expensive matrix-vector product.
+
+1. given a start vector :math:`x^0`,
+   compute :math:`r^0=b - Ax^0` and set :math:`{q}_0 =r^0`.
+
+2. for :math:`k=0,1,2,\ldots` until termination criteria are fulfilled:
+
+  a. :math:`c_k = {(r^{k},A{q}_k)/ [{q}_k,{q}_k]}`
+
+  b. :math:`x^{k+1} = x^{k} + c_k{q}_k`
+
+  c. :math:`r^{k+1} = r^{k} - c_kA{q}_k`
+
+  d. if :math:`A` is symmetric then
+
+    1. :math:`\beta_k = {[r^{k+1},{q}_k]/ [{q}_k,{q}_k]}`
+
+     a. :math:`{q}_{k+1} = r^{k+1} - \beta_k{q}_k`
+
+  b. else
+
+    1. :math:`\beta_j = {[r^{k+1},{q}_j]/ [{q}_j,{q}_j]},\quad j=0,\ldots,k`
+
+    2. :math:`{q}_{k+1} = r^{k+1} - \sum_{j=0}^k\beta_j{q}_j`
+
+Remark
+~~~~~~
+
+The algorithm above is just a summary of the steps in the derivation
+of the least-squares method and should not be directly used for
+practical computations without further developments.
+
+Truncation and restart
+----------------------
+
+When :math:`A` is nonsymmetric, the storage requirements of :math:`{q}_0,\ldots,{q}_k`
+may be prohibitively large. It has become a standard trick to
+either *truncate* or *restart* the algorithm.
+In the latter case one restarts the algorithm every :math:`K+1`-th step, i.e.,
+one aborts the iteration and starts the algorithm again with :math:`x^0=x^K`.
+The other alternative is to truncate the sum :math:`\sum_{j=0}^k\beta_j{q}_j`
+and use only the last :math:`K` vectors:
+
+.. index::
+   single: linear solvers; GMRES
+
+.. index::
+   single: linear solvers; GCR
+
+.. index::
+   single: linear solvers; minimum residuals
+
+.. index::
+   single: linear solvers; generalized conjugate residuals
+
+.. index:: search (direction) vectors
+
+.. math::
+         x^{k+1} = x^{k} + \sum_{j=k-K}^k \beta_j{q}_j{\thinspace .} 
+
+Both the restarted and truncated version of the algorithm require
+storage of only :math:`K+1` basis vectors :math:`{q}_{k-K},\ldots,{q}_k`.
+The basis vectors are also often called *search direction vectors*.
+The truncated version of the least-squares algorithm above
+is widely known as *Generalized Minimum Residuals*, shortened as GMRES,
+or GMRES$(K)$ to explicitly indicate the
+number of search direction vectors.
+In the literature one encounters the name
+*Generalized Conjugate Residual method*, abbreviated CGR, for
+the restarted version of Orthomin. When :math:`A` is symmetric, the method
+is known under the name *Conjugate Residuals*.
+
+Summary of the Galerkin method
+------------------------------
+
+.. index::
+   single: linear solvers; conjugate gradients
+
+In case of Galerkin's method, we assume that :math:`A` is symmetric and
+positive definite. The resulting computational procedure
+is the famous Conjugate Gradient
+method.
+Since :math:`A` must be symmetric, the recursive update of
+:math:`{q}_{k+1}` needs only one previous search direction vector :math:`{q}_k`, that is,
+:math:`\beta_j=0` for :math:`j<k`.
+
+1. Given a start vector :math:`x^0`,
+   compute :math:`r^0=b - Ax^0` and set :math:`{q}_0 =r^0`.
+
+2. for :math:`k=1,2,\ldots` until termination criteria are fulfilled:
+
+  a. :math:`c_k = {(r^{k},{q}_k) / \langle {q}_k,{q}_k\rangle}`
+
+  b. :math:`x^{k} = x^{k-1} + c_k{q}_k`
+
+  c. :math:`r^{k} = r^{k-1} - c_kA{q}_k`
+
+  d. :math:`\beta_k = {\langler^{k+1},{q}_k\rangle / \langle{q}_k,{q}_k\rangle}`
+
+  e. :math:`{q}_{k+1} = r^{k+1} - \beta_k{q}_k`
+
+The previous remark that the listed algorithm is just a summary of the
+steps in the solution procedure, and not an efficient algorithm
+that should be implemented in its present form, must be repeated here.
+In general, we recommend to rely on some high-quality linear algebra library
+that offers an implementation of the Conjugate gradient method.
+
+
+.. admonition:: The computational nature of Conjugate gradient-like methods
+
+   Looking at the Galerkin and least squares algorithms above,
+   one notice that the matrix :math:`A` is only used in matrix-vector
+   products. This means that it is sufficient
+   to store only the nonzero entries of :math:`A`.
+   The rest of the algorithms consists of vector operations of the
+   type :math:`y \leftarrow ax + y`,
+   the slightly more general variant :math:`q\leftarrow ax +y`, as well as
+   inner products.
+
+
+
+
+A framework based on the error
+------------------------------
+
+Let us define the error :math:`e^k = x - x^k`. Multiplying this equation by :math:`A`
+leads to the well-known relation between the error and the residual
+for linear systems:
+
+.. _Eq:linalg:erroreq:
+
+.. math::
+
+    \tag{483}
+    Ae^k = r^k {\thinspace .}
+        
+        
+
+Using :math:`r^k = Ae^k` we can reformulate the Galerkin and
+least-squares methods in terms of the error.  The Galerkin method can
+then be written
+
+.. _Eq:_auto199:
+
+.. math::
+
+    \tag{484}
+    (r^k,{q}_i ) = (Ae^k,{q}_i) = \langle e^k,{q}_i\rangle = 0,\quad
+        i=0,\ldots,k{\thinspace .}
+        
+        
+
+For the least-squares method we obtain
+
+.. _Eq:_auto200:
+
+.. math::
+
+    \tag{485}
+    (r^k,A{q}_i) = [e^k,{q}_i] =0,\quad i=0,\ldots,k{\thinspace .}
+        
+        
+
+This means that
+
+.. math::
+        \begin{align*}
+        \langle e^k, v\rangle  &= 0\quad\forall v\in V_{k+1}\hbox{ (Galerkin)}\\ 
+        \lbrack e^k, v \rbrack  &= 0\quad\forall v\in V_{k+1}\hbox{ (least-squares)}
+        \end{align*}
+
+In other words, the error is :math:`A`-orthogonal to the space :math:`V_{k+1}` in the
+Galerkin method, whereas the error is :math:`A^TA`-orthogonal to :math:`V_{k+1}` in
+the least-squares method. When the error is orthogonal to a space, we
+find the best approximation in the associated norm to the solution in
+that space. Specifically here, it means that for a symmetric and positive
+definite :math:`A`, the Conjugate gradient method finds the optimal adjustment
+in :math:`V_{k+1}` of the vector :math:`x^k` (in the :math:`A`-norm)
+in the update for :math:`x^{k+1}`. Similarly, the
+least squares formulation finds the optimal adjustment in :math:`V_{k+1}`
+measured in the :math:`A^TA`-norm.
+
+A lot of Conjugate gradient-like methods were developed in the 1980s and
+1990s, some of the most popular methods do not fit
+directly into the framework presented here.  The theoretical
+similarities between the methods are covered in [Ref15]_, whereas
+we refer to [Ref16]_ for algorithms and practical
+comments related to widespread methods, such as the SYMMLQ method (for
+symmetric indefinite systems), the Generalized Minimal Residual
+(GMRES) method, the BiConjugate Gradient (BiCG) method, the
+Quasi-Minimal Residual (QMR) method, and the BiConjugate Gradient
+Stabilized (BiCGStab) method.  When :math:`A` is symmetric and positive
+definite, the Conjugate gradient method is the optimal choice with
+respect to computational efficiency, but when :math:`A` is nonsymmetric,
+the performance of the methods is strongly problem dependent, and one
+needs to experiment.
+
+.. _ch:linalg2:preconditioning:
+
+Preconditioning
+===============
+
+.. index::
+   single: linear systems; preconditioned
+
+.. index::
+   single: linear solvers; preconditioning
+
+Motivation and Basic Principles
+-------------------------------
+
+.. index:: preconditioning
+
+The Conjugate Gradient method has been subject to extensive analysis,
+and its convergence properties are well understood.
+To reduce the initial error :math:`e^0 =x -x^0` with a factor
+:math:`0 <\epsilon\ll 1` after :math:`k` iterations, or more precisely,
+:math:`||e^k||_{A}\leq\epsilon ||e^0||_{A}`, it can be shown that
+:math:`k` is bounded by
+
+.. math::
+          {1\over2}\ln{2\over\epsilon}\sqrt{\kappa},
+
+where :math:`\kappa` is the ratio of the largest and smallest eigenvalue of
+:math:`A`. The quantity :math:`\kappa`  is commonly referred to as
+the spectral *condition number*.
+Common finite element and finite difference discretizations of
+Poisson-like PDEs lead to :math:`\kappa\sim h^{-2}`, where :math:`h` denotes the
+mesh size. This implies that the Conjugate Gradient method converges
+slowly in PDE problems with fine meshes, as the number of iterations is
+proportional to :math:`h^{-1}`.
+
+To speed up the Conjugate Gradient method, we should
+manipulate the eigenvalue distribution. For instance, we could reduce
+the condition number :math:`\kappa`. This can be achieved by so-called
+*preconditioning*. Instead of applying the iterative method to
+the system :math:`Ax =b`, we multiply by a matrix :math:`M^{-1}` and
+apply the iterative method to the mathematically equivalent system
+
+.. _Eq:_auto201:
+
+.. math::
+
+    \tag{486}
+    M^{-1}Ax = M^{-1}b {\thinspace .} 
+        
+
+The aim now is to construct a nonsingular *preconditioning matrix or algorithm*
+such that :math:`M^{-1}A`
+has a more favorable condition number than :math:`A`.
+We remark that we use the notation :math:`M^{-1}` here to indicate that it should resemble the inverse 
+of the matrix :math:`A`. 
+
+For increased flexibility we can write
+:math:`M^{-1} = C_LC_R` and transform the system according to
+
+.. _Eq:_auto202:
+
+.. math::
+
+    \tag{487}
+    C_LAC_R y = C_Lb,\quad  y =C_R^{-1}x ,
+        
+        
+
+where :math:`C_L` is the *left* and :math:`C_R` is the *right*
+preconditioner. If the original coefficient matrix :math:`A` is symmetric
+and positive definite, :math:`C_L = C_R^T` leads to preservation of these
+properties in the transformed system. This is important when applying
+the Conjugate Gradient method to the preconditioned linear system.
+Even if :math:`A` and :math:`M` are symmetric and positive definite,
+:math:`M^{-1}A` does not necessarily inherit these properties.  It
+appears that for practical purposes one can express the iterative
+algorithms such that it is sufficient to work with a single
+preconditioning matrix :math:`M` only [Ref16]_ [Ref15]_.  We
+shall therefore speak of preconditioning in terms of the left
+preconditioner :math:`M` in the following.
+
+Use of the preconditioning matrix in the iterative methods
+----------------------------------------------------------
+
+Optimal convergence for the Conjugate Gradient method is
+achieved when the coefficient matrix :math:`M^{-1}A` equals the identity matrix
+:math:`I` and only one iteration is required. In the algorithm we need to perform matrix-vector products
+:math:`M^{-1}Au` for an arbitrary :math:`u\in\mathbb{R}^n`.
+This means that we have to solve a linear system with :math:`M` as coefficient
+matrix in each iteration since we implement the product :math:`y =M^{-1}Au`
+in a two step fashion: First we compute :math:`v = Au` and then we
+solve the linear system :math:`My =v` for :math:`y`. The optimal choice :math:`M =A`
+therefore involves the solution of :math:`Ay =v` in each iteration, which
+is a problem of the same complexity as our original system :math:`Ax =b`.
+The strategy must hence be to compute an :math:`M^{-1} \approx A^{-1}` such that the
+algorithmic operations involved in the inversion of :math:`M` are cheap.
+
+The preceding discussion motivates the following
+demands on the preconditioning matrix :math:`M`:
+
+  * :math:`M^{-1}` should be a good approximation to :math:`A`,
+
+  * :math:`M^{-1}` should be inexpensive to compute,
+
+  * :math:`M^{-1}` should be sparse in order to minimize storage requirements,
+
+  * linear systems with :math:`M` as coefficient matrix must be efficiently solved.
+
+Regarding the last property, such systems must be solved in
+:math:`\mathcal{O}(n)` operations, that is, a complexity of the same order
+as the vector updates in the Conjugate Gradient-like algorithms.
+These four properties are contradictory and some sort of compromise
+must be sought.
+
+.. _ch:linalg:SORprecond:
+
+Classical iterative methods as preconditioners
+----------------------------------------------
+
+.. index::
+   single: preconditioning; classical iterations
+
+The simplest possible iterative method for solving :math:`Ax=b` is
+
+.. math::
+         x^{k+1} = x^{k} + r^{k} {\thinspace .} 
+
+Applying this method to the preconditioned system
+:math:`M^{-1}Ax =M^{-1}b` results in the scheme
+
+.. math::
+         x^{k+1} = x^{k} + M^{-1}r^{k} , 
+
+which is nothing but the formula for classical iterative methods such as
+the Jacobi method, the Gauss-Seidel method, SOR (Successive over-relaxation),
+and SSOR (Symmetric successive over-relaxation).
+This motivates for choosing :math:`M` as one iteration of these classical methods.
+In particular, these methods provide simple formulas for :math:`M`:
+
+  * Jacobi preconditioning: :math:`M =D`.
+
+  * Gauss-Seidel preconditioning: :math:`M = D + L`.
+
+  * SOR preconditioning: :math:`M = \omega^{-1}D +L`.
+
+  * SSOR preconditioning:  :math:`M = (2-\omega )^{-1} \left( \omega^{-1}D + L\right) \left( \omega^{-1}D\right)^{-1} \left( \omega^{-1}D + U\right)`
+
+Turning our attention to the four requirements of the preconditioning
+matrix, we realize that the suggested :math:`M` matrices do not demand
+additional storage, linear systems with :math:`M` as coefficient matrix are
+solved effectively in :math:`\mathcal{O}(n)` operations, and :math:`M` needs no
+initial computation.  The only questionable property is how well :math:`M`
+approximates :math:`A`, and that is the weak point of using classical
+iterative methods as preconditioners.
+
+The Conjugate Gradient method can only utilize the Jacobi and SSOR
+preconditioners among the classical iterative methods, because the :math:`M`
+matrix in that case is on the form :math:`M^{-1}=C_LC_L^T`, which is
+necessary to ensure that the coefficient matrix of the preconditioned
+system is symmetric and positive definite.  For certain PDEs, like the
+Poisson equation, it can be shown that the SSOR preconditioner reduces
+the condition number with an order of magnitude, i.e., from
+:math:`\mathcal{O}(h^{-2})` to :math:`\mathcal{O}(h^{-1})`, provided we use the
+optimal choice of the relaxation parameter :math:`\omega`.  According to
+experiments, however, the performance of the SSOR preconditioned
+Conjugate Gradient method is not very sensitive to the choice of
+:math:`\omega`. [**hpl 48**: Claim! Does TCSE1 have experiments?]
+We refer to [Ref16]_ [Ref15]_ for more information about
+classical iterative methods as preconditioners.
+
+[**kam 49**: I would like some references here.]
+
+.. _linalg:ILU:
+
+Incomplete factorization preconditioners
+----------------------------------------
+
+.. index:: MILU
+
+.. index:: ILU
+
+.. index:: incomplete factorization
+
+Imagine that we choose :math:`M =A` and solve systems :math:`My =v` by a
+direct method. Such methods typically first compute the LU
+factorization :math:`M =\bar L\bar U` and thereafter perform two
+triangular solves. The lower and upper triangular factors :math:`\bar L` and
+:math:`\bar U` are computed from a Gaussian elimination procedure.
+Unfortunately, :math:`\bar L` and :math:`\bar U` contain nonzero values, so-called
+*fill-in*, in many locations where the original matrix :math:`A` contains
+zeroes. This decreased sparsity of :math:`\bar L` and :math:`\bar U` increases
+both the storage requirements and the computational efforts related to
+solving systems :math:`My =v`.  An idea to improve the situation is to
+compute *sparse* versions of the factors :math:`\bar L` and :math:`\bar U`. This
+is achieved by performing Gaussian elimination, but neglecting the
+fill-in (!). In this way, we can compute approximate factors :math:`\widehat L`
+and :math:`\widehat U` that become as sparse as :math:`A`.  The storage
+requirements are hence only doubled by introducing a preconditioner,
+and the triangular solves become an :math:`\mathcal{O}(n)` operation since
+the number of nonzeroes in the :math:`\widehat L` and :math:`\widehat U` matrices
+(and :math:`A`) is :math:`\mathcal{O}(n)` when the underlying PDE is discretized
+by finite difference or finite element methods.  We call :math:`M
+=\widehat L\widehat U` an *incomplete LU factorization*
+preconditioner, often just referred to as the ILU preconditioner.
+
+Instead of throwing away all fill-in entries, we can add them to the
+main diagonal. This yields the *modified incomplete LU factorization*
+(MILU).  One can also allow a certain amount of fill-in
+to improve the quality of the preconditioner, at the expense of
+more storage for the factors. Libraries offering ILU preconditioners
+will then often have a tolerance for how small a fill-in element in
+the Gaussian elimination must be to be dropped, and a parameter that
+governs the maximum number of nonzeros per row in the factors.
+A popular ILU implementation is the open source C code
+`SuperLU <https://fs.hlrs.de/projects/craydoc/docs_merged/books/S-6532-30/S-6532-30.pdf>`__. This preconditioner is available to Python programmers through the
+``scipy.sparse.linalg.spilu`` function.
+[**hpl 50**: Need some references to textbooks; Axelsson? Saad?]
+
+The general algorithm for MILU preconditioning follows the steps of
+traditional exact Gaussian elimination, except that
+we restrict the computations to the nonzero entries in :math:`A`.
+The factors :math:`\widehat L` and :math:`\widehat U` can be stored directly in the
+sparsity structure of :math:`A`, that is, the algorithm overwrites a copy
+:math:`M` of :math:`A` with
+its MILU factorization. The steps in the MILU factorizations are
+listed below.
+
+1. Given a sparsity pattern as an index set :math:`\mathcal{I}`,
+   copy :math:`M_{i,j}\leftarrow A_{i,j}`, :math:`i,j=1,\ldots,n`
+
+2. for :math:`k=1,2,\ldots, n`
+
+  a. for :math:`i=k+1,\ldots,n`
+
+     * if :math:`(i,k)\in\mathcal{I}` then
+
+      a. :math:`M_{i,k}\leftarrow M_{i,k}/M_{k,k}`
+
+     * else
+
+      a. :math:`M_{i,k} = 0`
+
+     * :math:`r=M_{i,k}`
+
+     * for :math:`j=k+1,\ldots,n`
+
+       * if :math:`j=i` then
+
+         * :math:`M_{i,j}\leftarrow M_{i,j} - rM_{k,j} + \sum_{p=k+1}^n
+           \left( M_{i,p} - rM_{k,p}\right)`
+
+       * else
+
+         * if :math:`(i,j)\in\mathcal{I}` then
+
+           * :math:`M_{i,j}\leftarrow M_{i,j} - rM_{k,j}`
+
+         * else
+
+           * :math:`M_{i,j} =0`
+
+We also remark here that the algorithm above needs careful refinement
+before it should be implemented in a code. For example, one will not
+run through a series of :math:`(i,j)` indices and test for each of them if
+:math:`(i,j)\in\mathcal{I}`. Instead one should run more directly through
+the sparsity structure of :math:`A`.
+

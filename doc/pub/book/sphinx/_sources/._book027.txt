@@ -1,0 +1,3401 @@
+.. !split
+
+.. _ch:femsys:
+
+Variational forms for systems of PDEs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Many mathematical models involve :math:`m+1` unknown functions
+governed by a system of :math:`m+1` differential equations. In abstract form
+we may denote the unknowns by :math:`u^{(0)},\ldots,
+u^{(m)}` and write the governing equations as
+
+.. math::
+        \begin{align*}
+        \mathcal{L}_0(u^{(0)},\ldots,u^{(m)}) &= 0,\\ 
+        &\vdots\\ 
+        \mathcal{L}_{m}(u^{(0)},\ldots,u^{(m)}) &= 0,
+        \end{align*}
+
+where :math:`\mathcal{L}_i` is some differential operator defining differential
+equation number :math:`i`.
+
+.. _fem:sys:vform:
+
+Variational forms          (3)
+==============================
+
+There are basically two ways of formulating a variational form
+for a system of differential equations. The first method treats
+each equation independently as a scalar equation, while the other
+method views the total system as a vector equation with a vector function
+as unknown.
+
+Sequence of scalar PDEs formulation
+-----------------------------------
+
+Let us start with the approach that treats one equation at a time.
+We multiply equation number :math:`i` by
+some test function :math:`v^{(i)}\in V^{(i)}` and integrate over the domain:
+
+.. _Eq:fem:sys:vform:1by1a:
+
+.. math::
+
+    \tag{310}
+    \int_\Omega \mathcal{L}^{(0)}(u^{(0)},\ldots,u^{(m)}) v^{(0)}{\, \mathrm{d}x} = 0,
+        
+        
+
+.. _Eq:_auto128:
+
+.. math::
+
+    \tag{311}
+    \vdots
+        
+        
+
+.. _Eq:fem:sys:vform:1by1b:
+
+.. math::
+
+    \tag{312}
+    \int_\Omega \mathcal{L}^{(m)}(u^{(0)},\ldots,u^{(m)}) v^{(m)}{\, \mathrm{d}x} = 0
+        
+        {\thinspace .}
+        
+
+Terms with second-order derivatives may be integrated by parts, with
+Neumann conditions inserted in boundary integrals.
+Let
+
+.. math::
+         V^{(i)} = \hbox{span}\{{\psi}_0^{(i)},\ldots,{\psi}_{N_i}^{(i)}\},
+
+such that
+
+.. math::
+         u^{(i)} = B^{(i)}(\boldsymbol{x}) + \sum_{j=0}^{N_i} c_j^{(i)} {\psi}_j^{(i)}(\boldsymbol{x}),
+        
+
+where :math:`B^{(i)}` is a boundary function to handle nonzero Dirichlet conditions.
+Observe that different unknowns may live in different spaces with different
+basis functions and numbers of degrees of freedom.
+
+From the :math:`m` equations in the variational forms we can derive
+:math:`m` coupled systems of algebraic equations for the
+:math:`\Pi_{i=0}^{m} N_i` unknown coefficients :math:`c_j^{(i)}`, :math:`j=0,\ldots,N_i`,
+:math:`i=0,\ldots,m`.
+
+Vector PDE formulation
+----------------------
+
+The alternative method for deriving a variational form for a system of
+differential equations introduces a vector of unknown functions
+
+.. math::
+         \boldsymbol{u} = (u^{(0)},\ldots,u^{(m)}),
+
+a vector of test functions
+
+.. math::
+         \boldsymbol{v} = (v^{(0)},\ldots,v^{(m)}),
+
+with
+
+.. math::
+         \boldsymbol{u}, \boldsymbol{v} \in  \boldsymbol{V} = V^{(0)}\times \cdots \times V^{(m)}
+        {\thinspace .} 
+
+With nonzero Dirichlet conditions, we have a vector
+:math:`\boldsymbol{B} = (B^{(0)},\ldots,B^{(m)})` with boundary functions and then
+it is :math:`\boldsymbol{u} - \boldsymbol{B}` that lies in :math:`\boldsymbol{V}`, not :math:`\boldsymbol{u}` itself.
+
+The governing system of differential equations is written
+
+.. math::
+         \boldsymbol{\mathcal{L}}(\boldsymbol{u} ) = 0,
+
+where
+
+.. math::
+         \boldsymbol{\mathcal{L}}(\boldsymbol{u} ) = (\mathcal{L}^{(0)}(\boldsymbol{u}),\ldots, \mathcal{L}^{(m)}(\boldsymbol{u}))
+        {\thinspace .} 
+
+The variational form is derived by taking the inner product of
+the vector of equations and the test function vector:
+
+.. _Eq:fem:sys:vform:inner:
+
+.. math::
+
+    \tag{313}
+    \int_\Omega \boldsymbol{\mathcal{L}}(\boldsymbol{u} )\cdot\boldsymbol{v} = 0\quad\forall\boldsymbol{v}\in\boldsymbol{V}{\thinspace .}
+        
+        
+
+Observe that :ref:`(313) <Eq:fem:sys:vform:inner>` is one scalar equation. To derive
+systems of algebraic equations for the unknown coefficients in the
+expansions of the unknown functions, one chooses :math:`m` linearly
+independent :math:`\boldsymbol{v}` vectors to generate :math:`m` independent variational forms
+from :ref:`(313) <Eq:fem:sys:vform:inner>`.  The particular choice :math:`\boldsymbol{v} =
+(v^{(0)},0,\ldots,0)` recovers :ref:`(310) <Eq:fem:sys:vform:1by1a>`, :math:`\boldsymbol{v} =
+(0,\ldots,0,v^{(m)}` recovers :ref:`(312) <Eq:fem:sys:vform:1by1b>`, and :math:`\boldsymbol{v} =
+(0,\ldots,0,v^{(i)},0,\ldots,0)` recovers the variational form number
+:math:`i`, :math:`\int_\Omega \mathcal{L}^{(i)} v^{(i)}{\, \mathrm{d}x} =0`, in
+:ref:`(310) <Eq:fem:sys:vform:1by1a>`-:ref:`(312) <Eq:fem:sys:vform:1by1b>`.
+
+.. _fem:sys:uT:ex:
+
+A worked example
+================
+
+We now consider a specific system of two partial differential equations
+in two space dimensions:
+
+.. _Eq:fem:sys:wT:ex:weq:
+
+.. math::
+
+    \tag{314}
+    \mu \nabla^2 w = -\beta,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:Teq:
+
+.. math::
+
+    \tag{315}
+    \kappa\nabla^2 T = - \mu ||\nabla w||^2
+        {\thinspace .}
+        
+        
+
+The unknown functions :math:`w(x,y)` and :math:`T(x,y)` are defined in a domain :math:`\Omega`,
+while :math:`\mu`, :math:`\beta`,
+and :math:`\kappa` are given constants. The norm in
+:ref:`(315) <Eq:fem:sys:wT:ex:Teq>` is the standard Euclidean norm:
+
+.. math::
+         ||\nabla w||^2 = \nabla w\cdot\nabla w = w_x^2 + w_y^2
+        {\thinspace .} 
+
+The boundary conditions associated with
+:ref:`(314) <Eq:fem:sys:wT:ex:weq>`-:ref:`(315) <Eq:fem:sys:wT:ex:Teq>` are :math:`w=0` on
+:math:`\partial\Omega` and :math:`T=T_0` on :math:`\partial\Omega`.
+Each of the equations :ref:`(314) <Eq:fem:sys:wT:ex:weq>` and :ref:`(315) <Eq:fem:sys:wT:ex:Teq>`
+needs one condition at each point on the boundary.
+
+The system :ref:`(314) <Eq:fem:sys:wT:ex:weq>`-:ref:`(315) <Eq:fem:sys:wT:ex:Teq>` arises
+from fluid flow in a straight pipe, with the :math:`z` axis in the direction
+of the pipe. The domain :math:`\Omega` is a cross section of the pipe, :math:`w`
+is the velocity in the :math:`z` direction, :math:`\mu`
+is the viscosity of the fluid, :math:`\beta` is the pressure gradient along
+the pipe, :math:`T` is the temperature,
+and :math:`\kappa` is the heat conduction coefficient of the
+fluid. The equation :ref:`(314) <Eq:fem:sys:wT:ex:weq>` comes from the Navier-Stokes
+equations, and :ref:`(315) <Eq:fem:sys:wT:ex:Teq>` follows from the energy equation.
+The term :math:`- \mu ||\nabla w||^2` models heating of the fluid
+due to internal friction.
+
+Observe that the system :ref:`(314) <Eq:fem:sys:wT:ex:weq>`-:ref:`(315) <Eq:fem:sys:wT:ex:Teq>` has
+only a one-way coupling: :math:`T` depends on :math:`w`, but :math:`w` does not depend on
+:math:`T`, because we can solve :ref:`(314) <Eq:fem:sys:wT:ex:weq>` with respect
+to :math:`w` and then :ref:`(315) <Eq:fem:sys:wT:ex:Teq>` with respect to :math:`T`.
+Some may argue that this is not a real system of PDEs, but just two scalar
+PDEs. Nevertheless, the one-way coupling
+is convenient when comparing different variational forms
+and different implementations.
+
+Identical function spaces for the unknowns
+==========================================
+
+Let us first apply the same function space :math:`V` for :math:`w` and :math:`T`
+(or more precisely, :math:`w\in V` and :math:`T-T_0 \in V`).
+With
+
+.. math::
+         V = \hbox{span}\{{\psi}_0(x,y),\ldots,{\psi}_N(x,y)\}, 
+
+we write
+
+.. _Eq:fem:sys:wT:ex:sum:
+
+.. math::
+
+    \tag{316}
+    w = \sum_{j=0}^N c^{(w)}_j {\psi}_j,\quad T = T_0 + \sum_{j=0}^N c^{(T)}_j
+        {\psi}_j{\thinspace .}
+        
+        
+
+Note that :math:`w` and :math:`T` in :ref:`(314) <Eq:fem:sys:wT:ex:weq>`-:ref:`(315) <Eq:fem:sys:wT:ex:Teq>`
+denote the exact solution of the PDEs, while :math:`w` and :math:`T`
+:ref:`(316) <Eq:fem:sys:wT:ex:sum>` are the discrete functions that approximate
+the exact solution. It should be clear from the context whether a
+symbol means the exact or approximate solution, but when we need both
+at the same time, we use a subscript e to denote the exact solution.
+
+Variational form of each individual PDE
+---------------------------------------
+
+Inserting the expansions :ref:`(316) <Eq:fem:sys:wT:ex:sum>`
+in the governing PDEs, results in a residual in each equation,
+
+.. _Eq:fem:sys:wT:ex:weq:R:
+
+.. math::
+
+    \tag{317}
+    R_w = \mu \nabla^2 w + \beta,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:Teq:R:
+
+.. math::
+
+    \tag{318}
+    R_T = \kappa\nabla^2 T + \mu ||\nabla w||^2
+        {\thinspace .}
+        
+        
+
+A Galerkin method demands :math:`R_w` and :math:`R_T` do be orthogonal to :math:`V`:
+
+.. math::
+        \begin{align*}
+        \int_\Omega R_w v {\, \mathrm{d}x} &=0\quad\forall v\in V,\\ 
+        \int_\Omega R_T v {\, \mathrm{d}x} &=0\quad\forall v\in V
+        {\thinspace .}
+        \end{align*}
+
+Because of the Dirichlet conditions, :math:`v=0` on :math:`\partial\Omega`.
+We integrate the Laplace terms by parts and note that the boundary terms
+vanish since :math:`v=0` on :math:`\partial\Omega`:
+
+.. _Eq:fem:sys:wT:ex:w:vf1:
+
+.. math::
+
+    \tag{319}
+    \int_\Omega \mu \nabla w\cdot\nabla v {\, \mathrm{d}x} = \int_\Omega \beta v{\, \mathrm{d}x}
+        \quad\forall v\in V,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:T:vf1:
+
+.. math::
+
+    \tag{320}
+    \int_\Omega \kappa \nabla T\cdot\nabla v {\, \mathrm{d}x} = \int_\Omega \mu
+        \nabla w\cdot\nabla w\, v{\, \mathrm{d}x} \quad\forall v\in V
+        
+        {\thinspace .}
+        
+
+The equation :math:`R_w` in :ref:`(317) <Eq:fem:sys:wT:ex:weq:R>` is linear
+in :math:`w`, while the equation :math:`R_T` in :ref:`(318) <Eq:fem:sys:wT:ex:Teq:R>`
+is linear in :math:`T` and nonlinear in :math:`w`.
+
+Compound scalar variational form
+--------------------------------
+
+The alternative way of deriving the variational from is to
+introduce a test vector function :math:`\boldsymbol{v}\in\boldsymbol{V} = V\times V` and take
+the inner product of :math:`\boldsymbol{v}` and the residuals, integrated over the domain:
+
+.. math::
+         \int_{\Omega} (R_w, R_T)\cdot\boldsymbol{v} {\, \mathrm{d}x} = 0\quad\forall\boldsymbol{v}\in\boldsymbol{V}
+        {\thinspace .} 
+
+With :math:`\boldsymbol{v} = (v_0,v_1)` we get
+
+.. math::
+         \int_{\Omega} (R_w v_0 + R_T v_1) {\, \mathrm{d}x} = 0\quad\forall\boldsymbol{v}\in\boldsymbol{V}
+        {\thinspace .} 
+
+Integrating the Laplace terms by parts results in
+
+.. _Eq:fem:sys:wT:ex:wT:vf2:
+
+.. math::
+
+    \tag{321}
+    \int_\Omega (\mu\nabla w\cdot\nabla v_0 + \kappa\nabla T\cdot\nabla v_1){\, \mathrm{d}x}
+        = \int_\Omega (\beta v_0 + \mu\nabla w\cdot\nabla w\, v_1){\, \mathrm{d}x},
+        \quad\forall \boldsymbol{v}\in\boldsymbol{V}
+        {\thinspace .}
+        
+        
+
+Choosing :math:`v_0=v` and :math:`v_1=0` gives the variational form
+:ref:`(319) <Eq:fem:sys:wT:ex:w:vf1>`, while :math:`v_0=0` and :math:`v_1=v` gives
+:ref:`(320) <Eq:fem:sys:wT:ex:T:vf1>`.
+
+With the inner product notation, :math:`(p,q) = \int_\Omega pq{\, \mathrm{d}x}`, we
+can alternatively write :ref:`(319) <Eq:fem:sys:wT:ex:w:vf1>` and
+:ref:`(320) <Eq:fem:sys:wT:ex:T:vf1>` as
+
+.. math::
+        \begin{align*}
+         (\mu\nabla w,\nabla v) &= (\beta, v)
+        \quad\forall v\in V,\\ 
+        (\kappa \nabla T,\nabla v) &= (\mu\nabla w\cdot\nabla w, v)\quad\forall v\in V,
+        \end{align*}
+
+or since :math:`\mu` and :math:`\kappa` are considered constant,
+
+.. _Eq:fem:sys:wT:ex:w:vf1i:
+
+.. math::
+
+    \tag{322}
+    \mu (\nabla w,\nabla v) = (\beta, v)
+        \quad\forall v\in V,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:T:vf1i:
+
+.. math::
+
+    \tag{323}
+    \kappa(\nabla T,\nabla v) = \mu(\nabla w\cdot\nabla w, v)\quad\forall v\in V
+        
+        {\thinspace .}
+        
+
+Note that the left-hand side of :ref:`(322) <Eq:fem:sys:wT:ex:w:vf1i>` is
+again linear in :math:`w`, the left-hand side
+of :ref:`(323) <Eq:fem:sys:wT:ex:T:vf1i>` is linear in :math:`T`
+and the nonlinearity of :math:`w` appears in the right-hand side
+of  :ref:`(323) <Eq:fem:sys:wT:ex:T:vf1i>`
+
+Decoupled linear systems
+------------------------
+
+The linear systems governing the coefficients :math:`c_j^{(w)}` and
+:math:`c_j^{(T)}`, :math:`j=0,\ldots,N`, are derived by inserting the
+expansions :ref:`(316) <Eq:fem:sys:wT:ex:sum>` in :ref:`(319) <Eq:fem:sys:wT:ex:w:vf1>`
+and :ref:`(320) <Eq:fem:sys:wT:ex:T:vf1>`, and choosing :math:`v={\psi}_i` for
+:math:`i=0,\ldots,N`. The result becomes
+
+.. _Eq:fem:sys:wT:ex:linsys:w1:
+
+.. math::
+
+    \tag{324}
+    \sum_{j=0}^N A^{(w)}_{i,j} c^{(w)}_j = b_i^{(w)},\quad i=0,\ldots,N,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:linsys:T1:
+
+.. math::
+
+    \tag{325}
+    \sum_{j=0}^N A^{(T)}_{i,j} c^{(T)}_j = b_i^{(T)},\quad i=0,\ldots,N,
+        
+        
+
+.. _Eq:_auto129:
+
+.. math::
+
+    \tag{326}
+    A^{(w)}_{i,j} = \mu(\nabla {\psi}_j,\nabla {\psi}_i),
+        
+        
+
+.. _Eq:_auto130:
+
+.. math::
+
+    \tag{327}
+    b_i^{(w)} = (\beta, {\psi}_i),
+        
+        
+
+.. _Eq:_auto131:
+
+.. math::
+
+    \tag{328}
+    A^{(T)}_{i,j} = \kappa(\nabla {\psi}_j,\nabla {\psi}_i),
+        
+        
+
+.. _Eq:_auto132:
+
+.. math::
+
+    \tag{329}
+    b_i^{(T)} = \mu((\sum_j c^{(w)}_j\nabla{\psi}_j)\cdot (\sum_k
+        c^{(w)}_k\nabla{\psi}_k), {\psi}_i)
+        {\thinspace .}
+        
+        
+
+It can also be instructive to write the linear systems using matrices
+and vectors. Define :math:`K` as the matrix corresponding to the Laplace
+operator :math:`\nabla^2`. That is, :math:`K_{i,j} = (\nabla {\psi}_j,\nabla {\psi}_i)`.
+Let us introduce the vectors
+
+.. math::
+        \begin{align*}
+        b^{(w)} &= (b_0^{(w)},\ldots,b_{N}^{(w)}),\\ 
+        b^{(T)} &= (b_0^{(T)},\ldots,b_{N}^{(T)}),\\ 
+        c^{(w)} &= (c_0^{(w)},\ldots,c_{N}^{(w)}),\\ 
+        c^{(T)} &= (c_0^{(T)},\ldots,c_{N}^{(T)}){\thinspace .}
+        \end{align*}
+
+The system :ref:`(324) <Eq:fem:sys:wT:ex:linsys:w1>`-:ref:`(325) <Eq:fem:sys:wT:ex:linsys:T1>`
+can now be expressed in matrix-vector form as
+
+.. _Eq:_auto133:
+
+.. math::
+
+    \tag{330}
+    \mu K c^{(w)} = b^{(w)},
+        
+        
+
+.. _Eq:_auto134:
+
+.. math::
+
+    \tag{331}
+    \kappa K c^{(T)} = b^{(T)}{\thinspace .}
+        
+        
+
+We can solve the first system for :math:`c^{(w)}`, and then
+the right-hand side :math:`b^{(T)}` is known such that we can
+solve the second system for :math:`c^{(T)}`. Hence, the
+decoupling of the unknowns :math:`w` and :math:`T` reduces the
+system of nonlinear PDEs to two linear PDEs.
+
+Coupled linear systems
+----------------------
+
+Despite the fact that :math:`w` can be computed first, without knowing :math:`T`,
+we shall now pretend that :math:`w` and :math:`T` enter a two-way coupling such
+that we need to derive the
+algebraic equations as *one system* for all the unknowns
+:math:`c_j^{(w)}` and :math:`c_j^{(T)}`, :math:`j=0,\ldots,N`. This system is
+nonlinear in :math:`c_j^{(w)}` because of the :math:`\nabla w\cdot\nabla w` product.
+To remove this nonlinearity, imagine that we introduce an iteration
+method where we replace :math:`\nabla w\cdot\nabla w` by
+:math:`\nabla w_{-}\cdot\nabla w`, :math:`w_{-}` being the :math:`w`
+computed in the previous iteration. Then the term
+:math:`\nabla w_{-}\cdot\nabla w` is linear in :math:`w` since :math:`w_{-}` is
+known. The total linear system becomes
+
+.. _Eq:fem:sys:wT:ex:linsys:w2:
+
+.. math::
+
+    \tag{332}
+    \sum_{j=0}^N A^{(w,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^N A^{(w,T)}_{i,j} c^{(T)}_j
+        = b_i^{(w)},\quad i=0,\ldots,N,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:linsys:T2:
+
+.. math::
+
+    \tag{333}
+    \sum_{j=0}^N A^{(T,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^N A^{(T,T)}_{i,j} c^{(T)}_j = b_i^{(T)},\quad i=0,\ldots,N,
+        
+        
+
+.. _Eq:_auto135:
+
+.. math::
+
+    \tag{334}
+    A^{(w,w)}_{i,j} = \mu(\nabla {\psi}_j,\nabla {\psi}_i),
+        
+        
+
+.. _Eq:_auto136:
+
+.. math::
+
+    \tag{335}
+    A^{(w,T)}_{i,j} = 0,
+        
+        
+
+.. _Eq:_auto137:
+
+.. math::
+
+    \tag{336}
+    b_i^{(w)} = (\beta, {\psi}_i),
+        
+        
+
+.. _Eq:_auto138:
+
+.. math::
+
+    \tag{337}
+    A^{(w,T)}_{i,j} = \mu((\nabla w_{-})\cdot\nabla{\psi}_j), {\psi}_i),
+        
+        
+
+.. _Eq:_auto139:
+
+.. math::
+
+    \tag{338}
+    A^{(T,T)}_{i,j} = \kappa(\nabla {\psi}_j,\nabla {\psi}_i),
+        
+        
+
+.. _Eq:_auto140:
+
+.. math::
+
+    \tag{339}
+    b_i^{(T)} = 0
+        {\thinspace .}
+        
+        
+
+This system can alternatively be written in matrix-vector form as
+
+.. _Eq:_auto141:
+
+.. math::
+
+    \tag{340}
+    \mu K c^{(w)} = b^{(w)},
+        
+        
+
+.. _Eq:_auto142:
+
+.. math::
+
+    \tag{341}
+    L c^{(w)} + \kappa K c^{(T)}  =0,
+        
+        
+
+with :math:`L` as the matrix from the :math:`\nabla w_{-}\cdot\nabla` operator:
+:math:`L_{i,j} = A^{(w,T)}_{i,j}`. The matrix :math:`K` is :math:`K_{i,j} =
+A^{(w,w)}_{i,j} = A^{(T,T)}_{i,j}`.
+
+The matrix-vector equations are often conveniently written in block form:
+
+.. math::
+        
+        \left(\begin{array}{cc}
+        \mu K & 0\\ 
+        L & \kappa K
+        \end{array}\right)
+        \left(\begin{array}{c}
+        c^{(w)}\\ 
+        c^{(T)}
+        \end{array}\right) =
+        \left(\begin{array}{c}
+        b^{(w)}\\ 
+        0
+        \end{array}\right),
+        
+
+Note that in the general case where all unknowns enter all equations,
+we have to solve the compound system
+:ref:`(332) <Eq:fem:sys:wT:ex:linsys:w2>`-:ref:`(333) <Eq:fem:sys:wT:ex:linsys:T2>` since
+then we cannot utilize the special property that
+:ref:`(324) <Eq:fem:sys:wT:ex:linsys:w1>` does not involve :math:`T` and can be solved
+first.
+
+When the viscosity depends on the temperature, the
+:math:`\mu\nabla^2w` term must be replaced by :math:`\nabla\cdot (\mu(T)\nabla w)`,
+and then :math:`T` enters the equation for :math:`w`. Now we have a two-way coupling
+since both equations contain :math:`w` and :math:`T` and therefore
+must be solved simultaneously.
+The equation :math:`\nabla\cdot (\mu(T)\nabla w)=-\beta` is nonlinear,
+and if some iteration procedure is invoked, where we use a previously
+computed :math:`T_{-}` in the viscosity (:math:`\mu(T_{-})`), the coefficient is known,
+and the equation involves only one unknown, :math:`w`. In that case we are
+back to the one-way coupled set of PDEs.
+
+We may also formulate our PDE system as a vector equation. To this end,
+we introduce the vector of unknowns :math:`\boldsymbol{u} = (u^{(0)},u^{(1)})`,
+where :math:`u^{(0)}=w` and :math:`u^{(1)}=T`. We then have
+
+.. math::
+        
+        \nabla^2 \boldsymbol{u} = \left(\begin{array}{cc}
+        -{\mu}^{-1}{\beta}\\ 
+        -{\kappa}^{-1}\mu \nabla u^{(0)}\cdot\nabla u^{(0)}
+        \end{array}\right){\thinspace .}
+        
+
+Different function spaces for the unknowns
+==========================================
+
+.. index:: mixed finite elements
+
+It is easy to generalize the previous formulation to the case where
+:math:`w\in V^{(w)}` and :math:`T\in V^{(T)}`, where :math:`V^{(w)}` and :math:`V^{(T)}`
+can be different spaces with different numbers of degrees of freedom.
+For example, we may use quadratic basis functions for :math:`w` and linear
+for :math:`T`. Approximation of the unknowns by different finite element
+spaces is known as *mixed finite element methods*.
+
+We write
+
+.. math::
+        \begin{align*}
+        V^{(w)} &= \hbox{span}\{{\psi}_0^{(w)},\ldots,{\psi}_{N_w}^{(w)}\},\\ 
+        V^{(T)} &= \hbox{span}\{{\psi}_0^{(T)},\ldots,{\psi}_{N_T}^{(T)}\}
+        {\thinspace .}
+        \end{align*}
+
+The next step is to
+multiply :ref:`(314) <Eq:fem:sys:wT:ex:weq>` by a test function :math:`v^{(w)}\in V^{(w)}`
+and :ref:`(315) <Eq:fem:sys:wT:ex:Teq>` by a :math:`v^{(T)}\in V^{(T)}`, integrate by
+parts and arrive at
+
+.. _Eq:fem:sys:wT:ex:w:vf3:
+
+.. math::
+
+    \tag{342}
+    \int_\Omega \mu \nabla w\cdot\nabla v^{(w)} {\, \mathrm{d}x} = \int_\Omega \beta v^{(w)}{\, \mathrm{d}x}
+        \quad\forall v^{(w)}\in V^{(w)},
+        
+        
+
+.. _Eq:fem:sys:wT:ex:T:vf3:
+
+.. math::
+
+    \tag{343}
+    \int_\Omega \kappa \nabla T\cdot\nabla v^{(T)} {\, \mathrm{d}x} = \int_\Omega \mu
+        \nabla w\cdot\nabla w\, v^{(T)}{\, \mathrm{d}x} \quad\forall v^{(T)}\in V^{(T)}
+        
+        {\thinspace .}
+        
+
+The compound scalar variational formulation applies a test vector function
+:math:`\boldsymbol{v} = (v^{(w)}, v^{(T)})` and reads
+
+.. _Eq:fem:sys:wT:ex:wT:vf3:
+
+.. math::
+
+    \tag{344}
+    \int_\Omega (\mu\nabla w\cdot\nabla v^{(w)} +
+        \kappa\nabla T\cdot\nabla v^{(T)}){\, \mathrm{d}x}
+        = \int_\Omega (\beta v^{(w)} + \mu\nabla w\cdot\nabla w\, v^{(T)}){\, \mathrm{d}x},
+        
+        
+
+valid :math:`\forall \boldsymbol{v}\in\boldsymbol{V} = V^{(w)}\times V^{(T)}`.
+
+As earlier, we may decoupled the system in terms
+of two linear PDEs as we did with
+:ref:`(324) <Eq:fem:sys:wT:ex:linsys:w1>`-:ref:`(325) <Eq:fem:sys:wT:ex:linsys:T1>`
+or linearize the coupled system by introducing the previous
+iterate :math:`w_{-}` as in
+:ref:`(332) <Eq:fem:sys:wT:ex:linsys:w2>`-:ref:`(333) <Eq:fem:sys:wT:ex:linsys:T2>`.
+However, we need to distinguish between :math:`{\psi}_i^{(w)}`
+and :math:`{\psi}_i^{(T)}`, and the range in the sums over :math:`j`
+must match the number of degrees of freedom in the spaces :math:`V^{(w)}`
+and :math:`V^{(T)}`. The formulas become
+
+.. _Eq:fem:sys:wT:ex:linsys:w1:mixed:
+
+.. math::
+
+    \tag{345}
+    \sum_{j=0}^{N_w} A^{(w)}_{i,j} c^{(w)}_j = b_i^{(w)},\quad i=0,\ldots,N_w,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:linsys:T1:mixed:
+
+.. math::
+
+    \tag{346}
+    \sum_{j=0}^{N_T} A^{(T)}_{i,j} c^{(T)}_j = b_i^{(T)},\quad i=0,\ldots,N_T,
+        
+        
+
+.. _Eq:_auto143:
+
+.. math::
+
+    \tag{347}
+    A^{(w)}_{i,j} = \mu(\nabla {\psi}_j^{(w)},\nabla {\psi}_i^{(w)}),
+        
+        
+
+.. _Eq:_auto144:
+
+.. math::
+
+    \tag{348}
+    b_i^{(w)} = (\beta, {\psi}_i^{(w)}),
+        
+        
+
+.. _Eq:_auto145:
+
+.. math::
+
+    \tag{349}
+    A^{(T)}_{i,j} = \kappa(\nabla {\psi}_j^{(T)},\nabla {\psi}_i^{(T)}),
+        
+        
+
+.. _Eq:_auto146:
+
+.. math::
+
+    \tag{350}
+    b_i^{(T)} = \mu(\sum_{j=0}^{N_w} c^{(w)}_j\nabla{\psi}_j^{(w)})\cdot (\sum_{k=0}^{N_w}
+        c^{(w)}_k\nabla{\psi}_k^{(w)}) , {\psi}_i^{(T)})
+        {\thinspace .}
+        
+        
+
+In the case we formulate one compound linear system involving
+both :math:`c^{(w)}_j`, :math:`j=0,\ldots,N_w`, and :math:`c^{(T)}_j`, :math:`j=0,\ldots,N_T`,
+:ref:`(332) <Eq:fem:sys:wT:ex:linsys:w2>`-:ref:`(333) <Eq:fem:sys:wT:ex:linsys:T2>`
+becomes
+
+.. _Eq:fem:sys:wT:ex:linsys:w2b:
+
+.. math::
+
+    \tag{351}
+    \sum_{j=0}^{N_w} A^{(w,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^{N_T} A^{(w,T)}_{i,j} c^{(T)}_j
+        = b_i^{(w)},\quad i=0,\ldots,N_w,
+        
+        
+
+.. _Eq:fem:sys:wT:ex:linsys:T2b:
+
+.. math::
+
+    \tag{352}
+    \sum_{j=0}^{N_w} A^{(T,w)}_{i,j} c^{(w)}_j + \sum_{j=0}^{N_T} A^{(T,T)}_{i,j} c^{(T)}_j = b_i^{(T)},\quad i=0,\ldots,N_T,
+        
+        
+
+.. _Eq:_auto147:
+
+.. math::
+
+    \tag{353}
+    A^{(w,w)}_{i,j} = \mu(\nabla {\psi}_j^{(w)},\nabla {\psi}_i^{(w)}),
+        
+        
+
+.. _Eq:_auto148:
+
+.. math::
+
+    \tag{354}
+    A^{(w,T)}_{i,j} = 0,
+        
+        
+
+.. _Eq:_auto149:
+
+.. math::
+
+    \tag{355}
+    b_i^{(w)} = (\beta, {\psi}_i^{(w)}),
+        
+        
+
+.. _Eq:_auto150:
+
+.. math::
+
+    \tag{356}
+    A^{(w,T)}_{i,j} = \mu (\nabla w_{-}\cdot\nabla{\psi}_j^{(w)}), {\psi}_i^{(T)}),
+        
+        
+
+.. _Eq:_auto151:
+
+.. math::
+
+    \tag{357}
+    A^{(T,T)}_{i,j} = \kappa(\nabla {\psi}_j^{(T)},\nabla {\psi}_i^{(T)}),
+        
+        
+
+.. _Eq:_auto152:
+
+.. math::
+
+    \tag{358}
+    b_i^{(T)} = 0
+        {\thinspace .}
+        
+        
+
+Here, we have again performed a linearization by employing a previous iterate :math:`w_{-}`.
+The corresponding block form
+
+.. math::
+        
+        \left(\begin{array}{cc}
+        \mu K^{(w)} & 0\\ 
+        L & \kappa K^{(T)}
+        \end{array}\right)
+        \left(\begin{array}{c}
+        c^{(w)}\\ 
+        c^{(T)}
+        \end{array}\right) =
+        \left(\begin{array}{c}
+        b^{(w)}\\ 
+        0
+        \end{array}\right),
+        
+
+has square and rectangular block matrices: :math:`K^{(w)}` is :math:`N_w\times N_w`,
+:math:`K^{(T)}` is :math:`N_T\times N_T`, while :math:`L` is :math:`N_T\times N_w`,
+
+.. _femsys:cooling:1D:
+
+Computations in 1D
+==================
+
+.. 2DO
+
+.. show analytical solution in [0,H]
+
+.. use global polynomials (x^i(H-x)), exact sol
+
+.. compute uncoupled and coupled discrete systems, N=4
+
+.. note: coupled can use exact w_{-}
+
+.. P1-P1, n elements, 2 elements as special case
+
+.. uncoupled and coupled (can use exercises for variants)
+
+.. P1 for w, P2 for T or P4 for T
+
+.. similar computations for circle can be done as project
+
+.. extensions to time-dep versions in projects
+
+.. any geophysical applications? flowing ice sheet ("half channel") and
+
+.. temp gradient through, check with Jed
+
+.. the time-dependent system can be introduced in diffusion and
+
+.. a finite difference scheme can be devised
+
+We can reduce the system :ref:`(314) <Eq:fem:sys:wT:ex:weq>`-:ref:`(315) <Eq:fem:sys:wT:ex:Teq>`
+to one space dimension, which corresponds to flow in a channel between
+two flat plates. Alternatively, one may consider flow in a circular
+pipe, introduce cylindrical coordinates, and utilize the radial symmetry
+to reduce the equations to a one-dimensional problem in the radial
+coordinate. The former model becomes
+
+.. _Eq:fem:sys:wT:ex1D:weq:
+
+.. math::
+
+    \tag{359}
+    \mu w_{xx} = -\beta,
+        
+        
+
+.. _Eq:fem:sys:wT:ex1D:Teq:
+
+.. math::
+
+    \tag{360}
+    \kappa T_{xx} = - \mu w_x^2,
+        
+        
+
+while the model in the radial coordinate :math:`r` reads
+
+.. _Eq:fem:sys:wT:ex1Dr:weq:
+
+.. math::
+
+    \tag{361}
+    \mu\frac{1}{r}\frac{d}{dr}\left( r\frac{dw}{dr}\right) = -\beta,
+        
+        
+
+.. _Eq:fem:sys:wT:ex1Dr:Teq:
+
+.. math::
+
+    \tag{362}
+    \kappa \frac{1}{r}\frac{d}{dr}\left( r\frac{dT}{dr}\right) = - \mu \left(
+        \frac{dw}{dr}\right)^2
+        {\thinspace .}
+        
+        
+
+The domain for :ref:`(359) <Eq:fem:sys:wT:ex1D:weq>`-:ref:`(360) <Eq:fem:sys:wT:ex1D:Teq>`
+is :math:`\Omega = [0,H]`, with boundary conditions :math:`w(0)=w(H)=0` and
+:math:`T(0)=T(H)=T_0`. For
+:ref:`(361) <Eq:fem:sys:wT:ex1Dr:weq>`-:ref:`(362) <Eq:fem:sys:wT:ex1Dr:Teq>` the domain
+is :math:`[0,R]` (:math:`R` being the radius of the pipe) and the boundary
+conditions are :math:`du/dr = dT/dr =0` for :math:`r=0`, :math:`u(R)=0`, and :math:`T(R)=T_0`.
+
+The exact solutions, :math:`w_e` and :math:`T_e`,  to :ref:`(359) <Eq:fem:sys:wT:ex1D:weq>`
+and :ref:`(360) <Eq:fem:sys:wT:ex1D:Teq>` are computed
+as
+
+.. math::
+        \begin{align*}
+        w_{e,x} &= - \int \frac{\beta}{\mu} {\, \mathrm{d}x} + C_w, \\ 
+        w_e &= \int w_x {\, \mathrm{d}x} + D_w, \\ 
+        T_{e,x} &= - \int \mu w_x^2 {\, \mathrm{d}x} + C_T,\\ 
+        w_e &= \int w_x {\, \mathrm{d}x} + D_T, \\ 
+        \end{align*}
+
+where we determine the constants :math:`C_w`, :math:`D_w`, :math:`C_T`, and :math:`D_T`
+by the boundary conditions :math:`w(0)=w(H)=0` and
+:math:`T(0)=T(H)=T_0`. The calculations
+may be performed in  ``sympy`` as
+
+.. code-block:: python
+
+    import sympy as sym
+    
+    x, mu, beta, k, H, C, D, T0 = sym.symbols("x mu beta k H C D T0")
+    wx = sym.integrate(-beta/mu, (x, 0, x)) + C
+    w = sym.integrate(wx, x) + D
+    s = sym.solve([w.subs(x, 0)-0,  # x=0 condition
+                   w.subs(x,H)-0],  # x=H condition
+                   [C, D])       # unknowns
+    w = w.subs(C, s[C]).subs(D, s[D])
+    w = sym.simplify(sym.expand(w))
+    
+    Tx = sym.integrate(-mu*sym.diff(w,x)**2, x) + C
+    T = sym.integrate(Tx, x) + D
+    s = sym.solve([T.subs(x, 0)-T0,  # x=0 condition
+                   T.subs(x, H)-T0],  # x=H condition
+                   [C, D])       # unknowns
+    T = T.subs(C, s[C]).subs(D, s[D])
+    T = sym.simplify(sym.expand(T))
+
+We find that the solutions are
+
+.. math::
+        \begin{align*}
+        w_e(x) &= \frac{\beta x}{2 \mu} \left(H - x\right), \\ 
+        T_e(x) &= \frac{\beta^{2}}{\mu} \left(\frac{H^{3} x}{24}  - \frac{H^{2}}{8} x^{2} + \frac{H}{6} x^{3} - \frac{ x^{4}}{12}\right)  + T_{0} {\thinspace .}
+        \end{align*}
+
+The figure :ref:`femsys:cooling:w:plot` shows :math:`w` computed by the finite element method using the  decoupled
+approach with P1 elements, 
+that is; implementing :ref:`(324) <Eq:fem:sys:wT:ex:linsys:w1>`. The analytical solution :math:`w_e` is a quadratic
+polynomial.  The linear finite elements result in a poor approximation on the
+coarse meshes, :math:`N=2` and :math:`N=4`, but the approximation 
+improves fast and already at :math:`N=8` the 
+approximation appears adequate. 
+The figure :ref:`femsys:cooling:w:plot` shows the approximation of :math:`T` and also here
+we see that the fourth order polynomial is poorly approximated at coarse resolution, but
+that the approximation quickly improves.
+
+.. _femsys:cooling:w:plot:
+
+.. figure:: cooling_w.png
+   :width: 800
+
+   *The solution :math:`w` of :ref:`(359) <Eq:fem:sys:wT:ex1D:weq>` with :math:`\beta=\mu=1` for different mesh resolutions*
+
+The figure :ref:`femsys:cooling:w:plot` shows :math:`T` for different resolutions. The same tendency is apparent
+although the coarse grid solutions are worse for :math:`T` than for :math:`w`. The solutions at :math:`N=16` and :math:`N=32`, however, 
+appear almost identical. 
+
+.. _femsys:cooling:T:plot:
+
+.. figure:: cooling_T.png
+   :width: 800
+
+   The solution :math:`T` of :ref:`(360) <Eq:fem:sys:wT:ex1D:Teq>` for :math:`\kappa=H=1`
+
+.. code-block:: python
+
+    def boundary(x):
+      return x[0] < DOLFIN_EPS or x[0] > 1.0 - DOLFIN_EPS
+    
+    from dolfin import *
+    import matplotlib.pyplot as plt
+    
+    Ns = [2, 4, 8, 16, 32]
+    for N in Ns: 
+        mesh = UnitIntervalMesh(N)
+        V = FunctionSpace(mesh, "Lagrange", 1)
+        u = TrialFunction(V)
+        v = TestFunction(V) 
+    
+        beta = Constant(1)
+        mu = Constant(1) 
+    
+        bc = DirichletBC(V, Constant(0), boundary)
+        a = mu*inner(grad(u), grad(v))*dx 
+        L = -beta*v*dx 
+    
+        w = Function(V)
+        solve(a == L, w, bc)
+    
+        T0 = Constant(1)
+        kappa = Constant(1)
+        bc = DirichletBC(V, T0, boundary)
+        a = kappa*inner(grad(u), grad(v))*dx 
+        L = -mu*inner(grad(w), grad(w))*v*dx 
+    
+        T = Function(V)
+        solve(a == L, T, bc)
+    
+        plt.plot(V.dofmap().tabulate_all_coordinates(mesh), T.vector().array())
+        plt.hold(True)
+        plt.legend(["N=%d"%N for N in Ns], loc="upper left")
+    plt.show()
+
+Most of the FEniCS code should be familiar to the reader, but 
+we remark that we use the function ``V.dofmap().tabulate_all_coordinates(mesh)`` to obtain the coordinates of the nodal points. This is a general
+function that works for any finite element implemented in 
+FEniCS and also in a parallel setting. 
+
+[**kam 24**: do not need extensive description as it should be covered elsewhere]
+
+The calculations for :ref:`(361) <Eq:fem:sys:wT:ex1Dr:weq>`
+and :ref:`(362) <Eq:fem:sys:wT:ex1Dr:Teq>` are similar.
+The ``sympy`` code
+
+.. code-block:: python
+
+    import sympy as sym
+    
+    r, R = sym.symbols("r R")
+    rwr = sym.integrate(-(beta/mu)*r, r) + C
+    w = sym.integrate(rwr/r, r) + D
+    s = sym.solve([sym.diff(w,r).subs(r, 0)-0,  # r=0 condition
+                   w.subs(r,R)-0],              # r=R condition
+                   [C, D])                      # unknowns
+    w = w.subs(C, s[C]).subs(D, s[D])
+    w = sym.simplify(sym.expand(w))
+    
+    rTr = sym.integrate(-mu*sym.diff(w,r)**2*r, r) + C
+    T = sym.integrate(rTr/r, r) + D
+    s = sym.solve([sym.diff(T,r).subs(r, 0)-T0,  # r=0 condition
+                   T.subs(r, R)-T0],             # r=R condition
+                   [C, D])                       # unknowns
+    T = T.subs(C, s[C]).subs(D, s[D])
+    T = sym.simplify(sym.expand(T))
+
+and we obtain the solutions
+
+.. math::
+        \begin{align*}
+        w(r) &= \frac{\beta \left(R^{2} - r^{2}\right)}{4 \mu}, \\ 
+        T(r) &= \frac{1}{64 \mu} \left(R^{4} \beta^{2} + 64 T_{0} \mu - \beta^{2} r^{4}\right){\thinspace .}
+        \end{align*}
+
+[**kam 25**: so how do we do we conclude this? FEniCS simulation in 3D or FEniCS simulation in 1D with r? Or perhaps both? There are some stuff happening with piecewise integration in the presence of the r.]
+
+.. _fem:sys:up:1D:
+
+Another example in 1D
+---------------------
+Consider the problem
+
+.. _Eq:femsys:varcoeff:1D:
+
+.. math::
+
+    \tag{363}
+    -(a u')' = 0,
+        
+
+.. _Eq:_auto153:
+
+.. math::
+
+    \tag{364}
+    u(0) = 0,
+        
+        
+
+.. _Eq:_auto154:
+
+.. math::
+
+    \tag{365}
+    u(1) = 1 {\thinspace .}
+        
+        
+
+For any scalar :math:`a` (larger than 0), we may easily verify that the solution is :math:`u(x)=x`.
+In many applications, such as for example porous media flow
+or heat conduction, the parameter :math:`a` contains a jump that represents
+the transition from one material to another. Hence,
+let us consider the problem where :math:`a` is on the following
+form
+
+.. math::
+        
+        a(x) = \left\{ \begin{array}{ll}
+                    1 & \mbox{  if } x\le\frac{1}{2}, \\ 
+                    a_0 &  \mbox{  if } x>\frac{1}{2}{\thinspace .}
+                   \end{array} \right.
+        
+
+Notice that for such an :math:`a(x)`, the equation :ref:`(363) <Eq:femsys:varcoeff:1D>` does not necessarily make
+sense because we cannot differentiate :math:`a(x)`. Strictly speaking :math:`a'(x)` would
+be a Dirac's delta function in :math:`x=\frac{1}{2}`, that is; :math:`a'(x)` is :math:`\infty` at :math:`x=\frac{1}{2}` and zero
+everywhere else.
+
+Hand-calculations do however show that we may be able to
+compute the solution. Integrating :ref:`(363) <Eq:femsys:varcoeff:1D>`
+yields the expression
+
+.. math::
+        
+        -(a u') = C
+        
+
+A trick now is to divide by :math:`a(x)` on both sides to obtain
+
+.. math::
+        
+        - u' = \frac{C}{a}
+        
+
+and hence
+
+.. _Eq:varcoeff:analytical:solution:
+
+.. math::
+
+    \tag{366}
+    u(x) = \frac{C}{a(x)} x + D
+        
+
+The boundary conditions demand that :math:`u(0) = 0`, which means that :math:`D=0`
+and :math:`u(1) = 1` fixate :math:`C` to be :math:`a(1) = a_0`.
+
+To obtain a variational form of this problem suitable for
+finite element simulation, we transform the problem
+to a homogeneous Dirichlet problem.
+Let the solution be :math:`u(x) = B(x) + \sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j(x)` where
+:math:`B(x)=x`.
+
+[**kam 26**: the right hand side is hard to compute. Perhaps find a problem with homogeneous BC. Or perhaps just comment that we take the linear algebra approach. Can take the opportunity to say that the BC trick requires extra regularity and that we instead do the LA approach.]
+
+The variational problem derived from a standard Galerkin method reads: Find :math:`u` such that
+
+.. math::
+        
+        \int_{\Omega} a u' v' \, dx = \int_\Omega f v dx
+        
+
+We observe that in the variational problem, the discontinuity of :math:`a` does not cause any problem
+as the differentiation is moved from :math:`a` (and :math:`u'`) to :math:`v` by using integration by parts.
+Letting :math:`u=\sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j(x)` and :math:`v={\psi}_i(x)` the corresponding linear system is :math:`\sum_j A_{i,j}c_j=b_i`
+with
+
+.. math::
+        \begin{align*}
+        A_{i,j} &= (a {\psi}_j', {\psi}_i') = \int_{\Omega} a(x) {\psi}_j'(x)
+        {\psi}_i'(x){\, \mathrm{d}x},\\ 
+        b_i &= (f,{\psi}_i)= 0 {\thinspace .}
+        \end{align*}
+
+The solution of the problem is shown in Figure :ref:`femsys:varcoeff:1D:Galerkin:plotu` at different mesh resolutions.
+The analytical solution in :ref:`(366) <Eq:varcoeff:analytical:solution>` is a piecewise polynomial, linear
+for :math:`x` in :math:`[0,\frac{1}{2})` and :math:`(\frac{1}{2},1]` and it seems that the numerical strategy gives a good approximation
+of the solution.
+
+The flux :math:`a u'` is often a quantity of interest. Because the flux involves differentiation with respect
+to :math:`x` we do not have an direct access to it and 
+have to compute it. A natural approach is to take the Galerkin approximation,
+that is we seek a :math:`w \approx a u'` on the form  :math:`w=\sum_{j\in{\mathcal{I}_s}} d_j{\psi}_j` and
+require  Galerkin orthogonality. In other words, we require 
+that :math:`w-a u'` is orthogonal to :math:`\{{\psi}_i\}`. This is done by solving
+the linear system  :math:`\sum_j M_{i,j}d_j=b_i` with
+
+.. math::
+        \begin{align*}
+        M_{i,j} &= (a {\psi}_j, {\psi}_i) = \int_{\Omega} a(x) {\psi}_j(x) {\psi}_i(x){\, \mathrm{d}x},\\ 
+        b_i &= (a u',{\psi}_i)=  \int_\Omega a(x)  \sum_j c_j{\psi}_j'(x) {\, \mathrm{d}x}{\thinspace .}
+        \end{align*}
+
+As shown in Figure :ref:`femsys:varcoeff:1D:Galerkin:plotsux`, this
+approach does not produce a good approximation of the flux.
+
+.. _femsys:varcoeff:1D:Galerkin:plotu:
+
+.. figure:: darcy_a1D.png
+   :width: 800
+
+   Solution of the Darcy problem with discontinuous coefficient for different number of elements :math:`N`
+
+To improve the approximation of the flux, it is common to consider an equivalent form
+of :ref:`(363) <Eq:femsys:varcoeff:1D>` where the flux is one of the unknowns.
+The equations reads:
+
+.. _Eq:fem:sys:up:1D:eq:mass:
+
+.. math::
+
+    \tag{367}
+    \frac{\partial w}{\partial x} = 0,
+        
+        
+
+.. _Eq:fem:sys:up:1D:eq:Darcy:
+
+.. math::
+
+    \tag{368}
+    w =-a\frac{\partial u}{\partial x}
+        
+        {\thinspace .}
+        
+
+A straightforward calculation shows that inserting :ref:`(368) <Eq:fem:sys:up:1D:eq:Darcy>` into :ref:`(367) <Eq:fem:sys:up:1D:eq:mass>` yields
+the equation :ref:`(363) <Eq:femsys:varcoeff:1D>`. We also note that we have replaced the second order differential
+equation with a system of two first order differential equations.
+
+It is common to swap the order of the equations and also divide equation
+:ref:`(368) <Eq:fem:sys:up:1D:eq:Darcy>` by :math:`a` in order to get a symmetric system of
+equations. Then variational formulation of the problem, having the two unknowns :math:`w` and :math:`u`
+and corresponding test functions  :math:`v^{(w)}` and :math:`v^{(u)}`,
+ becomes
+
+.. _Eq:fem:sys:up:1D:eq:Darcy:var:
+
+.. math::
+
+    \tag{369}
+    \int_\Omega \frac{1}{a} w v^{(w)} + \frac{\partial u}{\partial x} v^{(w)} {\, \mathrm{d}x} =0, 
+        
+
+.. _Eq:fem:sys:up:1D:eq:mass:var:
+
+.. math::
+
+    \tag{370}
+    \int_\Omega \frac{\partial w}{\partial x} v^{(u)} {\, \mathrm{d}x} = 0{\thinspace .}
+        
+
+and letting
+:math:`u=\sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j^{(u)}`,
+:math:`w=\sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j^{(w)}`,
+:math:`v^{(u)} =  {\psi}_i^{(u)}`, and
+:math:`v^{(w)} =  {\psi}_i^{(w)}`, we obtain the following system
+of linear equations
+
+.. math::
+        
+        A\, c = \left[ \begin{array}{cc} A^{(w,w)} & A^{(w,u)}\\ A^{(u,w)} & 0 \end{array} \right]
+        \left[ \begin{array}{c} c^{(w)} \\ c^{(u)} \end{array} \right] =
+        \left[ \begin{array}{c} b^{(w)} \\ b^{(u)} \end{array} \right]
+        = b,
+        
+
+where
+
+.. math::
+        \begin{align*}
+        A^{(w,w)}_{i,j} &=  \int_{\Omega} \frac{1}{a(x)} {\psi}^{(w)}_j(x) {\psi}^{(w)}_i(x){\, \mathrm{d}x} & i,j = 0\ldots N^{(w)}-1, \\ 
+        A^{(w,u)}_{i,j} &=  \int_{\Omega} \frac{\partial}{\partial x} {\psi}^{(u)}_j(x) {\psi}^{(w)}_i(x){\, \mathrm{d}x} &  i=0\ldots N^{(w)}-1, j=0, \ldots N^{(u)}-1, \\ 
+        A^{(u,w)}_{i,j} &= A^{(w,u)}_{j,i}, \\ 
+        b^{(w)}_i &= (0,{\psi}^{(w)}_i)= 0, \\ 
+        b^{(u)}_i &= (0,{\psi}^{(u)}_i)= 0 {\thinspace .}
+        \end{align*}
+
+.. FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements :math:`N`.
+
+It is interesting to note that the standard Galerkin formulation
+of the problem results in a perfect approximation of :math:`u`, while
+the flux :math:`-a u'` is badly represented. On the other hand,
+for the mixed formulation, the flux is well approximated but
+:math:`u` is approximated only to first order yielding a staircase
+approximation. These observations naturally suggest
+that we should employ P1 approximation of both :math:`u` and
+its flux. We should then get a perfect approximation of
+both unknowns. This is however not possible. The
+linear system we obtain with P1 elements for both variables is singular.
+
+This example shows that when we are solving systems of PDEs with
+several unknowns, we can not choose the approximation arbitrary.
+The polynomial spaces of the different unknowns have to be compatible
+and the accuracy of the different unknowns depend on each other. 
+We will not discuss the reasons for the need of compatibility here
+as it is rather mathematical and 
+well presented in many books, e.g. [Ref03]_ [Ref04]_ [Ref10]_.
+
+.. _femsys:varcoeff:1D:Galerkin:plotsux:
+
+.. figure:: darcy_adx1D.png
+   :width: 800
+
+   The corresponding flux :math:`a u'` for the Darcy problem with discontinuous coefficient for different number of elements :math:`N`
+
+[**kam 27**: Not sure why the I don't get :math:`a_0`. Need to debug.]
+[**kam 28**: integration by parts done above, but not commented. Also bc, not considered.]
+[**kam 29**: wrong figure]
+
+Exercises          (6)
+======================
+
+.. --- begin exercise ---
+
+.. _femsys:exer:cooling:1:
+
+Problem 39: Estimate order of convergence for the Cooling law
+-------------------------------------------------------------
+
+Consider the 1D Example of the fluid flow in a straight pipe 
+coupled to heat conduction in the section :ref:`femsys:cooling:1D`. 
+The example demonstrated fast convergence when using linear elements
+for both variables :math:`w` and :math:`T`. In this exercise we quantify the order 
+of convergence. That is, we expect that
+
+.. math::
+        \begin{align*}
+        \|w - w_e \|_{L_2} &\le C_w h^{\beta_w}, \\ 
+        \|T - T_e \|_{L_2} &\le C_T h^{\beta_T},
+        \end{align*}
+
+for some :math:`C_w`, :math:`C_T`, :math:`\beta_w` and :math:`\beta_T`. 
+Assume therefore that
+
+.. math::
+        \begin{align*}
+        \|w - w_e \|_{L_2} &= C_w h^{\beta_w},\\ 
+        \|T - T_e \|_{L_2} &= C_T h^{\beta_T},
+        \end{align*}
+
+and estimate  :math:`C_w`, :math:`C_T`, :math:`\beta_w` and :math:`\beta_T`.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _femsys:exer:cooling:2:
+
+Problem 40: Estimate order of convergence for the Cooling law
+-------------------------------------------------------------
+
+Repeat :ref:`femsys:exer:cooling:1` with quadratic finite
+elements for both :math:`w` and :math:`T`. 
+
+.. 2DO
+
+**Calculations to be continued...**
+
+.. --- end exercise ---
+
+.. _ch:nitsche:
+
+Flexible implementations of boundary conditions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+One quickly gets the impression that variational forms can handle only
+two types of boundary conditions: essential conditions where the
+unknown is prescribed, and natural conditions where flux terms
+integrated by parts allow specification of flux conditions. However,
+it is possible to treat much more general boundary conditions by
+adding their weak form.  That is, one simply adds the variational
+formulation of some boundary condition :math:`\mathcal{B}(u)=0`:
+:math:`\int_{\Omega_B}\mathcal{B}(u)v{\, \mathrm{d}x}`, where :math:`\Omega_B` is some
+boundary, to the variational formulation of the PDE problem.  Or using
+the terminology from the chapter :ref:`ch:approx:global`: the residual of
+the boundary condition when the discrete solution is inserted is added
+to the residual of the entire problem. The present chapter shows
+underlying mathematical details.
+
+.. _nitsche:fxy:opt:
+
+Optimization with constraint
+============================
+
+\newcommand{\uN}{u_N}
+Suppose we have a function
+
+.. math::
+         f(x,y) = x^2 + y^2 {\thinspace .}
+
+and want to optimize its values, i.e., find minima and maxima.
+The condition for an optimum is that the derivatives vanish in all
+directions, which implies
+
+.. math::
+         \boldsymbol{n}\cdot\nabla f = 0\quad\forall\boldsymbol{n} \in \mathbb{R}^2,
+
+which further implies
+
+.. math::
+        
+        \frac{\partial f}{\partial x} = 0,\quad \frac{\partial f}{\partial y} = 0{\thinspace .}
+        
+
+These two equations are in general nonlinear and can have many solutions,
+one unique solution, or none.
+In our specific example, there is only one solution: :math:`x=0`, :math:`y=0`.
+
+Now we want to optimize :math:`f(x,y)` under the constraint :math:`y=2-x`.
+This means that only :math:`f` values along the line :math:`y=2-x` are relevant,
+and we can imagine we view :math:`f(x,y)` along this line and want to find
+the optimum value.
+
+Elimination of variables
+------------------------
+
+Our :math:`f` is obviously a function of one variable along the line.
+Inserting :math:`y=2-x` in :math:`f(x,y)` eliminates :math:`y` and leads to :math:`f` as
+function of :math:`x` alone:
+
+.. math::
+         f(x,y=2-x) = 4 - 4x + 2x^2{\thinspace .}
+
+The condition for an optimum is
+
+.. math::
+         \frac{d}{dx}(4 - 4x + 2x^2) = -4 + 4x = 0,
+
+so :math:`x=1` and :math:`y=2-x=1`.
+
+In the general case we have a scalar function :math:`f(\boldsymbol{x})`,
+:math:`\boldsymbol{x}=(x_0,\ldots,x_m)` with :math:`n+1` constraints :math:`g_i(\boldsymbol{x})=0`,
+:math:`i=0,\ldots,n`. In theory, we could use the constraints to
+express :math:`n+1` variables in terms of the remaining :math:`m-n` variables,
+but this is very seldom possible, because it requires us to solve
+the :math:`g_i=0` symbolically with respect to :math:`n+1` different variables.
+
+.. _nitsche:fxy:opt:Lagrange:
+
+Lagrange multiplier method
+--------------------------
+
+When we cannot easily eliminate variables using the constraint(s),
+the Lagrange multiplier method come to aid. Optimization of :math:`f(x,y)`
+under the constraint :math:`g(x,y)=0` then consists in formulating
+the *Lagrangian*
+
+.. math::
+         \ell(x,y,\lambda) = f(x,y) + \lambda g(x,y),
+
+where :math:`\lambda` is the Lagrange multiplier, which is unknown.
+The conditions for an optimum is that
+
+.. math::
+         \frac{\partial\ell}{\partial x}=0,\quad
+        \frac{\partial\ell}{\partial y}=0,\quad
+        \frac{\partial\ell}{\partial \lambda}=0{\thinspace .}
+
+In our example, we have
+
+.. math::
+         \ell(x,y,\lambda) = x^2 + y^2 + \lambda(y - 2 + x),
+
+leading to the conditions
+
+.. math::
+         2x + \lambda = 0,\quad 2y + \lambda = 0,\quad y - 2+ x = 0{\thinspace .}
+
+This is a system of three linear equations in three unknowns with
+the solution
+
+.. math::
+         x = 1,\quad y = 1,\quad \lambda =2{\thinspace .}
+
+In the general case with optimizing :math:`f(\boldsymbol{x})` subject to
+the constraints :math:`g_i(\boldsymbol{x})=0`, :math:`i=0,\ldots,n`, the Lagrangian becomes
+
+.. math::
+         \ell(\boldsymbol{x},\boldsymbol{\lambda}) = f(\boldsymbol{x}) + \sum_{j=0}^n\lambda_jg_j(\boldsymbol{x}),
+
+with :math:`\boldsymbol{x}=(x_0,\ldots,x_m)` and :math:`\boldsymbol{\lambda}=(\lambda_0,\ldots,\lambda_n)`.
+The conditions for an optimum are
+
+.. math::
+         \frac{\partial f}{\partial\boldsymbol{x}}=0,\quad
+        \frac{\partial f}{\partial\boldsymbol{\lambda}}=0{\thinspace .},
+
+where
+
+.. math::
+         \frac{\partial f}{\partial\boldsymbol{x}}=0\Rightarrow
+        \frac{\partial f}{\partial x_i}=0,\ i=0,\ldots,m{\thinspace .}
+
+Similarly, :math:`\partial f/\partial\boldsymbol{\lambda}=0` leads to
+:math:`n+1` equations :math:`\partial f/\partial\lambda_i=0`, :math:`i=0,\ldots,n`.
+
+.. _nitsche:fxy:opt:penalty:
+
+Penalty method
+--------------
+
+Instead of incorporating the constraint exactly, as in the
+Lagrange multiplier method, the penalty method employs an approximation
+at the benefit of avoiding the extra Lagrange multiplier as unknown.
+The idea is to add the constraint squared, multiplied by a large
+prescribed number :math:`\lambda`, called the penalty parameter,
+
+.. math::
+         \ell_\lambda (x,y) = f(x,y) + \frac{1}{2}\lambda(y-2+x)^2{\thinspace .}
+
+Note that :math:`\lambda` is now a given (chosen) number.
+The :math:`\ell_\lambda` function is just a function of two variables,
+so the optimum is found
+by solving
+
+.. math::
+         \frac{\partial \ell_\lambda}{\partial x} =0,\quad
+        \frac{\partial \ell_\lambda}{\partial y} =0{\thinspace .}
+
+Here we get
+
+.. math::
+         2x +\lambda (y-2+x)=0,\quad
+        2y + \lambda (y-2+x)=0{\thinspace .}
+
+The solution becomes
+
+.. math::
+         x = y = \frac{1}{1-\frac{1}{2}\lambda^{-1}},
+
+which we see approaches the correct solution :math:`x=y=1`
+as :math:`\lambda\rightarrow\infty`.
+
+The penalty method for optimization of a multi-variate function
+:math:`f(\boldsymbol{x})` with constraints :math:`g_i(\boldsymbol{x})=0`, :math:`i=0,\ldots,n`,
+can be formulated as optimization of the unconstrained function
+
+.. math::
+         \ell_\lambda(\boldsymbol{x}) = f(\boldsymbol{x}) + \frac{1}{2}\lambda\sum_{j=0}^n (g_i(\boldsymbol{x}))^2{\thinspace .}
+
+Sometimes the symbol :math:`\epsilon^{-1}` is used for :math:`\lambda` in the
+penalty method.
+
+.. _nitsche:pde:opt:
+
+Optimization of functionals
+===========================
+
+The methods above for optimization of scalar functions of a finite
+number of variables can be generalized to optimization of
+functionals (functions of functions).
+We start with the specific example of optimizing
+
+.. _Eq:nitsche:Fu:functional1:
+
+.. math::
+
+    \tag{371}
+    F(u) =
+        \int\limits_\Omega ||\nabla u||^2 {\, \mathrm{d}x} -
+        \int\limits_\Omega fu {\, \mathrm{d}x} -
+        \int\limits_{\partial\Omega_N}gu {\, \mathrm{d}s},\quad
+        u\in V,
+        
+        
+
+where :math:`\Omega\subset \mathbb{R}^2`, and :math:`u` and :math:`f` are functions of :math:`x`
+and :math:`y` in :math:`\Omega`. The norm :math:`||\nabla u||^2` is defined as :math:`u_{x}^2
++ u_{y}^2`, with :math:`u_x` denoting the derivative with respect to :math:`x`.
+The vector space :math:`V` contains the relevant functions for this problem,
+and more specifically, :math:`V` is the Hilbert space :math:`H^1_0` consisting of
+all functions for which :math:`\int\limits_\Omega (u^2 + ||\nabla u||^2){\, \mathrm{d}x}`
+is finite and :math:`u=0` on :math:`\partial\Omega_D`, which is some part of the
+boundary :math:`\partial\Omega` of :math:`\Omega`.  The remaining part of the
+boundary is denoted by :math:`\partial\Omega_N`
+(:math:`\partial\Omega_N\cup\partial\Omega_D=\partial\Omega`,
+:math:`\partial\Omega_N\cap\partial\Omega_D=\emptyset`), over which :math:`F(u)`
+involves a line integral.  Note that :math:`F` is a mapping from any :math:`u\in
+V` to a real number in :math:`\mathbb{R}`.
+
+.. _nitsche:pde:opt:varcalculus:
+
+Classical calculus of variations
+--------------------------------
+
+Optimization of the functional
+:math:`F` makes use of the machinery from `variational calculus <http://en.wikipedia.org/wiki/Variational_calculus>`__. The essence is to demand that the
+functional derivative of :math:`F` with respect to :math:`u` is zero.
+Technically, this is carried out by writing a general function :math:`\tilde u\in V`
+as :math:`\tilde u=u+\epsilon v`, where :math:`u` is the exact solution of the optimization
+problem, :math:`v` is an arbitrary function in :math:`V`,
+and :math:`\epsilon` is a scalar parameter. The
+functional derivative in the direction of :math:`v` (also known as the
+`Gateaux derivative <http://en.wikipedia.org/wiki/G%C3%A2teaux_derivative>`__)
+is defined as
+
+.. _Eq:nitcshe:functional:derivative:
+
+.. math::
+
+    \tag{372}
+    \frac{\delta F}{\delta u} = \lim_{\epsilon\rightarrow 0}\frac{d}{d\epsilon}
+        F(u+\epsilon v)
+        {\thinspace .}
+        
+        
+
+As an example,
+the functional derivative to the term
+:math:`\int\limits_\Omega fu{\, \mathrm{d}x}` in :math:`F(u)`
+is computed by finding
+
+.. _Eq:nitcshe:varform:Poisson1:
+
+.. math::
+
+    \tag{373}
+    \frac{d}{d\epsilon} \int\limits_\Omega f\cdot(u+\epsilon v){\, \mathrm{d}x}
+        = \int\limits_\Omega fv {\, \mathrm{d}x},
+        
+        
+
+and then let :math:`\epsilon` go to zero, which just results in :math:`\int\limits_\Omega fv{\, \mathrm{d}x}`.
+The functional derivative of the other area integral becomes
+
+.. math::
+        
+        \frac{d}{d\epsilon} \int\limits_\Omega ((u_x + \epsilon v_x)^2 +
+        (u_y + \epsilon v_y)^2){\, \mathrm{d}x} = \int\limits_\Omega (2(u_x + \epsilon v_x)v_x
+        + 2(u_v+\epsilon v_y)v_y){\, \mathrm{d}x},
+        
+
+which leads to
+
+.. _Eq:nitcshe:varform:Poisson2:
+
+.. math::
+
+    \tag{374}
+    \int\limits_\Omega (u_xv_x + u_yv_y){\, \mathrm{d}x} = \int\limits_\Omega \nabla u\cdot\nabla v {\, \mathrm{d}x},
+        
+        
+
+as :math:`\epsilon\rightarrow 0`.
+
+The functional derivative of the boundary term
+becomes
+
+.. _Eq:nitcshe:varform:Poisson3:
+
+.. math::
+
+    \tag{375}
+    \frac{d}{d\epsilon} \int\limits_{\partial\Omega_N} g \cdot (u+\epsilon v) {\, \mathrm{d}s}
+        = \int\limits_{\partial\Omega_N} g v {\, \mathrm{d}s},
+        
+        
+
+for any :math:`\epsilon`. From :ref:`(373) <Eq:nitcshe:varform:Poisson1>`-:ref:`(375) <Eq:nitcshe:varform:Poisson3>` we then get the result
+
+.. _Eq:nitcshe:varform:Poisson:
+
+.. math::
+
+    \tag{376}
+    \frac{\delta F}{\delta u} =
+        \int\limits_\Omega \nabla u\cdot\nabla v {\, \mathrm{d}x} -
+        \int\limits_\Omega fv {\, \mathrm{d}x} -
+        \int\limits_{\partial\Omega_N} g v {\, \mathrm{d}s} =0{\thinspace .}
+        
+        
+
+Since :math:`v` is arbitrary, this equation must hold :math:`\forall v\in V`. Many
+will recognize :ref:`(376) <Eq:nitcshe:varform:Poisson>` as the variational
+formulation of a Poisson problem, which can be directly discretized
+and solved by a finite element method.
+
+Variational calculus goes one more step and derives a partial differential
+equation problem from :ref:`(376) <Eq:nitcshe:varform:Poisson>`, known as the
+`Euler-Lagrange equation <http://en.wikipedia.org/wiki/Euler-Lagrange_equation>`__ corresponding to optimization of :math:`F(u)`. To find the differential
+equation, one manipulates the variational form
+:ref:`(376) <Eq:nitcshe:varform:Poisson>` such that no derivatives of :math:`v`
+appear and the equation :ref:`(376) <Eq:nitcshe:varform:Poisson>` can be
+written as :math:`\int\limits_\Omega \mathcal{L}v{\, \mathrm{d}x} =0`, :math:`\forall v\in`, from which
+it follows that :math:`\mathcal{L}=0` is the differential equation.
+
+Performing integration by parts of the term
+:math:`\int\limits_\Omega\nabla u\cdot\nabla v {\, \mathrm{d}x}` in :ref:`(376) <Eq:nitcshe:varform:Poisson>`
+moves the derivatives of :math:`v` over to :math:`u`:
+
+.. math::
+        \begin{align*}
+         \int\limits_\Omega\nabla u\cdot\nabla v {\, \mathrm{d}x} &=
+        -\int\limits_\Omega (\nabla^2 u)v{\, \mathrm{d}x} + \int\limits_{\partial\Omega}\frac{\partial u}{\partial n}v {\, \mathrm{d}s}\\ 
+        & = -\int\limits_\Omega (\nabla^2 u)v{\, \mathrm{d}x} +
+        \int\limits_{\partial\Omega_D}\frac{\partial u}{\partial n}v {\, \mathrm{d}s} +
+        \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v {\, \mathrm{d}s}\\ 
+        & = -\int\limits_\Omega (\nabla^2 u)v{\, \mathrm{d}x} +
+        \int\limits_{\partial\Omega_D}\frac{\partial u}{\partial n}0 {\, \mathrm{d}s} +
+        \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v {\, \mathrm{d}s}\\ 
+        & = -\int\limits_\Omega (\nabla^2 u)v{\, \mathrm{d}x} +
+        \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v {\, \mathrm{d}s}{\thinspace .}
+        \end{align*}
+
+Using this rewrite in :ref:`(376) <Eq:nitcshe:varform:Poisson>` gives
+
+.. math::
+        
+        -\int\limits_\Omega (\nabla^2 u)v{\, \mathrm{d}x} +
+        \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v {\, \mathrm{d}s}
+        -\int\limits_\Omega fv{\, \mathrm{d}x}
+        -\int\limits_{\partial\Omega_N} g v {\, \mathrm{d}s},
+        
+
+which equals
+
+.. math::
+        \int\limits_\Omega (\nabla^2 u + f)v{\, \mathrm{d}x} +
+        \int\limits_{\partial\Omega_N}\left(\frac{\partial u}{\partial n}-g\right)v {\, \mathrm{d}s}
+        =0{\thinspace .}
+        
+
+This is to hold for any :math:`v\in V`, which means that the integrands
+must vanish, and we get the famous Poisson problem
+
+.. math::
+        \begin{align*}
+        -\nabla^2u &= f,\quad (x,y)\in\Omega,\\ 
+        u &=0,\quad (x,y)\in\partial\Omega_D,\\ 
+        \frac{\partial u}{\partial n} &=g,\quad (x,y)\in\partial\Omega_N{\thinspace .}
+        \end{align*}
+
+
+.. admonition:: Some remarks
+
+    * Specifying :math:`u` on some part of the boundary (:math:`\partial\Omega_D`)
+      implies a specification of :math:`\partial u/\partial n` on the rest
+      of the boundary. In particular, if such a specification is not
+      explicitly done, the mathematics above implies :math:`\partial u/\partial n=0`
+      on :math:`\partial\Omega_N`.
+   
+    * If a non-zero condition on :math:`u=u_0` on :math:`\partial\Omega_D` is wanted, one
+      can write :math:`u = u_0 + \bar u` and express the functional
+      :math:`F` in terms of :math:`\bar u`, which obviously must vanish on
+      :math:`\partial\Omega_D` since :math:`u` is the exact solution that is :math:`u_0`
+      on :math:`\partial\Omega_D`.
+   
+    * The boundary conditions on :math:`u` must be implemented in the space :math:`V`,
+      i.e., we can only work with functions that *must* be zero on
+      :math:`\partial\Omega_D` (so-called *essential boundary condition*).
+      The condition involving :math:`\partial u/\partial n` is easier to
+      implement since it is just a matter of computing a line integral.
+   
+    * The solution is not unique if :math:`\partial\Omega_D = \emptyset`
+      (any solution :math:`u+\hbox{const}` is also a solution).
+
+
+
+
+.. _nitsche:pde:opt:penalty:
+
+Penalty method for optimization with constraints
+------------------------------------------------
+
+The attention is now on optimization of a functional :math:`F(u)`
+with a given constraint that :math:`u=\uN` on :math:`\partial\Omega_N`.
+We could, of course, just extend the Dirichlet condition on :math:`u` in the
+previous set-up by saying that :math:`\partial\Omega_D` is the
+complete boundary :math:`\partial\Omega` and that :math:`u` takes on
+the values of :math:`0` and :math:`\uN` at the different parts of the
+boundary. However, this also implies that all the functions
+in :math:`V` must vanish on the entire boundary. We want to relax
+this condition (and by relaxing it, we will derive a method
+that can be used for many other types of boundary conditions!).
+The goal is, therefore, to incorporate :math:`u=\uN` on
+:math:`\partial\Omega_N` without demanding anything from the functions
+in :math:`V`. We can achieve this by enforcing the constraint
+
+.. _Eq:nitsche:essbc:constraint:
+
+.. math::
+
+    \tag{377}
+    \int\limits_{\partial\Omega_N} |u-\uN| {\, \mathrm{d}s} = 0{\thinspace .}
+        
+        
+
+However, this constraint is cumbersome to implement. Note that
+the absolute sign here is needed as in general there
+are many functions :math:`u` such that
+:math:`\int\limits_{\partial\Omega_N} u-\uN {\, \mathrm{d}s} = 0`.
+
+**A penalty method.**
+The idea is to add a penalization term :math:`\frac{1}{2}\lambda(u-\uN)^2`,
+integrated over the boundary :math:`\partial\Omega_N`, to
+the functional :math:`F(u)`, just as we do in the penalty method (the
+factor :math:`\frac{1}{2}` can be incorporated in :math:`\lambda`, but makes the
+final result look nicer).
+The condition :math:`\partial u/\partial n=g`
+on :math:`\partial\Omega_N` is no longer relevant, so we replace
+the :math:`g` by the unknown :math:`\partial u/\partial n` in the
+boundary integral term in :ref:`(371) <Eq:nitsche:Fu:functional1>`.
+The new functional becomes
+
+[**kam 30**: there is a mismatch between text and equations here. If we replace :math:`g` with :math:`\partial u/\partial n` it seems we get a  symmetric form right away as we get :math:`u  \partial u/\partial n`.]
+
+.. _Eq:nitsche:Fu:functional2:
+
+.. math::
+
+    \tag{378}
+    F(u) =
+        \int\limits_\Omega ||\nabla u||^2 {\, \mathrm{d}x} -
+        \int\limits_\Omega fu {\, \mathrm{d}x} -
+        \int\limits_{\partial\Omega_N} \frac{\partial u}{\partial n}  u {\, \mathrm{d}s} + \,
+        \frac{1}{2}\int\limits_{\partial\Omega_N}\lambda (u-\uN)^2 {\, \mathrm{d}s},\quad
+        u\in V,
+        
+        
+
+In :math:`F(\tilde u)`, insert :math:`\tilde u=u+\epsilon v`,
+differentiate with respect
+to :math:`\epsilon`, and let :math:`\epsilon\rightarrow 0`.
+The result becomes
+
+.. _Eq:nitcshe:varform:Poisson2s:
+
+.. math::
+
+    \tag{379}
+    \frac{\delta F}{\delta u} =
+        \int\limits_\Omega \nabla u\cdot\nabla v {\, \mathrm{d}x} -
+        \int\limits_\Omega fv {\, \mathrm{d}x} -
+        \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v {\, \mathrm{d}s} +
+        \int\limits_{\partial\Omega_N}\lambda (u-\uN)v {\, \mathrm{d}s}
+        =0{\thinspace .}
+        
+        
+
+
+.. admonition:: Remark
+
+   We can drop the essential condition :math:`u=0` on :math:`\partial\Omega_E` and
+   just use the method above to enforce :math:`u=\uN` on the entire boundary
+   :math:`\partial\Omega`.
+
+
+
+
+.. The formulation :ref:`(379) <Eq:nitcshe:varform:Poisson2s>` for incorporating
+
+.. boundary conditions weakly is due to Nitsche
+
+**Symmetrization.**
+Using the formulation :ref:`(379) <Eq:nitcshe:varform:Poisson2s>` for finite
+element computations has one disadvantage: the variational form
+is no longer symmetric, and the coefficient matrix in the associated
+linear system becomes non-symmetric. We see this if we
+rewrite :ref:`(379) <Eq:nitcshe:varform:Poisson2s>` as
+
+.. math::
+         a(u,v) = L(v),\quad\forall v\in V,
+
+with
+
+.. math::
+        \begin{align*}
+        a(u,v) &=
+        \int\limits_\Omega \nabla u\cdot\nabla v {\, \mathrm{d}x}
+        -\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v {\, \mathrm{d}s}
+        + \int\limits_{\partial\Omega_N}\lambda uv {\, \mathrm{d}s},\\ 
+        L(v) &= \int\limits_\Omega fv {\, \mathrm{d}x} +
+        \int\limits_{\partial\Omega_N}\lambda \uN v {\, \mathrm{d}s}
+        {\thinspace .}
+        \end{align*}
+
+The lack of symmetry is
+evident in that we cannot interchange :math:`u` and :math:`v` in :math:`a(u,v)`, that is; 
+:math:`a(u,v)\not=a(v,u)`. 
+The standard finite element method results in a symmetric bilinear form
+and a corresponding matrix for 
+the Poisson problem and we would like to regain this property. 
+The problematic non-symmetric term
+is the line integral of :math:`v \partial u/\partial n`.
+If we had another term :math:`u \partial v/\partial n`, the sum would be
+symmetric. The idea is therefore to subtract :math:`\int_{\partial\Omega_N}
+u \partial v/\partial n{\, \mathrm{d}s}` from both :math:`a(u,v)` and :math:`L(v)`.
+Since :math:`u=\uN` on :math:`\partial\Omega_N` we subtract
+:math:`\int_{\partial\Omega_N}
+u\partial v/\partial n{\, \mathrm{d}s} = \int_{\partial\Omega_N}
+\uN\partial v/\partial n{\, \mathrm{d}s}` in :math:`L(v)`:
+
+.. math::
+        \begin{align*}
+        a(u,v) &=
+        \int\limits_\Omega \nabla u\cdot\nabla v {\, \mathrm{d}x}
+        -\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v {\, \mathrm{d}s}
+        - \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}u {\, \mathrm{d}s}
+        + \int\limits_{\partial\Omega_N}\lambda uv {\, \mathrm{d}s},\\ 
+        L(v) &= \int\limits_\Omega fv {\, \mathrm{d}x}
+        - \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}\uN {\, \mathrm{d}s}
+        + \int\limits_{\partial\Omega_N}\lambda \uN v {\, \mathrm{d}s}
+        {\thinspace .}
+        \end{align*}
+
+This formulation is known as Nitsche's method, but it is actually
+a standard penalty method.
+
+We can also easily derive this formulation from the partial differential
+equation problem. We multiply :math:`-\nabla^2 u=f` by :math:`v` and integrate over
+:math:`\Omega`. Integration by parts leads to
+
+.. math::
+         \int\limits_\Omega (\nabla^2 u)v{\, \mathrm{d}x} =
+        -\int\limits_\Omega \nabla u\cdot \nabla v{\, \mathrm{d}x}
+        + \int\limits_{\partial\Omega} \frac{\partial u}{\partial n}v{\, \mathrm{d}s}{\thinspace .}
+        
+
+Now, :math:`u=0` and therefore :math:`v=0` on :math:`\partial\Omega_D` so the
+line integral reduces to an integral over :math:`\partial\Omega_N`, where
+we have no condition and hence no value for :math:`\partial u/\partial n`,
+so we leave the integral as is.
+Then we add the boundary penalization term :math:`\lambda\int_{\partial\Omega_N}
+(u-\uN)v{\, \mathrm{d}s}`. The result becomes identical to :ref:`(379) <Eq:nitcshe:varform:Poisson2s>`.
+We can thereafter add the symmetrization terms if desired.
+
+.. _nitsche:pde:opt:Lagrange:
+
+Lagrange multiplier method for optimization with constraints
+------------------------------------------------------------
+
+We consider the same problem as in the section :ref:`nitsche:pde:opt:penalty`,
+but this time we want to apply a Lagrange multiplier method so we can
+solve for a *multiplier function* rather than specifying a large number for a
+penalty parameter and getting an approximate result.
+
+The functional to be optimized reads
+
+.. math::
+        
+        F(u) =
+        \int\limits_\Omega ||\nabla u||^2 {\, \mathrm{d}x} -
+        \int\limits_\Omega fu {\, \mathrm{d}x} -
+        \int\limits_{\partial\Omega_N}\uN {\, \mathrm{d}s} +
+        \int\limits_{\partial\Omega_N}\lambda(u-\uN){\, \mathrm{d}s},\quad
+        u\in V{\thinspace .}
+        
+
+Here we have two unknown functions: :math:`u\in V` in :math:`\Omega` and :math:`\lambda\in Q` on
+:math:`\partial\Omega_N`. The optimization criteria are
+
+.. math::
+         \frac{\delta F}{\delta u} = 0,\quad\frac{\delta F}{\delta\lambda} = 0{\thinspace .}
+
+We write :math:`\tilde u = u + \epsilon_u v` and :math:`\tilde\lambda = \lambda +
+\epsilon_\lambda p`, where :math:`v` is an arbitrary function in :math:`V` and :math:`p` is an
+arbitrary function in :math:`Q`. Notice that :math:`V` is here a usual
+function space with functions defined on :math:`\Omega`, while on 
+the other hand is a function space defined only on the
+surface :math:`\Omega_N`. 
+We insert the expressions for :math:`\tilde u` and
+:math:`\tilde\lambda` for :math:`u` and :math:`\lambda` and compute
+
+.. math::
+        \begin{align*}
+        \frac{\delta F}{\delta u} &=
+        \lim_{\epsilon_u\rightarrow 0}\frac{dF}{d\epsilon_u} =
+        \int\limits_{\Omega}\nabla u\cdot\nabla v{\, \mathrm{d}x} -
+        \int\limits_\Omega fv {\, \mathrm{d}x} -
+        \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v{\, \mathrm{d}s}  +
+        \int\limits_{\partial\Omega_N}\lambda(u-\uN){\, \mathrm{d}s} = 0,\\ 
+        \frac{\delta F}{\delta \lambda} &=
+        \lim_{\epsilon_\lambda\rightarrow 0}\frac{dF}{d\epsilon_\lambda} =
+        \int\limits_{\partial\Omega_N} (u-\uN) p{\, \mathrm{d}s} = 0 {\thinspace .}
+        \end{align*}
+
+These equations can be written as a linear system of equations: 
+Find :math:`u, \lambda \in V\times Q` such that  
+
+.. math::
+        \begin{align*}
+        a(u,v) + b(\lambda, v) &= L(v), \\ 
+        b(u, p)                &= 0, 
+        \end{align*}
+
+for all test functions :math:`v\in V` and :math:`p \in Q` and 
+
+.. math::
+        \begin{align*}
+        a(u,v)        &= \int\limits_{\Omega}\nabla u\cdot\nabla v{\, \mathrm{d}x} - \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v{\, \mathrm{d}s}, \\ 
+        b(\lambda, v) &= \int\limits_\Omega \lambda v {\, \mathrm{d}s}, \\ 
+        L(v)          &= \int\limits_\Omega fv {\, \mathrm{d}x}, \\ 
+        L(\lambda)    &= \int\limits_\Omega \uN \lambda {\, \mathrm{d}s} . 
+        \end{align*}
+
+Letting 
+:math:`u=\sum_{j\in{\mathcal{I}_s}} c_j{\psi}^{(u)}_j`, 
+:math:`\lambda=\sum_{j\in{\mathcal{I}_s}} c_j{\psi}^{(\lambda)}_j`, 
+:math:`v =  {\psi}^{(v)}_i`, and 
+:math:`p =  {\psi}^{(p)}_i`, we obtain the following system 
+of linear equations   
+
+.. math::
+        
+        A\, c = \left[ \begin{array}{cc} A^{(u,u)} & A^{(\lambda,u)}\\ A^{(u,\lambda)} & 0 \end{array} \right]
+        \left[ \begin{array}{c} c^{(u)} \\ c^{(\lambda)} \end{array} \right] =  
+        \left[ \begin{array}{c} b^{(u)} \\ b^{(\lambda)} \end{array} \right] 
+        = b, 
+        
+
+where 
+
+.. math::
+        \begin{align*}
+        A^{(u,u)}_{i,j} &=  a({\psi}^{(w)}_j, {\psi}^{(w)}_i),  \\ 
+        A^{(u,\lambda)}_{i,j} &=  b({\psi}^{(u)}_j, {\psi}^{(w)}_i),  \\ 
+        A^{(\lambda,u)}_{i,j} &= A^{(u,\lambda)}_{j,i}, \\ 
+        b^{(w)}_i &= (f,{\psi}^{(w)}_i), \\ 
+        b^{(u)}_i &= 0 {\thinspace .}
+        \end{align*}
+
+[**kam 31**: :math:`a` should be symmetric. Check why not. Also here :math:`\partial \Omega_N` is used almost everywhere. Should probably be :math:`\partial \Omega`.]
+
+.. _nitsche:pde:opt:1Dex:
+
+Example: 1D problem
+-------------------
+**Penalty method.**
+
+Let us do hand calculations to demonstrate weakly enforced boundary
+conditions via a penalty method and via the Lagrange multiplier method.
+We study the simple problem :math:`-u'' = 2` on :math:`[0,1]` with boundary
+conditions :math:`u(0)=0` and :math:`u(1)=1`.
+
+.. math::
+        \begin{align*}
+        a(u,v) &=
+        \int_0^1 \nabla u\cdot\nabla v {\, \mathrm{d}x}
+        -[u_x v]_0^1
+        -[v_x u]_0^1
+        +[\lambda uv]_0^1  \\ 
+        L(v) &= \int_0^1 fv {\, \mathrm{d}x}
+        - [v_x \uN]_0^1
+        + [\lambda \uN v]_0^1
+        {\thinspace .}
+        \end{align*}
+
+A uniform mesh with nodes
+:math:`x_i=i\Delta x` is introduced, numbered from left to right:
+:math:`i=0,\ldots,N_x`. The approximate value of :math:`u` at :math:`x_i` is denoted
+by :math:`c_i`, and in general the approximation to :math:`u` is :math:`\sum_{i=0}^{N_x}
+\varphi_i(x)c_i`.
+
+The elements at the boundaries needs special attention. Let us consider 
+the element 0 defined on :math:`[0,h]`. The basis functions are 
+:math:`\varphi_0(x) = 1 - x/h` and 
+:math:`\varphi_1(x) = x/h`. Hence, 
+:math:`\varphi_0|_{x=0} = 1`, 
+:math:`\varphi'_0|_{x=0} = -1/h`, 
+:math:`\varphi_1|_{x=0} = 0`, and  
+:math:`\varphi'_1|_{x=0} = 1/h`. Therefore, for element 0 we obtain the element matrix
+
+.. math::
+        \begin{align*}
+        A^{(0)}_{0, 0} &= \lambda + \frac{3}{h}, \\ 
+        A^{(0)}_{0, 1} &= - \frac{2}{h}, \\ 
+        A^{(0)}_{1, 0} &= - \frac{2}{h}, \\ 
+        A^{(0)}_{1, 1} &= \frac{1}{h} {\thinspace .}
+        \end{align*}
+
+The interior elements (:math:`e=1\ldots N_e-2`) result in the following element matrices
+
+.. math::
+        \begin{align*}
+        A^{(e)}_{0, 0} &= \frac{1}{h}, 
+        &A^{(e)}_{0, 1} = - \frac{1}{h},\\ 
+        A^{(e)}_{1, 0} &= - \frac{1}{h}, 
+        &A^{(e)}_{1, 1} = \frac{1}{h} {\thinspace .}
+        \end{align*}
+
+While the element at the boundary :math:`x=1` result in a element matrix similar to :math:`A^0`
+except that 0 and 1 are swapped. The calculations are straightforward in ``sympy``
+
+.. code-block:: python
+
+    import sympy as sym 
+    x, h, lam = sym.symbols("x h \lambda")
+    basis = [1 - x/h, x/h]
+    
+    for i in range(len(basis)): 
+      phi_i = basis[i]
+      for j in range(len(basis)): 
+        phi_j = basis[j]
+        a  = sym.integrate(sym.diff(phi_i, x)*sym.diff(phi_j, x), (x, 0, h))
+        a -= (sym.diff(phi_i, x)*phi_j).subs(x,0) 
+        a -= (sym.diff(phi_j, x)*phi_i).subs(x,0) 
+        a += (lam*phi_j*phi_i).subs(x,0) 
+
+[**kam 32**: Do the thing in FEniCS. Check results for different :math:`\lambda`.]
+
+**Lagrange multiplier method.**
+
+For the Lagrange multiplier method we need a function space :math:`Q` defined on the boundary 
+of the domain. In 1D with :math:`\Omega=(0,1)` the boundary is :math:`x=0` and :math:`x=1`. Hence, :math:`Q`
+can be spanned by two basis functions :math:`\lambda_0` and :math:`\lambda_1`. These functions
+should be such that :math:`\lambda_0=1` for :math:`x=0` and zero everywhere else, while
+:math:`\lambda_1=1` for :math:`x=1` and zero everywhere else. 
+Now, set
+
+.. math::
+         \lambda(x) = \lambda_0 \varphi_0(x) + \lambda_{N_x}\varphi_{N_x}(x){\thinspace .}
+        
+
+[**kam 33**: ok, write this up in detail]
+
+Example: adding a constraint in a Neumann problem
+-------------------------------------------------
+
+ * Neumann problem: add :math:`\int_\Omega u{\, \mathrm{d}x} =0` as constraint.
+
+ * Set up Nitsche and Lagrange multiplier method and the simple
+   trick :math:`u` fixed at a point. Compare in 1D.
+
+[**kam 34**: penalty is kind of hard, at least in fenics, it involves the terms :math:`\int_\Omega u \times \int_\Omega v` rather than :math:`\int_\Omega u v`.]
+
+.. _ch:nonlin:
+
+Nonlinear problems
+%%%%%%%%%%%%%%%%%%
+
+.. _nonlin:timediscrete:logistic:
+
+Introduction of basic concepts
+==============================
+
+Linear versus nonlinear equations
+---------------------------------
+
+Algebraic equations
+~~~~~~~~~~~~~~~~~~~
+
+A linear, scalar, algebraic equation in :math:`x` has the form
+
+.. math::
+         ax + b = 0,
+
+for arbitrary real constants :math:`a` and :math:`b`. The unknown is a number :math:`x`.
+All other algebraic equations, e.g., :math:`x^2 + ax + b = 0`, are nonlinear.
+The typical feature in a nonlinear algebraic equation is that the unknown
+appears in products with itself, like :math:`x^2` or
+in functions that are infinite sums of products, like :math:`e^x = 1 + x +\frac{1}{2} x^2 +
+\frac{1}{3!}x^3 + \cdots`.
+
+We know how to solve a linear algebraic equation, :math:`x=-b/a`, but there are
+no general closed formulas for finding the exact solutions of
+nonlinear algebraic equations, except for very special cases (quadratic
+equations constitute a primary example). A nonlinear algebraic equation
+may have no solution, one solution, or many solutions. The tools for
+solving nonlinear algebraic equations are *iterative methods*, where
+we construct a series of linear equations, which we know how to solve,
+and hope that the solutions of the linear equations converge to a
+solution of the nonlinear equation we want to solve.
+Typical methods for nonlinear algebraic equation equations are
+Newton's method, the Bisection method, and the Secant method.
+
+Differential equations
+~~~~~~~~~~~~~~~~~~~~~~
+
+The unknown in a differential equation is a function and not a number.
+In a linear differential equation, all terms involving the unknown function
+are linear in the unknown function or its derivatives. Linear here means that
+the unknown function, or a derivative of it, is multiplied by a number or
+a known function. All other differential equations are non-linear.
+
+The easiest way to see if an equation is nonlinear, is to spot nonlinear terms
+where the unknown function or its derivatives are multiplied by
+each other. For example, in
+
+.. math::
+         u^{\prime}(t) = -a(t)u(t) + b(t),
+
+the terms involving the unknown function :math:`u` are linear: :math:`u^{\prime}` contains
+the derivative of the unknown function multiplied by unity, and :math:`au` contains
+the unknown function multiplied by a known function.
+However,
+
+.. math::
+         u^{\prime}(t) = u(t)(1 - u(t)),
+
+is nonlinear because of the term :math:`-u^2` where the unknown function is
+multiplied by itself. Also
+
+.. math::
+         \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = 0,
+
+is nonlinear because of the term :math:`uu_x` where the unknown
+function appears in a product with its derivative.
+(Note here that we use different notations for derivatives: :math:`u^{\prime}`
+or :math:`du/dt` for a function :math:`u(t)` of one variable,
+:math:`\frac{\partial u}{\partial t}` or :math:`u_t` for a function of more than one
+variable.)
+
+Another example of a nonlinear equation is
+
+.. math::
+         u^{\prime\prime} + \sin(u) =0,
+
+because :math:`\sin(u)` contains products of :math:`u`, which becomes clear
+if we expand the function in a Taylor series:
+
+.. math::
+         \sin(u) = u - \frac{1}{3} u^3 + \ldots
+
+
+.. admonition:: Mathematical proof of linearity
+
+   To really prove mathematically that some differential equation
+   in an unknown :math:`u` is linear,
+   show for each term :math:`T(u)` that with :math:`u = au_1 + bu_2` for
+   constants :math:`a` and :math:`b`,
+   
+   .. math::
+            T(au_1 + bu_2) = aT(u_1) + bT(u_2){\thinspace .} 
+   
+   For example, the term :math:`T(u) = (\sin^2 t)u'(t)` is linear because
+   
+   .. math::
+           \begin{align*}
+           T(au_1 + bu_2) &= (\sin^2 t)(au_1(t) + b u_2(t))'\\ 
+           & = a(\sin^2 t)u_1'(t) + b(\sin^2 t)u_2'(t)\\ 
+           & =aT(u_1) + bT(u_2){\thinspace .}
+           \end{align*}
+   
+   However, :math:`T(u)=\sin u` is nonlinear because
+   
+   .. math::
+            T(au_1 + bu_2) = \sin (au_1 + bu_2) \neq a\sin u_1 + b\sin u_2{\thinspace .}
+
+
+
+
+A simple model problem
+----------------------
+
+A series of forthcoming examples will explain how to tackle
+nonlinear differential equations with various techniques.
+We start with the (scaled) logistic equation as model problem:
+
+.. _Eq:nonlin:timediscrete:logistic:eq:
+
+.. math::
+
+    \tag{380}
+    u^{\prime}(t) = u(t)(1 - u(t)) {\thinspace .}
+        
+        
+
+This is a nonlinear ordinary differential equation (ODE)
+which will be solved by
+different strategies in the following.
+Depending on the chosen
+time discretization of :ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>`,
+the mathematical problem to be solved at every time level will
+either be a linear algebraic equation or a nonlinear
+algebraic equation.
+In the former case, the time discretization method transforms
+the nonlinear ODE into linear subproblems at each time level, and
+the solution is straightforward to find since linear algebraic equations
+are easy to solve. However,
+when the time discretization leads to nonlinear algebraic equations, we
+cannot (except in very rare cases) solve these without turning to
+approximate, iterative solution methods.
+
+The next subsections introduce various methods
+for solving nonlinear differential equations,
+using :ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>` as model. We shall go through
+the following set of cases:
+
+ * explicit time discretization methods (with no need to
+   solve nonlinear algebraic equations)
+
+ * implicit Backward Euler time discretization, leading to nonlinear
+   algebraic equations solved by
+
+  * an exact analytical technique
+
+  * Picard iteration based on manual linearization
+
+  * a single Picard step
+
+  * Newton's method
+
+ * implicit Crank-Nicolson time discretization and linearization
+   via a geometric mean formula
+
+Thereafter, we compare the performance of the various approaches. Despite
+the simplicity of :ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>`, the conclusions
+reveal typical features of the various methods in much more complicated
+nonlinear PDE problems.
+
+.. _nonlin:timediscrete:logistic:FE:
+
+Linearization by explicit time discretization
+---------------------------------------------
+
+.. index::
+   single: linearization; explicit time integration
+
+Time discretization methods are divided into explicit and implicit
+methods. Explicit methods lead to a closed-form formula for
+finding new values of the unknowns, while implicit methods give
+a linear or nonlinear system of equations that couples (all) the
+unknowns at a new time level. Here we shall demonstrate that
+explicit methods may constitute an efficient way to deal with nonlinear
+differential equations.
+
+The Forward Euler
+method is an explicit method. When applied to
+:ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>`, sampled at :math:`t=t_n`, it results in
+
+.. math::
+         \frac{u^{n+1} - u^n}{\Delta t} = u^n(1 - u^n),
+
+which is a *linear* algebraic
+equation for the unknown value :math:`u^{n+1}` that we can easily solve:
+
+.. math::
+         u^{n+1} = u^n + \Delta t\,u^n(1 - u^n){\thinspace .}
+
+The nonlinearity in the original equation poses in this case no difficulty
+in the discrete algebraic equation.
+Any other explicit scheme in time will also give only linear
+algebraic equations
+to solve. For example, a typical 2nd-order Runge-Kutta method
+for :ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>` leads to the following
+formulas:
+
+.. math::
+        \begin{align*}
+        u^* &= u^n + \Delta t u^n(1 - u^n),\\ 
+        u^{n+1} &= u^n + \Delta t \frac{1}{2} \left(
+        u^n(1 - u^n) + u^*(1 - u^*))
+        \right){\thinspace .}
+        \end{align*}
+
+The first step is linear in the unknown :math:`u^*`. Then :math:`u^*` is
+known in the next step, which is linear in the unknown :math:`u^{n+1}` .
+
+.. _nonlin:timediscrete:logistic:roots:
+
+Exact solution of nonlinear algebraic equations
+-----------------------------------------------
+
+Switching to a Backward Euler scheme for
+:ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>`,
+
+.. _Eq:nonlin:timediscrete:logistic:eq:BE:
+
+.. math::
+
+    \tag{381}
+    \frac{u^{n} - u^{n-1}}{\Delta t} = u^n(1 - u^n),
+        
+        
+
+results in a nonlinear algebraic equation for the unknown value :math:`u^n`.
+The equation is of quadratic type:
+
+.. math::
+         \Delta t (u^n)^2 + (1-\Delta t)u^n - u^{n-1} = 0, 
+
+and may be solved exactly by the well-known formula for such equations.
+Before we do so, however, we will
+introduce a shorter, and often cleaner, notation for
+nonlinear algebraic equations at a given time level. The notation is
+inspired by the natural notation (i.e., variable names) used in a
+program, especially in more advanced partial differential equation
+problems. The unknown in the algebraic equation is denoted by :math:`u`,
+while :math:`u^{(1)}` is the value of the unknown at the previous time level
+(in general, :math:`u^{(\ell)}` is the value of the unknown :math:`\ell` levels
+back in time). The notation will be frequently used in later
+sections. What is meant by :math:`u` should be evident from the context: :math:`u`
+may be 1) the exact solution of the ODE/PDE problem,
+2) the numerical approximation to the exact solution, or 3) the unknown
+solution at a certain time level.
+
+The quadratic equation for the unknown :math:`u^n` in
+:ref:`(381) <Eq:nonlin:timediscrete:logistic:eq:BE>` can, with the new
+notation, be written
+
+.. _Eq:nonlin:timediscrete:logistic:eq:F:
+
+.. math::
+
+    \tag{382}
+    F(u) = \Delta t u^2 + (1-\Delta t)u - u^{(1)} = 0{\thinspace .}
+        
+        
+
+The solution is readily found to be
+
+.. _Eq:nonlin:timediscrete:logistic:eq:roots:
+
+.. math::
+
+    \tag{383}
+    u = \frac{1}{2\Delta t}
+        \left(-1+\Delta t \pm \sqrt{(1-\Delta t)^2 - 4\Delta t u^{(1)}}\right)
+        {\thinspace .}
+        
+        
+
+Now we encounter a fundamental challenge with nonlinear
+algebraic equations:
+the equation may have more than one solution. How do we pick the right
+solution? This is in general a hard problem.
+In the present simple case, however, we can analyze the roots mathematically
+and provide an answer. The idea is to expand the roots
+in a series in :math:`\Delta t` and truncate after the linear term since
+the Backward Euler scheme will introduce an error proportional to
+:math:`\Delta t` anyway. Using ``sympy`` we find the following Taylor series
+expansions of the roots:
+
+.. code-block:: python
+
+    >>> import sympy as sym
+    >>> dt, u_1, u = sym.symbols('dt u_1 u')
+    >>> r1, r2 = sym.solve(dt*u**2 + (1-dt)*u - u_1, u)  # find roots
+    >>> r1
+    (dt - sqrt(dt**2 + 4*dt*u_1 - 2*dt + 1) - 1)/(2*dt)
+    >>> r2
+    (dt + sqrt(dt**2 + 4*dt*u_1 - 2*dt + 1) - 1)/(2*dt)
+    >>> print r1.series(dt, 0, 2)    # 2 terms in dt, around dt=0
+    -1/dt + 1 - u_1 + dt*(u_1**2 - u_1) + O(dt**2)
+    >>> print r2.series(dt, 0, 2)
+    u_1 + dt*(-u_1**2 + u_1) + O(dt**2)
+
+We see that the ``r1`` root, corresponding to
+a minus sign in front of the square root in
+:ref:`(383) <Eq:nonlin:timediscrete:logistic:eq:roots>`,
+behaves as :math:`1/\Delta t` and will therefore
+blow up as :math:`\Delta t\rightarrow 0`! Since we know that :math:`u` takes on
+finite values, actually it is less than or equal to 1,
+only the ``r2`` root is of relevance in this case: as :math:`\Delta t\rightarrow 0`,
+:math:`u\rightarrow u^{(1)}`, which is the expected result.
+
+For those who are not well experienced with approximating mathematical
+formulas by series expansion, an alternative method of investigation
+is simply to compute the limits of the two roots as :math:`\Delta t\rightarrow 0`
+and see if a limit unreasonable:
+
+.. code-block:: python
+
+    >>> print r1.limit(dt, 0)
+    -oo
+    >>> print r2.limit(dt, 0)
+    u_1
+
+Linearization
+-------------
+
+When the time integration of an ODE results in a nonlinear algebraic
+equation, we must normally find its solution by defining a sequence
+of linear equations and hope that the solutions of these linear equations
+converge to the desired solution of the nonlinear algebraic equation.
+Usually, this means solving the linear equation repeatedly in an
+iterative fashion.
+Alternatively, the nonlinear equation can sometimes be approximated by one
+linear equation, and consequently there is no need for iteration.
+
+.. index:: linearization
+
+Constructing a linear equation from a nonlinear one requires
+*linearization* of each nonlinear term. This can be done manually
+as in Picard iteration, or fully algorithmically as in Newton's method.
+Examples will best illustrate how to linearize nonlinear problems.
+
+.. _nonlin:timediscrete:logistic:Picard:
+
+Picard iteration          (1)
+-----------------------------
+
+.. index:: Picard iteration
+
+.. index:: successive substitutions
+
+.. index:: fixed-point iteration
+
+.. index::
+   single: linearization; Picard iteration
+
+.. index::
+   single: linearization; successive substitutions
+
+.. index::
+   single: linearization; fixed-point iteration
+
+Let us write :ref:`(382) <Eq:nonlin:timediscrete:logistic:eq:F>` in a
+more compact form
+
+.. math::
+         F(u) = au^2 + bu + c = 0,
+
+with :math:`a=\Delta t`, :math:`b=1-\Delta t`, and :math:`c=-u^{(1)}`.
+Let :math:`u^{-}` be an available approximation of the unknown :math:`u`.
+
+Then we can linearize the term :math:`u^2` simply by writing
+:math:`u^{-}u`. The resulting equation, :math:`\hat F(u)=0`, is now linear
+and hence easy to solve:
+
+.. math::
+         F(u)\approx\hat F(u) = au^{-}u + bu + c = 0{\thinspace .}
+
+Since the equation :math:`\hat F=0` is only approximate, the solution :math:`u`
+does not equal the exact solution :math:`{u_{\small\mbox{e}}}` of the exact
+equation :math:`F({u_{\small\mbox{e}}})=0`, but we can hope that :math:`u` is closer to
+:math:`{u_{\small\mbox{e}}}` than :math:`u^{-}` is, and hence it makes sense to repeat the
+procedure, i.e., set :math:`u^{-}=u` and solve :math:`\hat F(u)=0` again.
+There is no guarantee that :math:`u` is closer to :math:`{u_{\small\mbox{e}}}` than :math:`u^{-}`,
+but this approach has proven to be effective in a wide range of
+applications.
+
+The idea of turning a nonlinear equation into a linear one by
+using an approximation :math:`u^{-}` of :math:`u` in nonlinear terms is
+a widely used approach that goes under many names:
+*fixed-point iteration*, the method of *successive substitutions*,
+*nonlinear Richardson iteration*, and *Picard iteration*.
+We will stick to the latter name.
+
+Picard iteration for solving the nonlinear equation
+arising from the Backward Euler discretization of the logistic
+equation can be written as
+
+.. math::
+         u = -\frac{c}{au^{-} + b},\quad u^{-}\ \leftarrow\ u{\thinspace .}
+
+The :math:`\leftarrow` symbols means assignment (we set :math:`u^{-}` equal to
+the value of :math:`u`).
+The iteration is started with the value of the unknown at the
+previous time level: :math:`u^{-}=u^{(1)}`.
+
+Some prefer an explicit iteration counter as superscript
+in the mathematical notation. Let :math:`u^k` be the computed approximation
+to the solution in iteration :math:`k`. In iteration :math:`k+1` we want
+to solve
+
+.. math::
+         au^k u^{k+1} + bu^{k+1} + c = 0\quad\Rightarrow\quad u^{k+1}
+        = -\frac{c}{au^k + b},\quad k=0,1,\ldots
+
+Since we need to perform the iteration at every time level, the
+time level counter is often also included:
+
+.. math::
+         au^{n,k} u^{n,k+1} + bu^{n,k+1} - u^{n-1} = 0\quad\Rightarrow\quad u^{n,k+1}
+        = \frac{u^{n-1}}{au^{n,k} + b},\quad k=0,1,\ldots,
+
+with the start value :math:`u^{n,0}=u^{n-1}` and the final converged value
+:math:`u^{n}=u^{n,k}` for sufficiently large :math:`k`.
+
+However, we will normally apply a mathematical notation in our
+final formulas that is as close as possible to what we aim to write
+in a computer code and then it becomes natural to use :math:`u` and :math:`u^{-}`
+instead of :math:`u^{k+1}` and :math:`u^k` or :math:`u^{n,k+1}` and :math:`u^{n,k}`.
+
+.. index:: stopping criteria (nonlinear problems)
+
+Stopping criteria          (1)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The iteration method can typically be terminated when the change
+in the solution is smaller than a tolerance :math:`\epsilon_u`:
+
+.. math::
+         |u - u^{-}| \leq\epsilon_u,
+
+or when the residual in the equation is sufficiently small (:math:`< \epsilon_r`),
+
+.. math::
+         |F(u)|= |au^2+bu + c| < \epsilon_r{\thinspace .}
+
+.. index:: single Picard iteration technique
+
+A single Picard iteration
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Instead of iterating until a stopping criterion is fulfilled, one may
+iterate a specific number of times. Just one Picard iteration is
+popular as this corresponds to the intuitive idea of approximating a
+nonlinear term like :math:`(u^n)^2` by :math:`u^{n-1}u^n`. This follows from the
+linearization :math:`u^{-}u^n` and the initial choice of :math:`u^{-}=u^{n-1}` at
+time level :math:`t_n`. In other words, a single Picard iteration
+corresponds to using the solution at the previous time level to
+linearize nonlinear terms. The resulting discretization becomes (using
+proper values for :math:`a`, :math:`b`, and :math:`c`)
+
+.. _Eq:nonlin:timediscrete:logistic:BE:Picard:1it:
+
+.. math::
+
+    \tag{384}
+    \frac{u^{n} - u^{n-1}}{\Delta t} = u^n(1 - u^{n-1}),
+        
+        
+
+which is a linear algebraic equation in the unknown :math:`u^n`, making
+it easy to solve for :math:`u^n` without any need for
+any alternative notation.
+
+We shall later refer to the strategy of taking one Picard step, or
+equivalently, linearizing terms with use of the solution at the
+previous time step, as the *Picard1* method. It is a widely used
+approach in science and technology, but with some limitations if
+:math:`\Delta t` is not sufficiently small (as will be illustrated later).
+
+
+.. note::
+   
+   Equation :ref:`(384) <Eq:nonlin:timediscrete:logistic:BE:Picard:1it>` does not
+   correspond to a "pure" finite difference method where the equation
+   is sampled at a point and derivatives replaced by differences (because
+   the :math:`u^{n-1}` term on the right-hand side must then be :math:`u^n`). The
+   best interpretation of the scheme
+   :ref:`(384) <Eq:nonlin:timediscrete:logistic:BE:Picard:1it>` is a Backward Euler
+   difference combined with a single (perhaps insufficient) Picard
+   iteration at each time level, with the value at the previous time
+   level as start for the Picard iteration.
+
+
+
+
+.. _nonlin:timediscrete:logistic:geometric:mean:
+
+Linearization by a geometric mean
+---------------------------------
+
+We consider now a Crank-Nicolson discretization of
+:ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>`. This means that the
+time derivative is approximated by a centered
+difference,
+
+.. math::
+         [D_t u = u(1-u)]^{n+\frac{1}{2}},
+
+written out as
+
+.. _Eq:nonlin:timediscrete:logistic:geometric:mean:scheme:
+
+.. math::
+
+    \tag{385}
+    \frac{u^{n+1}-u^n}{\Delta t} = u^{n+\frac{1}{2}} -
+        (u^{n+\frac{1}{2}})^2{\thinspace .}
+        
+        
+
+The first term :math:`u^{n+\frac{1}{2}}` is normally approximated by an arithmetic
+mean,
+
+.. math::
+         u^{n+\frac{1}{2}}\approx \frac{1}{2}(u^n + u^{n+1}),
+
+such that the scheme involves the unknown function only at the time levels
+where we actually compute it.
+The same arithmetic mean applied to the second term gives
+
+.. math::
+         (u^{n+\frac{1}{2}})^2\approx \frac{1}{4}(u^n + u^{n+1})^2,
+
+which is nonlinear in the unknown :math:`u^{n+1}`.
+However, using a *geometric mean* for :math:`(u^{n+\frac{1}{2}})^2`
+is a way of linearizing the nonlinear term in
+:ref:`(385) <Eq:nonlin:timediscrete:logistic:geometric:mean:scheme>`:
+
+.. math::
+         (u^{n+\frac{1}{2}})^2\approx u^nu^{n+1}{\thinspace .}
+
+Using an arithmetic mean on the linear :math:`u^{n+\frac{1}{2}}` term in
+:ref:`(385) <Eq:nonlin:timediscrete:logistic:geometric:mean:scheme>` and a geometric
+mean for the second term, results in a linearized equation for the
+unknown :math:`u^{n+1}`:
+
+.. math::
+         \frac{u^{n+1}-u^n}{\Delta t} =
+        \frac{1}{2}(u^n + u^{n+1}) - u^nu^{n+1},
+
+which can readily be solved:
+
+.. math::
+        
+        u^{n+1} = \frac{1 + \frac{1}{2}\Delta t}{1+\Delta t u^n - \frac{1}{2}\Delta t}
+        u^n{\thinspace .}
+
+This scheme can be coded directly, and since
+there is no nonlinear algebraic equation to iterate over,
+we skip the simplified notation with :math:`u` for :math:`u^{n+1}`
+and :math:`u^{(1)}` for :math:`u^n`. The technique with using
+a geometric average is an example of transforming a nonlinear
+algebraic equation to a linear one, without any need for iterations.
+
+The geometric mean approximation is often very effective for
+linearizing quadratic nonlinearities. Both the arithmetic and geometric mean
+approximations have truncation errors of order :math:`\Delta t^2` and are
+therefore compatible with the truncation error :math:`{\mathcal{O}(\Delta t^2)}`
+of the centered difference approximation for :math:`u^\prime` in the Crank-Nicolson
+method.
+
+Applying the operator notation for the means and finite differences,
+the linearized Crank-Nicolson scheme for the logistic equation can be
+compactly expressed as
+
+.. math::
+         [D_t u = \overline{u}^{t} + \overline{u^2}^{t,g}]^{n+\frac{1}{2}}{\thinspace .}
+
+
+.. admonition:: Remark
+
+   If we use an arithmetic instead of a geometric mean
+   for the nonlinear term in
+   :ref:`(385) <Eq:nonlin:timediscrete:logistic:geometric:mean:scheme>`,
+   we end up with a nonlinear term :math:`(u^{n+1})^2`.
+   This term can be linearized as :math:`u^{-}u^{n+1}` in a Picard iteration
+   approach and in particular as
+   :math:`u^nu^{n+1}` in a Picard1 iteration approach.
+   The latter gives a scheme almost identical to the one arising from
+   a geometric mean (the difference in :math:`u^{n+1}`
+   being :math:`\frac{1}{4}\Delta t u^n(u^{n+1}-u^n)\approx \frac{1}{4}\Delta t^2
+   u^\prime u`, i.e., a difference of size :math:`\Delta t^2`).
+
+
+
+
+[**kam 35**: this is the first time I've seen this :math:`\overline{u}^t` notation. It is not in the appendix either.]
+
+.. _nonlin:timediscrete:logistic:Newton:
+
+Newton's method          (1)
+----------------------------
+
+The Backward Euler scheme :ref:`(381) <Eq:nonlin:timediscrete:logistic:eq:BE>`
+for the logistic equation leads to a nonlinear algebraic equation
+:ref:`(382) <Eq:nonlin:timediscrete:logistic:eq:F>`. Now we write any nonlinear
+algebraic equation in the general and compact form
+
+.. math::
+         F(u) = 0{\thinspace .}
+
+Newton's method linearizes this equation by approximating :math:`F(u)` by
+its Taylor series expansion around a computed value :math:`u^{-}`
+and keeping only the linear part:
+
+.. math::
+        \begin{align*}
+        F(u) &= F(u^{-}) + F^{\prime}(u^{-})(u - u^{-}) + {\frac{1}{2}}F^{\prime\prime}(u^{-})(u-u^{-})^2
+        +\cdots\\ 
+        & \approx F(u^{-}) + F^{\prime}(u^{-})(u - u^{-}) = \hat F(u){\thinspace .}
+        \end{align*}
+
+The linear equation :math:`\hat F(u)=0` has the solution
+
+.. math::
+         u = u^{-} - \frac{F(u^{-})}{F^{\prime}(u^{-})}{\thinspace .}
+
+Expressed with an iteration index in the unknown, Newton's method takes
+on the more familiar mathematical form
+
+.. math::
+         u^{k+1} = u^k - \frac{F(u^k)}{F^{\prime}(u^k)},\quad k=0,1,\ldots
+
+It can be shown that the error in iteration :math:`k+1` of Newton's method is
+proportional to
+the square of the error in iteration :math:`k`, a result referred to as
+*quadratic convergence*. This means that for
+small errors the method converges very fast, and in particular much
+faster than Picard iteration and other iteration methods.
+(The proof of this result is found in most textbooks on numerical analysis.)
+However, the quadratic convergence appears only if :math:`u^k` is sufficiently
+close to the solution. Further away from the solution the method can
+easily converge very slowly or diverge. The reader is encouraged to do
+:ref:`nonlin:exer:Newton:problems1` to get a better understanding
+for the behavior of the method.
+
+Application of Newton's method to the logistic equation discretized
+by the Backward Euler method is straightforward
+as we have
+
+.. math::
+         F(u) = au^2 + bu + c,\quad a=\Delta t,\ b = 1-\Delta t,\ c=-u^{(1)},
+
+and then
+
+.. math::
+         F^{\prime}(u) = 2au + b{\thinspace .}
+
+The iteration method becomes
+
+.. _Eq:nonlin:timediscrete:logistic:Newton:alg1:
+
+.. math::
+
+    \tag{386}
+    u = u^{-} + \frac{a(u^{-})^2 + bu^{-} + c}{2au^{-} + b},\quad
+        u^{-}\ \leftarrow u{\thinspace .}
+        
+        
+
+At each time level, we start the iteration by setting :math:`u^{-}=u^{(1)}`.
+Stopping criteria as listed for the Picard iteration can be used also
+for Newton's method.
+
+An alternative mathematical form, where we write out :math:`a`, :math:`b`, and :math:`c`,
+and use a time level counter :math:`n` and an iteration counter :math:`k`, takes
+the form
+
+.. _Eq:nonlin:timediscrete:logistic:Newton:alg2:
+
+.. math::
+
+    \tag{387}
+    u^{n,k+1} = u^{n,k} +
+        \frac{\Delta t (u^{n,k})^2 + (1-\Delta t)u^{n,k} - u^{n-1}}
+        {2\Delta t u^{n,k} + 1 - \Delta t},\quad u^{n,0}=u^{n-1},
+        
+        
+
+for :math:`k=0,1,\ldots`.
+A program implementation is much closer to :ref:`(386) <Eq:nonlin:timediscrete:logistic:Newton:alg1>` than to :ref:`(387) <Eq:nonlin:timediscrete:logistic:Newton:alg2>`, but
+the latter is better aligned with the established mathematical
+notation used in the literature.
+
+.. _nonlin:timediscrete:logistic:relaxation:
+
+Relaxation
+----------
+
+.. index:: relaxation (nonlinear equations)
+
+One iteration in Newton's method or
+Picard iteration consists of solving a linear problem :math:`\hat F(u)=0`.
+Sometimes convergence problems arise because the new solution :math:`u`
+of :math:`\hat F(u)=0` is "too far away" from the previously computed
+solution :math:`u^{-}`. A remedy is to introduce a relaxation, meaning that
+we first solve :math:`\hat F(u^*)=0` for a suggested value :math:`u^*` and
+then we take :math:`u` as a weighted mean of what we had, :math:`u^{-}`, and
+what our linearized equation :math:`\hat F=0` suggests, :math:`u^*`:
+
+.. math::
+         u = \omega u^* + (1-\omega) u^{-}{\thinspace .}
+
+The parameter :math:`\omega`
+is known as a *relaxation parameter*, and a choice :math:`\omega < 1`
+may prevent divergent iterations.
+
+Relaxation in Newton's method can be directly incorporated
+in the basic iteration formula:
+
+.. _Eq:nonlin:timediscrete:logistic:relaxation:Newton:formula:
+
+.. math::
+
+    \tag{388}
+    u = u^{-} - \omega \frac{F(u^{-})}{F^{\prime}(u^{-})}{\thinspace .}
+        
+        
+
+.. _nonlin:timediscrete:logistic:impl:
+
+Implementation and experiments
+------------------------------
+
+The program `logistic.py <http://tinyurl.com/znpudbt/logistic.py>`__ contains
+implementations of all the methods described above.
+Below is an extract of the file showing how the Picard and Newton
+methods are implemented for a Backward Euler discretization of
+the logistic equation.
+
+.. @@@CODE src/logistic.py fromto: def BE_logistic@def CN_logistic
+
+.. code-block:: python
+
+    def BE_logistic(u0, dt, Nt, choice='Picard',
+                    eps_r=1E-3, omega=1, max_iter=1000):
+        if choice == 'Picard1':
+            choice = 'Picard'
+            max_iter = 1
+    
+        u = np.zeros(Nt+1)
+        iterations = []
+        u[0] = u0
+        for n in range(1, Nt+1):
+            a = dt
+            b = 1 - dt
+            c = -u[n-1]
+    
+            if choice == 'Picard':
+    
+                def F(u):
+                    return a*u**2 + b*u + c
+    
+                u_ = u[n-1]
+                k = 0
+                while abs(F(u_)) > eps_r and k < max_iter:
+                    u_ = omega*(-c/(a*u_ + b)) + (1-omega)*u_
+                    k += 1
+                u[n] = u_
+                iterations.append(k)
+    
+            elif choice == 'Newton':
+    
+                def F(u):
+                    return a*u**2 + b*u + c
+    
+                def dF(u):
+                    return 2*a*u + b
+    
+                u_ = u[n-1]
+                k = 0
+                while abs(F(u_)) > eps_r and k < max_iter:
+                    u_ = u_ - F(u_)/dF(u_)
+                    k += 1
+                u[n] = u_
+                iterations.append(k)
+        return u, iterations
+
+The Crank-Nicolson method utilizing a linearization based on the
+geometric mean gives a simpler algorithm:
+
+.. code-block:: python
+
+    def CN_logistic(u0, dt, Nt):
+        u = np.zeros(Nt+1)
+        u[0] = u0
+        for n in range(0, Nt):
+            u[n+1] = (1 + 0.5*dt)/(1 + dt*u[n] - 0.5*dt)*u[n]
+        return u
+
+We may run experiments with the model problem
+:ref:`(380) <Eq:nonlin:timediscrete:logistic:eq>` and the different strategies for
+dealing with nonlinearities as described above. For a quite coarse
+time resolution, :math:`\Delta t=0.9`, use of a tolerance :math:`\epsilon_r=0.05`
+in the stopping criterion introduces an iteration error, especially in
+the Picard iterations, that is visibly much larger than the
+time discretization error due to a large :math:`\Delta t`. This is illustrated
+by comparing the upper two plots in
+Figure :ref:`nonlin:timediscrete:logistic:impl:fig:u`. The one to
+the right has a stricter tolerance :math:`\epsilon = 10^{-3}`, which leads
+to all the curves corresponding to Picard and Newton iteration to be
+on top of each other (and no changes can be visually observed by
+reducing :math:`\epsilon_r` further). The reason why Newton's method does
+much better than Picard iteration in the upper left plot is that
+Newton's method with one step comes far below the :math:`\epsilon_r` tolerance,
+while the Picard iteration needs on average 7 iterations to bring the
+residual down to :math:`\epsilon_r=10^{-1}`, which gives insufficient
+accuracy in the solution of the nonlinear equation. It is obvious
+that the Picard1 method gives significant errors in addition to
+the time discretization unless the time step is as small as in
+the lower right plot.
+
+The *BE exact* curve corresponds to using the exact solution of the
+quadratic equation at each time level, so this curve is only affected
+by the Backward Euler time discretization.  The *CN gm* curve
+corresponds to the theoretically more accurate Crank-Nicolson
+discretization, combined with a geometric mean for linearization.
+This curve appears more accurate, especially if we take the plot in
+the lower right with a small :math:`\Delta t` and an appropriately small
+:math:`\epsilon_r` value as the exact curve.
+
+When it comes to the need for iterations, Figure
+:ref:`nonlin:timediscrete:logistic:impl:fig:iter` displays the number of
+iterations required at each time level for Newton's method and
+Picard iteration. The smaller :math:`\Delta t` is, the better starting value
+we have for the iteration, and the faster the convergence is.
+With :math:`\Delta t = 0.9` Picard iteration requires on average 32 iterations
+per time step for the stricter convergence criterion, but this number is dramatically reduced as :math:`\Delta t`
+is reduced.
+
+However, introducing relaxation and a parameter :math:`\omega=0.8`
+immediately reduces the average of 32 to 7, indicating that for the large
+:math:`\Delta t=0.9`, Picard iteration takes too long steps. An approximately optimal
+value for :math:`\omega` in this case is 0.5, which results in an average of only
+2 iterations! An even more dramatic impact of :math:`\omega` appears when
+:math:`\Delta t = 1`: Picard iteration does not convergence in 1000 iterations,
+but :math:`\omega=0.5` again brings the average number of iterations down to 2.
+
+.. _nonlin:timediscrete:logistic:impl:fig:u:
+
+.. figure:: logistic_u.png
+   :width: 800
+
+   *Impact of solution strategy and time step length on the solution*
+
+.. _nonlin:timediscrete:logistic:impl:fig:iter:
+
+.. figure:: logistic_iter.png
+   :width: 800
+
+   *Comparison of the number of iterations at various time levels for Picard and Newton iteration*
+
+[**hpl 36**: Is this remark really relevant now? Compare with text.]
+
+**Remark.**
+The simple Crank-Nicolson method with a geometric mean for the quadratic
+nonlinearity gives visually more accurate solutions than the
+Backward Euler discretization. Even with a tolerance of :math:`\epsilon_r=10^{-3}`,
+all the methods for treating the nonlinearities in the Backward Euler
+discretization give graphs that cannot be distinguished. So for
+accuracy in this problem, the time discretization is much more crucial
+than :math:`\epsilon_r`. Ideally, one should estimate the error in the
+time discretization, as the solution progresses, and set :math:`\epsilon_r`
+accordingly.
+
+.. _nonlin:ode:generic:
+
+Generalization to a general nonlinear ODE
+-----------------------------------------
+
+Let us see how the various methods in the previous sections
+can be applied to the more generic model
+
+.. _Eq:nonlin:ode:generic:model:
+
+.. math::
+
+    \tag{389}
+    u^{\prime} = f(u, t),
+        
+        
+
+where :math:`f` is a nonlinear function of :math:`u`.
+
+Explicit time discretization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Explicit ODE methods like the Forward Euler scheme, Runge-Kutta methods,
+Adams-Bashforth methods all evaluate :math:`f` at time levels where
+:math:`u` is already computed, so nonlinearities in :math:`f` do not
+pose any difficulties.
+
+Backward Euler discretization          (2)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Approximating :math:`u^{\prime}` by a backward difference leads to a Backward Euler
+scheme, which can be written as
+
+.. math::
+         F(u^n) = u^{n} - \Delta t\, f(u^n, t_n) - u^{n-1}=0,
+
+or alternatively
+
+.. math::
+         F(u) = u - \Delta t\, f(u, t_n) - u^{(1)} = 0{\thinspace .}
+
+A simple Picard iteration, not knowing anything about the nonlinear
+structure of :math:`f`, must approximate :math:`f(u,t_n)` by :math:`f(u^{-},t_n)`:
+
+.. math::
+         \hat F(u) = u - \Delta t\, f(u^{-},t_n) - u^{(1)}{\thinspace .}
+
+The iteration starts with :math:`u^{-}=u^{(1)}` and proceeds with repeating
+
+.. math::
+         u^* = \Delta t\, f(u^{-},t_n) + u^{(1)},\quad u = \omega u^* + (1-\omega)u^{-},
+        \quad u^{-}\ \leftarrow\ u,
+
+until a stopping criterion is fulfilled.
+
+
+.. admonition:: Explicit vs implicit treatment of nonlinear terms
+
+   Evaluating :math:`f` for a known :math:`u^{-}` is referred to as *explicit* treatment of
+   :math:`f`, while if :math:`f(u,t)` has some structure, say :math:`f(u,t) = u^3`, parts of
+   :math:`f` can involve the known :math:`u`, as in the manual linearization
+   like :math:`(u^{-})^2u`, and then the treatment of :math:`f` is "more implicit"
+   and "less explicit". This terminology is inspired by time discretization
+   of :math:`u^{\prime}=f(u,t)`, where evaluating :math:`f` for known :math:`u` values gives
+   explicit schemes, while treating :math:`f` or parts of :math:`f` implicitly,
+   makes :math:`f` contribute to the unknown terms in the equation at the new
+   time level.
+   
+   Explicit treatment of :math:`f` usually means stricter conditions on
+   :math:`\Delta t` to achieve stability of time discretization schemes. The same
+   applies to iteration techniques for nonlinear algebraic equations: the "less"
+   we linearize :math:`f` (i.e., the more we keep of :math:`u` in the original formula),
+   the faster the convergence may be.
+   
+   We may say that :math:`f(u,t)=u^3` is treated explicitly if we evaluate :math:`f`
+   as :math:`(u^{-})^3`, partially implicit if we linearize as :math:`(u^{-})^2u`
+   and fully implicit if we represent :math:`f` by :math:`u^3`. (Of course, the
+   fully implicit representation will require further linearization,
+   but with :math:`f(u,t)=u^2` a fully implicit treatment is possible if
+   the resulting quadratic equation is solved with a formula.)
+   
+   For the ODE :math:`u^{\prime}=-u^3` with :math:`f(u,t)=-u^3` and coarse
+   time resolution :math:`\Delta t = 0.4`, Picard iteration with :math:`(u^{-})^2u`
+   requires 8 iterations with :math:`\epsilon_r = 10^{-3}` for the first
+   time step, while :math:`(u^{-})^3` leads to 22 iterations. After about 10
+   time steps both approaches are down to about 2 iterations per time
+   step, but this example shows a potential of treating :math:`f` more
+   implicitly.
+   
+   A trick to treat :math:`f` implicitly in Picard iteration is to
+   evaluate it as :math:`f(u^{-},t)u/u^{-}`. For a polynomial :math:`f`, :math:`f(u,t)=u^m`,
+   this corresponds to :math:`(u^{-})^{m}u/u^{-}=(u^{-})^{m-1}u`. Sometimes this more implicit
+   treatment has no effect, as with :math:`f(u,t)=\exp(-u)` and :math:`f(u,t)=\ln (1+u)`,
+   but with :math:`f(u,t)=\sin(2(u+1))`, the :math:`f(u^{-},t)u/u^{-}` trick
+   leads to 7, 9, and 11 iterations during the first three steps, while
+   :math:`f(u^{-},t)` demands 17, 21, and 20 iterations.
+   (Experiments can be done with the code `ODE_Picard_tricks.py <http://tinyurl.com/znpudbt/ODE_Picard_tricks.py>`__.)
+
+
+
+
+Newton's method applied to a Backward Euler discretization of
+:math:`u^{\prime}=f(u,t)`
+requires the computation of the derivative
+
+.. math::
+         F^{\prime}(u) = 1 - \Delta t\frac{\partial f}{\partial u}(u,t_n){\thinspace .}
+
+Starting with the solution at the previous time level, :math:`u^{-}=u^{(1)}`,
+we can just use the standard formula
+
+.. _Eq:nonlin:ode:generic:Newton:
+
+.. math::
+
+    \tag{390}
+    u = u^{-} - \omega \frac{F(u^{-})}{F^{\prime}(u^{-})}
+        = u^{-} - \omega \frac{u^{-} - \Delta t\, f(u^{-}, t_n) - u^{(1)}}{1 - \Delta t
+        \frac{\partial}{\partial u}f(u^{-},t_n)}
+        {\thinspace .}
+        
+        
+
+.. The geometric mean trick cannot be used unless we know that :math:`f` has
+
+.. a special structure with quadratic expressions in :math:`u`.
+
+Crank-Nicolson discretization          (1)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The standard Crank-Nicolson scheme with arithmetic mean approximation of
+:math:`f` takes the form
+
+.. math::
+         \frac{u^{n+1} - u^n}{\Delta t} = \frac{1}{2}(f(u^{n+1}, t_{n+1})
+        + f(u^n, t_n)){\thinspace .}
+
+We can write the scheme as a nonlinear algebraic equation
+
+.. _Eq:nonlin:ode:generic:Newton2:
+
+.. math::
+
+    \tag{391}
+    F(u) = u - u^{(1)} - \Delta t{\frac{1}{2}}f(u,t_{n+1}) -
+        \Delta t{\frac{1}{2}}f(u^{(1)},t_{n}) = 0{\thinspace .}
+        
+        
+
+A Picard iteration scheme must in general employ the linearization
+
+.. math::
+         \hat F(u) = u - u^{(1)} - \Delta t{\frac{1}{2}}f(u^{-},t_{n+1}) -
+        \Delta t{\frac{1}{2}}f(u^{(1)},t_{n}),
+
+while Newton's method can apply the general formula
+:ref:`(390) <Eq:nonlin:ode:generic:Newton>` with :math:`F(u)` given in
+:ref:`(391) <Eq:nonlin:ode:generic:Newton2>` and
+
+.. math::
+         F^{\prime}(u)= 1 - \frac{1}{2}\Delta t\frac{\partial f}{\partial u}(u,t_{n+1}){\thinspace .}
+
+.. What about pendulum sin(u) as u/u_ sin(u_)? Check in odespy if it
+
+.. converges faster (should be able to store the no of Newton and
+
+.. Picard iterations in the classes and poll afterwards). It the trick
+
+.. pays off, describe it here. Can odespy be used here? That is, can we
+
+.. provide the linearization? No...?
+
+.. _nonlin:ode:generic:sys:pendulum:
+
+Systems of ODEs
+---------------
+
+We may write a system of ODEs
+
+.. math::
+        \begin{align*}
+        \frac{d}{dt}u_0(t) &= f_0(u_0(t),u_1(t),\ldots,u_N(t),t),\\ 
+        \frac{d}{dt}u_1(t) &= f_1(u_0(t),u_1(t),\ldots,u_N(t),t),\\ 
+        &\vdots\\ 
+        \frac{d}{dt}u_m(t) &= f_m(u_0(t),u_1(t),\ldots,u_N(t),t),
+        \end{align*}
+
+as
+
+.. _Eq:_auto155:
+
+.. math::
+
+    \tag{392}
+    u^{\prime} = f(u,t),\quad u(0)=U_0,
+        
+        
+
+if we interpret :math:`u` as a vector :math:`u=(u_0(t),u_1(t),\ldots,u_N(t))`
+and :math:`f` as a vector function with components
+:math:`(f_0(u,t),f_1(u,t),\ldots,f_N(u,t))`.
+
+[**kam 37**: Here we don't use bf] 
+
+Most solution methods for scalar ODEs, including
+the Forward and Backward Euler schemes and the
+Crank-Nicolson method, generalize in a
+straightforward way to systems of ODEs simply by using vector
+arithmetics instead of scalar arithmetics, which corresponds to
+applying the scalar scheme to each component of the system.  For
+example, here is a backward difference scheme applied to each
+component,
+
+[**kam 38**: I think we should write $f_0(u_0^n, \ldots, u_N,t_n)$]
+
+.. math::
+        \begin{align*}
+        \frac{u_0^n- u_0^{n-1}}{\Delta t} &= f_0(u^n,t_n),\\ 
+        \frac{u_1^n- u_1^{n-1}}{\Delta t} &= f_1(u^n,t_n),\\ 
+        &\vdots\\ 
+        \frac{u_N^n- u_N^{n-1}}{\Delta t} &= f_N(u^n,t_n),
+        \end{align*}
+
+which can be written more compactly in vector form as
+
+.. math::
+         \frac{u^n- u^{n-1}}{\Delta t} = f(u^n,t_n){\thinspace .}
+
+This is a *system of algebraic equations*,
+
+.. math::
+         u^n - \Delta t\,f(u^n,t_n) - u^{n-1}=0,
+
+or written out
+
+.. math::
+        \begin{align*}
+        u_0^n - \Delta t\, f_0(u^n,t_n) - u_0^{n-1} &= 0,\\ 
+        &\vdots\\ 
+        u_N^n - \Delta t\, f_N(u^n,t_n) - u_N^{n-1} &= 0{\thinspace .}
+        \end{align*}
+
+Example          (5)
+~~~~~~~~~~~~~~~~~~~~
+
+We shall address the :math:`2\times 2` ODE system for
+oscillations of a pendulum
+subject to gravity and air drag. The system can be written as
+
+.. _Eq:_auto156:
+
+.. math::
+
+    \tag{393}
+    \dot\omega = -\sin\theta -\beta \omega |\omega|,
+        
+        
+
+.. _Eq:_auto157:
+
+.. math::
+
+    \tag{394}
+    \dot\theta = \omega,
+        
+        
+
+where :math:`\beta` is a dimensionless parameter (this is the scaled, dimensionless
+version of the original, physical model). The unknown components of the
+system are the
+angle :math:`\theta(t)` and the angular velocity :math:`\omega(t)`.
+We introduce :math:`u_0=\omega` and :math:`u_1=\theta`, which leads to
+
+.. math::
+        \begin{align*}
+        u_0^{\prime} = f_0(u,t) &= -\sin u_1 - \beta u_0|u_0|,\\ 
+        u_1^{\prime} = f_1(u,t) &= u_0{\thinspace .}
+        \end{align*}
+
+A Crank-Nicolson scheme reads
+
+.. math::
+        
+        \frac{u_0^{n+1}-u_0^{n}}{\Delta t} = -\sin u_1^{n+\frac{1}{2}}
+        - \beta u_0^{n+\frac{1}{2}}|u_0^{n+\frac{1}{2}}|\nonumber
+        
+
+.. _Eq:_auto158:
+
+.. math::
+
+    \tag{395}
+    \approx -\sin\left(\frac{1}{2}(u_1^{n+1} + u_1^n)\right)
+        - \beta\frac{1}{4} (u_0^{n+1} + u_0^n)|u_0^{n+1}+u_0^n|,
+        
+        
+
+.. _Eq:_auto159:
+
+.. math::
+
+    \tag{396}
+    \frac{u_1^{n+1}-u_1^n}{\Delta t} = u_0^{n+\frac{1}{2}}\approx
+        \frac{1}{2} (u_0^{n+1}+u_0^n){\thinspace .}
+        
+        
+
+This is a *coupled system* of two nonlinear algebraic equations
+in two unknowns :math:`u_0^{n+1}` and :math:`u_1^{n+1}`.
+
+Using the notation :math:`u_0` and :math:`u_1` for the unknowns :math:`u_0^{n+1}` and
+:math:`u_1^{n+1}` in this system, writing :math:`u_0^{(1)}` and
+:math:`u_1^{(1)}` for the previous values :math:`u_0^n` and :math:`u_1^n`, multiplying
+by :math:`\Delta t` and moving the terms to the left-hand sides, gives
+
+.. _Eq:nonlin:ode:generic:sys:pendulum:u0:
+
+.. math::
+
+    \tag{397}
+    u_0 - u_0^{(1)} + \Delta t\,\sin\left(\frac{1}{2}(u_1 + u_1^{(1)})\right)
+        + \frac{1}{4}\Delta t\beta (u_0 + u_0^{(1)})|u_0 + u_0^{(1)}| =0,
+        
+        
+
+.. _Eq:nonlin:ode:generic:sys:pendulum:u1:
+
+.. math::
+
+    \tag{398}
+    u_1 - u_1^{(1)} -\frac{1}{2}\Delta t(u_0 + u_0^{(1)}) =0{\thinspace .}
+        
+        
+
+Obviously, we have a need for solving systems of nonlinear algebraic
+equations, which is the topic of the next section.
+

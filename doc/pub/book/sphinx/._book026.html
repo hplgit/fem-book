@@ -1,0 +1,1334 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Time-dependent variational forms</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+
+        <script src="http://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="http://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+
+        <script>sagecell.makeSagecell({inputLocation: ".sage"});</script>
+
+        <style type="text/css">
+                .sagecell .CodeMirror-scroll {
+                        overflow-y: hidden;
+                        overflow-x: auto;
+                }
+                .sagecell .CodeMirror {
+                        height: auto;
+                }
+        </style>
+
+    
+    <link rel="top" title="Introduction to Numerical Methods for Variational Problems" href="index.html" />
+    <link rel="next" title="Variational forms for systems of PDEs" href="._book027.html" />
+    <link rel="prev" title="Exercises" href="._book025.html" />
+ 
+  
+       <style type="text/css">
+         div.admonition {
+           background-color: whiteSmoke;
+           border: 1px solid #bababa;
+         }
+       </style>
+      </head>
+    
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="._book027.html" title="Variational forms for systems of PDEs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="._book025.html" title="Exercises"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="time-dependent-variational-forms">
+<span id="ch-femtime"></span><h1>Time-dependent variational forms<a class="headerlink" href="#time-dependent-variational-forms" title="Permalink to this headline">¶</a></h1>
+<p>The finite element method is normally used for discretization in
+space. There are three alternative strategies for performing
+a discretization in time:</p>
+<ol class="arabic simple">
+<li>Use <em>finite differences</em> for time derivatives to arrive at
+a recursive set of spatial problems that can be discretized by
+the finite element method.</li>
+<li>Discretize in space by finite elements first, and then solve
+the resulting system of ordinary differential equations (ODEs) by
+some <em>standard library</em> for ODEs.</li>
+<li>Use discontinuous finite elements in the spatial direction separately.</li>
+</ol>
+<p>With the first strategy, we discretize in time prior to the space
+discretization, while the second strategy consists of doing exactly
+the opposite. It should come as no surprise that in many situations
+these two strategies end up in exactly the same systems to be solved, but
+this is not always the case.  The third approach reproduces standard
+finite difference schemes such as the Backward Euler and the Crank-Nicolson
+schemes, but offers an interesting framework for deriving higher-order
+methods. In this chapter we shall be concerned with
+the first strategy,
+which is the most common strategy as it turns the time-dependent
+PDE problem to a sequence of stationary problems for which efficient
+finite element solution strategies often are available.
+The second strategy would
+naturally employ well-known ODE software,
+which are available as user-friendly routines
+in Python. However, these routines are presently not efficient enough
+for PDE problems in 2D and 3D. The first strategy gives complete hands-on
+control of the implementation and the computational efficiency
+in time and space.</p>
+<p>We shall use a simple diffusion problem to illustrate the basic
+principles of how a time-dependent PDE is solved by finite differences
+in time and finite elements in space. Of course, instead of finite elements,
+we may employ other types of basis functions, such as global polynomials.
+Our model problem reads</p>
+<div class="math" id="eq-fem-deq-diffu-eq">
+\[\tag{257}
+\frac{\partial u}{\partial t} = {\alpha}\nabla^2 u + f(\boldsymbol{x}, t),\quad
+    \boldsymbol{x}\in\Omega,\ t\in (0,T],\]</div>
+<div class="math" id="eq-fem-deq-diffu-ic">
+\[\tag{258}
+u(\boldsymbol{x}, 0)  = I(\boldsymbol{x}),\quad \boldsymbol{x}\in\Omega,\]</div>
+<div class="math" id="eq-fem-deq-diffu-bcn">
+\[ \begin{align}\begin{aligned}\tag{259}
+\frac{\partial u}{\partial n} = 0,\quad \boldsymbol{x}\in\partial\Omega,\ t\in (0,T]\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>Here, <span class="math">\(u(\boldsymbol{x},t)\)</span> is the unknown function, <span class="math">\({\alpha}\)</span> is a constant, and
+<span class="math">\(f(\boldsymbol{x},t)\)</span> and <span class="math">\(I(x)\)</span> are given functions. We have assigned the particular
+boundary condition <a class="reference internal" href="#eq-fem-deq-diffu-bcn"><span class="std std-ref">(259)</span></a> to minimize
+the details on handling boundary conditions in the finite element method.</p>
+<div class="section" id="discretization-in-time-by-a-forward-euler-scheme">
+<span id="fem-deq-diffu-fe"></span><h2>Discretization in time by a Forward Euler scheme<a class="headerlink" href="#discretization-in-time-by-a-forward-euler-scheme" title="Permalink to this headline">¶</a></h2>
+<p>The discretization strategy is to first apply a simple finite difference
+scheme in time and derive a recursive set of spatially continuous PDE
+problems, one at each time level. For each spatial PDE problem we can
+set up a variational formulation and employ the finite element method
+for solution.</p>
+<div class="section" id="time-discretization-1">
+<h3>Time discretization<a class="headerlink" href="#time-discretization-1" title="Permalink to this headline">¶</a></h3>
+<p>We can apply a finite difference method in time to <a class="reference internal" href="#eq-fem-deq-diffu-eq"><span class="std std-ref">(257)</span></a>.
+First we need &#8216;a mesh&#8217; in time, here taken as uniform with
+mesh points <span class="math">\(t_n = n\Delta t\)</span>, <span class="math">\(n=0,1,\ldots,N_t\)</span>.
+A Forward Euler scheme consists of sampling <a class="reference internal" href="#eq-fem-deq-diffu-eq"><span class="std std-ref">(257)</span></a>
+at <span class="math">\(t_n\)</span> and approximating the time derivative by a forward
+difference <span class="math">\([D_t^+ u]^n\approx
+(u^{n+1}-u^n)/\Delta t\)</span>.
+A list of finite difference formulas can be found in <a class="reference internal" href="._book035.html#sec-form-fdop"><span class="std std-ref">Finite difference operator notation</span></a>.
+This approximation turns <a class="reference internal" href="#eq-fem-deq-diffu-eq"><span class="std std-ref">(257)</span></a>
+into a differential equation that is discrete in time, but still
+continuous in space.
+With a finite difference operator notation we can write the
+time-discrete problem as</p>
+<div class="math" id="eq-fem-deq-diffu-fe-eq-feop">
+\[\tag{260}
+[D_t^+ u = {\alpha}\nabla^2 u + f]^n,\]</div>
+<p>for <span class="math">\(n=1,2,\ldots,N_t-1\)</span>.
+Writing this equation out in detail and
+isolating the unknown <span class="math">\(u^{n+1}\)</span> on the left-hand side, demonstrates that
+the time-discrete problem is a recursive set of problems that are
+continuous in space:</p>
+<div class="math" id="eq-fem-deq-diffu-fe-eq-unp1">
+\[ \begin{align}\begin{aligned}\tag{261}
+u^{n+1} = u^n + \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>Given <span class="math">\(u^0=I\)</span>, we can use <a class="reference internal" href="#eq-fem-deq-diffu-fe-eq-unp1"><span class="std std-ref">(261)</span></a> to compute
+<span class="math">\(u^1,u^2,\dots,u^{N_t}\)</span>.</p>
+<div class="admonition-more-precise-notation admonition">
+<p class="first admonition-title">More precise notation</p>
+<p class="last">For absolute clarity in the various stages of the discretizations, we
+introduce <span class="math">\({u_{\small\mbox{e}}}(\boldsymbol{x},t)\)</span> as the exact solution of the space-and time-continuous
+partial differential equation <a class="reference internal" href="#eq-fem-deq-diffu-eq"><span class="std std-ref">(257)</span></a> and
+<span class="math">\({u_{\small\mbox{e}}}^n(\boldsymbol{x})\)</span> as the time-discrete approximation, arising from the finite
+difference method in time <a class="reference internal" href="#eq-fem-deq-diffu-fe-eq-feop"><span class="std std-ref">(260)</span></a>.
+More precisely, <span class="math">\({u_{\small\mbox{e}}}\)</span> fulfills</p>
+</div>
+<div class="math" id="eq-fem-deq-diffu-eq-uex">
+\[ \begin{align}\begin{aligned} \tag{262}
+ \frac{\partial {u_{\small\mbox{e}}}}{\partial t} = {\alpha}\nabla^2 {u_{\small\mbox{e}}} + f(\boldsymbol{x}, t)
+        ,\\
+while  \( {u_{\small\mbox{e}}}^{n+1} \) , with a superscript,
+is the solution of the time-discrete equations\\.. _Eq:fem:deq:diffu:FE:eq:uex:n:\end{aligned}\end{align} \]</div>
+<div class="math">
+\[ \begin{align}\begin{aligned} \tag{263}
+ {u_{\small\mbox{e}}}^{n+1} = {u_{\small\mbox{e}}}^n + \Delta t \left( {\alpha}\nabla^2 {u_{\small\mbox{e}}}^n + f(\boldsymbol{x}, t_n)\right)\\        {\thinspace .}\\
+The  \( {u_{\small\mbox{e}}}^{n+1} \)  quantity is then discretized in space and approximated
+by  \( u^{n+1} \) .\end{aligned}\end{align} \]</div>
+</div>
+<div class="section" id="space-discretization">
+<h3>Space discretization<a class="headerlink" href="#space-discretization" title="Permalink to this headline">¶</a></h3>
+<p>We now introduce a finite element approximation to <span class="math">\({u_{\small\mbox{e}}}^n\)</span> and <span class="math">\({u_{\small\mbox{e}}}^{n+1}\)</span>
+in <span class="xref std std-ref">(263)</span>, where the coefficients depend on the
+time level:</p>
+<div class="math" id="eq-fem-deq-diffu-femapprox-n">
+\[\tag{264}
+{u_{\small\mbox{e}}}^n \approx u^n = \sum_{j=0}^{N} c_j^{n}{\psi}_j(\boldsymbol{x}),\]</div>
+<div class="math" id="eq-fem-deq-diffu-femapprox-np1">
+\[ \begin{align}\begin{aligned}\tag{265}
+{u_{\small\mbox{e}}}^{n+1} \approx u^{n+1} = \sum_{j=0}^{N} c_j^{n+1}{\psi}_j(\boldsymbol{x})\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>Note that, as before, <span class="math">\(N\)</span> denotes the number of degrees of freedom
+in the spatial domain. The number of time points is denoted by <span class="math">\(N_t\)</span>.
+We define a space <span class="math">\(V\)</span> spanned by the basis functions <span class="math">\(\left\{ {{\psi}}_i \right\}_{i\in{\mathcal{I}_s}}\)</span>.</p>
+</div>
+<div class="section" id="variational-forms-1">
+<h3>Variational forms<a class="headerlink" href="#variational-forms-1" title="Permalink to this headline">¶</a></h3>
+<p>A Galerkin method or a
+weighted residual method with weighting functions <span class="math">\(w_i\)</span> can
+now be formulated. We insert <a class="reference internal" href="#eq-fem-deq-diffu-femapprox-n"><span class="std std-ref">(264)</span></a> and
+<a class="reference internal" href="#eq-fem-deq-diffu-femapprox-np1"><span class="std std-ref">(265)</span></a> in
+<span class="xref std std-ref">(263)</span> to obtain the residual</p>
+<div class="math">
+\[R = u^{n+1} - u^n - \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)
+{\thinspace .}\]</div>
+<p>The weighted residual principle,</p>
+<div class="math">
+\[\int_\Omega Rw{\, \mathrm{d}x} = 0,\quad \forall w\in W,\]</div>
+<p>results in</p>
+<div class="math">
+\[\int_\Omega
+\left\lbrack
+u^{n+1} - u^n - \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)
+\right\rbrack w {\, \mathrm{d}x} =0, \quad\forall w \in W{\thinspace .}\]</div>
+<p>From now on we use the Galerkin method so <span class="math">\(W=V\)</span>.
+Isolating the unknown <span class="math">\(u^{n+1}\)</span> on the left-hand side gives</p>
+<div class="math">
+\[\int_{\Omega} u^{n+1}v{\, \mathrm{d}x} = \int_{\Omega}
+\left\lbrack u^n + \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)
+\right\rbrack v{\, \mathrm{d}x},\quad \forall v\in V
+{\thinspace .}\]</div>
+<p>As usual in spatial finite element problems involving second-order
+derivatives, we apply integration by parts on the term
+<span class="math">\(\int (\nabla^2 u^n)v{\, \mathrm{d}x}\)</span>:</p>
+<div class="math">
+\[\int_{\Omega}{\alpha}(\nabla^2 u^n)v {\, \mathrm{d}x} =
+-\int_{\Omega}{\alpha}\nabla u^n\cdot\nabla v{\, \mathrm{d}x} +
+\int_{\partial\Omega}{\alpha}\frac{\partial u^n}{\partial n}v {\, \mathrm{d}x}
+{\thinspace .}\]</div>
+<p>The last term vanishes because we have the Neumann condition
+<span class="math">\(\partial u^n/\partial n=0\)</span> for all <span class="math">\(n\)</span>. Our discrete problem in
+space and time then reads</p>
+<div class="math" id="eq-fem-deq-diffu-fe-vf-u-np1">
+\[\tag{266}
+\int_{\Omega} u^{n+1}v{\, \mathrm{d}x} =
+    \int_{\Omega} u^n v{\, \mathrm{d}x} -
+    \Delta t \int_{\Omega}{\alpha}\nabla u^n\cdot\nabla v{\, \mathrm{d}x} +
+    \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x},\quad \forall v\in V{\thinspace .}\]</div>
+<p>This is the variational formulation of our recursive set of spatial
+problems.</p>
+<div class="admonition-nonzero-dirichlet-boundary-conditions admonition">
+<p class="first admonition-title">Nonzero Dirichlet boundary conditions</p>
+<p class="last">As in stationary problems,
+we can introduce a boundary function <span class="math">\(B(\boldsymbol{x},t)\)</span> to take care
+of nonzero Dirichlet conditions:</p>
+</div>
+<div class="math" id="eq-fem-deq-diffu-femapprox-n-b">
+\[ \begin{align}\begin{aligned} \tag{267}
+ {u_{\small\mbox{e}}}^n \approx u^n = B(\boldsymbol{x},t_n) + \sum_{j=0}^{N} c_j^{n}{\psi}_j(\boldsymbol{x}),\\.. _Eq:fem:deq:diffu:femapprox:np1:B:\end{aligned}\end{align} \]</div>
+<div class="math">
+\[ \begin{align}\begin{aligned}\tag{268}
+{u_{\small\mbox{e}}}^{n+1} \approx u^{n+1} = B(\boldsymbol{x},t_{n+1}) +
+       \sum_{j=0}^{N} c_j^{n+1}{\psi}_j(\boldsymbol{x})\\       {\thinspace .}\end{aligned}\end{align} \]</div>
+</div>
+<div class="section" id="notation-for-the-solution-at-recent-time-levels">
+<h3>Notation for the solution at recent time levels<a class="headerlink" href="#notation-for-the-solution-at-recent-time-levels" title="Permalink to this headline">¶</a></h3>
+<p>In a program it is only necessary to have the two variables <span class="math">\(u^{n+1}\)</span>
+and <span class="math">\(u^n\)</span> at the same time at a given time step.  It is therefore
+unnatural to use the index <span class="math">\(n\)</span> in computer code. Instead a natural
+variable naming is <code class="docutils literal"><span class="pre">u</span></code> for <span class="math">\(u^{n+1}\)</span>, the new unknown, and <code class="docutils literal"><span class="pre">u_n</span></code> for
+<span class="math">\(u^n\)</span>, the solution at the previous time level.  When we have several
+preceding (already computed) time levels, it is natural to number them
+like <code class="docutils literal"><span class="pre">u_nm1</span></code>, <code class="docutils literal"><span class="pre">u_nm2</span></code>, <code class="docutils literal"><span class="pre">u_nm3</span></code>, etc., backwards in time, corresponding to
+<span class="math">\(u^{n-1}\)</span>, <span class="math">\(u^{n-2}\)</span>, and <span class="math">\(u^{n-3}\)</span>. Essentially, this means a one-to-one
+mapping of notation in mathematics and software, except for <span class="math">\(u^{n+1}\)</span>.
+We shall therefore, to make the distance between mathematics and code
+as small as possible, often introduce just <span class="math">\(u\)</span> for <span class="math">\(u^{n+1}\)</span> in the
+mathematical notation. Equation
+<a class="reference internal" href="#eq-fem-deq-diffu-fe-vf-u-np1"><span class="std std-ref">(266)</span></a> with this new naming convention is
+consequently expressed as</p>
+<div class="math" id="eq-fem-deq-diffu-fe-vf-u">
+\[\tag{269}
+\int_{\Omega} u v{\, \mathrm{d}x} =
+    \int_{\Omega} u^{n} v{\, \mathrm{d}x} -
+    \Delta t \int_{\Omega}{\alpha}\nabla u^{n}\cdot\nabla v{\, \mathrm{d}x} +
+    \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x}
+    {\thinspace .}\]</div>
+<p>This variational form can alternatively be expressed by the inner
+product notation:</p>
+<div class="math" id="eq-fem-deq-diffu-fe-vf-u-short">
+\[\tag{270}
+(u,v) = (u^{n},v) -
+    \Delta t ({\alpha}\nabla u^{n},\nabla v) +
+    \Delta t (f^n, v)
+    {\thinspace .}\]</div>
+</div>
+<div class="section" id="deriving-the-linear-systems">
+<h3>Deriving the linear systems<a class="headerlink" href="#deriving-the-linear-systems" title="Permalink to this headline">¶</a></h3>
+<p>In the following, we adopt the previously introduced convention that
+the unknowns <span class="math">\(c_j^{n+1}\)</span> are written as <span class="math">\(c_j\)</span>, while the known <span class="math">\(c_j^n\)</span>
+from the previous time level is simply written as <span class="math">\(c_{j}^n\)</span>.  To
+derive the equations for the new unknown coefficients <span class="math">\(c_j\)</span>, we insert</p>
+<div class="math">
+\[u = \sum_{j=0}^{N}c_j{\psi}_j(\boldsymbol{x}),\quad
+u^{n} = \sum_{j=0}^{N} c_{j}^n{\psi}_j(\boldsymbol{x})\]</div>
+<p>in <a class="reference internal" href="#eq-fem-deq-diffu-fe-vf-u"><span class="std std-ref">(269)</span></a> or <a class="reference internal" href="#eq-fem-deq-diffu-fe-vf-u-short"><span class="std std-ref">(270)</span></a>,
+let the equation hold for all <span class="math">\(v={\psi}_i\)</span>, <span class="math">\(i=0,\ldots,N\)</span>,
+and order the terms as matrix-vector products:</p>
+<div class="math" id="eq-auto116">
+\[\tag{271}
+\sum_{j=0}^{N} ({\psi}_i,{\psi}_j) c_j =
+    \sum_{j=0}^{N} ({\psi}_i,{\psi}_j) c_{j}^n
+    -\Delta t \sum_{j=0}^{N} (\nabla{\psi}_i,{\alpha}\nabla{\psi}_j) c_{j}^n
+    + \Delta t (f^n,{\psi}_i),\quad i=0,\ldots,N
+    {\thinspace .}\]</div>
+<p>This is a linear system <span class="math">\(\sum_j A_{i,j}c_j = b_i\)</span> with</p>
+<div class="math">
+\[A_{i,j} = ({\psi}_i,{\psi}_j)\]</div>
+<p>and</p>
+<div class="math">
+\[b_i = \sum_{j=0}^{N} ({\psi}_i,{\psi}_j) c_{j}^n
+-\Delta t \sum_{j=0}^{N} (\nabla{\psi}_i,{\alpha}\nabla{\psi}_j) c_{j}^n
++ \Delta t (f^n,{\psi}_i){\thinspace .}\]</div>
+<p>It is instructive and convenient for implementations to write the linear
+system on the form</p>
+<div class="math" id="eq-auto117">
+\[\tag{272}
+Mc = Mc_1 - \Delta t Kc_1 + \Delta t f,\]</div>
+<p>where</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+M &amp;= \{M_{i,j}\},\quad M_{i,j}=({\psi}_i,{\psi}_j),\quad i,j\in{\mathcal{I}_s},\\
+K &amp;= \{K_{i,j}\},\quad K_{i,j}=(\nabla{\psi}_i,{\alpha}\nabla{\psi}_j),
+\quad i,j\in{\mathcal{I}_s},\\
+f &amp;= \{f_i\},\quad f_i=(f(\boldsymbol{x},t_n),{\psi}_i),\quad i\in{\mathcal{I}_s},\\
+c &amp;= \{c_i\},\quad i\in{\mathcal{I}_s},\\
+c_1 &amp;= \{c_{i}^n\},\quad i\in{\mathcal{I}_s}
+{\thinspace .}
+\end{align*}\end{split}\]</div>
+<span class="target" id="index-0"></span><p id="index-1">We realize that <span class="math">\(M\)</span> is the matrix arising from a term with the
+zero-th derivative of <span class="math">\(u\)</span>, and called the mass matrix, while <span class="math">\(K\)</span> is
+the matrix arising from a Laplace term <span class="math">\(\nabla^2 u\)</span>. The <span class="math">\(K\)</span> matrix
+is often known as the <em>stiffness matrix</em>. (The terms mass and stiffness
+stem from the early days of finite elements when applications to
+vibrating structures dominated. The mass matrix arises from the
+mass times acceleration term in Newton&#8217;s second law, while the stiffness
+matrix arises from the elastic forces (the &#8220;stiffness&#8221;) in that law.
+The mass and stiffness
+matrix appearing in a diffusion have slightly different mathematical
+formulas compared to the classic structure problem.)</p>
+<p><strong>Remark.</strong>
+The mathematical symbol <span class="math">\(f\)</span> has two meanings, either the
+function <span class="math">\(f(\boldsymbol{x},t)\)</span> in the PDE or the <span class="math">\(f\)</span> vector in the linear system
+to be solved at each time level.</p>
+</div>
+<div class="section" id="computational-algorithm">
+<h3>Computational algorithm<a class="headerlink" href="#computational-algorithm" title="Permalink to this headline">¶</a></h3>
+<p>We observe that <span class="math">\(M\)</span> and <span class="math">\(K\)</span> can be precomputed so that we can avoid
+computing the matrix entries at every time level. Instead, some
+matrix-vector multiplications will produce the linear system to be solved.
+The computational algorithm has the following steps:</p>
+<ol class="arabic simple">
+<li>Compute <span class="math">\(M\)</span> and <span class="math">\(K\)</span>.</li>
+<li>Initialize <span class="math">\(u^0\)</span> by interpolation or projection</li>
+<li>For <span class="math">\(n=1,2,\ldots,N_t\)</span>:</li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>compute <span class="math">\(b = Mc_1 - \Delta t Kc_1 + \Delta t f\)</span></li>
+<li>solve <span class="math">\(Mc = b\)</span></li>
+<li>set <span class="math">\(c_1 = c\)</span></li>
+</ol>
+</div></blockquote>
+<p>In case of finite element basis functions, interpolation of the
+initial condition at the nodes means <span class="math">\(c_{j}^n = I(\boldsymbol{x}_j)\)</span>. Otherwise
+one has to solve the linear system</p>
+<div class="math">
+\[\sum_j{\psi}_j(\boldsymbol{x}_i)c_{j}^n = I(\boldsymbol{x}_i),\]</div>
+<p>where <span class="math">\(\boldsymbol{x}_i\)</span> denotes an interpolation point.  Projection
+(or Galerkin&#8217;s method) implies solving a linear system with <span class="math">\(M\)</span> as
+coefficient matrix:</p>
+<div class="math">
+\[\sum_j M_{i,j}c_{j}^n = (I,{\psi}_i),\quad i\in{\mathcal{I}_s}{\thinspace .}\]</div>
+</div>
+<div class="section" id="example-using-sinusoidal-basis-functions">
+<span id="fem-deq-diffu-fe-cosex"></span><h3>Example using sinusoidal basis functions<a class="headerlink" href="#example-using-sinusoidal-basis-functions" title="Permalink to this headline">¶</a></h3>
+<p>Let us go through a computational example and demonstrate the
+algorithm from the previous section. We consider a 1D problem</p>
+<div class="math" id="eq-fem-deq-diffu-pde1d-eq">
+\[\tag{273}
+\frac{\partial u}{\partial t} = {\alpha}\frac{\partial^2 u}{\partial x^2},\quad
+    x\in (0,L),\ t\in (0,T],\]</div>
+<div class="math" id="eq-fem-deq-diffu-pde1d-ic">
+\[\tag{274}
+u(x, 0)  = A\cos(\pi x/L) + B\cos(10\pi x/L),\quad x\in[0,L],\]</div>
+<div class="math" id="eq-fem-deq-diffu-pde1d-bcn">
+\[ \begin{align}\begin{aligned}\tag{275}
+\frac{\partial u}{\partial x} = 0,\quad x=0,L,\ t\in (0,T]\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>We use a Galerkin method with basis functions</p>
+<div class="math">
+\[{\psi}_i = \cos(i\pi x/L){\thinspace .}\]</div>
+<p>These basis functions fulfill <a class="reference internal" href="#eq-fem-deq-diffu-pde1d-bcn"><span class="std std-ref">(275)</span></a>, which is
+not a requirement (there are no Dirichlet conditions in this problem),
+but helps to make the approximation good.</p>
+<p>Since the initial condition <a class="reference internal" href="#eq-fem-deq-diffu-pde1d-ic"><span class="std std-ref">(274)</span></a> lies in the
+space <span class="math">\(V\)</span> where we seek the approximation, we know that a Galerkin or
+least squares approximation of the initial condition becomes exact.
+Therefore, the initial condition can be expressed as</p>
+<div class="math">
+\[c_{1}^n=A,\quad c_{10}^n=B,\]</div>
+<p>while <span class="math">\(c_{i}^n=0\)</span> for <span class="math">\(i\neq 1,10\)</span>.</p>
+<p>The <span class="math">\(M\)</span> and <span class="math">\(K\)</span> matrices are easy to compute since the basis functions
+are orthogonal on <span class="math">\([0,L]\)</span>. Hence, we
+only need to compute the diagonal entries. We get</p>
+<div class="math">
+\[M_{i,i} = \int_0^L  cos^2(i x \pi/L) {\, \mathrm{d}x},\]</div>
+<p>which is computed as</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sympy</span> <span class="kn">as</span> <span class="nn">sym</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x L&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">integer</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sym</span><span class="o">.</span><span class="n">integrate</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">sym</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">L</span><span class="p">))</span>
+<span class="go">Piecewise((L, Eq(pi*i/L, 0)), (L/2, True))</span>
+</pre></div>
+</div>
+<p>which means <span class="math">\(L\)</span> if <span class="math">\(i=0\)</span> and <span class="math">\(L/2\)</span> otherwise. Similarly,
+the diagonal entries of the <span class="math">\(K\)</span> matrix are computed as</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sym</span><span class="o">.</span><span class="n">integrate</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">cos</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">sym</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">L</span><span class="p">),</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">L</span><span class="p">))</span>
+<span class="go">pi**2*i**2*Piecewise((0, Eq(pi*i/L, 0)), (L/2, True))/L**2</span>
+</pre></div>
+</div>
+<p>so</p>
+<div class="math">
+\[M_{0,0}=L,\quad M_{i,i}=L/2,\ i&gt;0,\quad K_{0,0}=0,\quad K_{i,i}=\frac{\pi^2 i^2}{2L},\ i&gt;0{\thinspace .}\]</div>
+<p>The equation system becomes</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+Lc_0 &amp;= Lc_{0}^0 - \Delta t \cdot 0\cdot c_{0}^0,\\
+\frac{L}{2}c_i &amp;= \frac{L}{2}c_{i}^n - \Delta t
+\frac{\pi^2 i^2}{2L} c_{i}^n,\quad i&gt;0{\thinspace .}
+\end{align*}\end{split}\]</div>
+<p>The first equation always leads to <span class="math">\(c_0=0\)</span> since we start with <span class="math">\(c_{1}^n=0\)</span>
+for <span class="math">\(n=0\)</span>.
+The others imply</p>
+<div class="math">
+\[c_i = (1-\Delta t (\frac{\pi i}{L})^2) c_{i}^n{\thinspace .}\]</div>
+<p>With the notation <span class="math">\(c^n_i\)</span> for <span class="math">\(c_i\)</span> at the <span class="math">\(n\)</span>-th time level, we can apply
+the relation above recursively and get</p>
+<div class="math">
+\[c^n_i = (1-\Delta t (\frac{\pi i}{L})^2)^n c^0_i{\thinspace .}\]</div>
+<p>Since only two of the coefficients are nonzero at time <span class="math">\(t=0\)</span>, we have
+the closed-form discrete solution</p>
+<div class="math">
+\[u^n_i = A(1-\Delta t (\frac{\pi}{L})^2)^n \cos(\pi x/L)
++ B(1-\Delta t (\frac{10\pi }{L})^2)^n \cos(10\pi x/L){\thinspace .}\]</div>
+</div>
+<div class="section" id="comparing-p1-elements-with-the-finite-difference-method">
+<span id="fem-deq-diffu-fe-fdvsp1fe"></span><h3>Comparing P1 elements with the finite difference method<a class="headerlink" href="#comparing-p1-elements-with-the-finite-difference-method" title="Permalink to this headline">¶</a></h3>
+<p>We can compute the <span class="math">\(M\)</span> and <span class="math">\(K\)</span> matrices using P1 elements in 1D.
+A uniform mesh on <span class="math">\([0,L]\)</span> is introduced for this purpose.
+Since the boundary conditions are solely of Neumann type in this
+sample problem, we have no restrictions on the basis functions
+<span class="math">\({\psi}_i\)</span> and can simply choose <span class="math">\({\psi}_i = {\varphi}_i\)</span>, <span class="math">\(i=0,\ldots,N=N_n-1\)</span>.</p>
+<p>From the section <a class="reference internal" href="._book019.html#fem-deq-1d-comp-global"><span class="std std-ref">Computation in the global physical domain</span></a> or
+<a class="reference internal" href="._book019.html#fem-deq-1d-comp-elmwise"><span class="std std-ref">Cellwise computations</span></a> we
+have that the <span class="math">\(K\)</span> matrix is the same as we get from the finite
+difference method: <span class="math">\(h[D_xD_x u]^n_i\)</span>, while from
+the section <a class="reference internal" href="._book011.html#fem-approx-fe-fd-feproj"><span class="std std-ref">Interpretation of a finite element approximation in terms of finite difference operators</span></a>
+we know that <span class="math">\(M\)</span> can be
+interpreted as the finite difference approximation
+<span class="math">\(h[u + \frac{1}{6}h^2D_xD_x u]^n_i\)</span>. The equation system <span class="math">\(Mc=b\)</span>
+in the algorithm is therefore equivalent to the finite difference scheme</p>
+<div class="math" id="eq-fem-deq-diffu-fe-fdinterp">
+\[ \begin{align}\begin{aligned}\tag{276}
+[D_t^+(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u + f]^n_i\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>(More precisely, <span class="math">\(Mc=b\)</span> divided by <span class="math">\(h\)</span> gives the equation above.)</p>
+<div class="section" id="lumping-the-mass-matrix">
+<h4>Lumping the mass matrix<a class="headerlink" href="#lumping-the-mass-matrix" title="Permalink to this headline">¶</a></h4>
+<p>As explained in
+the section <a class="reference internal" href="._book011.html#fem-deq-1d-approx-fem-vs-fdm"><span class="std std-ref">Making finite elements behave as finite differences</span></a>, one can
+turn the <span class="math">\(M\)</span> matrix into a diagonal matrix
+<span class="math">\(\hbox{diag}(h/2,h,\ldots,h,h/2)\)</span> by
+applying the Trapezoidal rule for integration. Then there is
+no need to solve a linear system at each time level, and the finite
+element scheme becomes identical to a standard finite difference method</p>
+<div class="math" id="eq-fem-deq-diffu-fe-fdinterp-lumped">
+\[ \begin{align}\begin{aligned}\tag{277}
+[D_t^+ u = {\alpha} D_xD_x u + f]^n_i\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>The Trapezoidal integration is not as accurate as exact integration and
+introduces an error. Normally, one thinks of any error as
+an overall decrease of the accuracy. Nevertheless, errors may cancel
+each other, and the error introduced by numerical integration may
+in certain problems
+lead to improved overall accuracy in the finite element method.
+The interplay of the errors in the current problem is
+analyzed in detail in the section <a class="reference internal" href="#fem-deq-diffu-anal"><span class="std std-ref">Accuracy of the finite element solution</span></a>.
+The effect of the error is at least not more severe than what is
+produced by the finite difference method since both are
+<span class="math">\(\mathcal{O}(h^2)\)</span>.</p>
+<span class="target" id="index-2"></span><span class="target" id="index-3"></span><p id="index-4">Making <span class="math">\(M\)</span> diagonal is usually referred to as <em>lumping the mass matrix</em>.
+There is an alternative method to using an integration rule
+based on the node points: one can sum the entries in each row, place
+the sum on the diagonal, and set all other entries in the row equal
+to zero. For P1 elements the methods of lumping the mass matrix give
+the same result.</p>
+</div>
+</div>
+</div>
+<div class="section" id="discretization-in-time-by-a-backward-euler-scheme">
+<span id="fem-deq-diffu-be"></span><h2>Discretization in time by a Backward Euler scheme<a class="headerlink" href="#discretization-in-time-by-a-backward-euler-scheme" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="time-discretization-2">
+<h3>Time discretization<a class="headerlink" href="#time-discretization-2" title="Permalink to this headline">¶</a></h3>
+<p>The Backward Euler scheme in time applied to our diffusion problem
+can be expressed as follows using the finite difference operator notation:</p>
+<div class="math">
+\[[D_t^- u = {\alpha}\nabla^2 u + f(\boldsymbol{x}, t)]^n
+{\thinspace .}\]</div>
+<p>Here <span class="math">\([D_t^- u]^n\approx (u^{n}-u^{n-1})/\Delta t\)</span>.
+Written out, and collecting the unknown <span class="math">\(u^n\)</span> on the left-hand side
+and all the known terms on the right-hand side,
+the time-discrete differential equation becomes</p>
+<div class="math" id="eq-fem-deq-diffu-be-eq-un">
+\[ \begin{align}\begin{aligned}\tag{278}
+u^{n} - \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_{n})\right) =
+    u^{n-1}\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>Equation <a class="reference internal" href="#eq-fem-deq-diffu-be-eq-un"><span class="std std-ref">(278)</span></a> can compute
+<span class="math">\(u^1,u^2,\dots,u^{N_t}\)</span>,
+if we have a start <span class="math">\(u^0=I\)</span> from the initial condition.
+However, <a class="reference internal" href="#eq-fem-deq-diffu-be-eq-un"><span class="std std-ref">(278)</span></a> is a partial differential
+equation in space and needs a solution method based on discretization
+in space. For this purpose we use an expansion as in
+<a class="reference internal" href="#eq-fem-deq-diffu-femapprox-n"><span class="std std-ref">(264)</span></a>-<a class="reference internal" href="#eq-fem-deq-diffu-femapprox-np1"><span class="std std-ref">(265)</span></a>.</p>
+</div>
+<div class="section" id="variational-forms-2">
+<h3>Variational forms<a class="headerlink" href="#variational-forms-2" title="Permalink to this headline">¶</a></h3>
+<p>Inserting <a class="reference internal" href="#eq-fem-deq-diffu-femapprox-n"><span class="std std-ref">(264)</span></a>-<a class="reference internal" href="#eq-fem-deq-diffu-femapprox-np1"><span class="std std-ref">(265)</span></a>
+in <a class="reference internal" href="#eq-fem-deq-diffu-be-eq-un"><span class="std std-ref">(278)</span></a>, multiplying by any <span class="math">\(v\in V\)</span>
+(or <span class="math">\({\psi}_i\in V\)</span>),
+and integrating by parts, as we did in the Forward Euler case, results
+in the variational form</p>
+<div class="math" id="eq-fem-deq-diffu-be-vf-u-n">
+\[ \begin{align}\begin{aligned}\tag{279}
+\int_{\Omega} \left( u^{n}v
+    + \Delta t {\alpha}\nabla u^n\cdot\nabla v\right){\, \mathrm{d}x}
+    = \int_{\Omega} u^{n-1}  v{\, \mathrm{d}x} +
+    \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x},\quad\forall v\in V\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>Expressed with <span class="math">\(u\)</span> for the unknown <span class="math">\(u^n\)</span> and <span class="math">\(u^{n}\)</span> for the previous
+time level, as we have done before, the variational form becomes</p>
+<div class="math" id="eq-fem-deq-diffu-be-vf-u">
+\[\tag{280}
+\int_{\Omega} \left( uv
+    + \Delta t {\alpha}\nabla u\cdot\nabla v\right){\, \mathrm{d}x}
+    = \int_{\Omega} u^{n} v{\, \mathrm{d}x} +
+    \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x},\]</div>
+<p>or with the more compact inner product notation,</p>
+<div class="math" id="eq-fem-deq-diffu-be-vf-u-short">
+\[ \begin{align}\begin{aligned}\tag{281}
+(u,v) + \Delta t ({\alpha}\nabla u,\nabla v)
+    = (u^{n},v) +
+    \Delta t (f^n,v)\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+</div>
+<div class="section" id="linear-systems">
+<h3>Linear systems<a class="headerlink" href="#linear-systems" title="Permalink to this headline">¶</a></h3>
+<p>Inserting <span class="math">\(u=\sum_j c_j{\psi}_i\)</span> and <span class="math">\(u^{n}=\sum_j c_{j}^n{\psi}_i\)</span>,
+and choosing <span class="math">\(v\)</span> to be the basis functions <span class="math">\({\psi}_i\in V\)</span>,
+<span class="math">\(i=0,\ldots,N\)</span>, together with doing some algebra, lead
+to the following linear system to be
+solved at each time level:</p>
+<div class="math" id="eq-fem-deq-diffu-be-vf-linsys">
+\[\tag{282}
+(M + \Delta t K)c = Mc_1 + \Delta t f,\]</div>
+<p>where <span class="math">\(M\)</span>, <span class="math">\(K\)</span>, and <span class="math">\(f\)</span> are as in the Forward Euler case.
+This time we really have to solve a linear system at each time level.
+The computational algorithm goes as follows.</p>
+<ol class="arabic simple">
+<li>Compute <span class="math">\(M\)</span>, <span class="math">\(K\)</span>, and <span class="math">\(A=M + \Delta t K\)</span></li>
+<li>Initialize <span class="math">\(u^0\)</span> by interpolation or projection</li>
+<li>For <span class="math">\(n=1,2,\ldots,N_t\)</span>:</li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>compute <span class="math">\(b = Mc_1 + \Delta t f\)</span></li>
+<li>solve <span class="math">\(Ac = b\)</span></li>
+<li>set <span class="math">\(c_1 = c\)</span></li>
+</ol>
+</div></blockquote>
+<p>In case of finite element basis functions, interpolation of the
+initial condition at the nodes means <span class="math">\(c_{j}^n = I(\boldsymbol{x}_j)\)</span>. Otherwise
+one has to solve the linear system <span class="math">\(\sum_j{\psi}_j(\boldsymbol{x}_i)c_j =
+I(\boldsymbol{x}_i)\)</span>, where <span class="math">\(\boldsymbol{x}_i\)</span> denotes an interpolation point.  Projection
+(or Galerkin&#8217;s method) implies solving a linear system with <span class="math">\(M\)</span> as
+coefficient matrix: <span class="math">\(\sum_j M_{i,j}c_{j}^n = (I,{\psi}_i)\)</span>,
+<span class="math">\(i\in{\mathcal{I}_s}\)</span>.</p>
+<div class="section" id="finite-difference-operators-corresponding-to-p1-elements">
+<h4>Finite difference operators corresponding to P1 elements<a class="headerlink" href="#finite-difference-operators-corresponding-to-p1-elements" title="Permalink to this headline">¶</a></h4>
+<p>We know what kind of finite difference operators the <span class="math">\(M\)</span> and <span class="math">\(K\)</span>
+matrices correspond to (after dividing by <span class="math">\(h\)</span>), so
+<a class="reference internal" href="#eq-fem-deq-diffu-be-vf-linsys"><span class="std std-ref">(282)</span></a> can be interpreted as
+the following finite difference method:</p>
+<div class="math" id="eq-fem-deq-diffu-be-fdinterp">
+\[ \begin{align}\begin{aligned}\tag{283}
+[D_t^-(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u + f]^n_i\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>The mass matrix <span class="math">\(M\)</span> can be lumped, as explained in the section <a class="reference internal" href="#fem-deq-diffu-fe-fdvsp1fe"><span class="std std-ref">Comparing P1 elements with the finite difference method</span></a>, and then the linear system arising
+from the finite element method with P1 elements corresponds
+to a plain Backward Euler finite difference method for the diffusion
+equation:</p>
+<div class="math" id="eq-fem-deq-diffu-be-fdinterp-lumped">
+\[ \begin{align}\begin{aligned}\tag{284}
+[D_t^- u = {\alpha} D_xD_x u + f]^n_i\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+</div>
+</div>
+</div>
+<div class="section" id="dirichlet-boundary-conditions">
+<span id="fem-deq-diffu-dirichlet"></span><h2>Dirichlet boundary conditions<a class="headerlink" href="#dirichlet-boundary-conditions" title="Permalink to this headline">¶</a></h2>
+<p>Suppose now that the boundary condition <a class="reference internal" href="#eq-fem-deq-diffu-bcn"><span class="std std-ref">(259)</span></a> is
+replaced by a mixed Neumann and Dirichlet condition,</p>
+<div class="math" id="eq-auto118">
+\[\tag{285}
+u(\boldsymbol{x},t) = u_0(\boldsymbol{x},t),\quad  \boldsymbol{x}\in\partial\Omega_D,\]</div>
+<div class="math" id="eq-auto119">
+\[\tag{286}
+-{\alpha}\frac{\partial}{\partial n} u(\boldsymbol{x},t) = g(\boldsymbol{x},t),\quad
+     \boldsymbol{x}\in\partial{\Omega}_N{\thinspace .}\]</div>
+<p>Using a Forward Euler discretization in time, the variational
+form at a time level becomes</p>
+<div class="math" id="eq-auto120">
+\[\tag{287}
+\int\limits_\Omega u^{n+1}v{\, \mathrm{d}x} =
+    \int\limits_\Omega (u^n - \Delta t{\alpha}\nabla u^n\cdot\nabla v){\, \mathrm{d}x} +
+    \Delta t\int\limits_\Omega fv {\, \mathrm{d}x} -
+    \Delta t\int\limits_{\partial\Omega_N} gv{\, \mathrm{d}s},\quad \forall v\in V{\thinspace .}\]</div>
+<div class="section" id="boundary-function-2">
+<h3>Boundary function<a class="headerlink" href="#boundary-function-2" title="Permalink to this headline">¶</a></h3>
+<p>The Dirichlet condition <span class="math">\(u=u_0\)</span> at <span class="math">\(\partial\Omega_D\)</span> can be incorporated
+through a boundary function <span class="math">\(B(\boldsymbol{x})=u_0(\boldsymbol{x})\)</span> and demanding that <span class="math">\(v=0\)</span>
+at <span class="math">\(\partial\Omega_D\)</span>. The expansion for <span class="math">\(u^n\)</span> is written as</p>
+<div class="math">
+\[u^n(\boldsymbol{x}) = u_0(\boldsymbol{x},t_n) + \sum_{j\in{\mathcal{I}_s}}c_j^n{\psi}_j(\boldsymbol{x}){\thinspace .}\]</div>
+<p>Inserting this expansion in the variational formulation and letting it
+hold for all basis functions <span class="math">\({\psi}_i\)</span> leads to the linear system</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+\sum_{j\in{\mathcal{I}_s}} \left(\int\limits_\Omega {\psi}_i{\psi}_j{\, \mathrm{d}x}\right)
+c^{n+1}_j &amp;= \sum_{j\in{\mathcal{I}_s}}
+\left(\int\limits_\Omega\left( {\psi}_i{\psi}_j -
+\Delta t{\alpha}\nabla {\psi}_i\cdot\nabla{\psi}_j\right){\, \mathrm{d}x}\right) c_j^n - \\
+&amp;\quad  \int\limits_\Omega\left( u_0(\boldsymbol{x},t_{n+1}) - u_0(\boldsymbol{x},t_n)
++ \Delta t{\alpha}\nabla u_0(\boldsymbol{x},t_n)\cdot\nabla
+{\psi}_i\right){\, \mathrm{d}x} \\
+&amp; \quad + \Delta t\int\limits_\Omega f{\psi}_i{\, \mathrm{d}x} -
+\Delta t\int\limits_{\partial\Omega_N} g{\psi}_i{\, \mathrm{d}s},
+\quad i\in{\mathcal{I}_s}{\thinspace .}
+\end{align*}\end{split}\]</div>
+</div>
+<div class="section" id="finite-element-basis-functions-2">
+<h3>Finite element basis functions<a class="headerlink" href="#finite-element-basis-functions-2" title="Permalink to this headline">¶</a></h3>
+<p>When using finite elements, each basis function <span class="math">\({\varphi}_i\)</span> is associated
+with a node <span class="math">\(\boldsymbol{x}_{i}\)</span>. We have a collection of nodes
+<span class="math">\(\{\boldsymbol{x}_i\}_{i\in{I_b}}\)</span> on the boundary <span class="math">\(\partial\Omega_D\)</span>.
+Suppose <span class="math">\(U_k^n\)</span> is the known
+Dirichlet value at <span class="math">\(\boldsymbol{x}_{k}\)</span> at time <span class="math">\(t_n\)</span> (<span class="math">\(U_k^n=u_0(\boldsymbol{x}_{k},t_n)\)</span>).
+The appropriate boundary function is then</p>
+<div class="math">
+\[B(\boldsymbol{x},t_n)=\sum_{j\in{I_b}} U_j^n{\varphi}_j{\thinspace .}\]</div>
+<p>The unknown coefficients <span class="math">\(c_j\)</span> are associated with the rest of the nodes,
+which have numbers <span class="math">\(\nu(i)\)</span>, <span class="math">\(i\in{\mathcal{I}_s} = \{0,\ldots,N\}\)</span>. The basis
+functions for <span class="math">\(V\)</span> are chosen as <span class="math">\({\psi}_i = {\varphi}_{\nu(i)}\)</span>, <span class="math">\(i\in{\mathcal{I}_s}\)</span>,
+and all of these vanish at the boundary nodes as they should.
+The expansion for <span class="math">\(u^{n+1}\)</span> and <span class="math">\(u^n\)</span> become</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+u^n &amp;= \sum_{j\in{I_b}} U_j^n{\varphi}_j + \sum_{j\in{\mathcal{I}_s}}c_{j}^n{\varphi}_{\nu(j)},\\
+u^{n+1} &amp;= \sum_{j\in{I_b}} U_j^{n+1}{\varphi}_j +
+\sum_{j\in{\mathcal{I}_s}}c_{j}{\varphi}_{\nu(j)}{\thinspace .}
+\end{align*}\end{split}\]</div>
+<p>The equations for the unknown coefficients <span class="math">\(\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}\)</span> become</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+\sum_{j\in{\mathcal{I}_s}} \left(\int\limits_\Omega {\varphi}_i{\varphi}_j{\, \mathrm{d}x}\right)
+c_j &amp;= \sum_{j\in{\mathcal{I}_s}}
+\left(\int\limits_\Omega\left( {\varphi}_i{\varphi}_j -
+\Delta t{\alpha}\nabla {\varphi}_i\cdot\nabla{\varphi}_j\right){\, \mathrm{d}x}\right) c_{j}^n
+- \\
+&amp;\quad  \sum_{j\in{I_b}}\int\limits_\Omega\left( {\varphi}_i{\varphi}_j(U_j^{n+1} - U_j^n)
++ \Delta t{\alpha}\nabla {\varphi}_i\cdot\nabla
+{\varphi}_jU_j^n\right){\, \mathrm{d}x} \\
+&amp;\quad + \Delta t\int\limits_\Omega f{\varphi}_i{\, \mathrm{d}x} -
+\Delta t\int\limits_{\partial\Omega_N} g{\varphi}_i{\, \mathrm{d}s},
+\quad i\in{\mathcal{I}_s}{\thinspace .}
+\end{align*}\end{split}\]</div>
+</div>
+<div class="section" id="modification-of-the-linear-system-2">
+<h3>Modification of the linear system<a class="headerlink" href="#modification-of-the-linear-system-2" title="Permalink to this headline">¶</a></h3>
+<p>Instead of introducing a boundary function <span class="math">\(B\)</span> we can work with
+basis functions associated with all the nodes and incorporate the
+Dirichlet conditions by modifying the linear system.
+Let <span class="math">\({\mathcal{I}_s}\)</span> be the index set that counts all the nodes:
+<span class="math">\(\{0,1,\ldots,N=N_n-1\}\)</span>. The
+expansion for <span class="math">\(u^n\)</span> is then <span class="math">\(\sum_{j\in{\mathcal{I}_s}}c^n_j{\varphi}_j\)</span> and the
+variational form becomes</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+\sum_{j\in{\mathcal{I}_s}} \left(\int\limits_\Omega {\varphi}_i{\varphi}_j{\, \mathrm{d}x}\right)
+c_j &amp;= \sum_{j\in{\mathcal{I}_s}}
+\left(\int\limits_\Omega\left( {\varphi}_i{\varphi}_j -
+\Delta t{\alpha}\nabla {\varphi}_i\cdot\nabla{\varphi}_j\right){\, \mathrm{d}x}\right) c_{1,j}
+ \\
+&amp;\quad + \Delta t\int\limits_\Omega f{\varphi}_i{\, \mathrm{d}x} -
+\Delta t\int\limits_{\partial\Omega_N} g{\varphi}_i{\, \mathrm{d}s}{\thinspace .}
+\end{align*}\end{split}\]</div>
+<p>We introduce the matrices <span class="math">\(M\)</span> and <span class="math">\(K\)</span> with entries
+<span class="math">\(M_{i,j}=\int\limits_\Omega{\varphi}_i{\varphi}_j{\, \mathrm{d}x}\)</span> and
+<span class="math">\(K_{i,j}=\int\limits_\Omega{\alpha}\nabla{\varphi}_i\cdot\nabla{\varphi}_j{\, \mathrm{d}x}\)</span>,
+respectively.
+In addition, we define the vectors <span class="math">\(c\)</span>, <span class="math">\(c_1\)</span>, and <span class="math">\(f\)</span> with
+entries <span class="math">\(c_i\)</span>, <span class="math">\(c_{1,i}\)</span>, and
+<span class="math">\(\int\limits_\Omega f{\varphi}_i{\, \mathrm{d}x} - \int\limits_{\partial\Omega_N}g{\varphi}_i{\, \mathrm{d}s}\)</span>, respectively.
+The equation system can then be written as</p>
+<div class="math" id="eq-auto121">
+\[\tag{288}
+Mc = Mc_1 - \Delta t Kc_1 + \Delta t f{\thinspace .}\]</div>
+<p>When <span class="math">\(M\)</span>, <span class="math">\(K\)</span>, and <span class="math">\(f\)</span> are assembled without paying attention to
+Dirichlet boundary conditions, we need to replace equation <span class="math">\(k\)</span>
+by <span class="math">\(c_k=U_k\)</span> for <span class="math">\(k\)</span> corresponding to all boundary nodes (<span class="math">\(k\in{I_b}\)</span>).
+The modification of <span class="math">\(M\)</span> consists in setting <span class="math">\(M_{k,j}=0\)</span>, <span class="math">\(j\in{\mathcal{I}_s}\)</span>, and
+the <span class="math">\(M_{k,k}=1\)</span>. Alternatively, a modification that preserves
+the symmetry of <span class="math">\(M\)</span> can be applied. At each time level one forms
+<span class="math">\(b = Mc_1 - \Delta t Kc_1 + \Delta t f\)</span> and sets <span class="math">\(b_k=U^{n+1}_k\)</span>,
+<span class="math">\(k\in{I_b}\)</span>, and solves the system <span class="math">\(Mc=b\)</span>.</p>
+<p>In case of a Backward Euler method, the system becomes
+<a class="reference internal" href="#eq-fem-deq-diffu-be-vf-linsys"><span class="std std-ref">(282)</span></a>. We can write the system
+as <span class="math">\(Ac=b\)</span>, with <span class="math">\(A=M + \Delta t K\)</span> and <span class="math">\(b = Mc_1 + f\)</span>.
+Both <span class="math">\(M\)</span> and <span class="math">\(K\)</span> needs to be modified because of Dirichlet
+boundary conditions, but the diagonal entries in <span class="math">\(K\)</span> should be
+set to zero and those in <span class="math">\(M\)</span> to unity. In this way, for <span class="math">\(k\in{I_b}\)</span> we
+have  <span class="math">\(A_{k,k}=1\)</span>.
+The right-hand side must read <span class="math">\(b_k=U^n_k\)</span> for <span class="math">\(k\in{I_b}\)</span> (assuming
+the unknown is sought at time level <span class="math">\(t_n\)</span>).</p>
+</div>
+<div class="section" id="example-oscillating-dirichlet-boundary-condition">
+<span id="fem-deq-diffu-dirichlet-ex"></span><h3>Example: Oscillating Dirichlet boundary condition<a class="headerlink" href="#example-oscillating-dirichlet-boundary-condition" title="Permalink to this headline">¶</a></h3>
+<p>We shall address the one-dimensional initial-boundary value problem</p>
+<div class="math" id="eq-fem-deq-diffu-dirichlet-ex-pde">
+\[\tag{289}
+u_t = ({\alpha} u_x)_x + f,\quad  x\in\Omega =[0,L],\ t\in (0,T],\]</div>
+<div class="math" id="eq-fem-deq-diffu-dirichlet-ex-uic">
+\[\tag{290}
+u(x,0) = 0,\quad  x\in\Omega,\]</div>
+<div class="math" id="eq-fem-deq-diffu-dirichlet-ex-ul">
+\[\tag{291}
+u(0,t) = a\sin\omega t,\quad  t\in (0,T],\]</div>
+<div class="math" id="eq-fem-deq-diffu-dirichlet-ex-ur">
+\[\tag{292}
+u_x(L,t) = 0,\quad  t\in (0,T]{\thinspace .}\]</div>
+<p>A physical interpretation may be that <span class="math">\(u\)</span> is the temperature
+deviation from a constant mean temperature in a body <span class="math">\(\Omega\)</span>
+that is subject to an oscillating temperature (e.g., day and
+night, or seasonal, variations) at <span class="math">\(x=0\)</span>.</p>
+<p>We use a Backward Euler scheme in time and P1 elements of
+constant length <span class="math">\(h\)</span> in space.
+Incorporation of the Dirichlet condition at <span class="math">\(x=0\)</span> through
+modifying the linear system at each time level means that we
+carry out the computations as explained in the section <a class="reference internal" href="#fem-deq-diffu-be"><span class="std std-ref">Discretization in time by a Backward Euler scheme</span></a> and get a system <a class="reference internal" href="#eq-fem-deq-diffu-be-vf-linsys"><span class="std std-ref">(282)</span></a>.
+The <span class="math">\(M\)</span> and <span class="math">\(K\)</span> matrices computed without paying attention to
+Dirichlet boundary conditions become</p>
+<div class="math" id="eq-auto122">
+\[\begin{split}\tag{293}
+M = \frac{h}{6}
+    \left(
+    \begin{array}{cccccccccc}
+    2 &amp; 1 &amp; 0
+    &amp;\cdots &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots &amp; 0 \\
+    1 &amp; 4 &amp; 1 &amp; \ddots &amp;   &amp; &amp;  &amp; &amp;  \vdots \\
+    0 &amp; 1 &amp; 4 &amp; 1 &amp;
+    \ddots &amp; &amp;  &amp;  &amp; \vdots \\
+    \vdots &amp; \ddots &amp;  &amp; \ddots &amp; \ddots &amp; 0 &amp;  &amp; &amp; \vdots \\
+    \vdots &amp;  &amp; \ddots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \ddots &amp; &amp; \vdots \\
+    \vdots &amp; &amp;  &amp; 0 &amp; 1 &amp; 4 &amp; 1 &amp; \ddots &amp; \vdots \\
+    \vdots &amp; &amp; &amp;  &amp; \ddots &amp; \ddots &amp; \ddots &amp;\ddots  &amp; 0 \\
+    \vdots &amp; &amp; &amp; &amp;  &amp;\ddots  &amp; 1  &amp; 4  &amp; 1 \\
+    0 &amp;\cdots &amp; \cdots &amp;\cdots &amp; \cdots &amp; \cdots  &amp; 0 &amp; 1 &amp; 2
+    \end{array}
+    \right)\end{split}\]</div>
+<p>and</p>
+<div class="math" id="eq-auto123">
+\[\begin{split}\tag{294}
+K = \frac{{\alpha}}{h}
+    \left(
+    \begin{array}{cccccccccc}
+    1 &amp; -1 &amp; 0 &amp;\cdots &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots &amp; 0 \\
+    -1 &amp; 2 &amp; -1 &amp; \ddots &amp;   &amp; &amp;  &amp; &amp;  \vdots \\
+    0 &amp; -1 &amp; 2 &amp; -1 &amp; \ddots &amp; &amp;  &amp;  &amp; \vdots \\
+    \vdots &amp; \ddots &amp;  &amp; \ddots &amp; \ddots &amp; 0 &amp;  &amp; &amp; \vdots \\
+    \vdots &amp;  &amp; \ddots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \ddots &amp; &amp; \vdots \\
+    \vdots &amp; &amp;  &amp; 0 &amp; -1 &amp; 2 &amp; -1 &amp; \ddots &amp; \vdots \\
+    \vdots &amp; &amp; &amp;  &amp; \ddots &amp; \ddots &amp; \ddots &amp;\ddots  &amp; 0 \\
+    \vdots &amp; &amp; &amp; &amp;  &amp;\ddots  &amp; -1  &amp; 2  &amp; -1 \\
+    0 &amp;\cdots &amp; \cdots &amp;\cdots &amp; \cdots &amp; \cdots  &amp; 0 &amp; -1 &amp; 1
+    \end{array}
+    \right)\end{split}\]</div>
+<p>The right-hand side of the variational form contains <span class="math">\(Mc_1\)</span> since
+there is no source term (<span class="math">\(f\)</span>) and no boundary term from the
+integration by parts (<span class="math">\(u_x=0\)</span> at <span class="math">\(x=L\)</span> and we compute as if <span class="math">\(u_x=0\)</span> at
+<span class="math">\(x=0\)</span> too). We must incorporate the Dirichlet boundary
+condition <span class="math">\(c_0=a\sin\omega t_n\)</span> by ensuring that this is the
+first equation in the linear system.
+To this end,
+the first row in <span class="math">\(K\)</span> and <span class="math">\(M\)</span> is set to zero, but the diagonal
+entry <span class="math">\(M_{0,0}\)</span> is set to 1. The right-hand side is <span class="math">\(b=Mc_1\)</span>,
+and we set <span class="math">\(b_0 = a\sin\omega t_n\)</span>.
+Note that in this
+approach, <span class="math">\(N=N_n-1\)</span>, and <span class="math">\(c\)</span> equals the unknown <span class="math">\(u\)</span> at each node
+in the mesh. We can write the complete linear system as</p>
+<p>[<strong>kam 20</strong>: ensuring that it is the first equation in the system?]</p>
+<div class="math" id="eq-auto124">
+\[\tag{295}
+c_0 = a\sin\omega t_n,\]</div>
+<div class="math" id="eq-auto125">
+\[\tag{296}
+\frac{h}{6}(c_{i-1} + 4c_i + c_{i+1}) + \Delta t\frac{{\alpha}}{h}(-c_{i-1}
+    +2c_i - c_{i+1}) = \frac{h}{6}(c_{1,i-1} + 4c_{1,i} + c_{1,i+1}),\]</div>
+<div class="math">
+\[\qquad i=1,\ldots,N_n-2,\nonumber\]</div>
+<div class="math" id="eq-auto126">
+\[\tag{297}
+\frac{h}{6}(c_{i-1} + 2c_i) + \Delta t\frac{{\alpha}}{h}(-c_{i-1}
+    +c_i) = \frac{h}{6}(c_{1,i-1} + 2c_{1,i}),\]</div>
+<div class="math">
+\[\qquad i=N_n-1{\thinspace .}\nonumber\]</div>
+<p>The Dirichlet boundary condition can alternatively be implemented
+through a boundary function <span class="math">\(B(x,t)=a\sin\omega t\,{\varphi}_0(x)\)</span>:</p>
+<div class="math">
+\[u^n(x) = a\sin\omega t_n\,{\varphi}_0(x) +
+\sum_{j\in{\mathcal{I}_s}} c_j{\varphi}_{\nu(j)}(x),\quad
+\nu(j) = j+1{\thinspace .}\]</div>
+<p>Now, <span class="math">\(N=N_n-2\)</span> and the <span class="math">\(c\)</span> vector contains values of <span class="math">\(u\)</span> at nodes
+<span class="math">\(1,2,\ldots,N_n-1\)</span>. The right-hand side gets a contribution</p>
+<div class="math" id="eq-fem-deq-diffu-dirichlet-ex-bterm">
+\[\tag{298}
+\int\limits_0^L \left(
+    a(\sin\omega t_n - \sin\omega t_{n-1}){\varphi}_0{\varphi}_i
+    - \Delta t{\alpha} a\sin\omega t_n\nabla{\varphi}_0\cdot\nabla{\varphi}_i\right){\, \mathrm{d}x}
+    {\thinspace .}\]</div>
+</div>
+</div>
+<div class="section" id="accuracy-of-the-finite-element-solution">
+<span id="fem-deq-diffu-anal"></span><h2>Accuracy of the finite element solution<a class="headerlink" href="#accuracy-of-the-finite-element-solution" title="Permalink to this headline">¶</a></h2>
+<p>[<strong>kam 21</strong>: new intro]</p>
+<div class="section" id="illustrating-example">
+<h3>Illustrating example<a class="headerlink" href="#illustrating-example" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Two insulated metal pieces</li>
+<li>Run CN finite difference and finite element (just use FE code)</li>
+<li>Run Forward Euler</li>
+<li>Point to problems with non-physical oscillations, should be larger
+in finite elements than in finite difference</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="methods-of-analysis">
+<h3>Methods of analysis<a class="headerlink" href="#methods-of-analysis" title="Permalink to this headline">¶</a></h3>
+<p>There are three major tools for analyzing the accuracy of time-dependent
+finite element problems:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Truncation error</li>
+<li>Finite element error analysis framework</li>
+<li>Amplification factor analysis</li>
+</ul>
+</div></blockquote>
+<p>The truncation error is the dominating tool used to analyze finite
+difference schemes, but very seldom (if at all) used in the finite
+element literature.  This is actually surprising, since finite
+elements also give rise to difference stencils of the same nature
+mathematical form as finite difference methods, and there is no reason
+why we should not use a simple tool as the truncation error to
+establish expected convergence rates of finite element methods.</p>
+<p>Instead, a more rigorous and powerful error analysis framework has
+been developed for finite element methods. This framework deals
+primarily with the spatial discretization and is not so superior for
+space-time problems.</p>
+<p>To explain the numerical artifacts from the previous section,
+both the truncation error and the error analysis framework fall too
+short, and we have turn to the method based on analyzing amplification
+factors. For wave equations, the counterpart is often referred to as analysis
+of dispersion relations.</p>
+<p>The idea of the method of analyzing amplification factors is to
+see how sinusoidal waves are amplified in time. For example, if high
+frequency components are damped much less than the analytical damping,
+we may see this as ripples or noise in the solution.</p>
+<p>Let us address the diffusion equation in 1D, <span class="math">\(u_t = {\alpha} u_{xx}\)</span> for
+<span class="math">\(x \in \Omega=(0,\pi)\)</span> and <span class="math">\(t \in (0,T]\)</span>.  For the case where we have
+homogeneous Dirichlet conditions and the initial condition is <span class="math">\(u(x, 0)
+= u_0(x)\)</span>, the solution to the problem can be expressed as</p>
+<div class="math">
+\[u(x,t) = \sum_{k=1}^\infty B_k e^{-{\alpha} (k )^2 t} \sin(k x),\]</div>
+<p>where <span class="math">\(B_k = \int_\Omega u_0 \sin(k x)\)</span>.  This is the well-known
+Fourier decomposition of a signal in sine waves (one can also use
+cosine functions or a combination of sines and cosines).  For a given
+wave <span class="math">\(\sin(kx)\)</span> with wave length <span class="math">\(\lambda = 2\pi/k\)</span>, this part of the
+signal will in time develop as <span class="math">\(e^{-{\alpha} (k )^2 t}\)</span>.  Smooth signals
+will need only a few long waves (<span class="math">\(B_k\)</span> decays rapidly with <span class="math">\(k\)</span>), while
+discontinuous or noisy signals will have an amount of short waves with
+significant amplitude (<span class="math">\(B_k\)</span> decays slowly with <span class="math">\(k\)</span>).</p>
+<p>The amplification factor is defined as
+<span class="math">\({A_{\small\mbox{e}}} = e^{-{\alpha} (k )^2 \Delta t}\)</span> and expresses how much
+a wave with frequency <span class="math">\(k\)</span> is damped over a time step.
+The corresponding numerical amplification factor will vary with the
+discretization method and also discretization parameters in space.</p>
+<p>From the analytical expression for the amplification factor, we see
+that <span class="math">\(e^{-{\alpha} (k)^2}\)</span> is always less than 1. Further, we notice that
+the amplification factor has a strong dependency on the frequency of
+the Fourier component. For low frequency components (when <span class="math">\(k\)</span> is
+small), the amplification factor is relatively large although always
+less than 1.  For high frequency components, when <span class="math">\(k\)</span> approaches
+<span class="math">\(\infty\)</span>, the amplification factor goes to 0. Hence, high frequency
+components (rapid changes such as discontinuities or noise) present in
+the initial condition will be quickly dampened, while low frequency
+components stay for a longer time interval.</p>
+<p>The purpose of this section is to discuss the amplification factor
+of numerical schemes and compare the amplification factor of
+the scheme with the known analytical amplification factor.</p>
+</div>
+<div class="section" id="fourier-components-and-dispersion-relations">
+<h3>Fourier components and dispersion relations<a class="headerlink" href="#fourier-components-and-dispersion-relations" title="Permalink to this headline">¶</a></h3>
+<p>Let us again consider the diffusion equation in 1D,  <span class="math">\(u_t = {\alpha} u_{xx}\)</span>.
+To allow for general boundary conditions, we include
+both the <span class="math">\(\sin (k x)\)</span> and <span class="math">\(\cos(k x)\)</span>, or for
+convenience we expand the Fourier series in
+terms of <span class="math">\(\{e^{ikx}\}_{k=-\infty}^{\infty}\)</span>.
+Hence, we perform a separation in terms of the (Fourier)
+wave component</p>
+<div class="math">
+\[u=e^{\beta t + ikx}\]</div>
+<p>where
+<span class="math">\(\beta = -{\alpha} k^2\)</span> and <span class="math">\(i=\sqrt{-1}\)</span> is the imaginary unit.</p>
+<p>Discretizing in time such that <span class="math">\(t=n \Delta t\)</span>,
+this exact wave component can alternatively be written as</p>
+<div class="math" id="eq-fem-deq-diffu-analysis-ae">
+\[\tag{299}
+u = {A_{\small\mbox{e}}}^n e^{ikx},\quad {A_{\small\mbox{e}}} = e^{-{\alpha} k^2\Delta t}{\thinspace .}\]</div>
+<p>We remark that <span class="math">\({A_{\small\mbox{e}}}\)</span> is a function of the parameter <span class="math">\(k\)</span>, but
+to avoid to clutter the notation here we write
+<span class="math">\({A_{\small\mbox{e}}}\)</span> instead of <span class="math">\(A_{e,k}\)</span>. This convention will be used
+also for the discrete case.</p>
+<p>As we will show, many numerical schemes for the diffusion equation
+also have a similar wave component as solution:</p>
+<div class="math" id="eq-fem-deq-diffu-analysis-uni0">
+\[\tag{300}
+u^n_q = A^n e^{ikx},\]</div>
+<p>where <span class="math">\(A\)</span> is an amplification factor to be calculated by inserting
+<a class="reference internal" href="#eq-fem-deq-diffu-analysis-uni0"><span class="std std-ref">(300)</span></a> in the discrete equations.
+Normally <span class="math">\(A\neq{A_{\small\mbox{e}}}\)</span>, and the difference in the amplification factor is
+what introduces (visible) numerical errors.
+To compute <span class="math">\(A\)</span>, we need explicit expressions for the discrete equations
+for <span class="math">\(\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}\)</span> in the finite element method. That is,
+we need to assemble the linear system and look at a general row in
+the system. This row can be written as a finite difference scheme,
+and the analysis of the finite element solution is therefore performed
+in the same way as for finite difference methods. Expressing the
+discrete finite element equations as finite difference operators turns
+out to be very convenient for the calculations.</p>
+<p>We introduce <span class="math">\(x_q=qh\)</span>, or <span class="math">\(x_q=q\Delta x\)</span>, for the node coordinates,
+to align the notation with
+that frequently used in finite difference methods.
+A convenient start of the calculations is to establish some
+results for various finite difference operators acting
+on the wave component</p>
+<div class="math" id="eq-fem-deq-diffu-analysis-uni">
+\[\tag{301}
+u^n_q = A^n e^{ikq\Delta x}{\thinspace .}\]</div>
+<p>The forward Euler scheme (see <a class="reference internal" href="._book035.html#sec-form-fdop"><span class="std std-ref">Finite difference operator notation</span></a>) is</p>
+<div class="math">
+\[\begin{split}\begin{align*}
+u_q'(t_n) &amp;\approx [D_t^+ u_q]^n = \frac{u_q^{n+1} - u_q^{n}}{\Delta t} \\
+&amp;= \frac{A_q^{n+1} - A^{n}}{\Delta t}e^{ikq\Delta x} \\
+&amp;=A^n e^{ikq\Delta x}\frac{A-1}{\Delta t} {\thinspace .}
+\end{align*}\end{split}\]</div>
+<p>Similarly, the actions of the
+most common operators of relevance for the model problem at hand
+are listed below.</p>
+<div class="math" id="eq-fem-deq-diffu-analysis-fe-a">
+\[\tag{302}
+[D_t^+ A^n e^{ikq\Delta x}]^n = A^n e^{ikq\Delta x}\frac{A-1}{\Delta t},\]</div>
+<div class="math" id="eq-fem-deq-diffu-analysis-be-a">
+\[\tag{303}
+[D_t^- A^n e^{ikq\Delta x}]^n = A^n e^{ikq\Delta x}\frac{1-A^{-1}}{\Delta t},\]</div>
+<div class="math" id="eq-fem-deq-diffu-analysis-cn-a">
+\[\tag{304}
+[D_t A^n e^{ikq\Delta x}]^{n+\frac{1}{2}} = A^{n+\frac{1}{2}} e^{ikq\Delta x}\frac{A^{\frac{1}{2}}-A^{-\frac{1}{2}}}{\Delta t} = A^ne^{ikq\Delta x}\frac{A-1}{\Delta t},\]</div>
+<div class="math" id="eq-fem-deq-diffu-analysis-ddx-a">
+\[\tag{305}
+[D_xD_x A^ne^{ikq\Delta x}]_q = -A^n \frac{4}{\Delta x^2}\sin^2\left(\frac{k\Delta x}{2}\right){\thinspace .}\]</div>
+</div>
+<div class="section" id="forward-euler-discretization">
+<h3>Forward Euler discretization<a class="headerlink" href="#forward-euler-discretization" title="Permalink to this headline">¶</a></h3>
+<p>We insert <a class="reference internal" href="#eq-fem-deq-diffu-analysis-uni"><span class="std std-ref">(301)</span></a> in the
+Forward Euler scheme with P1 elements in space and <span class="math">\(f=0\)</span> (note that
+this type of analysis
+can only be carried out if <span class="math">\(f=0\)</span>) )</p>
+<div class="math" id="eq-fem-deq-diffu-fe-fdinterp2">
+\[ \begin{align}\begin{aligned}\tag{306}
+[D_t^+(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u]^n_q\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>We have (using <a class="reference internal" href="#eq-fem-deq-diffu-analysis-fe-a"><span class="std std-ref">(302)</span></a>
+and <a class="reference internal" href="#eq-fem-deq-diffu-analysis-ddx-a"><span class="std std-ref">(305)</span></a></p>
+<div class="math">
+\[[D_t^+D_xD_x Ae^{ikx}]^n_q = [D_t^+A]^n [D_xD_x e^{ikx}]_q
+= -A^ne^{ikp\Delta x}
+\frac{A-1}{\Delta t}\frac{4}{\Delta x^2}\sin^2 (\frac{k\Delta x}{2})
+{\thinspace .}\]</div>
+<p>The term <span class="math">\([D_t^+Ae^{ikx} + \frac{1}{6}\Delta x^2 D_t^+D_xD_x Ae^{ikx}]^n_q\)</span>
+then reduces to</p>
+<div class="math">
+\[\frac{A-1}{\Delta t} - \frac{1}{6}\Delta x^2 \frac{A-1}{\Delta t}
+\frac{4}{\Delta x^2}\sin^2 (\frac{k\Delta x}{2}),\]</div>
+<p>or</p>
+<div class="math">
+\[\frac{A-1}{\Delta t} \left(1 - \frac{2}{3}\sin^2 (k\Delta x/2)\right)
+{\thinspace .}\]</div>
+<p>Introducing <span class="math">\(p=k\Delta x/2\)</span> and <span class="math">\(F={\alpha}\Delta t/\Delta x^2\)</span>,
+the complete scheme becomes</p>
+<div class="math">
+\[(A-1) \left(1 - \frac{2}{3}\sin^2 p\right)
+= -4F\sin^2 p,\]</div>
+<p>from which we find <span class="math">\(A\)</span> to be</p>
+<div class="math" id="eq-fem-deq-fiffu-analysis-a-fe">
+\[\tag{307}
+A = 1 - 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
+    {\thinspace .}\]</div>
+<p>How does this <span class="math">\(A\)</span> change the stability criterion compared to the
+Forward Euler finite difference scheme and centered differences in
+space? The stability criterion is <span class="math">\(|A|\leq 1\)</span>, which here implies
+<span class="math">\(A\leq 1\)</span> and <span class="math">\(A\geq -1\)</span>. The former is always fulfilled, while
+the latter leads to</p>
+<div class="math">
+\[4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p} \leq 2{\thinspace .}\]</div>
+<p>The factor <span class="math">\(\sin^2 p/(1 - \frac{2}{3}\sin^2 p)\)</span>
+can be plotted for <span class="math">\(p\in [0,\pi/2]\)</span>, and the maximum value goes to 3
+as <span class="math">\(p\rightarrow \pi/2\)</span>. The worst case for stability therefore occurs for
+the shortest possible wave, <span class="math">\(p=\pi/2\)</span>, and the stability criterion becomes</p>
+<div class="math" id="eq-auto127">
+\[\tag{308}
+F\leq \frac{1}{6}\quad\Rightarrow\quad \Delta t\leq \frac{\Delta x^2}{6{\alpha}},\]</div>
+<p>which is a factor 1/3 worse than for the standard Forward Euler
+finite difference method for the diffusion equation, which demands
+<span class="math">\(F\leq 1/2\)</span>.
+Lumping the mass matrix will, however, recover the finite difference
+method and therefore imply <span class="math">\(F\leq 1/2\)</span> for stability.
+In other words, introducing an error in the integration improves the
+stability by a factor of 3.</p>
+</div>
+<div class="section" id="backward-euler-discretization-1">
+<h3>Backward Euler discretization<a class="headerlink" href="#backward-euler-discretization-1" title="Permalink to this headline">¶</a></h3>
+<p>We can use the same approach of analysis and insert
+<a class="reference internal" href="#eq-fem-deq-diffu-analysis-uni"><span class="std std-ref">(301)</span></a> in the
+Backward Euler scheme with P1 elements in space and <span class="math">\(f=0\)</span>:</p>
+<div class="math" id="eq-fem-deq-diffu-be-fdinterp2">
+\[ \begin{align}\begin{aligned}\tag{309}
+[D_t^-(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u]^n_i\\    {\thinspace .}\end{aligned}\end{align} \]</div>
+<p>Similar calculations as in the Forward Euler case lead to</p>
+<div class="math">
+\[(1-A^{-1}) \left(1 - \frac{2}{3}\sin^2 p\right)
+= -4F\sin^2 p,\]</div>
+<p>and hence</p>
+<div class="math">
+\[A = \left( 1 + 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}\right)^{-1}
+{\thinspace .}\]</div>
+<p>The quantity in the parentheses is always greater than unity, so
+<span class="math">\(|A|\leq 1\)</span> regardless of the size of <span class="math">\(F\)</span> and <span class="math">\(p\)</span>.
+As expected, the Backward Euler scheme is unconditionally stable.</p>
+</div>
+<div class="section" id="comparing-amplification-factors">
+<h3>Comparing amplification factors<a class="headerlink" href="#comparing-amplification-factors" title="Permalink to this headline">¶</a></h3>
+<p>It is of interest to compare <span class="math">\(A\)</span> and <span class="math">\({A_{\small\mbox{e}}}\)</span> as functions of <span class="math">\(p\)</span>
+for some <span class="math">\(F\)</span> values. Figure
+<a class="reference internal" href="#fem-deq-diffu-fig-a-be"><span class="std std-ref">Comparison of coarse-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation</span></a> displays the amplification factors
+for the Backward Euler scheme corresponding to
+a coarse mesh with <span class="math">\(F=2\)</span> and a mesh at the stability limit
+of the Forward Euler scheme in the finite difference method,
+<span class="math">\(F=1/2\)</span>. Figures
+<a class="reference internal" href="#fem-deq-diffu-fig-a-fe2"><span class="std std-ref">Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation</span></a> and <a class="reference internal" href="#fem-deq-diffu-fig-a-be2"><span class="std std-ref">Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation</span></a> shows how
+the accuracy increases with lower <span class="math">\(F\)</span> values for both the
+Forward and Backward Euler schemes, respectively.
+The striking fact, however, is that the accuracy of the finite element
+method is significantly less than the finite difference method for
+the same value of <span class="math">\(F\)</span>. Lumping the mass matrix to recover the
+numerical amplification factor <span class="math">\(A\)</span> of the finite difference method
+is therefore a good idea in this problem.</p>
+<div class="figure" id="id1">
+<span id="fem-deq-diffu-fig-a-fe2"></span><a class="reference internal image-reference" href="_images/diffu_A_factors_fine_FE.png"><img alt="_images/diffu_A_factors_fine_FE.png" src="_images/diffu_A_factors_fine_FE.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text"><em>Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation</em></span></p>
+</div>
+<div class="figure" id="id2">
+<span id="fem-deq-diffu-fig-a-be"></span><a class="reference internal image-reference" href="_images/diffu_A_factors_coarse_BE.png"><img alt="_images/diffu_A_factors_coarse_BE.png" src="_images/diffu_A_factors_coarse_BE.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text"><em>Comparison of coarse-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation</em></span></p>
+</div>
+<div class="figure" id="id3">
+<span id="fem-deq-diffu-fig-a-be2"></span><a class="reference internal image-reference" href="_images/diffu_A_factors_fine_BE.png"><img alt="_images/diffu_A_factors_fine_BE.png" src="_images/diffu_A_factors_fine_BE.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text"><em>Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation</em></span></p>
+</div>
+<div class="figure" id="id4">
+<span id="fem-deq-diffu-fig-a-cn"></span><a class="reference internal image-reference" href="_images/diffu_A_factors_coarse_CN.png"><img alt="_images/diffu_A_factors_coarse_CN.png" src="_images/diffu_A_factors_coarse_CN.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text"><em>Comparison of coarse-mesh amplification factors for Crank-Nicolson discretization of a 1D diffusion equation</em></span></p>
+</div>
+<div class="figure" id="id5">
+<span id="fem-deq-diffu-fig-a-cn2"></span><a class="reference internal image-reference" href="_images/diffu_A_factors_fine_CN.png"><img alt="_images/diffu_A_factors_fine_CN.png" src="_images/diffu_A_factors_fine_CN.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text"><em>Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation</em></span></p>
+</div>
+<p>[<strong>hpl 22</strong>: remaining tasks]
+Remaining tasks:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Taylor expansion of the error in the amplification factor <span class="math">\({A_{\small\mbox{e}}} - A\)</span></li>
+<li>Taylor expansion of the error <span class="math">\(e = ({A_{\small\mbox{e}}}^n - A^n)e^{ikx}\)</span></li>
+<li><span class="math">\(L^2\)</span> norm of <span class="math">\(e\)</span></li>
+</ul>
+</div></blockquote>
+<p>The difference between the exact and the numerical amplification factors
+gives insight into the order of the approximation. Considering for example the
+forward Euler scheme, the difference <span class="math">\({A_{\small\mbox{e}}}-A\)</span>, where
+<span class="math">\({A_{\small\mbox{e}}}\)</span> and <span class="math">\(A\)</span> are given in
+<a class="reference internal" href="#eq-fem-deq-diffu-analysis-ae"><span class="std std-ref">(299)</span></a> and <a class="reference internal" href="#eq-fem-deq-fiffu-analysis-a-fe"><span class="std std-ref">(307)</span></a>
+is a complicated expression. However,  performing a Taylor expansion in terms of <span class="math">\(\Delta t\)</span>
+using <code class="docutils literal"><span class="pre">sympy</span></code> is straightforward:</p>
+<div class="highlight-ipy"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sympy</span> <span class="kn">as</span> <span class="nn">sym</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">k</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;k dt dx alpha&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">F</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Ae</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="o">*</span><span class="n">k</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span> <span class="c1"># exact</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Af</span> <span class="o">=</span>  <span class="mi">1</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">F</span><span class="o">*</span><span class="n">sym</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">/</span><span class="mf">3.0</span><span class="o">*</span><span class="n">sym</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># FE</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">Ae</span> <span class="o">-</span> <span class="n">Af</span><span class="p">)</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">dt</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="o">*</span><span class="n">k</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">alpha</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span>
+<span class="p">(</span><span class="o">-</span><span class="mf">0.666666666666667</span><span class="o">*</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">O</span><span class="p">(</span><span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Hence, the differences between the numerical and exact amplification factor is first order in time,
+as expected.</p>
+<p>The <span class="math">\(L_2\)</span> error of the numerical solution at time step <span class="math">\(n\)</span> is</p>
+<div class="math">
+\[\|u-u_e\|_{L_2} = \sqrt{\int_0^1 (u - u_e)^2 {\, \mathrm{d}x}} =
+\sqrt{\int_0^1 (({A_{\small\mbox{e}}}^n - A^n)e^{ikx})^2 {\, \mathrm{d}x}}\]</div>
+<p>Again this yields a complicated expression for hand-calculations, but
+the following <code class="docutils literal"><span class="pre">sympy</span></code> provides the estimate:</p>
+<div class="highlight-ipy"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;n i x&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ae</span><span class="o">**</span><span class="n">n</span> <span class="o">-</span> <span class="n">Af</span><span class="o">**</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">sym</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">L2_error_squared</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">integrate</span><span class="p">(</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sym</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">L2_error_squared</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">O</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We remark here that it is an advantage to take the square-root after the deriving
+the Taylor-series.</p>
+<p>As we saw earlier, the amplification factor varied with <span class="math">\(k\)</span>, in
+particular with respect to the resolution. Let us therefore consider
+the error in the amplification factor <span class="math">\(A_e - A\)</span> at different
+resolutions for the <span class="math">\(k=1\ldots 100\)</span> at mesh sizes that under-resolve
+and properly resolve the first hundred components. That is, we vary
+<span class="math">\({\, \mathrm{d}x}\)</span> from <span class="math">\(\frac{8}{100}\)</span> to <span class="math">\(\frac{1}{800}\)</span>.  Plotting the error in
+the amplification factor versus <span class="math">\(k\)</span> as follows,</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">matplitlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="n">dxs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="o">*</span><span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="o">/</span><span class="mi">8</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">dx</span> <span class="ow">in</span> <span class="n">dxs</span><span class="p">:</span>
+  <span class="n">k_max</span><span class="o">=</span><span class="mi">100</span>
+  <span class="n">k</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">k_max</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">dt</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span>
+  <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="n">f</span> <span class="o">=</span> <span class="n">dt</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="o">*</span><span class="n">k</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">alpha</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span>
+  <span class="p">(</span><span class="o">-</span><span class="mf">0.666666666666667</span><span class="o">*</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+  <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;dx=</span><span class="si">%3.2e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dx</span> <span class="k">for</span> <span class="n">dx</span> <span class="ow">in</span> <span class="n">dxs</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Figure <span class="xref std std-ref">fem:deq:diffu:AeA:VS:k</span> shows that there is a polynomial
+relationship between the error of the amplification factor
+and <span class="math">\(k\)</span>, that is <span class="math">\(Ae-A\)</span> goes as <span class="math">\(k^4\)</span>. For well-resolved meshes,
+<span class="math">\(\Delta x \le 0.2 k\)</span> the amplification factor is always less than
+<span class="math">\(1/1000\)</span>. For the under-resolved meshes, e.g. <span class="math">\(\Delta x = 8 k\)</span>
+the error of the amplification factor is even larger than 1.</p>
+<div class="figure" id="id6">
+<span id="fem-deq-diffu-aea-vs-dt"></span><a class="reference internal image-reference" href="_images/AeA_vs_dt.png"><img alt="_images/AeA_vs_dt.png" src="_images/AeA_vs_dt.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Error in the amplification factor versus <span class="math">\(\Delta t\)</span></span></p>
+</div>
+<p>From the previous analysis of forward Euler scheme, we know that
+the scheme is only stable as long as the stability criterion
+<span class="math">\(\Delta t \le \frac{1}{2} \Delta x^2\)</span> is satisfied. Let us therefore consider
+the error in the amplification factor with respect to <span class="math">\(\Delta t\)</span>.
+Figure <a class="reference internal" href="#fem-deq-diffu-aea-vs-dt"><span class="std std-ref">Error in the amplification factor versus </span></a> shows a clear tendency that
+lower frequencies (lower <span class="math">\(k\)</span>) are quickly dampened. In fact, the
+lower frequencies will be dampened even though the stability criterion
+is not satisfied. However, the stability criterion is important for the
+high frequency components of the error.</p>
+<p>[<strong>kam 23</strong>: I have to admit I not sure this is what we want to show]</p>
+</div>
+</div>
+<div class="section" id="exercises-5">
+<h2>Exercises<a class="headerlink" href="#exercises-5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="exercise-38-analyze-a-crank-nicolson-scheme-for-the-diffusion-equation">
+<span id="fem-deq-exer-diffu-analysis-cn"></span><h3>Exercise 38: Analyze a Crank-Nicolson scheme for the diffusion equation<a class="headerlink" href="#exercise-38-analyze-a-crank-nicolson-scheme-for-the-diffusion-equation" title="Permalink to this headline">¶</a></h3>
+<p>Perform the analysis in the section <a class="reference internal" href="#fem-deq-diffu-anal"><span class="std std-ref">Accuracy of the finite element solution</span></a> for a 1D
+diffusion equation <span class="math">\(u_t = {\alpha} u_{xx}\)</span> discretized by the
+Crank-Nicolson scheme in time:</p>
+<div class="math">
+\[\frac{u^{n+1}- u^n}{\Delta t} = {\alpha} \frac{1}{2}\left(
+\frac{\partial u^{n+1}}{\partial x^2} +
+\frac{\partial u^{n}}{\partial x^2}\right),\]</div>
+<p>or written compactly with finite difference operators,</p>
+<div class="math">
+\[[D_t u = {\alpha} D_xD_x \overline{u}^t]^{n+\frac{1}{2}}{\thinspace .}\]</div>
+<p>(From a strict mathematical point of view, the <span class="math">\(u^n\)</span>
+and <span class="math">\(u^{n+1}\)</span> in these
+equations should be replaced by <span class="math">\({u_{\small\mbox{e}}}^n\)</span> and <span class="math">\({u_{\small\mbox{e}}}^{n+1}\)</span> to
+indicate that the unknown is the exact solution of the PDE
+discretized in time, but not yet in space, see
+the section <a class="reference internal" href="#fem-deq-diffu-fe"><span class="std std-ref">Discretization in time by a Forward Euler scheme</span></a>.)
+Filename: <code class="docutils literal"><span class="pre">fe_diffusion</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <center>
+            <p class="logo"><a href="http://cbc.simula.no/" title="Go to Center for Biomedical Computing">
+              <img class="logo" src="_static/cbc_logo.png" alt="Logo"/>
+            </a></p>
+            </center>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Time-dependent variational forms</a><ul>
+<li><a class="reference internal" href="#discretization-in-time-by-a-forward-euler-scheme">Discretization in time by a Forward Euler scheme</a><ul>
+<li><a class="reference internal" href="#time-discretization-1">Time discretization</a></li>
+<li><a class="reference internal" href="#space-discretization">Space discretization</a></li>
+<li><a class="reference internal" href="#variational-forms-1">Variational forms</a></li>
+<li><a class="reference internal" href="#notation-for-the-solution-at-recent-time-levels">Notation for the solution at recent time levels</a></li>
+<li><a class="reference internal" href="#deriving-the-linear-systems">Deriving the linear systems</a></li>
+<li><a class="reference internal" href="#computational-algorithm">Computational algorithm</a></li>
+<li><a class="reference internal" href="#example-using-sinusoidal-basis-functions">Example using sinusoidal basis functions</a></li>
+<li><a class="reference internal" href="#comparing-p1-elements-with-the-finite-difference-method">Comparing P1 elements with the finite difference method</a><ul>
+<li><a class="reference internal" href="#lumping-the-mass-matrix">Lumping the mass matrix</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#discretization-in-time-by-a-backward-euler-scheme">Discretization in time by a Backward Euler scheme</a><ul>
+<li><a class="reference internal" href="#time-discretization-2">Time discretization</a></li>
+<li><a class="reference internal" href="#variational-forms-2">Variational forms</a></li>
+<li><a class="reference internal" href="#linear-systems">Linear systems</a><ul>
+<li><a class="reference internal" href="#finite-difference-operators-corresponding-to-p1-elements">Finite difference operators corresponding to P1 elements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dirichlet-boundary-conditions">Dirichlet boundary conditions</a><ul>
+<li><a class="reference internal" href="#boundary-function-2">Boundary function</a></li>
+<li><a class="reference internal" href="#finite-element-basis-functions-2">Finite element basis functions</a></li>
+<li><a class="reference internal" href="#modification-of-the-linear-system-2">Modification of the linear system</a></li>
+<li><a class="reference internal" href="#example-oscillating-dirichlet-boundary-condition">Example: Oscillating Dirichlet boundary condition</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#accuracy-of-the-finite-element-solution">Accuracy of the finite element solution</a><ul>
+<li><a class="reference internal" href="#illustrating-example">Illustrating example</a></li>
+<li><a class="reference internal" href="#methods-of-analysis">Methods of analysis</a></li>
+<li><a class="reference internal" href="#fourier-components-and-dispersion-relations">Fourier components and dispersion relations</a></li>
+<li><a class="reference internal" href="#forward-euler-discretization">Forward Euler discretization</a></li>
+<li><a class="reference internal" href="#backward-euler-discretization-1">Backward Euler discretization</a></li>
+<li><a class="reference internal" href="#comparing-amplification-factors">Comparing amplification factors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exercises-5">Exercises</a><ul>
+<li><a class="reference internal" href="#exercise-38-analyze-a-crank-nicolson-scheme-for-the-diffusion-equation">Exercise 38: Analyze a Crank-Nicolson scheme for the diffusion equation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="._book025.html"
+                        title="previous chapter">Exercises</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="._book027.html"
+                        title="next chapter">Variational forms for systems of PDEs</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/._book026.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="._book027.html" title="Variational forms for systems of PDEs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="._book025.html" title="Exercises"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>
+<div class="wrapper">
+  <div class="footer">
+    <a href="http://cbc.simula.no"><img src="_static/cbc_banner.png" width="100%"><a>
+    <br />
+    <br />
+      &copy;2016, Hans Petter Langtangen, Kent-Andre Mardal. Released under CC Attribution 4.0 license.
+  </div>
+</div>
+
+  </body>
+</html>

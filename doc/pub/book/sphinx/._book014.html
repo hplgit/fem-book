@@ -1,0 +1,949 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Finite elements in 2D and 3D</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+
+        <script src="http://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="http://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+
+        <script>sagecell.makeSagecell({inputLocation: ".sage"});</script>
+
+        <style type="text/css">
+                .sagecell .CodeMirror-scroll {
+                        overflow-y: hidden;
+                        overflow-x: auto;
+                }
+                .sagecell .CodeMirror {
+                        height: auto;
+                }
+        </style>
+
+    
+    <link rel="top" title="Introduction to Numerical Methods for Variational Problems" href="index.html" />
+    <link rel="next" title="Variational formulations with global basis functions" href="._book015.html" />
+    <link rel="prev" title="Numerical integration" href="._book013.html" />
+ 
+  
+       <style type="text/css">
+         div.admonition {
+           background-color: whiteSmoke;
+           border: 1px solid #bababa;
+         }
+       </style>
+      </head>
+    
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="._book015.html" title="Variational formulations with global basis functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="._book013.html" title="Numerical integration"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="finite-elements-in-2d-and-3d">
+<h1>Finite elements in 2D and 3D<a class="headerlink" href="#finite-elements-in-2d-and-3d" title="Permalink to this headline">¶</a></h1>
+<p>Finite element approximation is particularly powerful in 2D and 3D because
+the method can handle a geometrically complex domain <span class="math">\(\Omega\)</span> with ease.
+The principal idea is, as in 1D, to divide the domain into cells
+and use polynomials for approximating a function over a cell.
+Two popular cell shapes are triangles and quadrilaterals.
+It is common to denote finite elements on triangles and tetrahedrons as P while
+elements defined in terms of quadrilaterals and boxes are denoted by Q.
+Figures <a class="reference internal" href="#fem-approx-fe-2d-fig-rectp1"><span class="std std-ref">Example on 2D P1 elements</span></a>, <a class="reference internal" href="#fem-approx-fe-2d-fig-circp1"><span class="std std-ref">Example on 2D P1 elements in a deformed geometry</span></a>,
+and <a class="reference internal" href="#fem-approx-fe-2d-fig-rectq1"><span class="std std-ref">Example on 2D Q1 elements</span></a> provide examples. P1 elements
+means linear functions (<span class="math">\(a_0 + a_1x + a_2y\)</span>) over triangles, while Q1 elements
+have bilinear functions (<span class="math">\(a_0 + a_1x + a_2y + a_3xy\)</span>) over rectangular cells.
+Higher-order elements can easily be defined.</p>
+<div class="figure" id="id1">
+<span id="fem-approx-fe-2d-fig-rectp1"></span><a class="reference internal image-reference" href="_images/mesh2D_rect_P1.png"><img alt="_images/mesh2D_rect_P1.png" src="_images/mesh2D_rect_P1.png" style="width: 800px;" /></a>
+<p class="caption"><span class="caption-text"><em>Example on 2D P1 elements</em></span></p>
+</div>
+<div class="figure" id="id2">
+<span id="fem-approx-fe-2d-fig-circp1"></span><a class="reference internal image-reference" href="_images/mesh2D_quarter_circle.png"><img alt="_images/mesh2D_quarter_circle.png" src="_images/mesh2D_quarter_circle.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Example on 2D P1 elements in a deformed geometry</em></span></p>
+</div>
+<div class="figure" id="id3">
+<span id="fem-approx-fe-2d-fig-rectq1"></span><a class="reference internal image-reference" href="_images/mesh2D_rect_Q1.png"><img alt="_images/mesh2D_rect_Q1.png" src="_images/mesh2D_rect_Q1.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Example on 2D Q1 elements</em></span></p>
+</div>
+<div class="section" id="basis-functions-over-triangles-in-the-physical-domain">
+<h2>Basis functions over triangles in the physical domain<a class="headerlink" href="#basis-functions-over-triangles-in-the-physical-domain" title="Permalink to this headline">¶</a></h2>
+<p>Cells with triangular shape will be in main focus here.  With the P1
+triangular element, <span class="math">\(u\)</span> is a linear function over each cell, as
+depicted in Figure <a class="reference internal" href="#fem-approx-fe-2d-fig-femfunc"><span class="std std-ref">Example on scalar function defined in terms of piecewise linear 2D functions defined on triangles</span></a>, with
+discontinuous derivatives at the cell boundaries.</p>
+<div class="figure" id="id4">
+<span id="fem-approx-fe-2d-fig-femfunc"></span><a class="reference internal image-reference" href="_images/demo2D_4x3r.png"><img alt="_images/demo2D_4x3r.png" src="_images/demo2D_4x3r.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Example on scalar function defined in terms of piecewise linear 2D functions defined on triangles</em></span></p>
+</div>
+<p>We give the vertices of the cells global and local numbers as in 1D.
+The degrees of freedom in the P1 element are the function values at
+a set of nodes, which are the three vertices.
+The basis function <span class="math">\({\varphi}_i(x,y)\)</span> is then 1 at the vertex with global vertex
+number <span class="math">\(i\)</span> and zero at all other vertices.
+On an element, the three degrees of freedom uniquely determine
+the linear basis functions in that element, as usual.
+The global
+<span class="math">\({\varphi}_i(x,y)\)</span> function is then a combination of the linear functions
+(planar surfaces)
+over all the neighboring cells
+that have vertex number <span class="math">\(i\)</span> in common. Figure <a class="reference internal" href="#fem-approx-fe-2d-fig-basphi"><span class="std std-ref">Example on a piecewise linear 2D basis function over a patch of triangles</span></a>
+tries to illustrate the shape of such a &#8220;pyramid&#8221;-like function.</p>
+<div class="figure" id="id5">
+<span id="fem-approx-fe-2d-fig-basphi"></span><a class="reference internal image-reference" href="_images/demo2D_basisfunc.png"><img alt="_images/demo2D_basisfunc.png" src="_images/demo2D_basisfunc.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Example on a piecewise linear 2D basis function over a patch of triangles</em></span></p>
+</div>
+<div class="section" id="element-matrices-and-vectors">
+<h3>Element matrices and vectors<a class="headerlink" href="#element-matrices-and-vectors" title="Permalink to this headline">¶</a></h3>
+<p>As in 1D, we split the integral over <span class="math">\(\Omega\)</span> into a sum of integrals
+over cells. Also as in 1D, <span class="math">\({\varphi}_i\)</span> overlaps <span class="math">\({\varphi}_j\)</span>
+(i.e., <span class="math">\({\varphi}_i{\varphi}_j\neq 0\)</span>) if and only if
+<span class="math">\(i\)</span> and <span class="math">\(j\)</span> are vertices in the same cell. Therefore, the integral
+of <span class="math">\({\varphi}_i{\varphi}_j\)</span> over an element is nonzero only when <span class="math">\(i\)</span> and <span class="math">\(j\)</span>
+run over the vertex numbers in the element. These nonzero contributions
+to the coefficient matrix are, as in 1D, collected in an element matrix.
+The size of the element matrix becomes <span class="math">\(3\times 3\)</span> since there are
+three degrees of freedom
+that <span class="math">\(i\)</span> and <span class="math">\(j\)</span> run over. Again, as in 1D, we number the
+local vertices in a cell, starting at 0, and add the entries in
+the element matrix into the global system matrix, exactly as in 1D.
+All details and code appear below.</p>
+</div>
+</div>
+<div class="section" id="basis-functions-over-triangles-in-the-reference-cell">
+<h2>Basis functions over triangles in the reference cell<a class="headerlink" href="#basis-functions-over-triangles-in-the-reference-cell" title="Permalink to this headline">¶</a></h2>
+<p>As in 1D, we can define the basis functions and the degrees of freedom
+in a reference cell and then use a mapping from the reference coordinate
+system to the physical coordinate system.
+We also need a mapping of local degrees of freedom numbers to global degrees
+of freedom numbers.</p>
+<p>The reference cell in an <span class="math">\((X,Y)\)</span> coordinate system has vertices
+<span class="math">\((0,0)\)</span>, <span class="math">\((1,0)\)</span>, and <span class="math">\((0,1)\)</span>, corresponding to local vertex numbers
+0, 1, and 2, respectively. The P1 element has linear functions
+<span class="math">\({\tilde{\varphi}}_r(X,Y)\)</span> as basis functions, <span class="math">\(r=0,1,2\)</span>.
+Since a linear function <span class="math">\({\tilde{\varphi}}_r(X,Y)\)</span> in 2D is on
+the form <span class="math">\(C_{r,0} + C_{r,1}X + C_{r,2}Y\)</span>, and hence has three
+parameters <span class="math">\(C_{r,0}\)</span>, <span class="math">\(C_{r,1}\)</span>, and <span class="math">\(C_{r,2}\)</span>, we need three
+degrees of freedom. These are in general taken as the function values at a
+set of nodes. For the P1 element the set of nodes is the three vertices.
+Figure <a class="reference internal" href="#fem-approx-fe-2d-fig-p12d"><span class="std std-ref">2D P1 element</span></a> displays the geometry of the
+element and the location of the nodes.</p>
+<div class="figure" id="id6">
+<span id="fem-approx-fe-2d-fig-p12d"></span><a class="reference internal image-reference" href="_images/P1_2d.png"><img alt="_images/P1_2d.png" src="_images/P1_2d.png" style="width: 100px;" /></a>
+<p class="caption"><span class="caption-text"><em>2D P1 element</em></span></p>
+</div>
+<p>Requiring <span class="math">\({\tilde{\varphi}}_r=1\)</span> at node number <span class="math">\(r\)</span> and
+<span class="math">\({\tilde{\varphi}}_r=0\)</span> at the two other nodes, gives three linear equations to
+determine <span class="math">\(C_{r,0}\)</span>, <span class="math">\(C_{r,1}\)</span>, and <span class="math">\(C_{r,2}\)</span>. The result is</p>
+<div class="math" id="eq-auto63">
+\[\tag{128}
+{\tilde{\varphi}}_0(X,Y) = 1 - X - Y,\]</div>
+<div class="math" id="eq-auto64">
+\[\tag{129}
+{\tilde{\varphi}}_1(X,Y) = X,\]</div>
+<div class="math" id="eq-auto65">
+\[\tag{130}
+{\tilde{\varphi}}_2(X,Y) = Y\]</div>
+<p>Higher-order approximations are obtained by increasing the polynomial order,
+adding additional nodes, and letting the degrees of freedom be
+function values at the nodes. Figure <a class="reference internal" href="#fem-approx-fe-2d-fig-p22d"><span class="std std-ref">2D P2 element</span></a>
+shows the location of the six nodes in the P2 element.</p>
+<div class="figure" id="id7">
+<span id="fem-approx-fe-2d-fig-p22d"></span><a class="reference internal image-reference" href="_images/P2_2d.png"><img alt="_images/P2_2d.png" src="_images/P2_2d.png" style="width: 100px;" /></a>
+<p class="caption"><span class="caption-text"><em>2D P2 element</em></span></p>
+</div>
+<p>A polynomial of degree <span class="math">\(p\)</span> in <span class="math">\(X\)</span> and <span class="math">\(Y\)</span> has <span class="math">\(n_p=(p+1)(p+2)/2\)</span> terms
+and hence needs <span class="math">\(n_p\)</span> nodes. The values at the nodes constitute <span class="math">\(n_p\)</span>
+degrees of freedom. The location of the nodes for
+<span class="math">\({\tilde{\varphi}}_r\)</span> up to degree 6 is displayed in Figure
+<a class="reference internal" href="#fem-approx-fe-2d-fig-p162d"><span class="std std-ref">2D P1, P2, P3, P4, P5, and P6 elements</span></a>.</p>
+<div class="figure" id="id8">
+<span id="fem-approx-fe-2d-fig-p162d"></span><a class="reference internal image-reference" href="_images/P1-6_2d.png"><img alt="_images/P1-6_2d.png" src="_images/P1-6_2d.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>2D P1, P2, P3, P4, P5, and P6 elements</em></span></p>
+</div>
+<p>The generalization to 3D is straightforward: the reference element is a
+<a class="reference external" href="http://en.wikipedia.org/wiki/Tetrahedron">tetrahedron</a>
+with vertices <span class="math">\((0,0,0)\)</span>, <span class="math">\((1,0,0)\)</span>, <span class="math">\((0,1,0)\)</span>, and <span class="math">\((0,0,1)\)</span>
+in a <span class="math">\(X,Y,Z\)</span> reference coordinate system. The P1 element has its degrees
+of freedom as four nodes, which are the four vertices, see Figure
+<a class="reference internal" href="#fem-approx-fe-2d-fig-p1-123d"><span class="std std-ref">P1 elements in 1D, 2D, and 3D</span></a>. The P2 element adds additional
+nodes along the edges of the cell, yielding a total of 10 nodes and
+degrees of freedom, see
+Figure <a class="reference internal" href="#fem-approx-fe-2d-fig-p2-123d"><span class="std std-ref">P2 elements in 1D, 2D, and 3D</span></a>.</p>
+<div class="figure" id="id9">
+<span id="fem-approx-fe-2d-fig-p1-123d"></span><a class="reference internal image-reference" href="_images/P1-1d2d3d.png"><img alt="_images/P1-1d2d3d.png" src="_images/P1-1d2d3d.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>P1 elements in 1D, 2D, and 3D</em></span></p>
+</div>
+<div class="figure" id="id10">
+<span id="fem-approx-fe-2d-fig-p2-123d"></span><a class="reference internal image-reference" href="_images/P2-1d2d3d.png"><img alt="_images/P2-1d2d3d.png" src="_images/P2-1d2d3d.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>P2 elements in 1D, 2D, and 3D</em></span></p>
+</div>
+<span class="target" id="index-0"></span><span class="target" id="index-1"></span><span class="target" id="index-2"></span><p id="index-3">The interval in 1D, the triangle in 2D, the tetrahedron in 3D, and
+its generalizations to higher space dimensions are known
+as <em>simplex</em> cells (the geometry) or <em>simplex</em> elements (the geometry,
+basis functions, degrees of freedom, etc.). The plural forms
+<a class="reference external" href="http://en.wikipedia.org/wiki/Simplex">simplices</a> and
+simplexes are
+also a much used shorter terms when referring to this type of cells or elements.
+The side of a simplex is called a <em>face</em>, while the tetrahedron also
+has <em>edges</em>.</p>
+<p><strong>Acknowledgment.</strong>
+Figures <a class="reference internal" href="#fem-approx-fe-2d-fig-p12d"><span class="std std-ref">2D P1 element</span></a>-<a class="reference internal" href="#fem-approx-fe-2d-fig-p2-123d"><span class="std std-ref">P2 elements in 1D, 2D, and 3D</span></a>
+are created by Anders Logg and taken from the <a class="reference external" href="https://launchpad.net/fenics-book">FEniCS book</a>: <em>Automated Solution of Differential Equations by the Finite Element Method</em>, edited by A. Logg, K.-A. Mardal, and G. N. Wells, published
+by <a class="reference external" href="http://goo.gl/lbyVMH">Springer</a>, 2012.</p>
+</div>
+<div class="section" id="affine-mapping-of-the-reference-cell">
+<h2>Affine mapping of the reference cell<a class="headerlink" href="#affine-mapping-of-the-reference-cell" title="Permalink to this headline">¶</a></h2>
+<p>Let <span class="math">\({\tilde{\varphi}}_r^{(1)}\)</span> denote the basis functions associated
+with the P1 element in 1D, 2D, or 3D, and let <span class="math">\(\boldsymbol{x}_{q(e,r)}\)</span> be
+the physical coordinates of local vertex number <span class="math">\(r\)</span> in cell <span class="math">\(e\)</span>.
+Furthermore,
+let <span class="math">\(\boldsymbol{X}\)</span> be a point in the reference coordinate system corresponding
+to the point <span class="math">\(\boldsymbol{x}\)</span> in the physical coordinate system.
+The affine mapping of any <span class="math">\(\boldsymbol{X}\)</span> onto <span class="math">\(\boldsymbol{x}\)</span> is
+then defined by</p>
+<div class="math" id="eq-fem-approx-fe-affine-map">
+<span id="index-4"></span>\[\tag{131}
+\boldsymbol{x} = \sum_{r} {\tilde{\varphi}}_r^{(1)}(\boldsymbol{X})\boldsymbol{x}_{q(e,r)},\]</div>
+<p>where <span class="math">\(r\)</span> runs over the local vertex numbers in the cell.
+The affine mapping essentially stretches, translates, and rotates
+the triangle. Straight or planar faces of the reference cell are
+therefore mapped onto
+straight or planar faces in the physical coordinate system. The mapping can
+be used for both P1 and higher-order elements, but note that the
+mapping itself always applies the P1 basis functions.</p>
+<div class="figure" id="id11">
+<span id="fem-approx-fe-map-fig-2dp1"></span><a class="reference internal image-reference" href="_images/ElmT3n2D_map.png"><img alt="_images/ElmT3n2D_map.png" src="_images/ElmT3n2D_map.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Affine mapping of a P1 element</em></span></p>
+</div>
+<p>[<strong>kam 6</strong>: Worked example here?]</p>
+</div>
+<div class="section" id="isoparametric-mapping-of-the-reference-cell">
+<h2>Isoparametric mapping of the reference cell<a class="headerlink" href="#isoparametric-mapping-of-the-reference-cell" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="index-5"></span><p id="index-6">Instead of using the P1 basis functions in the mapping
+<a class="reference internal" href="#eq-fem-approx-fe-affine-map"><span class="std std-ref">(131)</span></a>,
+we may use the basis functions of the actual P$d$ element:</p>
+<div class="math" id="eq-fem-approx-fe-isop-map">
+\[\tag{132}
+\boldsymbol{x} = \sum_{r} {\tilde{\varphi}}_r(\boldsymbol{X})\boldsymbol{x}_{q(e,r)},\]</div>
+<p>where <span class="math">\(r\)</span> runs over all nodes, i.e., all points associated with the
+degrees of freedom. This is called an <em>isoparametric mapping</em>.
+For P1 elements it is identical to the affine mapping
+<a class="reference internal" href="#eq-fem-approx-fe-affine-map"><span class="std std-ref">(131)</span></a>, but for higher-order elements
+the mapping of the straight or planar faces of the reference cell will
+result in a <em>curved</em> face in the physical coordinate system.
+For example, when we use the basis functions of the triangular P2 element
+in 2D in <a class="reference internal" href="#eq-fem-approx-fe-isop-map"><span class="std std-ref">(132)</span></a>, the straight faces of the
+reference triangle are mapped onto curved faces of parabolic shape in
+the physical coordinate system, see Figure <a class="reference internal" href="#fem-approx-fe-map-fig-2dp2"><span class="std std-ref">Isoparametric mapping of a P2 element</span></a>.</p>
+<div class="figure" id="id12">
+<span id="fem-approx-fe-map-fig-2dp2"></span><a class="reference internal image-reference" href="_images/ElmT6n2D_map.png"><img alt="_images/ElmT6n2D_map.png" src="_images/ElmT6n2D_map.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Isoparametric mapping of a P2 element</em></span></p>
+</div>
+<p>From <a class="reference internal" href="#eq-fem-approx-fe-affine-map"><span class="std std-ref">(131)</span></a> or
+<a class="reference internal" href="#eq-fem-approx-fe-isop-map"><span class="std std-ref">(132)</span></a> it is easy to realize that the
+vertices are correctly mapped. Consider a vertex with local number <span class="math">\(s\)</span>.
+Then <span class="math">\({\tilde{\varphi}}_s=1\)</span> at this vertex and zero at the others.
+This means that only one term in the sum is nonzero and <span class="math">\(\boldsymbol{x}=\boldsymbol{x}_{q(e,s)}\)</span>,
+which is the coordinate of this vertex in the global coordinate system.</p>
+</div>
+<div class="section" id="computing-integrals">
+<h2>Computing integrals<a class="headerlink" href="#computing-integrals" title="Permalink to this headline">¶</a></h2>
+<p>Let <span class="math">\(\tilde\Omega^r\)</span> denote the reference cell and <span class="math">\(\Omega^{(e)}\)</span>
+the cell in the physical coordinate system. The transformation of
+the integral from the physical to the reference coordinate system reads</p>
+<div class="math" id="eq-auto66">
+\[\tag{133}
+\int_{\Omega^{(e)}}{\varphi}_i (\boldsymbol{x}) {\varphi}_j (\boldsymbol{x}) {\, \mathrm{d}x} =
+    \int_{\tilde\Omega^r} {\tilde{\varphi}}_i (\boldsymbol{X}) {\tilde{\varphi}}_j (\boldsymbol{X})
+    \det J\, {\, \mathrm{d}X},\]</div>
+<div class="math" id="eq-auto67">
+\[\tag{134}
+\int_{\Omega^{(e)}}{\varphi}_i (\boldsymbol{x}) f(\boldsymbol{x}) {\, \mathrm{d}x} =
+    \int_{\tilde\Omega^r} {\tilde{\varphi}}_i (\boldsymbol{X}) f(\boldsymbol{x}(\boldsymbol{X})) \det J\, {\, \mathrm{d}X},\]</div>
+<p>where <span class="math">\({\, \mathrm{d}x}\)</span> means the infinitesimal area element <span class="math">\(dx dy\)</span> in 2D and
+<span class="math">\(dx dy dz\)</span> in 3D, with a similar
+definition of <span class="math">\({\, \mathrm{d}X}\)</span>. The quantity <span class="math">\(\det J\)</span> is the determinant of the
+Jacobian of the mapping <span class="math">\(\boldsymbol{x}(\boldsymbol{X})\)</span>. In 2D,</p>
+<div class="math" id="eq-fem-approx-fe-2d-mapping-j-detj">
+\[\begin{split}\tag{135}
+J = \left[\begin{array}{cc}
+    \frac{\partial x}{\partial X} &amp; \frac{\partial x}{\partial Y}\\
+    \frac{\partial y}{\partial X} &amp; \frac{\partial y}{\partial Y}
+    \end{array}\right], \quad
+    \det J = \frac{\partial x}{\partial X}\frac{\partial y}{\partial Y}
+    - \frac{\partial x}{\partial Y}\frac{\partial y}{\partial X}
+    {\thinspace .}\end{split}\]</div>
+<p>With the affine mapping
+<a class="reference internal" href="#eq-fem-approx-fe-affine-map"><span class="std std-ref">(131)</span></a>, <span class="math">\(\det J=2\Delta\)</span>, where <span class="math">\(\Delta\)</span> is
+the area or volume of the cell in the physical coordinate system.</p>
+<p><strong>Remark.</strong>
+Observe that finite elements in 2D and 3D builds on the same
+<em>ideas</em> and <em>concepts</em> as in 1D, but there is simply much
+more to compute because the
+specific mathematical formulas in 2D and 3D are more complicated
+and the book keeping with dof maps also gets more complicated.
+The manual work is tedious, lengthy, and error-prone
+so automation by the computer is a must.</p>
+</div>
+</div>
+<div class="section" id="implementation-5">
+<span id="fe-approx-fenics"></span><h1>Implementation<a class="headerlink" href="#implementation-5" title="Permalink to this headline">¶</a></h1>
+<p id="index-7">Our previous programs for doing 1D approximation by finite element
+basis function had a focus on all the small details needed to compute
+the solution. When going to 2D and 3D, the basic algorithms are the
+same, but the amount of computational details with basis functions,
+reference functions, mappings, numerical integration and so on,
+becomes overwhelming because of all the flexibility and choices of
+elements. For this purpose, we <em>must</em>, except in the simplest cases
+with P1 elements, use some well-developed, existing computer
+library. Here we shall use <a class="reference external" href="http://fenicsproject.org">FEniCS</a>, which
+is a free, open finite element package for advanced computations. The
+package can be programmed in C++ or Python. How it works is best
+illustrated by an example.</p>
+<div class="section" id="example-on-approximation-in-2d-using-fenics">
+<span id="fem-approx-fenics-2d"></span><h2>Example on approximation in 2D using FEniCS<a class="headerlink" href="#example-on-approximation-in-2d-using-fenics" title="Permalink to this headline">¶</a></h2>
+<p>Our previous programs for doing 1D approximation by finite element basis
+function had a focus on all the
+small details needed to compute the solution. When going to 2D and 3D,
+the basic algorithms are the same, but the amount of computational
+details with basis functions, reference functions, mappings,
+numerical integration and so on, becomes overwhelming because of all
+the flexibility and choices of elements. For this purpose, we <em>must</em>,
+except in the simplest cases with P1 elements, use some well-developed,
+existing computer library. Here we shall use
+<a class="reference external" href="http://fenicsproject.org">FEniCS</a>, which is a free, open finite
+element package for advanced computations. The package can be programmed
+in C++ or Python. How it works is best illustrated by an example.</p>
+<div class="section" id="mathematical-problem-1">
+<h3>Mathematical problem<a class="headerlink" href="#mathematical-problem-1" title="Permalink to this headline">¶</a></h3>
+<p>We want to approximate the function <span class="math">\(f(x)=2xy - x^2\)</span> by P1 and P2 elements
+on <span class="math">\([0,2]\times[-1,1]\)</span> using a division into <span class="math">\(8\times 8\)</span> squares, which are
+then divided into rectangles and then into triangles.</p>
+</div>
+<div class="section" id="the-code">
+<h3>The code<a class="headerlink" href="#the-code" title="Permalink to this headline">¶</a></h3>
+<p>Observe that the code employs the basic concepts from 1D, but is
+capable of using any element in FEniCS on any mesh in any number of
+space dimensions (!).</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fenics</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">approx</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+     <span class="sd">&quot;&quot;&quot;Return Galerkin approximation to f in V.&quot;&quot;&quot;</span>
+     <span class="n">u</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+     <span class="n">v</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+     <span class="n">a</span> <span class="o">=</span> <span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span>
+     <span class="n">L</span> <span class="o">=</span> <span class="n">f</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span>
+     <span class="n">u</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+     <span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">L</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+     <span class="k">return</span> <span class="n">u</span>
+
+<span class="k">def</span> <span class="nf">problem</span><span class="p">():</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">Expression</span><span class="p">(</span><span class="s1">&#39;2*x[0]*x[1] - pow(x[0], 2)&#39;</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">RectangleMesh</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+    <span class="n">V1</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">u1</span> <span class="o">=</span> <span class="n">approx</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">V1</span><span class="p">)</span>
+    <span class="n">u1</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;u1&#39;</span><span class="p">,</span> <span class="s1">&#39;u1&#39;</span><span class="p">)</span>
+    <span class="n">u1_error</span> <span class="o">=</span> <span class="n">errornorm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">)</span>
+
+    <span class="n">V2</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">approx</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">V2</span><span class="p">)</span>
+    <span class="n">u2</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;u2&#39;</span><span class="p">,</span> <span class="s1">&#39;u2&#39;</span><span class="p">)</span>
+    <span class="n">u2_error</span> <span class="o">=</span> <span class="n">errornorm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">u2</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s1">&#39;L2 errors: e1=</span><span class="si">%g</span><span class="s1">, e2=</span><span class="si">%g</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">u1_error</span><span class="p">,</span> <span class="n">u2_error</span><span class="p">)</span>
+    <span class="c1"># Simple plotting</span>
+    <span class="n">plot</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="n">plot</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;u1&#39;</span><span class="p">)</span>
+    <span class="n">plot</span><span class="p">(</span><span class="n">u2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;u2&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">problem</span><span class="p">()</span>
+    <span class="n">interactive</span><span class="p">()</span>  <span class="c1"># Enable plotting</span>
+</pre></div>
+</div>
+<p>Figure <a class="reference internal" href="#fem-approx-fenics-2d-fig1"><span class="std std-ref">Plot of the computed approximation using Lagrange elements of second order</span></a> shows the computed <code class="docutils literal"><span class="pre">u1</span></code>. The plots of
+<code class="docutils literal"><span class="pre">u2</span></code> and <code class="docutils literal"><span class="pre">f</span></code> are identical and therefore not shown.
+The plot itself is not very informative about the approximation quality of
+P1 elements. The output
+of errors becomes</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>L2 errors: e1=0.0131493, e2=4.93418e-15
+</pre></div>
+</div>
+<div class="figure" id="id13">
+<span id="fem-approx-fenics-2d-fig1"></span><a class="reference internal image-reference" href="_images/fenics_2D_plot_approx.png"><img alt="_images/fenics_2D_plot_approx.png" src="_images/fenics_2D_plot_approx.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Plot of the computed approximation using Lagrange elements of second order</em></span></p>
+</div>
+<span class="target" id="index-8"></span><span class="target" id="index-9"></span><span class="target" id="index-10"></span><span class="target" id="index-11"></span><span class="target" id="index-12"></span></div>
+<div class="section" id="dissection-of-the-code">
+<span id="index-13"></span><h3>Dissection of the code<a class="headerlink" href="#dissection-of-the-code" title="Permalink to this headline">¶</a></h3>
+<p>The function <code class="docutils literal"><span class="pre">approx</span></code> is a general solver function for any <span class="math">\(f\)</span> and
+<span class="math">\(V\)</span>.  We define the unknown <span class="math">\(u\)</span> in the variational form <span class="math">\(a=a(u,v) = \int uv{\, \mathrm{d}x}\)</span>
+as a <code class="docutils literal"><span class="pre">TrialFunction</span></code> object and the test function <span class="math">\(v\)</span> as a
+<code class="docutils literal"><span class="pre">TestFunction</span></code> object. Then we define the variational form through
+the integrand <code class="docutils literal"><span class="pre">u*v*dx</span></code>. The linear form <span class="math">\(L\)</span> is similarly defined as
+<code class="docutils literal"><span class="pre">f*v*dx</span></code>. Here, <code class="docutils literal"><span class="pre">f</span></code> must be an <code class="docutils literal"><span class="pre">Expression</span></code> object in FEniCS, i.e., a
+formula defined by its implementation in C++. With <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">L</span></code> defined,
+we re-define <code class="docutils literal"><span class="pre">u</span></code> to be a finite element function <code class="docutils literal"><span class="pre">Function</span></code>, which is
+now the unknown scalar field to be computed by the simple expression
+<code class="docutils literal"><span class="pre">solve(a</span> <span class="pre">==</span> <span class="pre">L,</span> <span class="pre">u)</span></code>. We remark that the above function <code class="docutils literal"><span class="pre">approx</span></code>
+is implemented in FEniCS (in a slightly more general fashion)
+in the function  <code class="docutils literal"><span class="pre">project</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">problem</span></code> function applies <code class="docutils literal"><span class="pre">approx</span></code> to solve a specific problem.</p>
+</div>
+<div class="section" id="integrating-sympy-and-fenics">
+<h3>Integrating SymPy and FEniCS<a class="headerlink" href="#integrating-sympy-and-fenics" title="Permalink to this headline">¶</a></h3>
+<p>The definition of <span class="math">\(f\)</span> must be expressed in C++.  This part requires
+two definitions: one of <span class="math">\(f\)</span> and one of <span class="math">\(\Omega\)</span>, or more precisely:
+the mesh (discrete <span class="math">\(\Omega\)</span> divided into cells).  The definition of
+<span class="math">\(f\)</span> is here expressed in C++ (it will be compiled for fast
+evaluation), where the independent coordinates are given by a C/C++
+vector <code class="docutils literal"><span class="pre">x</span></code>. This means that <span class="math">\(x\)</span> is <code class="docutils literal"><span class="pre">x[0]</span></code>, <span class="math">\(y\)</span> is <code class="docutils literal"><span class="pre">x[1]</span></code>, and <span class="math">\(z\)</span> is
+<code class="docutils literal"><span class="pre">x[2]</span></code>. Moreover, <code class="docutils literal"><span class="pre">x[0]**2</span></code> must be written as <code class="docutils literal"><span class="pre">pow(x[0],</span> <span class="pre">2)</span></code> in
+C/C++.</p>
+<p>Fortunately, we can easily integrate SymPy and <code class="docutils literal"><span class="pre">Expression</span></code> objects,
+because SymPy can take a formula and translate it to C/C++ code, and
+then we can require a Python code to numerically evaluate the formula.
+Here is how we can specify <code class="docutils literal"><span class="pre">f</span></code> in SymPy and use it in FEniCS as an
+<code class="docutils literal"><span class="pre">Expression</span></code> object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sympy</span> <span class="kn">as</span> <span class="nn">sym</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x[0] x[1]&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span>
+<span class="go">-x[0]**2 + 2*x[0]*x[1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">ccode</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>   <span class="c1"># Translate to C code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span>
+<span class="go">-pow(x[0], 2) + 2*x[0]*x[1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fenics</span> <span class="kn">as</span> <span class="nn">fe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, the function <code class="docutils literal"><span class="pre">ccode</span></code> generates C code and we use
+<code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> as placeholders for
+<code class="docutils literal"><span class="pre">x[0]</span></code> and <code class="docutils literal"><span class="pre">x[1]</span></code>, which represent the coordinate of
+a general point <code class="docutils literal"><span class="pre">x</span></code> in any dimension. The output of  <code class="docutils literal"><span class="pre">ccode</span></code>
+can then be used directly in  <code class="docutils literal"><span class="pre">Expression</span></code>.</p>
+</div>
+</div>
+<div class="section" id="refined-code-with-curve-plotting">
+<span id="fem-approx-fenics-2d-2"></span><h2>Refined code with curve plotting<a class="headerlink" href="#refined-code-with-curve-plotting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="interpolation-and-projection">
+<h3>Interpolation and projection<a class="headerlink" href="#interpolation-and-projection" title="Permalink to this headline">¶</a></h3>
+<p>The operation with defining <code class="docutils literal"><span class="pre">a</span></code>, <code class="docutils literal"><span class="pre">L</span></code>, and solving for a <code class="docutils literal"><span class="pre">u</span></code> is so
+common that it can be done by single FEniCS command <code class="docutils literal"><span class="pre">project</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">u</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>So, there is no need for our <code class="docutils literal"><span class="pre">approx</span></code> function!</p>
+<p>If we want to do interpolation (or collocation) instead, we simply do</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">u</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="plotting-the-solution-along-a-line">
+<h3>Plotting the solution along a line<a class="headerlink" href="#plotting-the-solution-along-a-line" title="Permalink to this headline">¶</a></h3>
+<p>Having <code class="docutils literal"><span class="pre">u</span></code> and <code class="docutils literal"><span class="pre">f</span></code> available as finite element functions (<code class="docutils literal"><span class="pre">Function</span></code>
+objects), we can easily plot the solution along a line since FEniCS
+has functionality for evaluating a <code class="docutils literal"><span class="pre">Function</span></code> at arbitrary points
+<em>inside the domain</em>. For example, here is the code for plotting <span class="math">\(u\)</span> and
+<span class="math">\(f\)</span> along a line <span class="math">\(x=\hbox{const}\)</span> or <span class="math">\(y=\hbox{const}\)</span>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">comparison_plot2D</span><span class="p">(</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>           <span class="c1"># Function expressions in x and y</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>      <span class="c1"># x or y equals this value</span>
+    <span class="n">variation</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>  <span class="c1"># independent variable</span>
+    <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>          <span class="c1"># no if intervals in plot</span>
+    <span class="n">tol</span><span class="o">=</span><span class="mf">1E-8</span><span class="p">,</span>       <span class="c1"># tolerance for points inside the domain</span>
+    <span class="n">plottitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>   <span class="c1"># heading in plot</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;tmp&#39;</span><span class="p">,</span> <span class="c1"># stem of filename</span>
+    <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot u and f along a line in x or y dir with n intervals</span>
+<span class="sd">    and a tolerance of tol for points inside the domain.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">tol</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">tol</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Compute points along specified line:</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">value</span><span class="p">,</span> <span class="n">v_</span><span class="p">)</span>
+                       <span class="k">if</span> <span class="n">variation</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="n">v_</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                       <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">])</span>
+    <span class="n">u_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span> <span class="c1"># eval. Function</span>
+    <span class="n">f_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u_values</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">f_values</span><span class="p">,</span> <span class="s1">&#39;b--&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">variation</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;u, f&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;u, f&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plottitle</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="integrating-plotting-and-computations">
+<h3>Integrating plotting and computations<a class="headerlink" href="#integrating-plotting-and-computations" title="Permalink to this headline">¶</a></h3>
+<p>It is now very easy to give some graphical impression of the approximations
+for various kinds of 2D elements.
+Basically, to solve the problem of approximating <span class="math">\(f=2xy-x^2\)</span> on <span class="math">\(\Omega = [-1,1]\times [0,2]\)</span> by P2 elements on a <span class="math">\(2\times 2\)</span> mesh,
+we want to integrate the function above with following type of computations:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span> <span class="kn">as</span> <span class="nn">fe</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="s1">&#39;2*x[0]*x[1] - pow(x[0], 2)&#39;</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">RectangleMesh</span><span class="p">(</span><span class="n">fe</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">fe</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">errornorm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p>However, we can now easily compare different type of elements and
+mesh resolutions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span> <span class="kn">as</span> <span class="nn">fe</span>
+<span class="kn">import</span> <span class="nn">sympy</span> <span class="kn">as</span> <span class="nn">sym</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x[0] x[1]&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">problem</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">nx</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">degrees</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot u along x=const or y=const for Lagrange elements,</span>
+<span class="sd">    of given degrees, on a nx times ny mesh. f is a SymPy expression.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">ccode</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">RectangleMesh</span><span class="p">(</span>
+        <span class="n">fe</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">fe</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">degree</span> <span class="ow">in</span> <span class="n">degrees</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">degree</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># The P0 element is specified like this in FEniCS</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># The Lagrange Pd family of elements, d=1,2,3,...</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+        <span class="n">u_error</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">errornorm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s1">&#39;||u-f||=</span><span class="si">%g</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">u_error</span><span class="p">,</span> <span class="n">degree</span>
+        <span class="n">comparison_plot2D</span><span class="p">(</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">variation</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
+            <span class="n">plottitle</span><span class="o">=</span><span class="s1">&#39;Approximation by P</span><span class="si">%d</span><span class="s1"> elements&#39;</span> <span class="o">%</span> <span class="n">degree</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;approx_fenics_by_P</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">degree</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="mf">1E-3</span><span class="p">)</span>
+        <span class="c1">#fe.plot(u, title=&#39;Approx by P%d&#39; % degree)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># x and y are global SymPy variables</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">16</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">problem</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">nx</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">degrees</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(We note that this code issues a lot of warnings from the <code class="docutils literal"><span class="pre">u(point)</span></code>
+evaluations.)</p>
+<p>We show in Figure <a class="reference internal" href="#fem-approx-fenics-2d-2-fig1"><span class="std std-ref">Comparison of P0, P1, and P2 approximations (left to right) along a line in a 2D mesh</span></a>
+how <span class="math">\(f\)</span> is approximated by P0, P1, and P2 elements
+on a very coarse <span class="math">\(2\times 2\)</span> mesh consisting of 8 cells.</p>
+<p>We have also added the result obtained by P2 elements.</p>
+<div class="figure" id="id14">
+<span id="fem-approx-fenics-2d-2-fig1"></span><a class="reference internal image-reference" href="_images/approx_fenics_f1.png"><img alt="_images/approx_fenics_f1.png" src="_images/approx_fenics_f1.png" style="width: 800px;" /></a>
+<p class="caption"><span class="caption-text"><em>Comparison of P0, P1, and P2 approximations (left to right) along a line in a 2D mesh</em></span></p>
+</div>
+<div class="admonition-questions admonition">
+<p class="first admonition-title">Questions</p>
+<p>There are two striking features in the figure:</p>
+<ol class="last arabic simple">
+<li>The P2 solution is exact. Why?</li>
+<li>The P1 solution does not seem to be a least squares approximation. Why?</li>
+</ol>
+</div>
+<p>With this code, found in the file <a class="reference external" href="$approx_fenics.py">approx_fenics.py</a>,
+we can easily run lots of experiments with the Lagrange element family.
+Just write the
+SymPy expression and choose the mesh resolution!</p>
+</div>
+</div>
+</div>
+<div class="section" id="exercises-2">
+<h1>Exercises<a class="headerlink" href="#exercises-2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="problem-11-define-nodes-and-elements">
+<span id="fem-approx-fe-exer-mesh1"></span><h2>Problem 11: Define nodes and elements<a class="headerlink" href="#problem-11-define-nodes-and-elements" title="Permalink to this headline">¶</a></h2>
+<p>Consider a domain <span class="math">\(\Omega =[0,2]\)</span> divided into the three elements
+<span class="math">\([0,1]\)</span>, <span class="math">\([1,1.2]\)</span>, and <span class="math">\([1.2,2]\)</span>.</p>
+<p>For P1 and P2 elements, set up the list of coordinates and nodes
+(<code class="docutils literal"><span class="pre">nodes</span></code>) and the numbers of the nodes that belong to each element
+(<code class="docutils literal"><span class="pre">elements</span></code>) in two cases: 1) nodes and elements numbered from left to
+right, and 2) nodes and elements numbered from right to left.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_numberings1</span></code>.</p>
+</div>
+<div class="section" id="problem-12-define-vertices-cells-and-dof-maps">
+<span id="fem-approx-fe-exer-mesh2"></span><h2>Problem 12: Define vertices, cells, and dof maps<a class="headerlink" href="#problem-12-define-vertices-cells-and-dof-maps" title="Permalink to this headline">¶</a></h2>
+<p>Repeat <a class="reference internal" href="#fem-approx-fe-exer-mesh1"><span class="std std-ref">Problem 11: Define nodes and elements</span></a>, but define the
+data structures <code class="docutils literal"><span class="pre">vertices</span></code>, <code class="docutils literal"><span class="pre">cells</span></code>, and <code class="docutils literal"><span class="pre">dof_map</span></code> instead of
+<code class="docutils literal"><span class="pre">nodes</span></code> and <code class="docutils literal"><span class="pre">elements</span></code>.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_numberings2</span></code>.</p>
+</div>
+<div class="section" id="problem-13-construct-matrix-sparsity-patterns">
+<span id="fem-approx-fe-exer-defmesh-sparsity"></span><h2>Problem 13: Construct matrix sparsity patterns<a class="headerlink" href="#problem-13-construct-matrix-sparsity-patterns" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#fem-approx-fe-exer-mesh1"><span class="std std-ref">Problem 11: Define nodes and elements</span></a> describes a element mesh
+with a total of five elements, but with two different element and
+node orderings. For each of the two orderings,
+make a <span class="math">\(5\times 5\)</span> matrix and fill in the entries that will be nonzero.</p>
+<p><strong>Hint.</strong>
+A matrix entry <span class="math">\((i,j)\)</span> is nonzero if <span class="math">\(i\)</span> and <span class="math">\(j\)</span> are nodes in the
+same element.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_sparsity_pattern</span></code>.</p>
+</div>
+<div class="section" id="problem-14-perform-symbolic-finite-element-computations">
+<span id="fem-approx-fe-exer-asinwt-symbolic"></span><h2>Problem 14: Perform symbolic finite element computations<a class="headerlink" href="#problem-14-perform-symbolic-finite-element-computations" title="Permalink to this headline">¶</a></h2>
+<p>Perform symbolic calculations to find formulas for the coefficient
+matrix and right-hand side when approximating <span class="math">\(f(x) = \sin (x)\)</span> on
+<span class="math">\(\Omega=[0, \pi]\)</span> by two P1 elements of size <span class="math">\(\pi/2\)</span>.  Solve the
+system and compare <span class="math">\(u(\pi/2)\)</span> with the exact value 1.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_sin_P1</span></code>.</p>
+</div>
+<div class="section" id="problem-15-approximate-a-steep-function-by-p1-and-p2-elements">
+<span id="fem-approx-exer-tanh-p1p2"></span><h2>Problem 15: Approximate a steep function by P1 and P2 elements<a class="headerlink" href="#problem-15-approximate-a-steep-function-by-p1-and-p2-elements" title="Permalink to this headline">¶</a></h2>
+<p>Given</p>
+<div class="math">
+\[f(x) = \tanh(s(x-\frac{1}{2}))\]</div>
+<p>use the Galerkin or least squares method with finite elements to find
+an approximate function <span class="math">\(u(x)\)</span>. Choose <span class="math">\(s=20\)</span> and try
+<span class="math">\(N_e=4,8,16\)</span> P1 elements and
+<span class="math">\(N_e=2,4,8\)</span> P2 elements.
+Integrate <span class="math">\(f{\varphi}_i\)</span> numerically.</p>
+<p><strong>Hint.</strong>
+You can automate the computations by calling the <code class="docutils literal"><span class="pre">approximate</span></code> method
+in the <code class="docutils literal"><span class="pre">fe_approx1D_numint</span></code> module.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_tanh_P1P2</span></code>.</p>
+</div>
+<div class="section" id="problem-16-approximate-a-steep-function-by-p3-and-p4-elements">
+<span id="fem-approx-exer-tanh-p3p4"></span><h2>Problem 16: Approximate a steep function by P3 and P4 elements<a class="headerlink" href="#problem-16-approximate-a-steep-function-by-p3-and-p4-elements" title="Permalink to this headline">¶</a></h2>
+<p><strong>a)</strong>
+Solve <a class="reference internal" href="#fem-approx-exer-tanh-p1p2"><span class="std std-ref">Problem 15: Approximate a steep function by P1 and P2 elements</span></a> using <span class="math">\(N_e=1,2,4\)</span> P3 and P4
+elements.</p>
+<p><strong>b)</strong>
+How will an interpolation method work in
+this case with the same number of nodes?</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_tanh_P3P4</span></code>.</p>
+</div>
+<div class="section" id="exercise-17-investigate-the-approximation-error-in-finite-elements">
+<span id="fem-approx-fe-exer-asinwt-interpol-error"></span><h2>Exercise 17: Investigate the approximation error in finite elements<a class="headerlink" href="#exercise-17-investigate-the-approximation-error-in-finite-elements" title="Permalink to this headline">¶</a></h2>
+<p>The theory <a class="reference internal" href="._book012.html#eq-fem-approx-fe-error-theorem"><span class="std std-ref">(115)</span></a> from the section <a class="reference internal" href="._book012.html#fem-approx-fe-error"><span class="std std-ref">Computing the error of the approximation</span></a> predicts that the error in the P$d$
+approximation of a function should behave as <span class="math">\(h^{d+1}\)</span>, where <span class="math">\(h\)</span> is
+the length of the element. Use experiments to verify this asymptotic
+behavior (i.e., for small enough <span class="math">\(h\)</span>).  Choose three examples:
+<span class="math">\(f(x)=Ae^{-\omega x}\)</span> on <span class="math">\([0,3/\omega]\)</span>, <span class="math">\(f(x) = A\sin (\omega x)\)</span> on
+<span class="math">\(\Omega=[0, 2\pi/\omega]\)</span> for constant <span class="math">\(A\)</span> and <span class="math">\(\omega\)</span>, and
+<span class="math">\(f(x)=\sqrt{x}\)</span> on <span class="math">\([0,1]\)</span>.</p>
+<p><strong>Hint 1.</strong>
+Run a series of experiments: <span class="math">\((h_i,E_i)\)</span>, <span class="math">\(i=0,\ldots,m\)</span>, where <span class="math">\(E_i\)</span>
+is the <span class="math">\(L^2\)</span> norm of the error corresponding to element length <span class="math">\(h_i\)</span>.
+Assume an error model <span class="math">\(E=Ch^r\)</span> and compute <span class="math">\(r\)</span> from two successive
+experiments:</p>
+<div class="math">
+\[r_i = \ln (E_{i+1}/E_i)/\ln (h_{i+1}/h_i),\quad i=0,\ldots,m-1{\thinspace .}\]</div>
+<p>Hopefully, the sequence <span class="math">\(r_0,\ldots,r_{m-1}\)</span> converges to the true
+<span class="math">\(r\)</span>, and <span class="math">\(r_{m-1}\)</span> can be taken as an approximation to <span class="math">\(r\)</span>.
+Run such experiments for different <span class="math">\(d\)</span> for the different <span class="math">\(f(x)\)</span> functions.</p>
+<p><strong>Hint 2.</strong>
+The <code class="docutils literal"><span class="pre">approximate</span></code> function in <code class="docutils literal"><span class="pre">fe_approx1D_numint.py</span></code> is handy for
+calculating the numerical solution. This function returns the
+finite element solution as the coefficients <span class="math">\(\left\{ {c}_i \right\}_{i\in{\mathcal{I}_s}}\)</span>.
+To compute <span class="math">\(u\)</span>, use <code class="docutils literal"><span class="pre">u_glob</span></code> from the same module.
+Use the Trapezoidal rule to integrate the <span class="math">\(L^2\)</span> error:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">xc</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="n">u_glob</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">dof_map</span><span class="p">)</span>
+<span class="n">e</span> <span class="o">=</span> <span class="n">f_func</span><span class="p">(</span><span class="n">xc</span><span class="p">)</span> <span class="o">-</span> <span class="n">u</span>
+<span class="n">L2_error</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="n">e</span><span class="o">**</span><span class="mi">2</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xc</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">L2_error</span> <span class="o">+=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">e2</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">e2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">xc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="n">L2_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">L2_error</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The reason for this Trapezoidal integration is
+that <code class="docutils literal"><span class="pre">u_glob</span></code> returns coordinates <code class="docutils literal"><span class="pre">xc</span></code> and corresponding <code class="docutils literal"><span class="pre">u</span></code> values
+where some of the coordinates (the cell vertices) coincides, because
+the solution is computed in one element at a time, using all local
+nodes. Also note that there are many coordinates in <span class="math">\(xc\)</span> per cell
+such that we can accurately compute the error inside each cell.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">Pd_approx_error</span></code>.</p>
+</div>
+<div class="section" id="problem-18-approximate-a-step-function-by-finite-elements">
+<span id="fem-approx-fe-exer-heaviside"></span><h2>Problem 18: Approximate a step function by finite elements<a class="headerlink" href="#problem-18-approximate-a-step-function-by-finite-elements" title="Permalink to this headline">¶</a></h2>
+<p>Approximate the step function</p>
+<div class="math">
+\[\begin{split}f(x) = \left\lbrace\begin{array}{ll}
+0 &amp; \mbox{ if } 0\leq x &lt; {1/2},\\
+1 &amp; \mbox{ if } {1/2} \leq x \geq {1/2}
+\end{array}\right.\end{split}\]</div>
+<p>by 2, 4, 8, and 16 elements and  P1, P2, P3, and P4. Compare approximations visually.</p>
+<p><strong>Hint.</strong>
+This <span class="math">\(f\)</span> can also be expressed in terms of the Heaviside function <span class="math">\(H(x)\)</span>:
+<span class="math">\(f(x) = H(x-{1/2})\)</span>.
+Therefore, <span class="math">\(f\)</span> can be defined by</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">Heaviside</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">sym</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>making the <code class="docutils literal"><span class="pre">approximate</span></code> function in the
+<code class="docutils literal"><span class="pre">fe_approx1D.py</span></code> module an obvious candidate to solve the
+problem. However, <code class="docutils literal"><span class="pre">sympy</span></code> does not handle symbolic integration
+with this particular integrand, and the <code class="docutils literal"><span class="pre">approximate</span></code> function faces a problem
+when converting <code class="docutils literal"><span class="pre">f</span></code> to a Python function (for plotting) since
+<code class="docutils literal"><span class="pre">Heaviside</span></code> is not an available function in <code class="docutils literal"><span class="pre">numpy</span></code>.</p>
+<p>An alternative is to perform hand calculations. This is an instructive
+task, but in practice only feasible for few elements and P1 and P2 elements.
+It is better to copy the functions <code class="docutils literal"><span class="pre">element_matrix</span></code>, <code class="docutils literal"><span class="pre">element_vector</span></code>,
+<code class="docutils literal"><span class="pre">assemble</span></code>, and <code class="docutils literal"><span class="pre">approximate</span></code> from the <code class="docutils literal"><span class="pre">fe_approx1D_numint.py</span></code> file
+and edit these functions such that they can compute approximations
+with <code class="docutils literal"><span class="pre">f</span></code> given as a Python function and not a symbolic expression.
+Also assume that <code class="docutils literal"><span class="pre">phi</span></code> computed by the <code class="docutils literal"><span class="pre">basis</span></code> function is a Python
+callable function. Remove all instances of the <code class="docutils literal"><span class="pre">symbolic</span></code> variable
+and associated code.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_Heaviside_P1P2</span></code>.</p>
+</div>
+<div class="section" id="exercise-19-2d-approximation-with-orthogonal-functions">
+<span id="fem-approx-fe-exer-2dsines-symbolic"></span><h2>Exercise 19: 2D approximation with orthogonal functions<a class="headerlink" href="#exercise-19-2d-approximation-with-orthogonal-functions" title="Permalink to this headline">¶</a></h2>
+<p><strong>a)</strong>
+Assume we have basis functions <span class="math">\({\varphi}_i(x,y)\)</span> in 2D that are
+orthogonal such that <span class="math">\(({\varphi}_i,{\varphi}_j)=0\)</span> when <span class="math">\(i\neq j\)</span>.  The
+function <code class="docutils literal"><span class="pre">least_squares</span></code> in the file <a class="reference external" href="http://tinyurl.com/znpudbt/fe_approx2D.py">approx2D.py</a> will then spend much time on computing
+off-diagonal terms in the coefficient matrix that we know are zero.
+To speed up the computations, make a version <code class="docutils literal"><span class="pre">least_squares_orth</span></code> that
+utilizes the orthogonality among the basis functions.</p>
+<p><strong>b)</strong>
+Apply the function to approximate</p>
+<div class="math">
+\[f(x,y) = x(1-x)y(1-y)e^{-x-y}\]</div>
+<p>on <span class="math">\(\Omega = [0,1]\times [0,1]\)</span> via basis functions</p>
+<div class="math">
+\[{\varphi}_i(x,y) = \sin ((p+1)\pi x)\sin((q+1)\pi y),\quad i=q(N_x+1) + p,\]</div>
+<p>where <span class="math">\(p=0,\ldots,N_x\)</span> and <span class="math">\(q=0,\ldots,N_y\)</span>.</p>
+<p><strong>Hint.</strong>
+Get ideas from the function <code class="docutils literal"><span class="pre">least_squares_orth</span></code> in
+the section <a class="reference internal" href="._book005.html#fem-approx-global-orth"><span class="std std-ref">Orthogonal basis functions</span></a> and
+file <a class="reference external" href="http://tinyurl.com/znpudbt/fe_approx1D.py">approx1D.py</a>.</p>
+<p><strong>c)</strong>
+Make a unit test for the <code class="docutils literal"><span class="pre">least_squares_orth</span></code> function.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">approx2D_ls_orth</span></code>.</p>
+</div>
+<div class="section" id="exercise-20-use-the-trapezoidal-rule-and-p1-elements">
+<span id="fem-approx-fe-exer-1d-trapez"></span><h2>Exercise 20: Use the Trapezoidal rule and P1 elements<a class="headerlink" href="#exercise-20-use-the-trapezoidal-rule-and-p1-elements" title="Permalink to this headline">¶</a></h2>
+<p>Consider approximation of some <span class="math">\(f(x)\)</span> on an interval <span class="math">\(\Omega\)</span> using
+the least squares or Galerkin methods with P1 elements. Derive
+the element matrix and vector using the
+Trapezoidal rule <a class="reference internal" href="._book013.html#eq-fem-approx-fe-numint1-trapez"><span class="std std-ref">(123)</span></a> for calculating
+integrals on the reference element. Assemble the contributions, assuming
+a uniform cell partitioning, and show that the resulting linear system
+has the form <span class="math">\(c_i=f(x_{i})\)</span> for <span class="math">\(i\in{\mathcal{I}_s}\)</span>.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_P1_trapez</span></code>.</p>
+</div>
+<div class="section" id="exercise-21-compare-p1-elements-and-interpolation">
+<span id="fem-approx-fe-exer-1d-p1-vs-interp"></span><h2>Exercise 21: Compare P1 elements and interpolation<a class="headerlink" href="#exercise-21-compare-p1-elements-and-interpolation" title="Permalink to this headline">¶</a></h2>
+<p>We shall approximate the function</p>
+<div class="math">
+\[f(x) = 1 + \epsilon\sin (2\pi nx),\quad x\in \Omega = [0,1],\]</div>
+<p>where <span class="math">\(n\in\mathbb{Z}\)</span> and <span class="math">\(\epsilon \geq 0\)</span>.</p>
+<p><strong>a)</strong>
+Plot <span class="math">\(f(x)\)</span> for <span class="math">\(n=1,2,3\)</span> and find the wave length of the function.</p>
+<p><strong>b)</strong>
+We want to use <span class="math">\(N_P\)</span> elements per wave length. Show that the number
+of elements is then <span class="math">\(nN_P\)</span>.</p>
+<p><strong>c)</strong>
+The critical quantity for accuracy is the number of elements per
+wave length, not the element size in itself. It therefore suffices
+to study an <span class="math">\(f\)</span> with just one wave length in <span class="math">\(\Omega = [0,1]\)</span>.
+Set <span class="math">\(\epsilon = 0.5\)</span>.</p>
+<p>Run the least squares or projection/Galerkin method for
+<span class="math">\(N_P=2,4,8,16,32\)</span>. Compute the error <span class="math">\(E=||u-f||_{L^2}\)</span>.</p>
+<p><strong>Hint 1.</strong>
+Use the <code class="docutils literal"><span class="pre">fe_approx1D_numint</span></code> module to compute <span class="math">\(u\)</span> and use
+the technique from the section <a class="reference internal" href="._book012.html#fem-approx-fe-error"><span class="std std-ref">Computing the error of the approximation</span></a> to
+compute the norm of the error.</p>
+<p><strong>Hint 2.</strong>
+Read up on the Nyquist–Shannon sampling theorem.</p>
+<p><strong>d)</strong>
+Repeat the set of experiments in the above point, but
+use interpolation/collocation based on the node points to
+compute <span class="math">\(u(x)\)</span> (recall that <span class="math">\(c_i\)</span> is now simply <span class="math">\(f(x_{i})\)</span>).
+Compute the error <span class="math">\(E=||u-f||_{L^2}\)</span>.
+Which method seems to be most accurate?</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_P1_vs_interp</span></code>.</p>
+</div>
+<div class="section" id="exercise-22-implement-3d-computations-with-global-basis-functions">
+<span id="fem-approx-fe-exer-3d-approx3d"></span><h2>Exercise 22: Implement 3D computations with global basis functions<a class="headerlink" href="#exercise-22-implement-3d-computations-with-global-basis-functions" title="Permalink to this headline">¶</a></h2>
+<p>Extend the <a class="reference external" href="http://tinyurl.com/znpudbt/approx2D.py">approx2D.py</a> code to 3D
+applying ideas from the section <a class="reference internal" href="._book007.html#fem-approx-3d-global"><span class="std std-ref">Extension to 3D</span></a>.
+Construct some 3D problem to make a test function for the
+implementation.</p>
+<p><strong>Hint.</strong>
+Drop symbolic integration since it is in general too slow for 3D problems.
+Also use <code class="docutils literal"><span class="pre">scipy.integrate.nquad</span></code> instead of <code class="docutils literal"><span class="pre">sympy.mpmath.quad</span></code>
+for numerical integration, since it is much faster.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">approx3D</span></code>.</p>
+</div>
+<div class="section" id="exercise-23-use-simpson-s-rule-and-p2-elements">
+<span id="fem-approx-fe-exer-1d-simpson"></span><h2>Exercise 23: Use Simpson&#8217;s rule and P2 elements<a class="headerlink" href="#exercise-23-use-simpson-s-rule-and-p2-elements" title="Permalink to this headline">¶</a></h2>
+<p>Redo <a class="reference internal" href="#fem-approx-fe-exer-1d-trapez"><span class="std std-ref">Exercise 20: Use the Trapezoidal rule and P1 elements</span></a>, but use P2
+elements and Simpson&#8217;s rule based on sampling the integrands at
+the nodes in the reference cell.</p>
+<p>Filename: <code class="docutils literal"><span class="pre">fe_P2_simpson</span></code>.</p>
+</div>
+<div class="section" id="exercise-24-make-a-3d-code-for-lagrange-elements-of-arbitrary-order">
+<h2>Exercise 24: Make a 3D code for Lagrange elements of arbitrary order<a class="headerlink" href="#exercise-24-make-a-3d-code-for-lagrange-elements-of-arbitrary-order" title="Permalink to this headline">¶</a></h2>
+<p>Extend the code from the section <a class="reference internal" href="#fem-approx-fenics-2d-2"><span class="std std-ref">Refined code with curve plotting</span></a> to 3D.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <center>
+            <p class="logo"><a href="http://cbc.simula.no/" title="Go to Center for Biomedical Computing">
+              <img class="logo" src="_static/cbc_logo.png" alt="Logo"/>
+            </a></p>
+            </center>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Finite elements in 2D and 3D</a><ul>
+<li><a class="reference internal" href="#basis-functions-over-triangles-in-the-physical-domain">Basis functions over triangles in the physical domain</a><ul>
+<li><a class="reference internal" href="#element-matrices-and-vectors">Element matrices and vectors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#basis-functions-over-triangles-in-the-reference-cell">Basis functions over triangles in the reference cell</a></li>
+<li><a class="reference internal" href="#affine-mapping-of-the-reference-cell">Affine mapping of the reference cell</a></li>
+<li><a class="reference internal" href="#isoparametric-mapping-of-the-reference-cell">Isoparametric mapping of the reference cell</a></li>
+<li><a class="reference internal" href="#computing-integrals">Computing integrals</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-5">Implementation</a><ul>
+<li><a class="reference internal" href="#example-on-approximation-in-2d-using-fenics">Example on approximation in 2D using FEniCS</a><ul>
+<li><a class="reference internal" href="#mathematical-problem-1">Mathematical problem</a></li>
+<li><a class="reference internal" href="#the-code">The code</a></li>
+<li><a class="reference internal" href="#dissection-of-the-code">Dissection of the code</a></li>
+<li><a class="reference internal" href="#integrating-sympy-and-fenics">Integrating SymPy and FEniCS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#refined-code-with-curve-plotting">Refined code with curve plotting</a><ul>
+<li><a class="reference internal" href="#interpolation-and-projection">Interpolation and projection</a></li>
+<li><a class="reference internal" href="#plotting-the-solution-along-a-line">Plotting the solution along a line</a></li>
+<li><a class="reference internal" href="#integrating-plotting-and-computations">Integrating plotting and computations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exercises-2">Exercises</a><ul>
+<li><a class="reference internal" href="#problem-11-define-nodes-and-elements">Problem 11: Define nodes and elements</a></li>
+<li><a class="reference internal" href="#problem-12-define-vertices-cells-and-dof-maps">Problem 12: Define vertices, cells, and dof maps</a></li>
+<li><a class="reference internal" href="#problem-13-construct-matrix-sparsity-patterns">Problem 13: Construct matrix sparsity patterns</a></li>
+<li><a class="reference internal" href="#problem-14-perform-symbolic-finite-element-computations">Problem 14: Perform symbolic finite element computations</a></li>
+<li><a class="reference internal" href="#problem-15-approximate-a-steep-function-by-p1-and-p2-elements">Problem 15: Approximate a steep function by P1 and P2 elements</a></li>
+<li><a class="reference internal" href="#problem-16-approximate-a-steep-function-by-p3-and-p4-elements">Problem 16: Approximate a steep function by P3 and P4 elements</a></li>
+<li><a class="reference internal" href="#exercise-17-investigate-the-approximation-error-in-finite-elements">Exercise 17: Investigate the approximation error in finite elements</a></li>
+<li><a class="reference internal" href="#problem-18-approximate-a-step-function-by-finite-elements">Problem 18: Approximate a step function by finite elements</a></li>
+<li><a class="reference internal" href="#exercise-19-2d-approximation-with-orthogonal-functions">Exercise 19: 2D approximation with orthogonal functions</a></li>
+<li><a class="reference internal" href="#exercise-20-use-the-trapezoidal-rule-and-p1-elements">Exercise 20: Use the Trapezoidal rule and P1 elements</a></li>
+<li><a class="reference internal" href="#exercise-21-compare-p1-elements-and-interpolation">Exercise 21: Compare P1 elements and interpolation</a></li>
+<li><a class="reference internal" href="#exercise-22-implement-3d-computations-with-global-basis-functions">Exercise 22: Implement 3D computations with global basis functions</a></li>
+<li><a class="reference internal" href="#exercise-23-use-simpson-s-rule-and-p2-elements">Exercise 23: Use Simpson&#8217;s rule and P2 elements</a></li>
+<li><a class="reference internal" href="#exercise-24-make-a-3d-code-for-lagrange-elements-of-arbitrary-order">Exercise 24: Make a 3D code for Lagrange elements of arbitrary order</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="._book013.html"
+                        title="previous chapter">Numerical integration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="._book015.html"
+                        title="next chapter">Variational formulations with global basis functions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/._book014.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="._book015.html" title="Variational formulations with global basis functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="._book013.html" title="Numerical integration"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>
+<div class="wrapper">
+  <div class="footer">
+    <a href="http://cbc.simula.no"><img src="_static/cbc_banner.png" width="100%"><a>
+    <br />
+    <br />
+      &copy;2016, Hans Petter Langtangen, Kent-Andre Mardal. Released under CC Attribution 4.0 license.
+  </div>
+</div>
+
+  </body>
+</html>

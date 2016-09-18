@@ -2265,7 +2265,7 @@ Numerical integration over reference cell triangles and tetrahedra:
 \[ \int_{\tilde\Omega^r} g\dX = \sum_{j=0}^{n-1} w_j g(\bar\X_j)\]
 !et
 
-Module "`numint.py`": "${src_approx}/numint.py" contains different rules:
+Module "`numint.py`": "${fem_src}/numint.py" contains different rules:
 
 !bc ipy
 >>> import numint

@@ -1,0 +1,191 @@
+.. !split
+
+.. _ch:preface:
+
+Preface
+%%%%%%%
+
+The present book is essentially a book on the finite element method,
+although we discuss many other choices of basis functions and other
+applications than partial differential equations. The
+literature on finite elements contains books of many different
+flavors, ranging from the abstract view of the method
+[Ref01]_ [Ref02]_ [Ref03]_ [Ref04]_ via more
+intuitive, algorithmic treatment of the subject cite{}, to the
+structural engineering view on the method cite{}. The present book has
+a very strong algorithmic focus ("how to compute"), but formulate
+the method in the abstract form with variational forms and function
+spaces.
+
+One highly valued feature of the finite element method is the prospect
+of rigorous analysis provided by the functional analysis framework. In
+particular, for elliptic problems (or in general symmetric problems)
+the theory provides error control via sharp estimates and efficient
+computations via multiscale algorithms. In fact, the development of
+this mathematical theory of finite element methods is one of the
+highlights of numerical analysis. However, within scientific computing
+the computational engine of the finite element method is being used
+far outside what is theoretically understood. Obviously, this is a
+trend that will continue in the future. Hence, it is our aim here
+provide the reader with the gory details of the implementation in an
+explicit, user-friendly and simplistic manner to lower the threshold
+of usage and to provide tools for verification and debugging that are
+applicable in general situations.
+
+An important motivation for writing this book was to provide an
+intuitive approach to the finite element method, using the
+mathematical language frameworks such as the FEniCS software
+[Ref05]_. FEniCS is a modern, very powerful tool for solving
+partial differential equations by the finite element method, and it
+was designed to make implementations very compact for those who are
+used to the abstract formulation of the method.  Our aim here is
+different.
+
+A standard reference for FEniCS users have been the excellent text by
+Brenner and Scott [Ref03]_, but for many students with weak
+formal mathematical background, the learning curve became
+unnecessarily steep using this book to take advantage of FEniCS.  The
+present book grew out of the need to explain variational formulations
+in the most intuitive way so FEniCS users can transform their PDE
+problem into the proper formulation for FEniCS programming. We then
+added material such that also the details of the most fundamental
+finite element algorithms could easily be understood.
+
+The learning outcomes of this book are four-fold
+
+1. understanding various types of variational formulations of PDE problems,
+
+2. understanding the machinery of finite element algorithms,
+   with an emphasis on one-dimensional problems,
+
+3. understanding potential artifacts in simulation results,
+
+4. understanding how variational formulations can be used in other
+   contexts (polynomial chaos expansions, solving linear systems).
+
+The exposition is recognized by very explicit mathematics, i.e., we
+have tried to write out all details of the finite element "engine"
+such that a reader can calculate a finite element problem by
+hand. Explaining all details and carrying them out by hand are
+formidable tasks in two- and three-dimensional PDE problems, so we
+restrict the attention to one space dimension when it comes to
+detailed calculations.  Although we imagine that the reader will use
+FEniCS or other similar software to actually solve finite element
+problems, we strongly believe that successful application of such
+complex software requires a thorough understanding of the underlying
+method, which is best gained by hand calculations of the steps in the
+algorithms. Also, hand calculations are indispensable for debugging
+finite element programs: one can run a one-dimensional problem, print
+out intermediate results, and compare with separate hand calculations.
+When the program is fully verified in 1D, ideally the program should
+turned into a 2D/3D simulation simply by switching from a 1D mesh
+to the relevant 2D/3D mesh.
+
+When working with algorithms and hand calculations in the present
+book, we emphasize the usefulness of symbolic computing. Our choice is
+the free SymPy package, which is very easy to use for students and
+which gives a seamless transition from symbolic to numerical
+computing.  Most of the numerical algorithms in this book are
+summarized as compact SymPy programs. However, symbolic computing
+certainly has its limitations, especially when it comes to speed, so
+their numerical counterparts are usually also developed in the
+text. The reader should be able to write her own finite element
+program for one-dimensional problems, but otherwise we have no aim to
+educate the reader to write fast, state-of-the-art finite element
+programs!
+
+Another learning outcome (although not needed to be a successful
+FEniCS user) is to understand how the finite element method is a
+special case of more general variational approaches to solving
+equations. Therefore, we also treat uncertainty quantification via
+polynomial chaos methods and conjugate gradient-like methods for
+solving linear systems in a way that hopefully gives the reader an
+understanding of how seemingly very different numerical methods
+actually are just variants of a common way of reasoning.
+
+Many common topics found in finite element books are not present in
+this book. A striking feature is perhaps the presence of the abstract
+formulation of the finite element method, but without any classical
+error analysis.  The reason is that we have taken a very practical
+approach to the contents: what does a user need to know to safely
+apply finite element software?  A thorough understanding of the errors
+is obviously essential, but the classical error analysis of elliptic
+problems is of limited practical interest for the practitioner, except
+for the final results regarding convergence rates of different types
+of finite elements.
+
+In time-dependent problems, on the other hand, a lot of things can go
+wrong with finite element solutions, but the extensions of the
+classical finite element error analysis to time dependency quickly
+meets limitations with respect to explaining typical numerical
+artifacts. We therefore follow a completely different type of
+analysis, namely the one often used for finite difference methods:
+insight through numerical dispersion relations and similar results
+based on exact discrete solutions via Fourier wave
+components. Actually, all the analysis of the quality of finite
+element solutions are in this book done with the aid of techniques for
+analyzing finite difference methods, so a knowledge of finite
+differences is needed. This approach also makes it very easy to
+compare the two methods, which is frequently done throughout the text.
+
+The mathematical notation in this text makes deviations from the
+literature trends. Especially books on the abstract formulation of the
+finite element method often denotes the numerical solution by :math:`u_h`.
+Our mathematical notation is dictated by the natural notation in a
+computer code, so if ``u`` is the unknown in the code, we let :math:`u` be the
+corresponding quantity in the mathematical description as well. When
+also the exact solution of the PDE problem is needed, it is usually
+denoted by :math:`{u_{\small\mbox{e}}}`. Especially in the chapter on nonlinear problems we
+introduce notations that are handy in a program and use the same
+notation in the mathematics such that we achieve as close
+correspondence as possible between the mathematics and the code.
+
+Contents
+~~~~~~~~
+
+The very first chapter starts with a quick overview of how PDE
+problems are solved by the finite element method. The next four
+chapters go into deep detail of the algorithms. We employ a successful
+idea, pursued by Larson and Bengzon [Ref06]_ in particular,
+of first treating finite element approximation *before* attacking PDE
+problems. The chapter :ref:`ch:approx:global` explains approximation of
+functions in function spaces from a general point of view, where finite
+element basis functions constitute one example to be explored in
+the chapter :ref:`ch:approx:fe`.  The principles of variational
+formulations constitute the subject of the chapter :ref:`ch:varform:global`.
+A lot of details of the finite element machinery are met already in
+the approximation problem in the chapter :ref:`ch:approx:fe`, so when these
+topics are familiar together with the variational formulations of
+the chapter :ref:`ch:varform:global`, it is easier to put the entire finite
+element method together in the chapter :ref:`ch:varform:fe` with variational formulations
+of PDE problems, boundary conditions, and the necessary
+finite element computing algorithms.  Our experience is that
+this pedagogical approach greatly simplifies the learning process for
+students.  The chapter :ref:`ch:femtime` explains how time-dependent
+problems are attacked, primarily by using finite difference
+discretizations in time. Here we develop the corresponding finite
+difference schemes and analyze them via Fourier components and
+numerical dispersion relations. How to set up variational formulations
+of systems of PDEs, and in particular the way systems are treated in
+FEniCS, is the topic of the chapter :ref:`ch:femsys`.
+Nonlinear ODE and PDE problems are treated quite comprehensively in
+the chapter :ref:`ch:nonlin`.
+
+With all the
+fundamental building blocks from the chapter :ref:`ch:approx:global`, we have most
+of the elements in place for a quick treatment of the popular
+polynomial chaos expansion method for uncertainty quantification in
+the chapter :ref:`ch:pce`.
+This chapter becomes a nice illustration of the power of the theory in
+the beginning of the book.  A similar illustration of the applicability
+of variational thinking appears in the chapter :ref:`ch:cg` where we construct
+iterative methods for linear systems and derive methods in the Conjugate
+gradient family.
+
+Supplementary materials
+~~~~~~~~~~~~~~~~~~~~~~~
+
+All program and data files referred to in this book are available
+from the book's primary web site:
+`<http://hplgit.github.io/fem-book/doc/web/>`_.
+

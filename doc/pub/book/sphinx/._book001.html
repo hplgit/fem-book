@@ -1,0 +1,325 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Preface</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+
+        <script src="http://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="http://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+
+        <script>sagecell.makeSagecell({inputLocation: ".sage"});</script>
+
+        <style type="text/css">
+                .sagecell .CodeMirror-scroll {
+                        overflow-y: hidden;
+                        overflow-x: auto;
+                }
+                .sagecell .CodeMirror {
+                        height: auto;
+                }
+        </style>
+
+    
+    <link rel="top" title="Introduction to Numerical Methods for Variational Problems" href="index.html" />
+    <link rel="next" title="Quick overview of the finite element method" href="._book002.html" />
+    <link rel="prev" title="Introduction to Numerical Methods for Variational Problems" href="._book000.html" />
+ 
+  
+       <style type="text/css">
+         div.admonition {
+           background-color: whiteSmoke;
+           border: 1px solid #bababa;
+         }
+       </style>
+      </head>
+    
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="._book002.html" title="Quick overview of the finite element method"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="._book000.html" title="Introduction to Numerical Methods for Variational Problems"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="preface">
+<span id="ch-preface"></span><h1>Preface<a class="headerlink" href="#preface" title="Permalink to this headline">¶</a></h1>
+<p>The present book is essentially a book on the finite element method,
+although we discuss many other choices of basis functions and other
+applications than partial differential equations. The
+literature on finite elements contains books of many different
+flavors, ranging from the abstract view of the method
+<a class="reference internal" href="._book036.html#ref01" id="id1">[Ref01]</a> <a class="reference internal" href="._book036.html#ref02" id="id2">[Ref02]</a> <a class="reference internal" href="._book036.html#ref03" id="id3">[Ref03]</a> <a class="reference internal" href="._book036.html#ref04" id="id4">[Ref04]</a> via more
+intuitive, algorithmic treatment of the subject cite{}, to the
+structural engineering view on the method cite{}. The present book has
+a very strong algorithmic focus (&#8220;how to compute&#8221;), but formulate
+the method in the abstract form with variational forms and function
+spaces.</p>
+<p>One highly valued feature of the finite element method is the prospect
+of rigorous analysis provided by the functional analysis framework. In
+particular, for elliptic problems (or in general symmetric problems)
+the theory provides error control via sharp estimates and efficient
+computations via multiscale algorithms. In fact, the development of
+this mathematical theory of finite element methods is one of the
+highlights of numerical analysis. However, within scientific computing
+the computational engine of the finite element method is being used
+far outside what is theoretically understood. Obviously, this is a
+trend that will continue in the future. Hence, it is our aim here
+provide the reader with the gory details of the implementation in an
+explicit, user-friendly and simplistic manner to lower the threshold
+of usage and to provide tools for verification and debugging that are
+applicable in general situations.</p>
+<p>An important motivation for writing this book was to provide an
+intuitive approach to the finite element method, using the
+mathematical language frameworks such as the FEniCS software
+<a class="reference internal" href="._book036.html#ref05" id="id5">[Ref05]</a>. FEniCS is a modern, very powerful tool for solving
+partial differential equations by the finite element method, and it
+was designed to make implementations very compact for those who are
+used to the abstract formulation of the method.  Our aim here is
+different.</p>
+<p>A standard reference for FEniCS users have been the excellent text by
+Brenner and Scott <a class="reference internal" href="._book036.html#ref03" id="id6">[Ref03]</a>, but for many students with weak
+formal mathematical background, the learning curve became
+unnecessarily steep using this book to take advantage of FEniCS.  The
+present book grew out of the need to explain variational formulations
+in the most intuitive way so FEniCS users can transform their PDE
+problem into the proper formulation for FEniCS programming. We then
+added material such that also the details of the most fundamental
+finite element algorithms could easily be understood.</p>
+<p>The learning outcomes of this book are four-fold</p>
+<ol class="arabic simple">
+<li>understanding various types of variational formulations of PDE problems,</li>
+<li>understanding the machinery of finite element algorithms,
+with an emphasis on one-dimensional problems,</li>
+<li>understanding potential artifacts in simulation results,</li>
+<li>understanding how variational formulations can be used in other
+contexts (polynomial chaos expansions, solving linear systems).</li>
+</ol>
+<p>The exposition is recognized by very explicit mathematics, i.e., we
+have tried to write out all details of the finite element &#8220;engine&#8221;
+such that a reader can calculate a finite element problem by
+hand. Explaining all details and carrying them out by hand are
+formidable tasks in two- and three-dimensional PDE problems, so we
+restrict the attention to one space dimension when it comes to
+detailed calculations.  Although we imagine that the reader will use
+FEniCS or other similar software to actually solve finite element
+problems, we strongly believe that successful application of such
+complex software requires a thorough understanding of the underlying
+method, which is best gained by hand calculations of the steps in the
+algorithms. Also, hand calculations are indispensable for debugging
+finite element programs: one can run a one-dimensional problem, print
+out intermediate results, and compare with separate hand calculations.
+When the program is fully verified in 1D, ideally the program should
+turned into a 2D/3D simulation simply by switching from a 1D mesh
+to the relevant 2D/3D mesh.</p>
+<p>When working with algorithms and hand calculations in the present
+book, we emphasize the usefulness of symbolic computing. Our choice is
+the free SymPy package, which is very easy to use for students and
+which gives a seamless transition from symbolic to numerical
+computing.  Most of the numerical algorithms in this book are
+summarized as compact SymPy programs. However, symbolic computing
+certainly has its limitations, especially when it comes to speed, so
+their numerical counterparts are usually also developed in the
+text. The reader should be able to write her own finite element
+program for one-dimensional problems, but otherwise we have no aim to
+educate the reader to write fast, state-of-the-art finite element
+programs!</p>
+<p>Another learning outcome (although not needed to be a successful
+FEniCS user) is to understand how the finite element method is a
+special case of more general variational approaches to solving
+equations. Therefore, we also treat uncertainty quantification via
+polynomial chaos methods and conjugate gradient-like methods for
+solving linear systems in a way that hopefully gives the reader an
+understanding of how seemingly very different numerical methods
+actually are just variants of a common way of reasoning.</p>
+<p>Many common topics found in finite element books are not present in
+this book. A striking feature is perhaps the presence of the abstract
+formulation of the finite element method, but without any classical
+error analysis.  The reason is that we have taken a very practical
+approach to the contents: what does a user need to know to safely
+apply finite element software?  A thorough understanding of the errors
+is obviously essential, but the classical error analysis of elliptic
+problems is of limited practical interest for the practitioner, except
+for the final results regarding convergence rates of different types
+of finite elements.</p>
+<p>In time-dependent problems, on the other hand, a lot of things can go
+wrong with finite element solutions, but the extensions of the
+classical finite element error analysis to time dependency quickly
+meets limitations with respect to explaining typical numerical
+artifacts. We therefore follow a completely different type of
+analysis, namely the one often used for finite difference methods:
+insight through numerical dispersion relations and similar results
+based on exact discrete solutions via Fourier wave
+components. Actually, all the analysis of the quality of finite
+element solutions are in this book done with the aid of techniques for
+analyzing finite difference methods, so a knowledge of finite
+differences is needed. This approach also makes it very easy to
+compare the two methods, which is frequently done throughout the text.</p>
+<p>The mathematical notation in this text makes deviations from the
+literature trends. Especially books on the abstract formulation of the
+finite element method often denotes the numerical solution by <span class="math">\(u_h\)</span>.
+Our mathematical notation is dictated by the natural notation in a
+computer code, so if <code class="docutils literal"><span class="pre">u</span></code> is the unknown in the code, we let <span class="math">\(u\)</span> be the
+corresponding quantity in the mathematical description as well. When
+also the exact solution of the PDE problem is needed, it is usually
+denoted by <span class="math">\({u_{\small\mbox{e}}}\)</span>. Especially in the chapter on nonlinear problems we
+introduce notations that are handy in a program and use the same
+notation in the mathematics such that we achieve as close
+correspondence as possible between the mathematics and the code.</p>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<p>The very first chapter starts with a quick overview of how PDE
+problems are solved by the finite element method. The next four
+chapters go into deep detail of the algorithms. We employ a successful
+idea, pursued by Larson and Bengzon <a class="reference internal" href="._book036.html#ref06" id="id7">[Ref06]</a> in particular,
+of first treating finite element approximation <em>before</em> attacking PDE
+problems. The chapter <a class="reference internal" href="._book002.html#ch-approx-global"><span class="std std-ref">Function approximation by global functions</span></a> explains approximation of
+functions in function spaces from a general point of view, where finite
+element basis functions constitute one example to be explored in
+the chapter <a class="reference internal" href="._book009.html#ch-approx-fe"><span class="std std-ref">Function approximation by finite elements</span></a>.  The principles of variational
+formulations constitute the subject of the chapter <a class="reference internal" href="._book015.html#ch-varform-global"><span class="std std-ref">Variational formulations with global basis functions</span></a>.
+A lot of details of the finite element machinery are met already in
+the approximation problem in the chapter <a class="reference internal" href="._book009.html#ch-approx-fe"><span class="std std-ref">Function approximation by finite elements</span></a>, so when these
+topics are familiar together with the variational formulations of
+the chapter <a class="reference internal" href="._book015.html#ch-varform-global"><span class="std std-ref">Variational formulations with global basis functions</span></a>, it is easier to put the entire finite
+element method together in the chapter <a class="reference internal" href="._book019.html#ch-varform-fe"><span class="std std-ref">Variational formulations with finite elements</span></a> with variational formulations
+of PDE problems, boundary conditions, and the necessary
+finite element computing algorithms.  Our experience is that
+this pedagogical approach greatly simplifies the learning process for
+students.  The chapter <a class="reference internal" href="._book026.html#ch-femtime"><span class="std std-ref">Time-dependent variational forms</span></a> explains how time-dependent
+problems are attacked, primarily by using finite difference
+discretizations in time. Here we develop the corresponding finite
+difference schemes and analyze them via Fourier components and
+numerical dispersion relations. How to set up variational formulations
+of systems of PDEs, and in particular the way systems are treated in
+FEniCS, is the topic of the chapter <a class="reference internal" href="._book027.html#ch-femsys"><span class="std std-ref">Variational forms for systems of PDEs</span></a>.
+Nonlinear ODE and PDE problems are treated quite comprehensively in
+the chapter <a class="reference internal" href="._book027.html#ch-nonlin"><span class="std std-ref">Nonlinear problems</span></a>.</p>
+<p>With all the
+fundamental building blocks from the chapter <a class="reference internal" href="._book002.html#ch-approx-global"><span class="std std-ref">Function approximation by global functions</span></a>, we have most
+of the elements in place for a quick treatment of the popular
+polynomial chaos expansion method for uncertainty quantification in
+the chapter <span class="xref std std-ref">ch:pce</span>.
+This chapter becomes a nice illustration of the power of the theory in
+the beginning of the book.  A similar illustration of the applicability
+of variational thinking appears in the chapter <a class="reference internal" href="._book034.html#ch-cg"><span class="std std-ref">Variational methods for linear systems</span></a> where we construct
+iterative methods for linear systems and derive methods in the Conjugate
+gradient family.</p>
+</div>
+<div class="section" id="supplementary-materials">
+<h2>Supplementary materials<a class="headerlink" href="#supplementary-materials" title="Permalink to this headline">¶</a></h2>
+<p>All program and data files referred to in this book are available
+from the book&#8217;s primary web site:
+<a class="reference external" href="http://hplgit.github.io/fem-book/doc/web/">http://hplgit.github.io/fem-book/doc/web/</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <center>
+            <p class="logo"><a href="http://cbc.simula.no/" title="Go to Center for Biomedical Computing">
+              <img class="logo" src="_static/cbc_logo.png" alt="Logo"/>
+            </a></p>
+            </center>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Preface</a><ul>
+<li><a class="reference internal" href="#contents">Contents</a></li>
+<li><a class="reference internal" href="#supplementary-materials">Supplementary materials</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="._book000.html"
+                        title="previous chapter">Introduction to Numerical Methods for Variational Problems</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="._book002.html"
+                        title="next chapter">Quick overview of the finite element method</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/._book001.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="._book002.html" title="Quick overview of the finite element method"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="._book000.html" title="Introduction to Numerical Methods for Variational Problems"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>
+<div class="wrapper">
+  <div class="footer">
+    <a href="http://cbc.simula.no"><img src="_static/cbc_banner.png" width="100%"><a>
+    <br />
+    <br />
+      &copy;2016, Hans Petter Langtangen, Kent-Andre Mardal. Released under CC Attribution 4.0 license.
+  </div>
+</div>
+
+  </body>
+</html>

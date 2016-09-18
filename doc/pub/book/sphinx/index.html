@@ -1,0 +1,710 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction to Numerical Methods for Variational Problems</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+
+        <script src="http://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="http://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+
+        <script>sagecell.makeSagecell({inputLocation: ".sage"});</script>
+
+        <style type="text/css">
+                .sagecell .CodeMirror-scroll {
+                        overflow-y: hidden;
+                        overflow-x: auto;
+                }
+                .sagecell .CodeMirror {
+                        height: auto;
+                }
+        </style>
+
+    
+    <link rel="top" title="Introduction to Numerical Methods for Variational Problems" href="#" />
+    <link rel="next" title="Introduction to Numerical Methods for Variational Problems" href="._book000.html" />
+ 
+  
+       <style type="text/css">
+         div.admonition {
+           background-color: whiteSmoke;
+           border: 1px solid #bababa;
+         }
+       </style>
+      </head>
+    
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="._book000.html" title="Introduction to Numerical Methods for Variational Problems"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction-to-numerical-methods-for-variational-problems">
+<h1>Introduction to Numerical Methods for Variational Problems<a class="headerlink" href="#introduction-to-numerical-methods-for-variational-problems" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="._book000.html">Introduction to Numerical Methods for Variational Problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book001.html">Preface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book001.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book001.html#supplementary-materials">Supplementary materials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book002.html">Quick overview of the finite element method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book002.html#function-approximation-by-global-functions">Function approximation by global functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book003.html">Approximation of vectors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book003.html#approximation-of-planar-vectors">Approximation of planar vectors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book003.html#the-least-squares-method-1">The least squares method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book003.html#the-projection-method">The projection method</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book003.html#approximation-of-general-vectors">Approximation of general vectors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book003.html#the-least-squares-method-2">The least squares method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book003.html#the-galerkin-or-projection-method">The Galerkin or projection method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book004.html">Approximation principles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book004.html#the-least-squares-method-3">The least squares method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book004.html#the-projection-or-galerkin-method">The projection (or Galerkin) method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book004.html#example-on-linear-approximation">Example on linear approximation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book004.html#implementation-of-the-least-squares-method">Implementation of the least squares method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book004.html#symbolic-integration">Symbolic integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book004.html#fall-back-on-numerical-integration">Fall back on numerical integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book004.html#plotting-the-approximation">Plotting the approximation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book004.html#perfect-approximation">Perfect approximation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book004.html#the-regression-method">The regression method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book004.html#overdetermined-equation-system">Overdetermined equation system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book004.html#the-normal-equations-derived-from-a-least-squares-principle">The normal equations derived from a least squares principle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book004.html#implementation-1">Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book004.html#example-1">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book005.html">Orthogonal basis functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book005.html#ill-conditioning">Ill-conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book005.html#fourier-series">Fourier series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book005.html#orthogonal-basis-functions-2">Orthogonal basis functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book005.html#numerical-computations">Numerical computations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book006.html">Interpolation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book006.html#the-interpolation-or-collocation-principle">The interpolation (or collocation) principle</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book006.html#example-2">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book006.html#lagrange-polynomials">Lagrange polynomials</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book006.html#approximation-of-a-polynomial">Approximation of a polynomial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book006.html#successful-example">Successful example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book006.html#less-successful-example">Less successful example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book006.html#remedy-for-strong-oscillations">Remedy for strong oscillations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book006.html#bernstein-polynomials">Bernstein polynomials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book006.html#approximation-properties-and-convergence-rates">Approximation properties and convergence rates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book007.html">Approximation of functions in higher dimensions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book007.html#d-basis-functions-as-tensor-products-of-1d-functions">2D basis functions as tensor products of 1D functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book007.html#example-on-polynomial-basis-in-2d">Example on polynomial basis in 2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book007.html#implementation-2">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book007.html#extension-to-3d">Extension to 3D</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book008.html">Exercises</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-1-linear-algebra-refresher">Problem 1: Linear algebra refresher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-2-approximate-a-three-dimensional-vector-in-a-plane">Problem 2: Approximate a three-dimensional vector in a plane</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-3-approximate-a-parabola-by-a-sine">Problem 3: Approximate a parabola by a sine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-4-approximate-the-exponential-function-by-power-functions">Problem 4: Approximate the exponential function by power functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-5-approximate-the-sine-function-by-power-functions">Problem 5: Approximate the sine function by power functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-6-approximate-a-steep-function-by-sines">Problem 6: Approximate a steep function by sines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book008.html#remarks-1">Remarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-7-approximate-a-steep-function-by-sines-with-boundary-adjustment">Problem 7: Approximate a steep function by sines with boundary adjustment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book008.html#remarks-2">Remarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#exercise-8-fourier-series-as-a-least-squares-approximation">Exercise 8: Fourier series as a least squares approximation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-9-approximate-a-steep-function-by-lagrange-polynomials">Problem 9: Approximate a steep function by Lagrange polynomials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book008.html#problem-10-approximate-a-steep-function-by-lagrange-polynomials-and-regression">Problem 10: Approximate a steep function by Lagrange polynomials and regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book009.html">Function approximation by finite elements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book009.html#finite-element-basis-functions-1">Finite element basis functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#elements-and-nodes">Elements and nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#the-basis-functions">The basis functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#example-on-quadratic-finite-element-functions">Example on quadratic finite element functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#example-on-linear-finite-element-functions">Example on linear finite element functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#example-on-cubic-finite-element-functions">Example on cubic finite element functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#calculating-the-linear-system">Calculating the linear system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#assembly-of-elementwise-computations">Assembly of elementwise computations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#mapping-to-a-reference-element">Mapping to a reference element</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book009.html#example-on-integration-over-a-reference-element">Example on integration over a reference element</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book010.html">Implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#integration">Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#linear-system-assembly-and-solution">Linear system assembly and solution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#example-on-computing-symbolic-approximations">Example on computing symbolic approximations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#using-interpolation-instead-of-least-squares">Using interpolation instead of least squares</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#example-on-computing-numerical-approximations">Example on computing numerical approximations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#the-structure-of-the-coefficient-matrix">The structure of the coefficient matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#applications">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book010.html#sparse-matrix-storage-and-solution">Sparse matrix storage and solution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book011.html">Comparison of finite elements and finite differences</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book011.html#finite-difference-approximation-of-given-functions">Finite difference approximation of given functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book011.html#interpretation-of-a-finite-element-approximation-in-terms-of-finite-difference-operators">Interpretation of a finite element approximation in terms of finite difference operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book011.html#making-finite-elements-behave-as-finite-differences">Making finite elements behave as finite differences</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book011.html#computations-in-physical-space">Computations in physical space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book011.html#elementwise-computations">Elementwise computations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book011.html#terminology">Terminology</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book012.html">A generalized element concept</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book012.html#cells-vertices-and-degrees-of-freedom">Cells, vertices, and degrees of freedom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book012.html#extended-finite-element-concept">Extended finite element concept</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book012.html#implementation-4">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book012.html#computing-the-error-of-the-approximation">Computing the error of the approximation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book012.html#example-on-cubic-hermite-polynomials">Example on cubic Hermite polynomials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book013.html">Numerical integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book013.html#newton-cotes-rules">Newton-Cotes rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book013.html#gauss-legendre-rules-with-optimized-points">Gauss-Legendre rules with optimized points</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book014.html">Finite elements in 2D and 3D</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#basis-functions-over-triangles-in-the-physical-domain">Basis functions over triangles in the physical domain</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#element-matrices-and-vectors">Element matrices and vectors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#basis-functions-over-triangles-in-the-reference-cell">Basis functions over triangles in the reference cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#affine-mapping-of-the-reference-cell">Affine mapping of the reference cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#isoparametric-mapping-of-the-reference-cell">Isoparametric mapping of the reference cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#computing-integrals">Computing integrals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book014.html#implementation-5">Implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#example-on-approximation-in-2d-using-fenics">Example on approximation in 2D using FEniCS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#mathematical-problem-1">Mathematical problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#the-code">The code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#dissection-of-the-code">Dissection of the code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#integrating-sympy-and-fenics">Integrating SymPy and FEniCS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#refined-code-with-curve-plotting">Refined code with curve plotting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#interpolation-and-projection">Interpolation and projection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#plotting-the-solution-along-a-line">Plotting the solution along a line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book014.html#integrating-plotting-and-computations">Integrating plotting and computations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book014.html#exercises-2">Exercises</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#problem-11-define-nodes-and-elements">Problem 11: Define nodes and elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#problem-12-define-vertices-cells-and-dof-maps">Problem 12: Define vertices, cells, and dof maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#problem-13-construct-matrix-sparsity-patterns">Problem 13: Construct matrix sparsity patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#problem-14-perform-symbolic-finite-element-computations">Problem 14: Perform symbolic finite element computations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#problem-15-approximate-a-steep-function-by-p1-and-p2-elements">Problem 15: Approximate a steep function by P1 and P2 elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#problem-16-approximate-a-steep-function-by-p3-and-p4-elements">Problem 16: Approximate a steep function by P3 and P4 elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#exercise-17-investigate-the-approximation-error-in-finite-elements">Exercise 17: Investigate the approximation error in finite elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#problem-18-approximate-a-step-function-by-finite-elements">Problem 18: Approximate a step function by finite elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#exercise-19-2d-approximation-with-orthogonal-functions">Exercise 19: 2D approximation with orthogonal functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#exercise-20-use-the-trapezoidal-rule-and-p1-elements">Exercise 20: Use the Trapezoidal rule and P1 elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#exercise-21-compare-p1-elements-and-interpolation">Exercise 21: Compare P1 elements and interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#exercise-22-implement-3d-computations-with-global-basis-functions">Exercise 22: Implement 3D computations with global basis functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#exercise-23-use-simpson-s-rule-and-p2-elements">Exercise 23: Use Simpson&#8217;s rule and P2 elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book014.html#exercise-24-make-a-3d-code-for-lagrange-elements-of-arbitrary-order">Exercise 24: Make a 3D code for Lagrange elements of arbitrary order</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book015.html">Variational formulations with global basis functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book015.html#basic-principles-for-approximating-differential-equations">Basic principles for approximating differential equations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#differential-equation-models">Differential equation models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#simple-model-problems-and-their-solutions">Simple model problems and their solutions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#forming-the-residual">Forming the residual</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#the-least-squares-method-4">The least squares method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#the-galerkin-method-1">The Galerkin method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#the-method-of-weighted-residuals">The method of weighted residuals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#test-and-trial-functions">Test and trial functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#the-collocation-method-1">The collocation method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#examples-on-using-the-principles">Examples on using the principles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#integration-by-parts-1">Integration by parts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#boundary-function-1">Boundary function</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book015.html#computing-with-global-polynomials">Computing with global polynomials</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#computing-with-dirichlet-and-neumann-conditions">Computing with Dirichlet and Neumann conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book015.html#when-the-numerical-method-is-exact">When the numerical method is exact</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book016.html">Abstract notation for variational formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book016.html#variational-problems-and-minimization-of-functionals">Variational problems and minimization of functionals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book016.html#example-4">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book016.html#the-general-minimization-problem">The general minimization problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book016.html#derivation">Derivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book016.html#minimization-of-the-discretized-functional">Minimization of the discretized functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book016.html#calculus-of-variations">Calculus of variations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book017.html">Examples on variational formulations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book017.html#variable-coefficient">Variable coefficient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book017.html#first-order-derivative-in-the-equation-and-boundary-condition">First-order derivative in the equation and boundary condition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book017.html#nonlinear-coefficient">Nonlinear coefficient</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book017.html#implementation-of-the-algorithms">Implementation of the algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book017.html#extensions-of-the-code-for-approximation-1">Extensions of the code for approximation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book017.html#fallback-on-numerical-methods">Fallback on numerical methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book017.html#example-with-constant-right-hand-side">Example with constant right-hand side</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book017.html#approximations-may-fail-convection-diffusion">Approximations may fail: convection-diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book018.html">Exercises</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book018.html#exercise-25-refactor-functions-into-a-more-general-class">Exercise 25: Refactor functions into a more general class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book018.html#exercise-26-compute-the-deflection-of-a-cable-with-sine-functions">Exercise 26: Compute the deflection of a cable with sine functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book018.html#exercise-27-compute-the-deflection-of-a-cable-with-power-functions">Exercise 27: Compute the deflection of a cable with power functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book018.html#exercise-28-check-integration-by-parts">Exercise 28: Check integration by parts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book019.html">Variational formulations with finite elements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book019.html#computing-with-finite-elements">Computing with finite elements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book019.html#finite-element-mesh-and-basis-functions">Finite element mesh and basis functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book019.html#computation-in-the-global-physical-domain">Computation in the global physical domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book019.html#comparison-with-a-finite-difference-discretization">Comparison with a finite difference discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book019.html#cellwise-computations-1">Cellwise computations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book020.html">Boundary conditions: specified nonzero value</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book020.html#general-construction-of-a-boundary-function">General construction of a boundary function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book020.html#example-on-computing-with-a-finite-element-based-boundary-function">Example on computing with a finite element-based boundary function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book020.html#computations-in-physical-coordinates">Computations in physical coordinates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book020.html#cellwise-computations-on-the-reference-element">Cellwise computations on the reference element</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book020.html#modification-of-the-linear-system-1">Modification of the linear system</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book020.html#computations-in-the-physical-system">Computations in the physical system</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book020.html#symmetric-modification-of-the-linear-system">Symmetric modification of the linear system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book020.html#modification-of-the-element-matrix-and-vector">Modification of the element matrix and vector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book021.html">Boundary conditions: specified derivative</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book021.html#the-variational-formulation">The variational formulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book021.html#boundary-term-vanishes-because-of-the-test-functions">Boundary term vanishes because of the test functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book021.html#boundary-term-vanishes-because-of-linear-system-modifications">Boundary term vanishes because of linear system modifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book021.html#direct-computation-of-the-global-linear-system">Direct computation of the global linear system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book021.html#cellwise-computations-2">Cellwise computations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book022.html">Implementation of finite element algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book022.html#extensions-of-the-code-for-approximation-2">Extensions of the code for approximation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book022.html#utilizing-a-sparse-matrix">Utilizing a sparse matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book022.html#application-to-our-model-problem">Application to our model problem</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book023.html">Variational formulations in 2D and 3D</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#integration-by-parts-2">Integration by parts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#example-on-a-multi-dimensional-variational-problem">Example on a multi-dimensional variational problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#transformation-to-a-reference-cell-in-2d-and-3d">Transformation to a reference cell in 2D and 3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#numerical-integration-2">Numerical integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#convenient-formulas-for-p1-elements-in-2d">Convenient formulas for P1 elements in 2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#a-glimpse-of-the-mathematical-theory-of-the-finite-element-method">A glimpse of the mathematical theory of the finite element method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#abstract-variational-forms">Abstract variational forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#example-on-an-abstract-variational-form-and-associated-spaces">Example on an abstract variational form and associated spaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#assumptions">Assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#existence-and-uniqueness">Existence and uniqueness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#stability">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#equivalent-minimization-problem">Equivalent minimization problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#best-approximation-principle">Best approximation principle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#best-approximation-property-in-the-norm-of-the-space">Best approximation property in the norm of the space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#symmetric-positive-definite-coefficient-matrix">Symmetric, positive definite coefficient matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#equivalent-matrix-minimization-problem">Equivalent matrix minimization problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#a-priori-error-estimate-for-the-derivative">A priori error estimate for the derivative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#a-priori-error-estimate-for-the-solution">A priori error estimate for the solution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book023.html#implementation-in-2d-and-3d-via-fenics">Implementation in 2D and 3D via FEniCS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#mathematical-problem-2">Mathematical problem</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book023.html#symmetry">Symmetry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#variational-formulation">Variational formulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#the-fenics-solver">The FEniCS solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#making-the-mesh">Making the mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book023.html#solving-a-problem">Solving a problem</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book024.html">Convection-diffusion and Petrov-Galerkin methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book024.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="._book025.html">Exercises</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-29-compute-the-deflection-of-a-cable-with-2-p1-elements">Exercise 29: Compute the deflection of a cable with 2 P1 elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-30-compute-the-deflection-of-a-cable-with-1-p2-element">Exercise 30: Compute the deflection of a cable with 1 P2 element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-31-compute-the-deflection-of-a-cable-with-a-step-load">Exercise 31: Compute the deflection of a cable with a step load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-32-compute-with-a-non-uniform-mesh">Exercise 32: Compute with a non-uniform mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#problem-33-solve-a-1d-finite-element-problem-by-hand">Problem 33: Solve a 1D finite element problem by hand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-34-investigate-exact-finite-element-solutions">Exercise 34: Investigate exact finite element solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-35-compare-finite-elements-and-differences-for-a-radially-symmetric-poisson-equation">Exercise 35: Compare finite elements and differences for a radially symmetric Poisson equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-36-compute-with-variable-coefficients-and-p1-elements-by-hand">Exercise 36: Compute with variable coefficients and P1 elements by hand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book025.html#exercise-37-solve-a-2d-poisson-equation-using-polynomials-and-sines">Exercise 37: Solve a 2D Poisson equation using polynomials and sines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book026.html">Time-dependent variational forms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book026.html#discretization-in-time-by-a-forward-euler-scheme">Discretization in time by a Forward Euler scheme</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#time-discretization-1">Time discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#space-discretization">Space discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#variational-forms-1">Variational forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#notation-for-the-solution-at-recent-time-levels">Notation for the solution at recent time levels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#deriving-the-linear-systems">Deriving the linear systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#computational-algorithm">Computational algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#example-using-sinusoidal-basis-functions">Example using sinusoidal basis functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#comparing-p1-elements-with-the-finite-difference-method">Comparing P1 elements with the finite difference method</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book026.html#discretization-in-time-by-a-backward-euler-scheme">Discretization in time by a Backward Euler scheme</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#time-discretization-2">Time discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#variational-forms-2">Variational forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#linear-systems">Linear systems</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book026.html#dirichlet-boundary-conditions">Dirichlet boundary conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#boundary-function-2">Boundary function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#finite-element-basis-functions-2">Finite element basis functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#modification-of-the-linear-system-2">Modification of the linear system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#example-oscillating-dirichlet-boundary-condition">Example: Oscillating Dirichlet boundary condition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book026.html#accuracy-of-the-finite-element-solution">Accuracy of the finite element solution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#illustrating-example">Illustrating example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#methods-of-analysis">Methods of analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#fourier-components-and-dispersion-relations">Fourier components and dispersion relations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#forward-euler-discretization">Forward Euler discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#backward-euler-discretization-1">Backward Euler discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#comparing-amplification-factors">Comparing amplification factors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book026.html#exercises-5">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book026.html#exercise-38-analyze-a-crank-nicolson-scheme-for-the-diffusion-equation">Exercise 38: Analyze a Crank-Nicolson scheme for the diffusion equation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book027.html">Variational forms for systems of PDEs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#variational-forms-3">Variational forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#sequence-of-scalar-pdes-formulation">Sequence of scalar PDEs formulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#vector-pde-formulation">Vector PDE formulation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#a-worked-example">A worked example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#identical-function-spaces-for-the-unknowns">Identical function spaces for the unknowns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#variational-form-of-each-individual-pde">Variational form of each individual PDE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#compound-scalar-variational-form">Compound scalar variational form</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#decoupled-linear-systems">Decoupled linear systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#coupled-linear-systems">Coupled linear systems</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#different-function-spaces-for-the-unknowns">Different function spaces for the unknowns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#computations-in-1d">Computations in 1D</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#another-example-in-1d">Another example in 1D</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#exercises-6">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#problem-39-estimate-order-of-convergence-for-the-cooling-law">Problem 39: Estimate order of convergence for the Cooling law</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#problem-40-estimate-order-of-convergence-for-the-cooling-law">Problem 40: Estimate order of convergence for the Cooling law</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book027.html#flexible-implementations-of-boundary-conditions">Flexible implementations of boundary conditions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#optimization-with-constraint">Optimization with constraint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#elimination-of-variables">Elimination of variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#lagrange-multiplier-method">Lagrange multiplier method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#penalty-method">Penalty method</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#optimization-of-functionals">Optimization of functionals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#classical-calculus-of-variations">Classical calculus of variations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#penalty-method-for-optimization-with-constraints">Penalty method for optimization with constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#lagrange-multiplier-method-for-optimization-with-constraints">Lagrange multiplier method for optimization with constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#example-1d-problem">Example: 1D problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#example-adding-a-constraint-in-a-neumann-problem">Example: adding a constraint in a Neumann problem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book027.html#nonlinear-problems">Nonlinear problems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book027.html#introduction-of-basic-concepts">Introduction of basic concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#linear-versus-nonlinear-equations">Linear versus nonlinear equations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#a-simple-model-problem">A simple model problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#linearization-by-explicit-time-discretization">Linearization by explicit time discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#exact-solution-of-nonlinear-algebraic-equations">Exact solution of nonlinear algebraic equations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#linearization">Linearization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#picard-iteration-1">Picard iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#linearization-by-a-geometric-mean">Linearization by a geometric mean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#newton-s-method-1">Newton&#8217;s method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#relaxation">Relaxation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#implementation-and-experiments">Implementation and experiments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#generalization-to-a-general-nonlinear-ode">Generalization to a general nonlinear ODE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book027.html#systems-of-odes">Systems of ODEs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book028.html">Systems of nonlinear algebraic equations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book028.html#picard-iteration-2">Picard iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book028.html#newton-s-method-2">Newton&#8217;s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book028.html#stopping-criteria-2">Stopping criteria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book028.html#example-a-nonlinear-ode-model-from-epidemiology">Example: A nonlinear ODE model from epidemiology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book028.html#implicit-time-discretization">Implicit time discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book028.html#a-picard-iteration">A Picard iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book028.html#newton-s-method-3">Newton&#8217;s method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book029.html">Linearization at the differential equation level</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book029.html#explicit-time-integration">Explicit time integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book029.html#backward-euler-scheme-and-picard-iteration">Backward Euler scheme and Picard iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book029.html#backward-euler-scheme-and-newton-s-method">Backward Euler scheme and Newton&#8217;s method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book029.html#linearization-via-taylor-expansions">Linearization via Taylor expansions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book029.html#similarity-with-picard-iteration">Similarity with Picard iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book029.html#implementation-6">Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book029.html#derivation-with-alternative-notation">Derivation with alternative notation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book029.html#crank-nicolson-discretization-2">Crank-Nicolson discretization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book030.html">1D stationary nonlinear differential equations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book030.html#finite-difference-discretization-1">Finite difference discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book030.html#solution-of-algebraic-equations">Solution of algebraic equations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book030.html#the-structure-of-the-equation-system">The structure of the equation system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book030.html#picard-iteration-3">Picard iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book030.html#newton-s-method-4">Newton&#8217;s method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book031.html">Multi-dimensional PDE problems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book031.html#finite-difference-discretization-2">Finite difference discretization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book031.html#picard-iteration-4">Picard iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book031.html#newton-s-method-5">Newton&#8217;s method</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book031.html#continuation-methods">Continuation methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book032.html">Exercises</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#problem-41-determine-if-equations-are-nonlinear-or-not">Problem 41: Determine if equations are nonlinear or not</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-42-derive-and-investigate-a-generalized-logistic-model">Exercise 42: Derive and investigate a generalized logistic model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#problem-43-experience-the-behavior-of-newton-s-method">Problem 43: Experience the behavior of Newton&#8217;s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#problem-44-compute-the-jacobian-of-a-system">Problem 44: Compute the Jacobian of a <span class="math">\(2\times 2\)</span> system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#problem-45-solve-nonlinear-equations-arising-from-a-vibration-ode">Problem 45: Solve nonlinear equations arising from a vibration ODE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-46-find-the-truncation-error-of-arithmetic-mean-of-products">Exercise 46: Find the truncation error of arithmetic mean of products</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#problem-47-newton-s-method-for-linear-problems">Problem 47: Newton&#8217;s method for linear problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-48-discretize-a-1d-problem-with-a-nonlinear-coefficient">Exercise 48: Discretize a 1D problem with a nonlinear coefficient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-49-linearize-a-1d-problem-with-a-nonlinear-coefficient">Exercise 49: Linearize a 1D problem with a nonlinear coefficient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#problem-50-finite-differences-for-the-1d-bratu-problem">Problem 50: Finite differences for the 1D Bratu problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-51-discretize-a-nonlinear-1d-heat-conduction-pde-by-finite-differences">Exercise 51: Discretize a nonlinear 1D heat conduction PDE by finite differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-52-differentiate-a-highly-nonlinear-term">Exercise 52: Differentiate a highly nonlinear term</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-53-crank-nicolson-for-a-nonlinear-3d-diffusion-equation">Exercise 53: Crank-Nicolson for a nonlinear 3D diffusion equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#exercise-54-find-the-sparsity-of-the-jacobian">Exercise 54: Find the sparsity of the Jacobian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#problem-55-investigate-a-1d-problem-with-a-continuation-method">Problem 55: Investigate a 1D problem with a continuation method</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book032.html#symbolic-nonlinear-finite-element-equations">Symbolic nonlinear finite element equations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#finite-element-basis-functions-3">Finite element basis functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#the-group-finite-element-method">The group finite element method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book032.html#finite-element-approximation-of-functions-of">Finite element approximation of functions of <span class="math">\(u\)</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book032.html#simplified-problem">Simplified problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book032.html#integrating-nonlinear-functions">Integrating nonlinear functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book032.html#application-of-the-group-finite-element-method">Application of the group finite element method</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#numerical-integration-of-nonlinear-terms-by-hand">Numerical integration of nonlinear terms by hand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book032.html#discretization-of-a-variable-coefficient-laplace-term">Discretization of a variable coefficient Laplace term</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book032.html#group-finite-element-method">Group finite element method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book032.html#numerical-integration-at-the-nodes">Numerical integration at the nodes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book033.html">Uncertainty quantification and polynomial chaos expansions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book033.html#sample-problems">Sample problems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#ode-for-decay-processes">ODE for decay processes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#the-stochastic-poisson-equation">The stochastic Poisson equation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book033.html#basic-principles">Basic principles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#basic-statistical-results">Basic statistical results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#least-squares-methods">Least-squares methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#example-least-squares-applied-to-the-decay-ode">Example: Least squares applied to the decay ODE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#modeling-the-response">Modeling the response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#numerical-integration-3">Numerical integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book033.html#stochastic-collocation">Stochastic collocation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book033.html#the-chaospy-software">The Chaospy software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book033.html#intrusive-polynomial-chaos-methods">Intrusive polynomial chaos methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book034.html">Variational methods for linear systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book034.html#conjugate-gradient-like-iterative-methods">Conjugate gradient-like iterative methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#the-galerkin-method-3">The Galerkin method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#the-least-squares-method-6">The least squares method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#krylov-subspaces">Krylov subspaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#computation-of-the-basis-vectors">Computation of the basis vectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#computation-of-a-new-solution-vector">Computation of a new solution vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#summary-of-the-least-squares-method">Summary of the least squares method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#truncation-and-restart">Truncation and restart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#summary-of-the-galerkin-method">Summary of the Galerkin method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#a-framework-based-on-the-error">A framework based on the error</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book034.html#preconditioning">Preconditioning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#motivation-and-basic-principles">Motivation and Basic Principles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#use-of-the-preconditioning-matrix-in-the-iterative-methods">Use of the preconditioning matrix in the iterative methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#classical-iterative-methods-as-preconditioners">Classical iterative methods as preconditioners</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book034.html#incomplete-factorization-preconditioners">Incomplete factorization preconditioners</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book035.html">Appendix: Useful formulas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="._book035.html#finite-difference-operator-notation">Finite difference operator notation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book035.html#truncation-errors-of-finite-difference-approximations">Truncation errors of finite difference approximations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="._book035.html#finite-differences-of-exponential-functions">Finite differences of exponential functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="._book035.html#complex-exponentials">Complex exponentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="._book035.html#real-exponentials">Real exponentials</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="._book035.html#finite-differences-of">Finite differences of <span class="math">\(t^n\)</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="._book036.html">References</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="index">
+<h1>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <center>
+            <p class="logo"><a href="http://cbc.simula.no/" title="Go to Center for Biomedical Computing">
+              <img class="logo" src="_static/cbc_logo.png" alt="Logo"/>
+            </a></p>
+            </center>
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction to Numerical Methods for Variational Problems</a></li>
+<li><a class="reference internal" href="#index">Index</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="._book000.html"
+                        title="next chapter">Introduction to Numerical Methods for Variational Problems</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="._book000.html" title="Introduction to Numerical Methods for Variational Problems"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>
+<div class="wrapper">
+  <div class="footer">
+    <a href="http://cbc.simula.no"><img src="_static/cbc_banner.png" width="100%"><a>
+    <br />
+    <br />
+      &copy;2016, Hans Petter Langtangen, Kent-Andre Mardal. Released under CC Attribution 4.0 license.
+  </div>
+</div>
+
+  </body>
+</html>

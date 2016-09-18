@@ -1,0 +1,845 @@
+.. !split
+
+.. _fem:deq:1D:varform:ex:
+
+Examples on variational formulations
+====================================
+
+The following sections derive variational formulations for some
+prototype differential equations in 1D, and demonstrate how we with
+ease can handle variable coefficients, mixed Dirichlet and Neumann
+boundary conditions, first-order derivatives, and nonlinearities.
+
+Variable coefficient
+--------------------
+
+Consider the problem
+
+.. _Eq:_auto93:
+
+.. math::
+
+    \tag{186}
+    -\frac{d}{dx}\left( {\alpha}(x)\frac{du}{dx}\right) = f(x),\quad x\in\Omega =[0,L],\ 
+        u(0)=C,\ u(L)=D{\thinspace .}
+        
+        
+
+There are two new features of this problem compared with
+previous examples: a variable
+coefficient :math:`{\alpha} (x)` and nonzero Dirichlet conditions at both boundary points.
+
+Let us first deal with the boundary conditions. We seek
+
+.. math::
+         u(x) = B(x) + \sum_{j\in{\mathcal{I}_s}} c_j{\psi}_i(x){\thinspace .}
+
+Since the Dirichlet conditions demand
+
+.. math::
+         {\psi}_i(0)={\psi}_i(L)=0,\quad i\in{\mathcal{I}_s},
+
+the function :math:`B(x)`
+must fulfill :math:`B(0)=C` and :math:`B(L)=D`. The we are guaranteed that :math:`u(0)=C`
+and :math:`u(L)=D`. How :math:`B` varies in between
+:math:`x=0` and :math:`x=L` is not of importance. One possible choice is
+
+.. math::
+         B(x) = C + \frac{1}{L}(D-C)x,
+
+which follows from :ref:`(183) <Eq:fem:deq:1D:essBC:Bfunc:gen>` with :math:`p=1`.
+
+We seek :math:`(u-B)\in V`. As usual,
+
+.. math::
+         V = \hbox{span}\{{\psi}_0,\ldots,{\psi}_N\}{\thinspace .}
+
+Note that any :math:`v\in V` has the property :math:`v(0)=v(L)=0`.
+
+The residual arises by inserting our :math:`u` in the differential equation:
+
+.. math::
+         R = -\frac{d}{dx}\left( {\alpha}\frac{du}{dx}\right) -f{\thinspace .} 
+
+Galerkin's method is
+
+.. math::
+        
+        (R, v) = 0,\quad \forall v\in V,
+        
+
+or written with explicit integrals,
+
+.. math::
+        
+        \int_{\Omega} \left(-\frac{d}{dx}\left( {\alpha}\frac{du}{dx}\right) -f\right)v {\, \mathrm{d}x} = 0,\quad \forall v\in V {\thinspace .}
+        
+
+We proceed with integration by parts to lower the derivative from
+second to first order:
+
+.. math::
+         -\int_{\Omega} \frac{d}{dx}\left( {\alpha}(x)\frac{du}{dx}\right) v {\, \mathrm{d}x}
+        = \int_{\Omega} {\alpha}(x)\frac{du}{dx}\frac{dv}{dx}{\, \mathrm{d}x} -
+        \left[{\alpha}\frac{du}{dx}v\right]_0^L
+        {\thinspace .}
+        
+
+The boundary term vanishes since :math:`v(0)=v(L)=0`.
+The variational formulation is then
+
+.. math::
+        
+        \int_{\Omega} {\alpha}(x)\frac{du}{dx}\frac{dv}{dx}{\, \mathrm{d}x} = \int_{\Omega} f(x)v{\, \mathrm{d}x},\quad
+        \forall v\in V{\thinspace .}
+        
+
+The variational formulation can alternatively be written in a more
+compact form:
+
+.. math::
+        
+        ({\alpha} u',v') = (f,v),\quad \forall v\in V
+        {\thinspace .}
+        
+
+The corresponding abstract notation reads
+
+.. math::
+         a(u,v)=L(v)\quad\forall v\in V,
+
+with
+
+.. math::
+         a(u,v)= ({\alpha} u',v'),\quad L(v)=(f,v) {\thinspace .}  
+
+We may insert :math:`u=B + \sum_jc_j{\psi}_j` and :math:`v={\psi}_i` to
+derive the linear system:
+
+.. math::
+        
+        ({\alpha} B' + {\alpha} \sum_{j\in{\mathcal{I}_s}} c_j {\psi}_j', {\psi}_i') =
+        (f,{\psi}_i), \quad i\in{\mathcal{I}_s} {\thinspace .}
+        
+
+Isolating everything with the :math:`c_j` coefficients on the left-hand side
+and all known terms on the right-hand side
+gives
+
+.. math::
+         \sum_{j\in{\mathcal{I}_s}} ({\alpha}{\psi}_j', {\psi}_i')c_j  =
+        (f,{\psi}_i) + (\alpha (D-C)L^{-1}, {\psi}_i'), \quad i\in{\mathcal{I}_s}
+        {\thinspace .}
+        
+
+This is nothing but a linear system :math:`\sum_j A_{i,j}c_j=b_i`
+with
+
+.. math::
+        \begin{align*}
+        A_{i,j} &= (\alpha {\psi}_j', {\psi}_i') = \int_{\Omega} {\alpha}(x){\psi}_j'(x),
+        {\psi}_i'(x){\, \mathrm{d}x},\\ 
+        b_i &= (f,{\psi}_i) + (\alpha (D-C)L^{-1},{\psi}_i')=
+        \int_{\Omega} \left(f(x){\psi}_i(x) + {\alpha}(x)\frac{D-C}{L}{\psi}_i'(x)\right) {\, \mathrm{d}x}
+        {\thinspace .}
+        \end{align*}
+
+First-order derivative in the equation and boundary condition
+-------------------------------------------------------------
+
+The next problem to formulate in terms of a variational form reads
+
+.. _Eq:_auto94:
+
+.. math::
+
+    \tag{187}
+    -u''(x) + bu'(x) = f(x),\quad x\in\Omega =[0,L],\ 
+        u(0)=C,\ u'(L)=E{\thinspace .}
+        
+        
+
+The new features are a first-order derivative :math:`u'` in the equation
+and the boundary
+condition involving the derivative: :math:`u'(L)=E`.
+Since we have a Dirichlet condition at :math:`x=0`,
+we must force :math:`{\psi}_i(0)=0` and use a boundary function
+to take care of the condition :math:`u(0)=C`.
+Because there is no Dirichlet
+condition on :math:`x=L` we do not make any requirements to :math:`{\psi}_i(L)`.
+The simplest possible choice of :math:`B(x)` is :math:`B(x)=C`.
+
+The expansion for :math:`u` becomes
+
+.. math::
+         u = C + \sum_{j\in{\mathcal{I}_s}} c_j {\psi}_i(x)
+        {\thinspace .}
+        
+
+The variational formulation arises from multiplying the equation by
+a test function :math:`v\in V` and integrating over :math:`\Omega`:
+
+.. math::
+          (-u'' + bu' - f, v) = 0,\quad\forall v\in V
+
+We apply integration by parts to the :math:`u''v` term only. Although we could
+also integrate :math:`u' v` by parts, this is not common.
+The result becomes
+
+.. math::
+         (u',v') + (bu',v) = (f,v) + [u' v]_0^L, \quad\forall v\in V {\thinspace .} 
+
+Now, :math:`v(0)=0` so
+
+.. math::
+         [u' v]_0^L = u'(L)v(L) = E v(L),
+
+because :math:`u'(L)=E`.
+Thus, integration by parts allows us to take care of the Neumann condition
+in the boundary term.
+
+.. index:: natural boundary condition
+
+.. index:: essential boundary condition
+
+
+.. admonition:: Natural and essential boundary conditions
+
+   A common mistake is to forget a boundary term like :math:`[u'v]_0^L` in
+   the integration by parts. Such a mistake implies that we actually
+   impose the condition :math:`u'=0` unless there is a Dirichlet condition
+   (i.e., :math:`v=0`) at that point! This fact has great practical
+   consequences, because it is easy to forget the boundary term, and that
+   implicitly set a boundary condition!
+   
+   Since homogeneous Neumann conditions can be incorporated without
+   "doing anything" (i.e., omitting the boundary term), and
+   non-homogeneous Neumann conditions can just be inserted in the
+   boundary term, such conditions are known as *natural boundary
+   conditions*.  Dirichlet conditions require more essential steps in the
+   mathematical formulation, such as forcing all :math:`{\varphi}_i=0` on the
+   boundary and constructing a :math:`B(x)`, and are therefore known as
+   *essential boundary conditions*.
+
+
+
+
+The final variational form reads
+
+.. math::
+         (u',v') + (bu',v) = (f,v) + E v(L), \quad\forall v\in V {\thinspace .} 
+
+In the abstract notation we have
+
+.. math::
+         a(u,v)=L(v)\quad\forall v\in V,
+
+with the particular formulas
+
+.. math::
+         a(u,v)=(u',v') + (bu',v),\quad L(v)= (f,v) + E v(L){\thinspace .} 
+
+The associated linear system is derived by inserting :math:`u=B+\sum_jc_j{\psi}_j`
+and replacing :math:`v` by :math:`{\psi}_i` for :math:`i\in{\mathcal{I}_s}`. Some algebra results in
+
+.. math::
+         \sum_{j\in{\mathcal{I}_s}} \underbrace{(({\psi}_j',{\psi}_i') + (b{\psi}_j',{\psi}_i))}_{A_{i,j}} c_j = \underbrace{(f,{\psi}_i) + E {\psi}_i(L)}_{b_i}
+        {\thinspace .}
+        
+
+Observe that in this problem, the coefficient matrix is not symmetric,
+because of the term
+
+.. math::
+        
+        (b{\psi}_j',{\psi}_i)=\int_{\Omega} b{\psi}_j'{\psi}_i {\, \mathrm{d}x}
+         \neq \int_{\Omega} b {\psi}_i' {\psi}_j {\, \mathrm{d}x} = ({\psi}_i',b{\psi}_j)
+        {\thinspace .}
+        
+
+.. Too early:
+
+.. For finite element basis functions, it is worth noticing that the boundary term
+
+.. :math:`E{\psi}_i(L)` is nonzero only in the entry :math:`b_N` since all
+
+.. :math:`{\psi}_i`, :math:`i\neq N`, are zero at :math:`x=L`, provided the degrees of freedom
+
+.. are numbered from left to right in 1D so that :math:`x_{N}=L`.
+
+Nonlinear coefficient
+---------------------
+
+Finally, we show that the techniques used above to derive variational
+forms apply to nonlinear differential equation
+problems as well. Here is a model problem with
+a nonlinear coefficient :math:`\alpha(u)` and a nonlinear right-hand side :math:`f(u)`:
+
+.. _Eq:_auto95:
+
+.. math::
+
+    \tag{188}
+    -({\alpha}(u)u')' = f(u),\quad x\in [0,L],\ u(0)=0,\ u'(L)=E
+        {\thinspace .}
+        
+        
+
+Our space :math:`V` has basis :math:`\left\{ {{\psi}}_i \right\}_{i\in{\mathcal{I}_s}}`, and because of the
+condition :math:`u(0)=0`, we must require :math:`{\psi}_i(0)=0`, :math:`i\in{\mathcal{I}_s}`.
+
+Galerkin's method is about inserting the approximate
+:math:`u`, multiplying the differential equation by :math:`v\in V`, and integrate,
+
+.. math::
+         -\int_0^L \frac{d}{dx}\left({\alpha}(u)\frac{du}{dx}\right)v {\, \mathrm{d}x} =
+        \int_0^L f(u)v {\, \mathrm{d}x}\quad\forall v\in V
+        {\thinspace .}
+        
+
+The integration by parts does not differ from the case where we have
+:math:`{\alpha}(x)` instead of :math:`{\alpha}(u)`:
+
+.. math::
+         \int_0^L {\alpha}(u)\frac{du}{dx}\frac{dv}{dx}{\, \mathrm{d}x} =
+        \int_0^L f(u)v{\, \mathrm{d}x} + [{\alpha}(u)vu']_0^L\quad\forall v\in V
+        {\thinspace .}
+        
+
+The term :math:`{\alpha}(u(0))v(0)u'(0)=0` since :math:`v(0)`.
+The other term, :math:`{\alpha}(u(L))v(L)u'(L)`,
+is used to impose the other boundary condition :math:`u'(L)=E`, resulting in
+
+.. math::
+         \int_0^L {\alpha}(u)\frac{du}{dx}\frac{dv}{dx}{\, \mathrm{d}x} =
+        \int_0^L f(u)v{\, \mathrm{d}x} + {\alpha}(u(L))v(L)E\quad\forall v\in V,
+        
+
+or alternatively written more compactly as
+
+.. math::
+         ({\alpha}(u)u', v') = (f(u),v) + {\alpha}(u(L))v(L)E\quad\forall v\in V
+        {\thinspace .}
+        
+
+Since the problem is nonlinear, we cannot identify a bilinear
+form :math:`a(u,v)` and a linear form :math:`L(v)`.
+An abstract formulation is typically *find :math:`u` such that*
+
+.. math::
+         F(u;v) = 0\quad\forall v\in V,
+
+with
+
+.. math::
+         F(u;v) = (a(u)u', v') - (f(u),v) - a(L)v(L)E
+        {\thinspace .}
+        
+
+By inserting :math:`u=\sum_j c_j{\psi}_j` and :math:`v={\psi}_i` in :math:`F(u;v)`,
+we get a *nonlinear system of
+algebraic equations* for the unknowns :math:`c_i`, :math:`i\in{\mathcal{I}_s}`. Such systems must
+be solved by constructing a sequence of linear systems whose solutions
+hopefully converge to the solution of the nonlinear system. Frequently applied
+methods are Picard iteration and Newton's method.
+
+.. _fem:global:deq:1D:code:
+
+Implementation of the algorithms
+================================
+
+Our hand calculations can benefit greatly by symbolic computing, as shown
+earlier, so it is natural to extend our approximation programs based on
+``sympy`` to the problem domain of variational formulations.
+
+.. _fem:deq:1D:code:global:
+
+Extensions of the code for approximation          (1)
+-----------------------------------------------------
+
+The user must prepare a function ``integrand_lhs(psi, i, j)`` for
+returning the integrand of the integral that contributes to matrix
+entry :math:`(i,j)` on the left-hand side.  The ``psi`` variable is a Python dictionary holding the
+basis functions and their derivatives in symbolic form. More
+precisely, ``psi[q]`` is a list of
+
+.. math::
+        
+        \{\frac{d^q{\psi}_0}{dx^q},\ldots,\frac{d^q{\psi}_{N_n-1}}{dx^q}\}
+        {\thinspace .}
+        
+
+Similarly, ``integrand_rhs(psi, i)`` returns the integrand
+for entry number :math:`i` in the right-hand side vector.
+
+Since we also have contributions to the right-hand side vector (and
+potentially also the matrix) from boundary terms without any integral,
+we introduce two additional functions, ``boundary_lhs(psi, i, j)`` and
+``boundary_rhs(psi, i)`` for returning terms in the variational
+formulation that are not to be integrated over the domain :math:`\Omega`.
+Examples, to be shown later, will explain in more detail how these
+user-supplied function may look like.
+
+The linear system can be computed and solved symbolically by
+the following function:
+
+.. code-block:: python
+
+    import sympy as sym
+    
+    def solver(integrand_lhs, integrand_rhs, psi, Omega,
+               boundary_lhs=None, boundary_rhs=None):
+        N = len(psi[0]) - 1
+        A = sym.zeros((N+1, N+1))
+        b = sym.zeros((N+1, 1))
+        x = sym.Symbol('x')
+        for i in range(N+1):
+            for j in range(i, N+1):
+                integrand = integrand_lhs(psi, i, j)
+                I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+                if boundary_lhs is not None:
+                    I += boundary_lhs(psi, i, j)
+                A[i,j] = A[j,i] = I   # assume symmetry
+            integrand = integrand_rhs(psi, i)
+            I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+            if boundary_rhs is not None:
+                I += boundary_rhs(psi, i)
+            b[i,0] = I
+        c = A.LUsolve(b)
+        u = sum(c[i,0]*psi[0][i] for i in range(len(psi[0])))
+        return u, c
+
+Fallback on numerical methods
+-----------------------------
+
+Not surprisingly, symbolic solution of differential
+equations, discretized by a Galerkin or least squares method
+with global basis functions,
+is of limited interest beyond the simplest problems, because
+symbolic integration might be very time consuming or impossible, not
+only in ``sympy`` but also in
+`WolframAlpha <http://wolframalpha.com>`__
+(which applies the perhaps most powerful symbolic integration
+software available today: Mathematica). Numerical integration
+as an option is therefore desirable.
+
+The extended ``solver`` function below tries to combine symbolic and
+numerical integration.  The latter can be enforced by the user, or it
+can be invoked after a non-successful symbolic integration (being
+detected by an ``Integral`` object as the result of the integration
+in ``sympy``).
+
+.. see the section :ref:`fem:approx:global:Lagrange`).
+
+Note that for a
+numerical integration, symbolic expressions must be converted to
+Python functions (using ``lambdify``), and the expressions cannot contain
+other symbols than ``x``. The real ``solver`` routine in the
+`varform1D.py <http://tinyurl.com/znpudbt/varform1D.py>`__
+file has error checking and meaningful error messages in such cases.
+The ``solver`` code below is a condensed version of the real one, with
+the purpose of showing how to automate the Galerkin or least squares
+method for solving differential equations in 1D with global basis functions:
+
+[**kam 10**: this point has been made many times already]
+
+.. code-block:: python
+
+    def solver(integrand_lhs, integrand_rhs, psi, Omega,
+               boundary_lhs=None, boundary_rhs=None, symbolic=True):
+        N = len(psi[0]) - 1
+        A = sym.zeros((N+1, N+1))
+        b = sym.zeros((N+1, 1))
+        x = sym.Symbol('x')
+        for i in range(N+1):
+            for j in range(i, N+1):
+                integrand = integrand_lhs(psi, i, j)
+                if symbolic:
+                    I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+                    if isinstance(I, sym.Integral):
+                        symbolic = False  # force num.int. hereafter
+                if not symbolic:
+                    integrand = sym.lambdify([x], integrand)
+                    I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+                if boundary_lhs is not None:
+                    I += boundary_lhs(psi, i, j)
+                A[i,j] = A[j,i] = I
+            integrand = integrand_rhs(psi, i)
+            if symbolic:
+                I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
+                if isinstance(I, sym.Integral):
+                    symbolic = False
+            if not symbolic:
+                integrand = sym.lambdify([x], integrand)
+                I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            if boundary_rhs is not None:
+                I += boundary_rhs(psi, i)
+            b[i,0] = I
+        c = A.LUsolve(b)
+        u = sum(c[i,0]*psi[0][i] for i in range(len(psi[0])))
+        return u, c
+
+Example with constant right-hand side
+-------------------------------------
+
+To demonstrate the code above, we address
+
+.. math::
+         -u''(x)=b,\quad x\in\Omega=[0,1],\quad u(0)=1,\ u(1)=0,
+
+with :math:`b` as a (symbolic) constant. A possible basis for the space :math:`V`
+is :math:`{\psi}_i(x) = x^{i+1}(1-x)`, :math:`i\in{\mathcal{I}_s}`. Note that
+:math:`{\psi}_i(0)={\psi}_i(1)=0` as required by the Dirichlet conditions.
+We need a :math:`B(x)` function to take care of the known boundary
+values of :math:`u`. Any function :math:`B(x)=1-x^p`, :math:`p\in\mathbb{R}`, is a candidate,
+and one arbitrary choice from this family
+is :math:`B(x)=1-x^3`. The unknown function is then written as
+
+.. math::
+        
+        u(x) = B(x) + \sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j(x){\thinspace .}
+        
+
+Let us use the Galerkin method to derive the variational formulation.
+Multiplying the differential
+equation by :math:`v` and integrating by parts yield
+
+.. math::
+        
+        \int_0^1 u'v' {\, \mathrm{d}x} = \int_0^1 fv {\, \mathrm{d}x}\quad\forall v\in V,
+        
+
+and with :math:`u=B + \sum_jc_j{\psi}_j` we get the linear system
+
+.. _Eq:_auto96:
+
+.. math::
+
+    \tag{189}
+    \sum_{j\in{\mathcal{I}_s}}\left(\int_0^1{\psi}_i'{\psi}_j' {\, \mathrm{d}x}\right)c_j =
+        \int_0^1(f{\psi}_i-B'{\psi}_i') {\, \mathrm{d}x},
+        \quad i\in{\mathcal{I}_s}{\thinspace .}
+        
+        
+
+The application can be coded as follows with ``sympy``:
+
+.. code-block:: python
+
+    import sympy as sym
+    x, b = sym.symbols('x b')
+    f = b
+    B = 1 - x**3
+    dBdx = sym.diff(B, x)
+    
+    # Compute basis functions and their derivatives
+    N = 3
+    psi = {0: [x**(i+1)*(1-x) for i in range(N+1)]}
+    psi[1] = [sym.diff(psi_i, x) for psi_i in psi[0]]
+    
+    def integrand_lhs(psi, i, j):
+        return psi[1][i]*psi[1][j]
+    
+    def integrand_rhs(psi, i):
+        return f*psi[0][i] - dBdx*psi[1][i]
+    
+    Omega = [0, 1]
+    
+    from varform1D import solver
+    u_bar, c = solver(integrand_lhs, integrand_rhs, psi, Omega,
+                      verbose=True, symbolic=True)
+    u = B + u_bar
+    print 'solution u:', sym.simplify(sym.expand(u))
+
+[**kam 11**: does not work]
+[**hpl 12**: We must get it to work. It's a small extension of the code for approximation and very natural to include when we have so much material already on ``sympy`` for implementing algorithms.]
+
+The printout of ``u`` reads ``-b*x**2/2 + b*x/2 - x + 1``.  Note that
+expanding ``u``, before simplifying, is necessary in the present case to
+get a compact, final expression with ``sympy``. Doing ``expand`` before
+``simplify`` is a common strategy for simplifying expressions in
+``sympy``. However, a non-expanded ``u`` might be preferable in other
+cases - this depends on the problem in question.
+
+The exact solution :math:`{u_{\small\mbox{e}}}(x)` can be derived by some ``sympy`` code that
+closely follows the examples in the section :ref:`fem:deq:1D:models:simple`. The idea is to integrate :math:`-u''=b` twice
+and determine the integration constants from the boundary conditions:
+
+.. code-block:: python
+
+    C1, C2 = sym.symbols('C1 C2')    # integration constants
+    f1 = sym.integrate(f, x) + C1
+    f2 = sym.integrate(f1, x) + C2
+    # Find C1 and C2 from the boundary conditions u(0)=0, u(1)=1
+    s = sym.solve([u_e.subs(x,0) - 1, u_e.subs(x,1) - 0], [C1, C2])
+    # Form the exact solution
+    u_e = -f2 + s[C1]*x + s[C2]
+    print 'analytical solution:', u_e
+    print 'error:', sym.simplify(sym.expand(u - u_e))
+
+The last line prints ``0``, which is not surprising when
+:math:`{u_{\small\mbox{e}}}(x)` is a parabola and our approximate :math:`u` contains polynomials up to
+degree 4. It suffices to have :math:`N=1`, i.e., polynomials of degree
+2, to recover the exact solution.
+
+We can play around with the code and test that with :math:`f=Kx^p`, for
+some constants :math:`K` and :math:`p`,
+the solution is a polynomial of degree :math:`p+2`, and :math:`N=p+1` guarantees
+that the approximate solution is exact.
+
+Although the symbolic code is capable of integrating many choices of :math:`f(x)`,
+the symbolic expressions for :math:`u` quickly become lengthy and non-informative,
+so numerical integration in the code, and hence numerical answers,
+have the greatest application potential.
+
+.. _ch:convdiff:
+
+Approximations may fail: convection-diffusion
+=============================================
+
+.. index:: convection-diffusion
+
+In the previous examples we have obtained reasonable approximations
+of the continuous solution with several different approaches. In this
+chapter we will consider a convection-diffusion equation where
+many methods will fail. The failure is purely numerical
+and it is often tied to the resolution. The current example is perhaps
+the prime example of numerical instabilities in the context of
+numerical solution algorithms for PDEs.
+
+Consider the equation
+
+.. _Eq:convdiff:1D:
+
+.. math::
+
+    \tag{190}
+    \
+        - \epsilon u_{xx} - u_x = 0, \quad \in  (0,1), 
+        
+
+.. _Eq:_auto97:
+
+.. math::
+
+    \tag{191}
+    u(0) = 1, 
+        
+        
+
+.. _Eq:_auto98:
+
+.. math::
+
+    \tag{192}
+    u(1) = 0 .
+        
+        
+
+The problem describes a convection-diffusion problem where the
+convection is modelled by the first order term :math:`-u_x` and diffusion is
+described by the second order term :math:`-\epsilon u_{xx}`. In many
+applications :math:`\epsilon \ll 1` and the dominating term is :math:`-u_x`. The
+sign of :math:`-u_x` is not important, the same problem occurs for
+:math:`u_x`. The sign only determine the direction of the convection.
+
+For :math:`\epsilon=0`, the solution satisfies
+
+.. math::
+        
+        u(x) - u(1) = \int_1^x (-u_x) (-{\, \mathrm{d}x}) = 0 ,
+        
+
+which means that :math:`u(x) = u(1)`. Clearly only the boundary condition at :math:`x=1` is required
+and the solution is constant throughout the domain.
+
+If :math:`0 < \epsilon \ll 1` such that the term :math:`-u_x` is dominating, the
+solution is similar to the solution for :math:`\epsilon=0` in the interior.
+However, the second order term :math:`-\epsilon u_{xx}` makes the problem a
+second order problem and two boundary conditions are required, one
+condition at each side.  The boundary condition at :math:`x=0` forces the
+solution to be zero at that point and this creates a sharp gradient
+close to :math:`x=0`.  For this reason, the problem is called a *singular
+perturbation problem* as the problem changes fundamentally in the
+sense that different boundary conditions are required in the limiting
+case :math:`\epsilon=0`.
+
+The solution of the above problem is
+
+.. _Eq:convdiff:1D:analytical:
+
+.. math::
+
+    \tag{193}
+    \
+        u(x) = \frac{e^{-x/\epsilon} - 1}{ e^{-1/\epsilon} -1 } .
+        
+
+.. _convdiff:analytical:
+
+.. figure:: conv-diff-analytical.png
+   :width: 400
+
+   Analytical solution to the convection-diffusion problem for varying :math:`\epsilon`
+
+The solution is plotted in Figure :ref:`convdiff:analytical` for
+different values of :math:`\epsilon`.  Clearly, as :math:`\epsilon` decrease the
+exponential function represents a sharper and sharper gradient.  From
+a physical or engineering point of view, the equation
+:ref:`(190) <Eq:convdiff:1D>` represents the simplest problem involving a common
+phenomenon of boundary layers.  Boundary layers are common in all
+kinds of fluid flow and is a main problem when discretizing such
+equations.  Boundary layers have the characteristics of the solution
+:ref:`(193) <Eq:convdiff:1D:analytical>`, that is; a sharp local exponential
+gradient.  In fluid flow the parameter :math:`\epsilon` is often related to
+the inverse of the Reynolds number which frequently in engineering is
+significantly larger than :math:`10^3` as it was here.  In these
+applications the boundary layer is extremely thin and the gradient
+extremely sharp.
+
+In this chapter we will not embark on the fascinating and complex
+issue of boundary layer theory but only consider the numerical issues
+related to this phenomenon.  Let us as earlier therefore consider an
+approximate solution on the following form
+
+.. _Eq:_auto99:
+
+.. math::
+
+    \tag{194}
+    u(x) =  \hat{u}(x) + B(x) = \sum^{N-1}_{j=1} c_j {\psi}_j(x)  + B(x)
+        
+        
+
+As earlier :math:`\{{\psi}_j(x)\}_{j=1}^{N-1}\}` are zero at the boundary :math:`x=0`
+and :math:`x=1` and the boundary conditions are accounted for by the function :math:`B(x)`.
+Let
+
+.. _Eq:_auto100:
+
+.. math::
+
+    \tag{195}
+    B(x) = c_0 (1-x) + c_N x {\thinspace .}
+        
+        
+
+Then we fixate :math:`c_0=0` and :math:`c_N=1` which makes :math:`B(x) = x`.
+To determine :math:`\{c_j\}_{j=1}^{N-1}\}`  we consider the homogeneous Dirichlet problem
+where we solve for :math:`\hat{u} = u - B`. The homogeneous Dirichlet problem reads
+
+.. _Eq:_auto101:
+
+.. math::
+
+    \tag{196}
+    - \epsilon \hat{u}_{xx} + \hat{u}_x = 1, \quad \in  (0,1), 
+        
+        
+
+.. _Eq:convdiff:1D:homo:
+
+.. math::
+
+    \tag{197}
+    \hat{u}(0) = 0, 
+        
+
+.. math::
+          
+        \nonumber
+        \hat{u}(1) = 0 {\thinspace .}
+        \nonumber
+        
+
+The Galerkin formulation of :ref:`(197) <Eq:convdiff:1D:homo>` is obtained as
+
+.. math::
+        
+        \int_0^1
+        (- \epsilon \hat{u}'' + \hat{u}' - 1) {\psi}_j {\, \mathrm{d}x} {\thinspace .}
+        
+
+Integration by parts leads to
+
+.. math::
+        
+        \int_0^1
+        \epsilon \hat{u}' {\psi}_i' + \hat{u}' {\psi}_i - 1 {\psi}_i {\, \mathrm{d}x} {\thinspace .}
+        
+
+In other words, we need to solve the linear system :math:`\sum_j A_{i,j} c_j = b_i` where
+
+.. math::
+        \begin{align*}
+        A_{i,j} &= \int_0^1\epsilon {\psi}_j' {\psi}_i' + {\psi}_j' {\psi}_i {\, \mathrm{d}x},\\ 
+        b_i &=\int_0^1 1 {\psi}_j {\, \mathrm{d}x} {\thinspace .}
+        \end{align*}
+
+A sketch of a
+corresponding code where we also plot the behavior of the solution
+with respect to different :math:`\epsilon` goes as follows.
+
+.. code-block:: python
+
+    import matplotlib.pyplot as plt
+    N = 8
+    psi = series(x, series_type, N)  # Lagrange, Bernstein, sin, ...
+    eps_values =[1.0, 0.1, 0.01, 0.001]
+    for eps in eps_valuess:
+        A = sym.zeros((N-1), (N-1))
+        b = sym.zeros((N-1))
+    
+        for i in range(0, N-1):
+            integrand = f*psi[i]
+            integrand = sym.lambdify([x], integrand)
+            b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            for j in range(0, N-1):
+                integrand = eps*sym.diff(psi[i], x)*\ 
+                     sym.diff(psi[j], x) - sym.diff(psi[i], x)*psi[j]
+                integrand = sym.lambdify([x], integrand)
+                A[i,j] = sym.mpmath.quad(integrand,
+                                         [Omega[0], Omega[1]])
+    
+        c = A.LUsolve(b)
+        u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
+    
+        U = sym.lambdify([x], u, modules='numpy')
+        x_ = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0))
+        U_ = U(x_)
+        plt.plot(x_, U_)
+
+.. _convdiff:osc:Lagrange8:
+
+.. figure:: Lagrange_convdiff_8.png
+   :width: 400
+
+   Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various :math:`\epsilon`
+
+.. _convdiff:osc:Lagrange16:
+
+.. figure:: Lagrange_convdiff_16.png
+   :width: 400
+
+   Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various :math:`\epsilon`
+
+The numerical solutions for different :math:`\epsilon` is shown in Figure
+:ref:`convdiff:osc:Lagrange8` and :ref:`convdiff:osc:Lagrange16` for :math:`N=8`
+and :math:`N=16`, respectively.  From these figures we can make two
+observations. The first observation is that the numerical solution
+contains non-physical oscillations that grows as :math:`\epsilon`
+decreases. These oscillations are so strong that for :math:`N=8`, the
+numerical solutions do not resemble the true solution at all for
+:math:`\epsilon` less than :math:`1/10`. The true solution is always in the
+interval :math:`[0,1]` while the numerical solution has values larger than 2
+for :math:`\epsilon=1/100` and larger than 10 for :math:`\epsilon=1/1000`.  The
+second observation is that the numerical solutions appear to improve
+as :math:`N` increases. While the numerical solution is outside the interval
+:math:`[0,1]` for :math:`\epsilon` less than :math:`1/10` the magnitude of the
+oscillations clearly has decreased.
+
+We will return to this example later and show examples of
+techniques that can be used to improve the approximation.
+The complete source code can be found in
+ `conv_diff_global.py <http://tinyurl.com/znpudbt/conv_diff_global.py>`__.
+

@@ -1,0 +1,442 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quick overview of the finite element method</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+
+        <script src="http://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="http://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+
+        <script>sagecell.makeSagecell({inputLocation: ".sage"});</script>
+
+        <style type="text/css">
+                .sagecell .CodeMirror-scroll {
+                        overflow-y: hidden;
+                        overflow-x: auto;
+                }
+                .sagecell .CodeMirror {
+                        height: auto;
+                }
+        </style>
+
+    
+    <link rel="top" title="Introduction to Numerical Methods for Variational Problems" href="index.html" />
+    <link rel="next" title="Approximation of vectors" href="._book003.html" />
+    <link rel="prev" title="Preface" href="._book001.html" />
+ 
+  
+       <style type="text/css">
+         div.admonition {
+           background-color: whiteSmoke;
+           border: 1px solid #bababa;
+         }
+       </style>
+      </head>
+    
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="._book003.html" title="Approximation of vectors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="._book001.html" title="Preface"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quick-overview-of-the-finite-element-method">
+<span id="ch-overview"></span><h1>Quick overview of the finite element method<a class="headerlink" href="#quick-overview-of-the-finite-element-method" title="Permalink to this headline">¶</a></h1>
+<div class="figure" id="id4">
+<span id="overview-meshex"></span><a class="reference internal image-reference" href="_images/dolfin_mesh.png"><img alt="_images/dolfin_mesh.png" src="_images/dolfin_mesh.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text"><em>Example on a complicated domain for solving PDEs</em></span></p>
+</div>
+<p>The finite element method is a versatile approach to construct
+computational schemes to solve any partial differential equation on
+any domain in any dimension. The method may at first glance appear
+cumbersome and even unnatural as it relies on variational formulations
+and polynomial spaces. However, the study of these somewhat abstract
+concepts pays off as the finite element method provides a general
+recipe for efficient and accurate simulations.</p>
+<p>Let us start by outlining the concepts briefly.
+Consider the following PDE in 2D:</p>
+<div class="math">
+\[-\nabla^2 u = -u_{xx} - u_{yy} = f,\]</div>
+<p>equipped with suitable boundary conditions.
+A finite difference scheme to solve the current PDE
+would in the simplest case be described by the stencil</p>
+<div class="math" id="eq-overview-2d-fdm0">
+\[\tag{1}
+-\frac{u_{i-1,j} - 2 u_{i,j} + u_{i+1,j}}{h^2}
+    -\frac{u_{i,j-1} - 2 u_{i,j} + u_{i,j+1}}{h^2}
+     = f_{i}\]</div>
+<p>or reordered to the more famous</p>
+<div class="math" id="eq-overview-2d-fdm">
+\[\tag{2}
+\frac{-u_{i-1,j} -u_{i,j-1} + 4 u_{i,j} - u_{i+1,j} -u_{i,j+1}}{h^2}  = f_{i}
+    {\thinspace .}\]</div>
+<p>On a structured mesh, the stencil appears natural and
+is convenient to implement.
+However, for a unstructured, &#8220;complicated&#8221;domain
+as shown in Figure <a class="reference internal" href="#overview-meshex"><span class="std std-ref">Example on a complicated domain for solving PDEs</span></a>,
+we would need to be careful when placing
+points and evaluating stencils and functions.  Both accuracy and efficiency
+may easily be sacrificed by a reckless implementation.</p>
+<p>In general, a domain like the one represented in Figure
+<a class="reference internal" href="#overview-meshex"><span class="std std-ref">Example on a complicated domain for solving PDEs</span></a> will be representation by a triangulation. The
+finite element method (and the finite volume method which often is a
+special case of the finite element method) is a methodology for
+creating stencils like <a class="reference internal" href="#eq-overview-2d-fdm"><span class="std std-ref">(2)</span></a> in a structured manner
+that adapt to the underlying triangulation.</p>
+<p>The triangulation in Figure <a class="reference internal" href="#overview-meshex"><span class="std std-ref">Example on a complicated domain for solving PDEs</span></a> is a mesh that
+consists of cells that are connected and defined in terms of
+vertices. The fundamental idea of the finite element method is
+to construct a procedure to compute a stencil on a general element and
+then apply this procedure to each element of the mesh. Let
+us therefore denote the mesh as <span class="math">\(\Omega\)</span> while <span class="math">\(\Omega_e\)</span> is the domain
+of a generic element such that <span class="math">\(\Omega=\cup_e \Omega_e\)</span>.</p>
+<p>This is exactly the point where the challenges of the finite element
+method starts and where we need some new concepts.  The basic question
+is: How should we create a stencil like <a class="reference internal" href="#eq-overview-2d-fdm"><span class="std std-ref">(2)</span></a> for a
+general element and a general PDE that has the maximal accuracy and
+minimal computational complexity at the current triangulation?  The
+two basic building blocks of the finite element method are</p>
+<ol class="arabic simple">
+<li>the solution is represented in terms of a polynomial expression on the
+given general element, and</li>
+<li>a variational formulation of the PDE
+where element-wise integration enables the PDE to be transformed to a
+stencil.</li>
+</ol>
+<p>Step 1 is, as will be explained later, conveniently represented
+both implementation-wise and mathematically as a solution</p>
+<div class="math" id="eq-overview-u-fem">
+\[\tag{3}
+u = \sum_{i=0}^N c_i {\psi}_i(x,y),\]</div>
+<p>where <span class="math">\(\{c_i\}\)</span> are the coefficients to be determined
+(often called the degrees of freedom)
+and <span class="math">\({\psi}_i(x,y)\)</span> are prescribed polynomials.
+The next step is the variational formulation. This step
+may seem like a trick of magic or a cumbersome
+mathematical exercise at first glance.
+We take the PDE and multiply by a function <span class="math">\(v\)</span> (usually called a
+the test function)
+and integrate over an element <span class="math">\(\Omega_e\)</span> and obtain the expression</p>
+<div class="math" id="eq-overview-poisson">
+\[\tag{4}
+\int_{\Omega_e} -\nabla^2 u \, v {\, \mathrm{d}x} =  \int_{\Omega_e} f \, v {\, \mathrm{d}x}\]</div>
+<p>A perfectly natural question at this point is: Why multiply
+with a test function <span class="math">\(v\)</span>? The simple answer is that
+there are <span class="math">\(N+1\)</span> unknowns that needs to be determined in <span class="math">\(u\)</span>
+in <a class="reference internal" href="#eq-overview-u-fem"><span class="std std-ref">(3)</span></a>
+and for this we need <span class="math">\(N+1\)</span> equations. The equations are
+obtained by using  <span class="math">\(N+1\)</span> different test functions which when used
+in  <a class="reference internal" href="#eq-overview-fem-a"><span class="std std-ref">(5)</span></a>
+give rise to <span class="math">\(N+1\)</span> linearly independent equations.</p>
+<span class="target" id="index-0"></span><p id="index-1">While <a class="reference internal" href="#eq-overview-poisson"><span class="std std-ref">(4)</span></a> is a variational formulation of
+our PDE problem, it is not the most common form.
+It is common to re-write</p>
+<div class="math" id="eq-overview-fem-a">
+\[\tag{5}
+\int_{\Omega_e} -\nabla^2 u \, v {\, \mathrm{d}x}\]</div>
+<p>to weaken the requirement of the polynomial space used for the
+trial function (that here needs to be twice differentiable)
+and write this term on its corresponding weak form.
+That
+is, the term is rewritten in terms of first-derivatives only (of
+both the trial and the test function)  with the aid of Gauss-Green&#8217;s lemma:</p>
+<div class="math" id="eq-overview-fem-a-weak">
+\[\tag{6}
+\int_{\Omega_e} -\nabla^2 u \, v {\, \mathrm{d}x}  =
+    \int_{\Omega_e} \nabla u \cdot \nabla v {\, \mathrm{d}x}   - \int_{\partial \Omega_e} \frac{\partial u}{\partial n} \,  v \,  dS\]</div>
+<p>The reasons behind this alternative formulation is rather mathematical and will
+not be a major subject of this book as it is well described elsewhere.
+In fact, a precise explanation would need tools from functional analysis.</p>
+<p>With the above rewrite assuming now that the boundary term vanish due to
+boundary conditions (why this is possible will be dealt with in detail
+later in this book) the
+stencil, corresponding to <a class="reference internal" href="#eq-overview-2d-fdm"><span class="std std-ref">(2)</span></a>,  is represented by</p>
+<div class="math">
+\[\int_{\Omega_e} \nabla u \cdot \nabla v {\, \mathrm{d}x}\]</div>
+<p>where <span class="math">\(u\)</span> is called the <em>trial function</em>, <span class="math">\(v\)</span> is called a <em>test function</em>,
+and <span class="math">\(\Omega\)</span> is an element of
+a triangulated mesh. The idea of software like FEniCS is that this
+piece of mathematics can be directly expressed in terms of Python code as</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="s2">&quot;some_file&quot;</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;some polynomial&quot;</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="o">*</span><span class="n">dx</span>
+</pre></div>
+</div>
+<p>The methodology and code in this example is not tied to a particular
+equation, except the formula for <code class="docutils literal"><span class="pre">a</span></code>, holding the derivatives of our
+sample PDE, but any other PDE terms could be expressed via <code class="docutils literal"><span class="pre">u</span></code>, <code class="docutils literal"><span class="pre">v</span></code>,
+<code class="docutils literal"><span class="pre">grad</span></code>, and other symbolic operators in this line of code.  In fact,
+finite element packages like FEniCS are typically structured as
+general toolboxes that can be adapted to any PDE as soon as the
+derivation of variational formulations is mastered.  The main obstacle
+here for a novice FEM user is then to understand the concept of trial
+functions and test functions realised in terms of polynomial spaces.</p>
+<p>Hence, a finite element formulation (or a weak formulation) of
+the Poisson problem that works on any mesh <span class="math">\(\Omega\)</span> can be written
+in terms of solving the problem:</p>
+<div class="math">
+\[\int_\Omega\nabla u\cdot\nabla vd{\, \mathrm{d}x} = \int_\Omega fv{\, \mathrm{d}x}{\thinspace .}\]</div>
+<p>By varying the trial and test spaces we obtain different stencils,
+some of which will be identical to finite difference schemes on
+particular meshes. We will now show a complete FEniCS program to
+illustrate how a typical finite element code may be structured</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="s2">&quot;some_file&quot;</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;some polynomial&quot;</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">f</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span>
+
+<span class="n">bc</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="s2">&quot;some_function&quot;</span><span class="p">,</span> <span class="s2">&quot;some_domain&quot;</span><span class="p">)</span>
+<span class="n">solution</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>  <span class="c1"># unknown FEM function</span>
+<span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">L</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">bc</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>While the finite element method is versatile and may be adapted to any
+PDE on any domain in any dimension, the different methods that are
+derived by using different trial and test functions may vary
+significantly in terms of accuracy and efficiency. In fact, even
+though the process of deriving at a variational formulation is
+general, a bad choice of polynomial space may in some cases lead to a
+completely wrong result. This is particularly the case for complicated
+PDEs. For this reason, it is dangerous to regard the method as a black
+box and not do proper verification of the method for a particular
+application.</p>
+<p>In this book we will put focus on verification in the sense
+that we provide the reader with explicit calculations as
+well as demonstrations of how such computations can be performed
+by using symbolic or numerical calculations to control the
+various parts of the computational framework. In our view, there
+are three important tests that should be frequently employed
+during verification:</p>
+<ol class="arabic simple">
+<li>reducing the model problem to 1D and carefully check the calculations involved in the variational formulation on a small 1D mesh</li>
+<li>perform the calculation involved on one general or random element</li>
+<li>test whether convergence is obtained and to what order the method converge by refining the mesh</li>
+</ol>
+<p>The two first task here should ideally be performed by independent calculations
+outside the framework used for the simulations. In our view <code class="docutils literal"><span class="pre">sympy</span></code> is a
+convenient tool that can be used to assist hand calculations.</p>
+<p>So far, we have outlined how the finite element method handles derivatives
+in a PDE, but we also had a right-hand side <span class="math">\(f\)</span>. This term is multiplied
+by the test function <span class="math">\(v\)</span> as well, such that the entire Poisson equation
+is transformed to</p>
+<div class="math">
+\[\int_\Omega\nabla u\cdot\nabla vd{\, \mathrm{d}x} = \int_\Omega fv{\, \mathrm{d}x}{\thinspace .}\]</div>
+<p>This statement is assumed valid for all test functions <span class="math">\(v\)</span> in some
+function space <span class="math">\(V\)</span> of polynomials. The right-hand side expression is
+coded in FEniCS as</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="n">f</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span>
+</pre></div>
+</div>
+<p>and the problem is then solved by the statements</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">u</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>  <span class="c1"># unknown FEM function</span>
+<span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">L</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">bc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal"><span class="pre">bc</span></code> holds information about boundary conditions. This information
+is connected to information about the triangulation, the <em>mesh</em>.
+Assuming <span class="math">\(u=0\)</span> on the boundary, we can in FEniCS generate a triangular
+mesh over a rectangular domain <span class="math">\([-1,-1]\times [-1,1]\)</span> as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">RectangleMesh</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;on_boundary&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Mathematically, the finite element method transforms our PDE to
+a sparse linear system. The <code class="docutils literal"><span class="pre">solve</span></code> step performs two tasks:
+construction of the linear system based on the given information about
+the domain and its elements, and then solution of the linear system by
+either an iterative or direct method.</p>
+<p>We are now in a position to summarize all the parts of a FEniCS program
+that solves the Poisson equation by the finite element method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fenics</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">RectangleMesh</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># quadratic polynomials</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;on_boundary&#39;</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">f</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>  <span class="c1"># unknown FEM function to be computed</span>
+<span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">L</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">bc</span><span class="p">)</span>
+<span class="n">vtkfile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="s1">&#39;poisson.pvd&#39;</span><span class="p">);</span> <span class="n">vtkfile</span> <span class="o">&lt;&lt;</span> <span class="n">u</span>  <span class="c1"># store solution</span>
+</pre></div>
+</div>
+<p>Solving a different PDE is a matter of changing <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">L</span></code>. We refer to
+the FEniCS tutorial <a class="reference internal" href="._book036.html#ref07" id="id1">[Ref07]</a> <a class="reference internal" href="._book036.html#ref08" id="id2">[Ref08]</a> for lots of examples.</p>
+<p>Although we assert here that the finite element method is a tool that
+can solve any PDE problem on any domain of any complexity, the
+fundamental ideas of the method are in fact even more general. This
+book will emphasize this general framework and show how the finite
+element method is actually just one way to choose the expansion
+functions <span class="math">\({\psi}\)</span>, but there are many others, giving rise to other
+frameworks for other problems, such as uncertainty quantification via
+polynomial chaos theory in the chapter <a class="reference internal" href="._book033.html#ch-pc"><span class="std std-ref">Uncertainty quantification and polynomial chaos expansions</span></a>. By understanding the
+general framework of approximations of the form <a class="reference internal" href="#eq-overview-u-fem"><span class="std std-ref">(3)</span></a>,
+i.e, understanding how <span class="math">\({\psi}_i\)</span> are constructed and how <span class="math">\(c_i\)</span> are
+computed, we believe the reader can develop a better intuitive
+understanding the finite element method in particular and its
+foundation in general.</p>
+</div>
+<div class="section" id="function-approximation-by-global-functions">
+<span id="ch-approx-global"></span><h1>Function approximation by global functions<a class="headerlink" href="#function-approximation-by-global-functions" title="Permalink to this headline">¶</a></h1>
+<p>Many successful numerical solution methods for differential equations,
+including the finite element method,
+aim at approximating the unknown function by a sum</p>
+<div class="math" id="eq-fem-u">
+\[\tag{7}
+u(x) \approx \sum_{i=0}^N c_i{\psi}_i(x),\]</div>
+<p>where <span class="math">\({\psi}_i(x)\)</span> are prescribed functions and <span class="math">\(c_0,\ldots,c_N\)</span>
+are unknown coefficients to be determined.
+Solution methods for differential equations
+utilizing <a class="reference internal" href="#eq-fem-u"><span class="std std-ref">(7)</span></a> must
+have a <em>principle</em> for constructing <span class="math">\(N+1\)</span> equations to
+determine <span class="math">\(c_0,\ldots,c_N\)</span>. Then there is a <em>machinery</em> regarding
+the actual constructions of the equations for <span class="math">\(c_0,\ldots,c_N\)</span>, in a
+particular problem. Finally, there is a <em>solve</em> phase for computing
+the solution <span class="math">\(c_0,\ldots,c_N\)</span> of the <span class="math">\(N+1\)</span> equations.</p>
+<p>Especially in the finite element method, the machinery for
+constructing the discrete equations to be implemented on a computer is
+quite comprehensive, with many mathematical and implementational
+details entering the scene at the same time. From an ease-of-learning
+perspective it can therefore be wise to follow an idea of Larson and
+Bengzon <a class="reference internal" href="._book036.html#ref06" id="id3">[Ref06]</a> and introduce the computational machinery
+for a trivial equation: <span class="math">\(u=f\)</span>. Solving this equation with <span class="math">\(f\)</span> given
+and <span class="math">\(u\)</span> on the form <a class="reference internal" href="#eq-fem-u"><span class="std std-ref">(7)</span></a>, means that we seek an approximation
+<span class="math">\(u\)</span> to <span class="math">\(f\)</span>.  This approximation problem has the advantage of
+introducing most of the finite element toolbox, but without involving
+demanding topics related to differential equations (e.g., integration
+by parts, boundary conditions, and coordinate mappings).  This is the
+reason why we shall first become familiar with finite element
+<em>approximation</em> before addressing finite element methods for
+differential equations.</p>
+<p>First, we refresh some linear algebra concepts about approximating
+vectors in vector spaces. Second, we extend these concepts to
+approximating functions in function spaces, using the same principles
+and the same notation.  We present examples on approximating functions
+by global basis functions with support throughout the entire
+domain. That is, the functions are in general nonzero on the entire
+domain.  Third, we introduce the finite element type of basis
+functions globally.  These basis functions will later,
+in ref {ch:approx:fe},
+be used with local support
+(meaning that each function is nonzero except in a small part of the domain)
+to enhance stability and efficiency.
+We explain all details of the
+computational algorithms involving such functions.  Four types of
+approximation principles are covered: 1) the least squares method, 2)
+the <span class="math">\(L_2\)</span> projection or Galerkin method, 3) interpolation or
+collocation, and 4) the regression method.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <center>
+            <p class="logo"><a href="http://cbc.simula.no/" title="Go to Center for Biomedical Computing">
+              <img class="logo" src="_static/cbc_logo.png" alt="Logo"/>
+            </a></p>
+            </center>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quick overview of the finite element method</a></li>
+<li><a class="reference internal" href="#function-approximation-by-global-functions">Function approximation by global functions</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="._book001.html"
+                        title="previous chapter">Preface</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="._book003.html"
+                        title="next chapter">Approximation of vectors</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/._book002.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="._book003.html" title="Approximation of vectors"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="._book001.html" title="Preface"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Introduction to Numerical Methods for Variational Problems</a> &raquo;</li> 
+      </ul>
+    </div>
+<div class="wrapper">
+  <div class="footer">
+    <a href="http://cbc.simula.no"><img src="_static/cbc_banner.png" width="100%"><a>
+    <br />
+    <br />
+      &copy;2016, Hans Petter Langtangen, Kent-Andre Mardal. Released under CC Attribution 4.0 license.
+  </div>
+</div>
+
+  </body>
+</html>

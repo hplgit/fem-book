@@ -1,0 +1,17 @@
+.. Automatically generated Sphinx-extended reStructuredText file from DocOnce source
+   (https://github.com/hplgit/doconce/)
+
+.. Document title:
+
+Introduction to Numerical Methods for Variational Problems
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+:Authors: Hans Petter Langtangen, Kent-Andre Mardal
+
+This easy-to-read book introduces the basic ideas and technicalities of
+least squares, Galerkin, and weighted residual methods for solving
+partial differential equations. Special emphasis is put on finite element
+methods.
+
+:Date: Sep 18, 2016
+

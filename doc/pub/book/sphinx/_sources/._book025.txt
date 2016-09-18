@@ -1,0 +1,389 @@
+.. !split
+
+Exercises          (4)
+======================
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:cable:2P1:
+
+Exercise 29: Compute the deflection of a cable with 2 P1 elements
+-----------------------------------------------------------------
+
+Solve the problem for :math:`u` in :ref:`fem:deq:exer:tension:cable`
+using two P1 linear elements. Incorporate the condition :math:`u(0)=0`
+by two methods: 1) excluding the unknown at :math:`x=0`, 2) keeping the unknown
+at :math:`x=0`, but modifying the linear system.
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+Filename: ``cable_2P1``.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:cable:1P2:
+
+Exercise 30: Compute the deflection of a cable with 1 P2 element
+----------------------------------------------------------------
+
+Solve the problem for :math:`u` in :ref:`fem:deq:exer:tension:cable`
+using one P2 element with quadratic basis functions.
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+Filename: ``cable_1P2``.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:cable:stepload:
+
+Exercise 31: Compute the deflection of a cable with a step load
+---------------------------------------------------------------
+
+We consider the deflection of a tension cable as described in
+:ref:`fem:deq:exer:tension:cable`: :math:`w''=\ell`, :math:`w(0)=w(L)=0`.
+Now the load is discontinuous:
+
+.. math::
+         \ell (x) =\left\lbrace\begin{array}{ll}
+        \ell_1, & x < L/2,\\ 
+        \ell_2, & x \geq L/2
+        \end{array}\right.\quad x\in [0,L]
+        {\thinspace .}
+        
+
+This load is not symmetric
+with respect to the midpoint :math:`x=L/2` so the solution loses its symmetry.
+Scaling the problem by introducing
+
+.. math::
+         \bar x = \frac{x}{L/2},\quad u = \frac{w}{w_c},\quad\bar\ell = \frac{\ell - \ell_1}{\ell_2 - \ell_1}{\thinspace .}
+
+This leads to a scaled problem on :math:`[0,2]` (we rename :math:`\bar x` as :math:`x`
+for convenience):
+
+.. math::
+         u'' = \bar\ell(x) = \left\lbrace\begin{array}{ll}
+        1, & x < 1,\\ 
+        0, & x \geq 1
+        \end{array}\right.
+        \quad x\in (0,1),\quad u(0)=0,\ u(2)=0
+        {\thinspace .} 
+
+**a)**
+Find the analytical solution of the problem.
+
+.. --- begin hint in exercise ---
+
+**Hint.**
+Integrate the equation separately for :math:`x < 1` and :math:`x>1`. Use
+the conditions that :math:`u` and :math:`u'` must be continuous at :math:`x=1`.
+
+.. --- end hint in exercise ---
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+**b)**
+Use :math:`{\psi}_i = \sin((i+1)\frac{\pi x}{2})`,
+:math:`i=0,\ldots,N` and the Galerkin method to find an approximate
+solution :math:`u=\sum_j c_j{\psi}_j`.
+Plot how fast the coefficients :math:`c_j` tend to zero (on a log scale).
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+**c)**
+Solve the problem with P1 finite elements.
+Plot the solution for :math:`N_e=2,4,8` elements.
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+Filename: ``cable_discont_load``.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:1D:mesh:nonuniform:
+
+Exercise 32: Compute with a non-uniform mesh
+--------------------------------------------
+
+**a)**
+Derive the linear system for the problem :math:`-u''=2` on :math:`[0,1]`, with
+:math:`u(0)=0` and :math:`u(1)=1`, using P1 elements and a *non-uniform* mesh. The
+vertices have coordinates :math:`x_{0}=0 < x_{1} <\cdots <
+x_{N_n-1}=1`, and the length of cell number :math:`e` is :math:`h_e = x_{e+1}
+-x_{e}`.
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+**b)**
+It is of interest to compare the discrete equations for the finite
+element method in a non-uniform mesh with the corresponding discrete
+equations arising from a finite difference method. Go through the
+derivation of the finite difference formula :math:`u''(x_i) \approx [D_x D_x
+u]_i` and modify it to find a natural discretization of :math:`u''(x_i)` on
+a non-uniform mesh. Compare the finite element and difference
+discretizations
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+Filename: ``nonuniform_P1``.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:1D:gen:problem1:
+
+Problem 33: Solve a 1D finite element problem by hand
+-----------------------------------------------------
+
+The following scaled 1D problem is a very simple, yet relevant, model
+for convective transport in fluids:
+
+.. _Eq:_auto114:
+
+.. math::
+
+    \tag{253}
+    u' = \epsilon u'' ,\quad u(0)=0,\ u(1)=1,\ x\in [0,1]
+        {\thinspace .}
+        
+        
+
+**a)**
+Find the analytical solution to this problem.
+(Introduce :math:`w=u'`, solve the first-order differential equation for :math:`w(x)`,
+and integrate once more.)
+
+**b)**
+Derive the variational form of this problem.
+
+**c)**
+Introduce a finite element mesh with uniform partitioning.
+Use P1 elements and compute the element matrix and vector for
+a general element.
+
+**d)**
+Incorporate the boundary conditions and
+assemble the element contributions.
+
+**e)**
+Identify the resulting linear system as a finite difference discretization
+of the differential equation using
+
+.. math::
+         [D_{2x}u = \epsilon D_xD_x u]_i {\thinspace .}  
+
+**f)**
+Compute the numerical solution and plot it together with the exact solution
+for a mesh with 20 elements and
+:math:`\epsilon=10, 1, 0.1, 0.01`.
+
+Filename: ``convdiff1D_P1``.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:1D:exact_numerics:
+
+Exercise 34: Investigate exact finite element solutions
+-------------------------------------------------------
+
+Consider
+
+.. math::
+         -u''(x)=x^m,\quad x\in (0,L),\quad u'(0)=C,\ u(L)=D,
+
+where :math:`m\geq 0` is an integer, and :math:`L`, :math:`C`, and :math:`D` are given numbers.
+Utilize a mesh with two (non-uniform) elements: :math:`\Omega^{(0)}=[0,3]` and
+:math:`\Omega^{(0)}=[3,4]`.
+Plot the exact solution and the finite element solution for
+polynomial degree :math:`d=1,2,3,4` and :math:`m=0, 1, 2, 3, 4`. Find values of :math:`d` and :math:`m`
+that make the finite element solution exact at the nodes in the mesh.
+
+.. --- begin hint in exercise ---
+
+**Hint.**
+Use the ``mesh_uniform``, ``finite_element1D``, and ``u_glob2`` functions
+from the ``fe1D.py`` module.
+
+.. --- end hint in exercise ---
+
+.. removed !bsol ... !esol environment (because of the command-line option --without_solutions)
+
+Filename: ``u_xx_xm_P1to4``.
+
+.. Could have shooting method as a project
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:1D:Poisson:polar:
+
+Exercise 35: Compare finite elements and differences for a radially symmetric Poisson equation
+----------------------------------------------------------------------------------------------
+
+We consider the Poisson problem in a disk with radius :math:`R` with
+Dirichlet conditions at the boundary.
+Given that the solution is radially symmetric and hence dependent only on
+the radial coordinate (:math:`r=\sqrt{x^2+y^2}`), we can reduce the problem
+to a 1D Poisson equation
+
+.. _Eq:fem:deq:exer:1D:Poisson:polar:eq:
+
+.. math::
+
+    \tag{254}
+    -\frac{1}{r}\frac{d}{dr}\left( r\frac{du}{dr}\right) = f(r),\quad r\in (0,R),\ 
+        u'(0)=0,\ u(R)=U_R
+        {\thinspace .}
+        
+        
+
+**a)**
+Derive a variational form of :ref:`(254) <Eq:fem:deq:exer:1D:Poisson:polar:eq>`
+by integrating over the whole disk, or posed equivalently: use
+a weighting function :math:`2\pi r v(r)` and integrate :math:`r` from :math:`0` to :math:`R`.
+
+**b)**
+Use a uniform mesh partition with P1 elements and show what the
+resulting set of equations becomes. Integrate the matrix entries
+exact by hand, but use a Trapezoidal rule to integrate the :math:`f` term.
+
+**c)**
+Explain that an intuitive
+finite difference method applied to :ref:`(254) <Eq:fem:deq:exer:1D:Poisson:polar:eq>`
+gives
+
+.. math::
+        
+        \frac{1}{r_i}\frac{1}{h^2}\left( r_{i+\frac{1}{2}}(u_{i+1}-u_i) -
+        r_{i-\frac{1}{2}}(u_{i}-u_{i-1})\right) = f_i,\quad i=rh
+        {\thinspace .}
+        
+
+For :math:`i=0` the factor :math:`1/r_i` seemingly becomes problematic. One must always
+have :math:`u'(0)=0`, because of the radial symmetry, which implies
+:math:`u_{-1}=u_1`, if we allow introduction of a fictitious value :math:`u_{-1}`.
+Using this :math:`u_{-1}` in the difference equation for :math:`i=0` gives
+
+.. math::
+        \begin{align*}
+        &\frac{1}{r_0}\frac{1}{h^2}\left( r_{\frac{1}{2}}(u_{1}-u_0) -
+        r_{-\frac{1}{2}}(u_{0}-u_{1})\right) = \\ 
+        & \qquad
+        \frac{1}{r_0}\frac{1}{2h^2}\left( (r_0 + r_1)(u_{1}-u_0) -
+        (r_{-1} + r_0)(u_{0}-u_{1})\right) \approx
+        2(u_1-u_0),
+        \end{align*}
+
+if we use :math:`r_{-1}+r_1\approx 2r_0`.
+
+Set up the complete set of equations for the finite difference method
+and compare to the finite element method in case a Trapezoidal rule
+is used to integrate the :math:`f` term in the latter method.
+
+Filename: ``radial_Poisson1D_P1``.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:1D:gen:problem2:
+
+Exercise 36: Compute with variable coefficients and P1 elements by hand
+-----------------------------------------------------------------------
+
+Consider the problem
+
+.. _Eq:fem:deq:1D:model4:
+
+.. math::
+
+    \tag{255}
+    -\frac{d}{dx}\left( {\alpha}(x)\frac{du}{dx}\right) + \gamma u = f(x),
+        \quad x\in\Omega=[0,L],\quad u(0)={\alpha},\ u'(L)=\beta{\thinspace .}
+        
+        
+
+We choose :math:`{\alpha}(x)=1+x^2`. Then
+
+.. _Eq:_auto115:
+
+.. math::
+
+    \tag{256}
+    u(x) = {\alpha} + \beta(1+L^2)\tan^{-1}(x),
+        
+        
+
+is an exact solution if :math:`f(x) = \gamma u`.
+
+Derive a variational formulation and compute general expressions for the
+element matrix and vector in an arbitrary element, using P1 elements
+and a uniform partitioning of :math:`[0,L]`. The right-hand side
+integral is challenging and can be computed by a numerical integration
+rule. The Trapezoidal rule :ref:`(123) <Eq:fem:approx:fe:numint1:trapez>`
+gives particularly simple expressions.
+Filename: ``atan1D_P1``.
+
+.. --- end exercise ---
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:2D:torsion:xy:sin:
+
+Exercise 37: Solve a 2D Poisson equation using polynomials and sines
+--------------------------------------------------------------------
+
+The classical problem of applying a torque to the ends of a rod
+can be modeled by a Poisson equation defined in the cross section :math:`\Omega`:
+
+.. math::
+         -\nabla^2 u = 2,\quad (x,y)\in\Omega,
+
+with :math:`u=0` on :math:`\partial\Omega`. Exactly the same problem arises for
+the deflection of a membrane with shape :math:`\Omega` under a constant load.
+
+For a circular cross section one can readily
+find an analytical solution. For a rectangular cross section the analytical
+approach ends up with a sine series. The idea in this exercise is to
+use a single basis function to obtain an approximate answer.
+
+We assume for simplicity that the cross section is the unit square:
+:math:`\Omega = [0,1]\times [0,1]`.
+
+**a)**
+We consider the basis
+:math:`{\psi}_{p,q}(x,y) = \sin((p+1)\pi x)\sin (q\pi y)`, :math:`p,q=0,\ldots,n`.
+These basis functions fulfill the Dirichlet condition.
+Use a Galerkin method and :math:`n=0`.
+
+**b)**
+The basis function involving sine functions are orthogonal.
+Use this property in the Galerkin method
+to derive the coefficients :math:`c_{p,q}` in a
+formula :math:`u=\sum_p\sum_q c_{p,q}{\psi}_{p,q}(x,y)`.
+
+**c)**
+Another possible basis is
+:math:`{\psi}_i(x,y) = (x(1-x)y(1-y))^{i+1}`, :math:`i=0,\ldots,N`.
+Use the Galerkin method to compute the solution for :math:`N=0`.
+Which choice of a single basis function is best,
+:math:`u\sim x(1-x)y(1-y)` or :math:`u\sim \sin(\pi x)\sin(\pi y)`?
+In order to answer the question,
+it is necessary to search the web or the literature for an accurate
+estimate of the maximum :math:`u` value at :math:`x=y=1/2`.
+
+Filename: ``torsion_sin_xy``.
+
+.. --- end exercise ---
+

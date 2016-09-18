@@ -1,0 +1,196 @@
+.. !split
+
+Multi-dimensional PDE problems
+==============================
+
+The fundamental ideas in the
+derivation of :math:`F_i` and :math:`J_{i,j}` in the 1D model problem
+are easily generalized to multi-dimensional problems.
+Nevertheless, the expressions involved are slightly different, with
+derivatives in :math:`x` replaced by :math:`\nabla`, so we present some
+examples below in detail.
+
+.. _nonlin:alglevel:dD:fd:
+
+Finite difference discretization          (2)
+---------------------------------------------
+
+A typical diffusion equation
+
+.. math::
+         u_t = \nabla\cdot({\alpha}(u)\nabla u) + f(u),
+
+can be discretized by (e.g.) a Backward Euler scheme,
+which in 2D can be written
+
+.. math::
+         [D_t^- u = D_x\overline{{\alpha}(u)}^xD_x u
+        + D_y\overline{{\alpha}(u)}^yD_y u + f(u)]_{i,j}^n{\thinspace .}
+        
+
+We do not dive into the details of handling boundary conditions now.
+Dirichlet and Neumann conditions are handled as in a
+corresponding linear, variable-coefficient diffusion problems.
+
+Writing the scheme out, putting the unknown values on the
+left-hand side and known values on the right-hand side, and
+introducing :math:`\Delta x=\Delta y=h` to save some writing, one gets
+
+.. math::
+        \begin{align*}
+        u^n_{i,j} &- \frac{\Delta t}{h^2}(
+         \frac{1}{2}({\alpha}(u_{i,j}^n)   + {\alpha}(u_{i+1,j}^n))(u_{i+1,j}^n-u_{i,j}^n)\\ 
+        &\quad -
+        \frac{1}{2}({\alpha}(u_{i-1,j}^n) + {\alpha}(u_{i,j}^n))(u_{i,j}^n-u_{i-1,j}^n) \\ 
+        &\quad +
+         \frac{1}{2}({\alpha}(u_{i,j}^n)   + {\alpha}(u_{i,j+1}^n))(u_{i,j+1}^n-u_{i,j}^n)\\ 
+        &\quad -
+         \frac{1}{2}({\alpha}(u_{i,j-1}^n) + {\alpha}(u_{i,j}^n))(u_{i,j}^n-u_{i,j-1}^n))
+        - \Delta tf(u_{i,j}^n) = u^{n-1}_{i,j}
+        \end{align*}
+
+This defines a nonlinear algebraic system on the form :math:`A(u)u=b(u)`.
+
+Picard iteration          (4)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The most recently computed values :math:`u^{-}` of :math:`u^n` can be
+used in :math:`{\alpha}` and :math:`f` for a Picard iteration,
+or equivalently, we solve :math:`A(u^{-})u=b(u^{-})`.
+The result is a linear system of the same type as arising
+from :math:`u_t = \nabla\cdot ({\alpha}(\boldsymbol{x})\nabla u) + f(\boldsymbol{x},t)`.
+
+The Picard iteration scheme can also be expressed in operator notation:
+
+.. math::
+         [D_t^- u = D_x\overline{{\alpha}(u^{-})}^xD_x u
+        + D_y\overline{{\alpha}(u^{-})}^yD_y u + f(u^{-})]_{i,j}^n{\thinspace .}
+        
+
+Newton's method          (5)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As always, Newton's method is technically more involved than
+Picard iteration. We first define
+the nonlinear algebraic equations to be solved, drop the
+superscript :math:`n` (use :math:`u` for :math:`u^n`), and introduce :math:`u^{(1)}` for :math:`u^{n-1}`:
+
+.. math::
+        \begin{align*}
+        F_{i,j} &= u_{i,j} - \frac{\Delta t}{h^2}(\\ 
+        &\qquad \frac{1}{2}({\alpha}(u_{i,j})   + {\alpha}(u_{i+1,j}))(u_{i+1,j}-u_{i,j}) -\\ 
+        &\qquad \frac{1}{2}({\alpha}(u_{i-1,j}) + {\alpha}(u_{i,j}))(u_{i,j}-u_{i-1,j}) + \\ 
+        &\qquad \frac{1}{2}({\alpha}(u_{i,j})   + {\alpha}(u_{i,j+1}))(u_{i,j+1}-u_{i,j}) -\\ 
+        &\qquad \frac{1}{2}({\alpha}(u_{i,j-1}) + {\alpha}(u_{i,j}))(u_{i,j}-u_{i,j-1})) -
+        \Delta t\, f(u_{i,j}) - u^{(1)}_{i,j} = 0{\thinspace .}
+        \end{align*}
+
+It is convenient to work with two indices :math:`i` and :math:`j` in 2D
+finite difference discretizations, but it complicates
+the derivation of the Jacobian, which then gets four indices.
+(Make sure you really understand the 1D version of this problem
+as treated in the section :ref:`nonlin:alglevel:1D:fd`.)
+The left-hand expression of an equation :math:`F_{i,j}=0` is to be
+differentiated with respect to each of the unknowns :math:`u_{r,s}`
+(recall that this is short notation for :math:`u_{r,s}^n`), :math:`r\in{\mathcal{I}_x}`, :math:`s\in{\mathcal{I}_y}`:
+
+.. math::
+         J_{i,j,r,s} = \frac{\partial F_{i,j}}{\partial u_{r,s}}{\thinspace .} 
+
+The Newton system to be solved in each iteration can be written as
+
+.. math::
+         \sum_{r\in{\mathcal{I}_x}}\sum_{s\in{\mathcal{I}_y}}J_{i,j,r,s}\delta u_{r,s} = -F_{i,j},
+        \quad i\in{\mathcal{I}_x},\ j\in{\mathcal{I}_y}{\thinspace .}
+
+Given :math:`i` and :math:`j`, only a few :math:`r` and :math:`s` indices give nonzero
+contribution to the Jacobian since :math:`F_{i,j}` contains :math:`u_{i\pm 1,j}`,
+:math:`u_{i,j\pm 1}`, and :math:`u_{i,j}`. This means that :math:`J_{i,j,r,s}` has
+nonzero contributions only if :math:`r=i\pm 1`, :math:`s=j\pm 1`, as well as :math:`r=i`
+and :math:`s=j`.  The corresponding terms in :math:`J_{i,j,r,s}` are
+:math:`J_{i,j,i-1,j}`, :math:`J_{i,j,i+1,j}`, :math:`J_{i,j,i,j-1}`, :math:`J_{i,j,i,j+1}`,
+and :math:`J_{i,j,i,j}`.  Therefore, the left-hand side of the Newton
+system, :math:`\sum_r\sum_s J_{i,j,r,s}\delta u_{r,s}` collapses to
+
+.. math::
+        \begin{align*}
+         J_{i,j,r,s}\delta u_{r,s} =
+        J_{i,j,i,j}\delta u_{i,j} & +
+        J_{i,j,i-1,j}\delta u_{i-1,j} +
+        J_{i,j,i+1,j}\delta u_{i+1,j} +
+        J_{i,j,i,j-1}\delta u_{i,j-1}\\ 
+        & +
+        J_{i,j,i,j+1}\delta u_{i,j+1}
+        \end{align*}
+
+The specific derivatives become
+
+.. math::
+        \begin{align*}
+        J_{i,j,i-1,j} &=\frac{\partial F_{i,j}}{\partial u_{i-1,j}}\\ 
+        &= \frac{1}{2}\frac{\Delta t}{h^2}({\alpha}^{\prime}(u_{i-1,j})(u_{i,j}-u_{i-1,j})
+        + ({\alpha}(u_{i-1,j}) + {\alpha}(u_{i,j}))(-1)),\\ 
+        J_{i,j,i+1,j} &= \frac{\partial F_{i,j}}{\partial u_{i+1,j}}\\ 
+        &= \frac{1}{2} \frac{\Delta t}{h^2}(-{\alpha}^{\prime}(u_{i+1,j})(u_{i+1,j}-u_{i,j})
+        - ({\alpha}(u_{i-1,j}) + {\alpha}(u_{i,j}))),\\ 
+        J_{i,j,i,j-1} &=\frac{\partial F_{i,j}}{\partial u_{i,j-1}}\\ 
+        &= \frac{1}{2} \frac{\Delta t}{h^2}({\alpha}^{\prime}(u_{i,j-1})(u_{i,j}-u_{i,j-1})
+        + ({\alpha}(u_{i,j-1})+ {\alpha}(u_{i,j}))(-1)),\\ 
+        J_{i,j,i,j+1} &= \frac{\partial F_{i,j}}{\partial u_{i,j+1}}\\ 
+        &= \frac{1}{2}\frac{\Delta t}{h^2}(-{\alpha}^{\prime}(u_{i,j+1})(u_{i,j+1}-u_{i,j})
+        - ({\alpha}(u_{i,j-1}) + {\alpha}(u_{i,j}))){\thinspace .}
+        \end{align*}
+
+The :math:`J_{i,j,i,j}` entry has a few more terms and is left as an
+exercise.
+Inserting the most recent approximation
+:math:`u^{-}` for :math:`u` in the :math:`J` and :math:`F` formulas and then
+forming :math:`J\delta u=-F` gives the linear system to be solved
+in each Newton iteration. Boundary conditions will affect the
+formulas when any of the indices coincide with a boundary value
+of an index.
+
+Continuation methods
+--------------------
+
+.. index:: continuation method
+
+Picard iteration or Newton's method may diverge when solving PDEs with
+severe nonlinearities. Relaxation with :math:`\omega <1`
+may help, but in highly nonlinear problems it can be
+necessary to introduce a *continuation parameter* :math:`\Lambda` in
+the problem: :math:`\Lambda =0` gives a version of the
+problem that is easy to solve, while
+:math:`\Lambda =1` is the target problem. The idea is then
+to increase :math:`\Lambda` in steps, :math:`\Lambda_0=0 ,\Lambda_1 <\cdots <\Lambda_n=1`,
+and use the solution from the problem with :math:`\Lambda_{i-1}` as
+initial guess for the iterations in the problem corresponding
+to :math:`\Lambda_i`.
+
+The continuation method is easiest to understand through an example.
+Suppose we intend to solve
+
+.. math::
+         -\nabla\cdot\left( ||\nabla u||^q\nabla u\right) = f, 
+
+which is an equation modeling the flow of a non-Newtonian fluid through
+a channel or pipe. For :math:`q=0` we have the Poisson equation (corresponding
+to a Newtonian fluid) and the problem is linear. A typical
+value for pseudo-plastic fluids may be :math:`q_n=-0.8`. We can introduce
+the continuation parameter :math:`\Lambda\in [0,1]` such that
+:math:`q=q_n\Lambda`. Let :math:`\{\Lambda_\ell\}_{\ell=0}^n` be the sequence of
+:math:`\Lambda` values in :math:`[0,1]`, with corresponding :math:`q` values
+:math:`\{q_\ell\}_{\ell=0}^n`. We can then solve a sequence of problems
+
+.. math::
+        
+        -\nabla\cdot\left( ||\nabla u^\ell||^q_\ell\nabla u^\ell\right) = f,\quad
+        \ell = 0,\ldots,n,
+
+where the initial guess for iterating on :math:`u^{\ell}` is the
+previously computed solution :math:`u^{\ell-1}`. If a particular :math:`\Lambda_\ell`
+leads to convergence problems, one may try a smaller
+increase in :math:`\Lambda`:
+:math:`\Lambda_* = \frac{1}{2} (\Lambda_{\ell-1}+\Lambda_\ell)`,
+and repeat halving the step in :math:`\Lambda` until convergence is reestablished.
+

@@ -1,0 +1,1734 @@
+.. !split
+
+.. _ch:femtime:
+
+Time-dependent variational forms
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The finite element method is normally used for discretization in
+space. There are three alternative strategies for performing
+a discretization in time:
+
+1. Use *finite differences* for time derivatives to arrive at
+   a recursive set of spatial problems that can be discretized by
+   the finite element method.
+
+2. Discretize in space by finite elements first, and then solve
+   the resulting system of ordinary differential equations (ODEs) by
+   some *standard library* for ODEs.
+
+3. Use discontinuous finite elements in the spatial direction separately.
+
+With the first strategy, we discretize in time prior to the space
+discretization, while the second strategy consists of doing exactly
+the opposite. It should come as no surprise that in many situations
+these two strategies end up in exactly the same systems to be solved, but
+this is not always the case.  The third approach reproduces standard
+finite difference schemes such as the Backward Euler and the Crank-Nicolson
+schemes, but offers an interesting framework for deriving higher-order
+methods. In this chapter we shall be concerned with
+the first strategy,
+which is the most common strategy as it turns the time-dependent
+PDE problem to a sequence of stationary problems for which efficient
+finite element solution strategies often are available.
+The second strategy would
+naturally employ well-known ODE software,
+which are available as user-friendly routines
+in Python. However, these routines are presently not efficient enough
+for PDE problems in 2D and 3D. The first strategy gives complete hands-on
+control of the implementation and the computational efficiency
+in time and space.
+
+We shall use a simple diffusion problem to illustrate the basic
+principles of how a time-dependent PDE is solved by finite differences
+in time and finite elements in space. Of course, instead of finite elements,
+we may employ other types of basis functions, such as global polynomials.
+Our model problem reads
+
+.. _Eq:fem:deq:diffu:eq:
+
+.. math::
+
+    \tag{257}
+    \frac{\partial u}{\partial t} = {\alpha}\nabla^2 u + f(\boldsymbol{x}, t),\quad
+        \boldsymbol{x}\in\Omega,\ t\in (0,T],
+        
+        
+
+.. _Eq:fem:deq:diffu:ic:
+
+.. math::
+
+    \tag{258}
+    u(\boldsymbol{x}, 0)  = I(\boldsymbol{x}),\quad \boldsymbol{x}\in\Omega,
+        
+        
+
+.. _Eq:fem:deq:diffu:bcN:
+
+.. math::
+
+    \tag{259}
+    \frac{\partial u}{\partial n} = 0,\quad \boldsymbol{x}\in\partial\Omega,\ t\in (0,T]
+        
+        {\thinspace .}
+        
+
+Here, :math:`u(\boldsymbol{x},t)` is the unknown function, :math:`{\alpha}` is a constant, and
+:math:`f(\boldsymbol{x},t)` and :math:`I(x)` are given functions. We have assigned the particular
+boundary condition :ref:`(259) <Eq:fem:deq:diffu:bcN>` to minimize
+the details on handling boundary conditions in the finite element method.
+
+.. _fem:deq:diffu:FE:
+
+Discretization in time by a Forward Euler scheme
+================================================
+
+The discretization strategy is to first apply a simple finite difference
+scheme in time and derive a recursive set of spatially continuous PDE
+problems, one at each time level. For each spatial PDE problem we can
+set up a variational formulation and employ the finite element method
+for solution.
+
+Time discretization          (1)
+--------------------------------
+
+We can apply a finite difference method in time to :ref:`(257) <Eq:fem:deq:diffu:eq>`.
+First we need 'a mesh' in time, here taken as uniform with
+mesh points :math:`t_n = n\Delta t`, :math:`n=0,1,\ldots,N_t`.
+A Forward Euler scheme consists of sampling :ref:`(257) <Eq:fem:deq:diffu:eq>`
+at :math:`t_n` and approximating the time derivative by a forward
+difference :math:`[D_t^+ u]^n\approx
+(u^{n+1}-u^n)/\Delta t`.
+A list of finite difference formulas can be found in :ref:`sec:form:fdop`.
+This approximation turns :ref:`(257) <Eq:fem:deq:diffu:eq>`
+into a differential equation that is discrete in time, but still
+continuous in space.
+With a finite difference operator notation we can write the
+time-discrete problem as
+
+.. _Eq:fem:deq:diffu:FE:eq:FEop:
+
+.. math::
+
+    \tag{260}
+    [D_t^+ u = {\alpha}\nabla^2 u + f]^n,
+        
+        
+
+for :math:`n=1,2,\ldots,N_t-1`.
+Writing this equation out in detail and
+isolating the unknown :math:`u^{n+1}` on the left-hand side, demonstrates that
+the time-discrete problem is a recursive set of problems that are
+continuous in space:
+
+.. _Eq:fem:deq:diffu:FE:eq:unp1:
+
+.. math::
+
+    \tag{261}
+    u^{n+1} = u^n + \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)
+        
+        {\thinspace .}
+        
+
+Given :math:`u^0=I`, we can use :ref:`(261) <Eq:fem:deq:diffu:FE:eq:unp1>` to compute
+:math:`u^1,u^2,\dots,u^{N_t}`.
+
+
+.. admonition:: More precise notation
+
+   For absolute clarity in the various stages of the discretizations, we
+   introduce :math:`{u_{\small\mbox{e}}}(\boldsymbol{x},t)` as the exact solution of the space-and time-continuous
+   partial differential equation :ref:`(257) <Eq:fem:deq:diffu:eq>` and
+   :math:`{u_{\small\mbox{e}}}^n(\boldsymbol{x})` as the time-discrete approximation, arising from the finite
+   difference method in time :ref:`(260) <Eq:fem:deq:diffu:FE:eq:FEop>`.
+   More precisely, :math:`{u_{\small\mbox{e}}}` fulfills
+   
+   .. _Eq:fem:deq:diffu:eq:uex:
+
+.. math::
+
+    \tag{262}
+    \frac{\partial {u_{\small\mbox{e}}}}{\partial t} = {\alpha}\nabla^2 {u_{\small\mbox{e}}} + f(\boldsymbol{x}, t)
+           ,
+           
+   
+   while :math:`{u_{\small\mbox{e}}}^{n+1}`, with a superscript,
+   is the solution of the time-discrete equations
+   
+   .. _Eq:fem:deq:diffu:FE:eq:uex:n:
+
+.. math::
+
+    \tag{263}
+    {u_{\small\mbox{e}}}^{n+1} = {u_{\small\mbox{e}}}^n + \Delta t \left( {\alpha}\nabla^2 {u_{\small\mbox{e}}}^n + f(\boldsymbol{x}, t_n)\right)
+           
+           {\thinspace .}
+           
+   
+   The :math:`{u_{\small\mbox{e}}}^{n+1}` quantity is then discretized in space and approximated
+   by :math:`u^{n+1}`.
+
+
+
+
+Space discretization
+--------------------
+
+We now introduce a finite element approximation to :math:`{u_{\small\mbox{e}}}^n` and :math:`{u_{\small\mbox{e}}}^{n+1}`
+in :ref:`(263) <Eq:fem:deq:diffu:FE:eq:uex:n>`, where the coefficients depend on the
+time level:
+
+.. _Eq:fem:deq:diffu:femapprox:n:
+
+.. math::
+
+    \tag{264}
+    {u_{\small\mbox{e}}}^n \approx u^n = \sum_{j=0}^{N} c_j^{n}{\psi}_j(\boldsymbol{x}),
+        
+        
+
+.. _Eq:fem:deq:diffu:femapprox:np1:
+
+.. math::
+
+    \tag{265}
+    {u_{\small\mbox{e}}}^{n+1} \approx u^{n+1} = \sum_{j=0}^{N} c_j^{n+1}{\psi}_j(\boldsymbol{x})
+        
+        {\thinspace .}
+        
+
+Note that, as before, :math:`N` denotes the number of degrees of freedom
+in the spatial domain. The number of time points is denoted by :math:`N_t`.
+We define a space :math:`V` spanned by the basis functions :math:`\left\{ {{\psi}}_i \right\}_{i\in{\mathcal{I}_s}}`.
+
+.. Also note that we use :math:`u^n` as the numerical solution we want
+
+.. to compute in a program, while :math:`{u_{\small\mbox{e}}}` and :math:`{u_{\small\mbox{e}}}^n` are used when
+
+.. we occasionally
+
+.. need to refer to the exact solution and the time-discrete solution,
+
+.. respectively.
+
+Variational forms          (1)
+------------------------------
+
+A Galerkin method or a
+weighted residual method with weighting functions :math:`w_i` can
+now be formulated. We insert :ref:`(264) <Eq:fem:deq:diffu:femapprox:n>` and
+:ref:`(265) <Eq:fem:deq:diffu:femapprox:np1>` in
+:ref:`(263) <Eq:fem:deq:diffu:FE:eq:uex:n>` to obtain the residual
+
+.. math::
+         R = u^{n+1} - u^n - \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)
+        {\thinspace .} 
+
+The weighted residual principle,
+
+.. math::
+         \int_\Omega Rw{\, \mathrm{d}x} = 0,\quad \forall w\in W,
+
+results in
+
+.. math::
+        
+        \int_\Omega
+        \left\lbrack
+        u^{n+1} - u^n - \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)
+        \right\rbrack w {\, \mathrm{d}x} =0, \quad\forall w \in W{\thinspace .}
+        
+
+From now on we use the Galerkin method so :math:`W=V`.
+Isolating the unknown :math:`u^{n+1}` on the left-hand side gives
+
+.. math::
+        
+        \int_{\Omega} u^{n+1}v{\, \mathrm{d}x} = \int_{\Omega}
+        \left\lbrack u^n + \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_n)\right)
+        \right\rbrack v{\, \mathrm{d}x},\quad \forall v\in V
+        {\thinspace .}
+        
+
+As usual in spatial finite element problems involving second-order
+derivatives, we apply integration by parts on the term
+:math:`\int (\nabla^2 u^n)v{\, \mathrm{d}x}`:
+
+.. math::
+         \int_{\Omega}{\alpha}(\nabla^2 u^n)v {\, \mathrm{d}x} =
+        -\int_{\Omega}{\alpha}\nabla u^n\cdot\nabla v{\, \mathrm{d}x} +
+        \int_{\partial\Omega}{\alpha}\frac{\partial u^n}{\partial n}v {\, \mathrm{d}x}
+        {\thinspace .}
+        
+
+The last term vanishes because we have the Neumann condition
+:math:`\partial u^n/\partial n=0` for all :math:`n`. Our discrete problem in
+space and time then reads
+
+.. _Eq:fem:deq:diffu:FE:vf:u:np1:
+
+.. math::
+
+    \tag{266}
+    \int_{\Omega} u^{n+1}v{\, \mathrm{d}x} =
+        \int_{\Omega} u^n v{\, \mathrm{d}x} -
+        \Delta t \int_{\Omega}{\alpha}\nabla u^n\cdot\nabla v{\, \mathrm{d}x} +
+        \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x},\quad \forall v\in V{\thinspace .}
+        
+        
+
+This is the variational formulation of our recursive set of spatial
+problems.
+
+
+.. admonition:: Nonzero Dirichlet boundary conditions
+
+   As in stationary problems,
+   we can introduce a boundary function :math:`B(\boldsymbol{x},t)` to take care
+   of nonzero Dirichlet conditions:
+   
+   .. _Eq:fem:deq:diffu:femapprox:n:B:
+
+.. math::
+
+    \tag{267}
+    {u_{\small\mbox{e}}}^n \approx u^n = B(\boldsymbol{x},t_n) + \sum_{j=0}^{N} c_j^{n}{\psi}_j(\boldsymbol{x}),
+           
+           
+   
+   .. _Eq:fem:deq:diffu:femapprox:np1:B:
+
+.. math::
+
+    \tag{268}
+    {u_{\small\mbox{e}}}^{n+1} \approx u^{n+1} = B(\boldsymbol{x},t_{n+1}) +
+           \sum_{j=0}^{N} c_j^{n+1}{\psi}_j(\boldsymbol{x})
+           
+           {\thinspace .}
+
+
+
+
+Notation for the solution at recent time levels
+-----------------------------------------------
+
+In a program it is only necessary to have the two variables :math:`u^{n+1}`
+and :math:`u^n` at the same time at a given time step.  It is therefore
+unnatural to use the index :math:`n` in computer code. Instead a natural
+variable naming is ``u`` for :math:`u^{n+1}`, the new unknown, and ``u_n`` for
+:math:`u^n`, the solution at the previous time level.  When we have several
+preceding (already computed) time levels, it is natural to number them
+like ``u_nm1``, ``u_nm2``, ``u_nm3``, etc., backwards in time, corresponding to
+:math:`u^{n-1}`, :math:`u^{n-2}`, and :math:`u^{n-3}`. Essentially, this means a one-to-one
+mapping of notation in mathematics and software, except for :math:`u^{n+1}`.
+We shall therefore, to make the distance between mathematics and code
+as small as possible, often introduce just :math:`u` for :math:`u^{n+1}` in the
+mathematical notation. Equation
+:ref:`(266) <Eq:fem:deq:diffu:FE:vf:u:np1>` with this new naming convention is
+consequently expressed as
+
+.. _Eq:fem:deq:diffu:FE:vf:u:
+
+.. math::
+
+    \tag{269}
+    \int_{\Omega} u v{\, \mathrm{d}x} =
+        \int_{\Omega} u^{n} v{\, \mathrm{d}x} -
+        \Delta t \int_{\Omega}{\alpha}\nabla u^{n}\cdot\nabla v{\, \mathrm{d}x} +
+        \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x}
+        {\thinspace .}
+        
+        
+
+This variational form can alternatively be expressed by the inner
+product notation:
+
+.. _Eq:fem:deq:diffu:FE:vf:u:short:
+
+.. math::
+
+    \tag{270}
+    (u,v) = (u^{n},v) -
+        \Delta t ({\alpha}\nabla u^{n},\nabla v) +
+        \Delta t (f^n, v)
+        {\thinspace .}
+        
+        
+
+Deriving the linear systems
+---------------------------
+
+In the following, we adopt the previously introduced convention that
+the unknowns :math:`c_j^{n+1}` are written as :math:`c_j`, while the known :math:`c_j^n`
+from the previous time level is simply written as :math:`c_{j}^n`.  To
+derive the equations for the new unknown coefficients :math:`c_j`, we insert
+
+.. math::
+         u = \sum_{j=0}^{N}c_j{\psi}_j(\boldsymbol{x}),\quad
+        u^{n} = \sum_{j=0}^{N} c_{j}^n{\psi}_j(\boldsymbol{x})
+
+in :ref:`(269) <Eq:fem:deq:diffu:FE:vf:u>` or :ref:`(270) <Eq:fem:deq:diffu:FE:vf:u:short>`,
+let the equation hold for all :math:`v={\psi}_i`, :math:`i=0,\ldots,N`,
+and order the terms as matrix-vector products:
+
+.. _Eq:_auto116:
+
+.. math::
+
+    \tag{271}
+    \sum_{j=0}^{N} ({\psi}_i,{\psi}_j) c_j =
+        \sum_{j=0}^{N} ({\psi}_i,{\psi}_j) c_{j}^n
+        -\Delta t \sum_{j=0}^{N} (\nabla{\psi}_i,{\alpha}\nabla{\psi}_j) c_{j}^n
+        + \Delta t (f^n,{\psi}_i),\quad i=0,\ldots,N
+        {\thinspace .}
+        
+        
+
+This is a linear system :math:`\sum_j A_{i,j}c_j = b_i` with
+
+.. math::
+         A_{i,j} = ({\psi}_i,{\psi}_j)
+        
+
+and
+
+.. math::
+         b_i = \sum_{j=0}^{N} ({\psi}_i,{\psi}_j) c_{j}^n
+        -\Delta t \sum_{j=0}^{N} (\nabla{\psi}_i,{\alpha}\nabla{\psi}_j) c_{j}^n
+        + \Delta t (f^n,{\psi}_i){\thinspace .}  
+
+It is instructive and convenient for implementations to write the linear
+system on the form
+
+.. _Eq:_auto117:
+
+.. math::
+
+    \tag{272}
+    Mc = Mc_1 - \Delta t Kc_1 + \Delta t f,
+        
+        
+
+where
+
+.. math::
+        \begin{align*}
+        M &= \{M_{i,j}\},\quad M_{i,j}=({\psi}_i,{\psi}_j),\quad i,j\in{\mathcal{I}_s},\\ 
+        K &= \{K_{i,j}\},\quad K_{i,j}=(\nabla{\psi}_i,{\alpha}\nabla{\psi}_j),
+        \quad i,j\in{\mathcal{I}_s},\\ 
+        f &= \{f_i\},\quad f_i=(f(\boldsymbol{x},t_n),{\psi}_i),\quad i\in{\mathcal{I}_s},\\ 
+        c &= \{c_i\},\quad i\in{\mathcal{I}_s},\\ 
+        c_1 &= \{c_{i}^n\},\quad i\in{\mathcal{I}_s}
+        {\thinspace .}
+        \end{align*}
+
+.. index:: mass matrix
+
+.. index:: stiffness matrix
+
+We realize that :math:`M` is the matrix arising from a term with the
+zero-th derivative of :math:`u`, and called the mass matrix, while :math:`K` is
+the matrix arising from a Laplace term :math:`\nabla^2 u`. The :math:`K` matrix
+is often known as the *stiffness matrix*. (The terms mass and stiffness
+stem from the early days of finite elements when applications to
+vibrating structures dominated. The mass matrix arises from the
+mass times acceleration term in Newton's second law, while the stiffness
+matrix arises from the elastic forces (the "stiffness") in that law.
+The mass and stiffness
+matrix appearing in a diffusion have slightly different mathematical
+formulas compared to the classic structure problem.)
+
+**Remark.**
+The mathematical symbol :math:`f` has two meanings, either the
+function :math:`f(\boldsymbol{x},t)` in the PDE or the :math:`f` vector in the linear system
+to be solved at each time level.
+
+Computational algorithm
+-----------------------
+
+We observe that :math:`M` and :math:`K` can be precomputed so that we can avoid
+computing the matrix entries at every time level. Instead, some
+matrix-vector multiplications will produce the linear system to be solved.
+The computational algorithm has the following steps:
+
+1. Compute :math:`M` and :math:`K`.
+
+2. Initialize :math:`u^0` by interpolation or projection
+
+3. For :math:`n=1,2,\ldots,N_t`:
+
+  a. compute :math:`b = Mc_1 - \Delta t Kc_1 + \Delta t f`
+
+  b. solve :math:`Mc = b`
+
+  c. set :math:`c_1 = c`
+
+In case of finite element basis functions, interpolation of the
+initial condition at the nodes means :math:`c_{j}^n = I(\boldsymbol{x}_j)`. Otherwise
+one has to solve the linear system
+
+.. math::
+         \sum_j{\psi}_j(\boldsymbol{x}_i)c_{j}^n = I(\boldsymbol{x}_i),
+
+where :math:`\boldsymbol{x}_i` denotes an interpolation point.  Projection
+(or Galerkin's method) implies solving a linear system with :math:`M` as
+coefficient matrix:
+
+.. math::
+         \sum_j M_{i,j}c_{j}^n = (I,{\psi}_i),\quad i\in{\mathcal{I}_s}{\thinspace .}
+
+.. _fem:deq:diffu:FE:cosex:
+
+Example using sinusoidal basis functions
+----------------------------------------
+
+Let us go through a computational example and demonstrate the
+algorithm from the previous section. We consider a 1D problem
+
+.. _Eq:fem:deq:diffu:pde1D:eq:
+
+.. math::
+
+    \tag{273}
+    \frac{\partial u}{\partial t} = {\alpha}\frac{\partial^2 u}{\partial x^2},\quad
+        x\in (0,L),\ t\in (0,T],
+        
+        
+
+.. _Eq:fem:deq:diffu:pde1D:ic:
+
+.. math::
+
+    \tag{274}
+    u(x, 0)  = A\cos(\pi x/L) + B\cos(10\pi x/L),\quad x\in[0,L],
+        
+        
+
+.. _Eq:fem:deq:diffu:pde1D:bcN:
+
+.. math::
+
+    \tag{275}
+    \frac{\partial u}{\partial x} = 0,\quad x=0,L,\ t\in (0,T]
+        
+        {\thinspace .}
+        
+
+We use a Galerkin method with basis functions
+
+.. math::
+         {\psi}_i = \cos(i\pi x/L){\thinspace .}
+
+These basis functions fulfill :ref:`(275) <Eq:fem:deq:diffu:pde1D:bcN>`, which is
+not a requirement (there are no Dirichlet conditions in this problem),
+but helps to make the approximation good.
+
+Since the initial condition :ref:`(274) <Eq:fem:deq:diffu:pde1D:ic>` lies in the
+space :math:`V` where we seek the approximation, we know that a Galerkin or
+least squares approximation of the initial condition becomes exact.
+Therefore, the initial condition can be expressed as
+
+.. math::
+         c_{1}^n=A,\quad c_{10}^n=B,
+
+while :math:`c_{i}^n=0` for :math:`i\neq 1,10`.
+
+The :math:`M` and :math:`K` matrices are easy to compute since the basis functions
+are orthogonal on :math:`[0,L]`. Hence, we
+only need to compute the diagonal entries. We get
+
+.. math::
+        
+        M_{i,i} = \int_0^L  cos^2(i x \pi/L) {\, \mathrm{d}x},
+        
+
+which is computed as
+
+.. code-block:: python
+
+    >>> import sympy as sym
+    >>> x, L = sym.symbols('x L')
+    >>> i = sym.symbols('i', integer=True)
+    >>> sym.integrate(sym.cos(i*x*sym.pi/L)**2, (x,0,L))
+    Piecewise((L, Eq(pi*i/L, 0)), (L/2, True))
+
+which means :math:`L` if :math:`i=0` and :math:`L/2` otherwise. Similarly,
+the diagonal entries of the :math:`K` matrix are computed as
+
+.. code-block:: python
+
+    >>> sym.integrate(sym.diff(cos(i*x*sym.pi/L),x)**2, (x,0,L))
+    pi**2*i**2*Piecewise((0, Eq(pi*i/L, 0)), (L/2, True))/L**2
+
+so
+
+.. math::
+         M_{0,0}=L,\quad M_{i,i}=L/2,\ i>0,\quad K_{0,0}=0,\quad K_{i,i}=\frac{\pi^2 i^2}{2L},\ i>0{\thinspace .}
+
+The equation system becomes
+
+.. math::
+        \begin{align*}
+        Lc_0 &= Lc_{0}^0 - \Delta t \cdot 0\cdot c_{0}^0,\\ 
+        \frac{L}{2}c_i &= \frac{L}{2}c_{i}^n - \Delta t
+        \frac{\pi^2 i^2}{2L} c_{i}^n,\quad i>0{\thinspace .}
+        \end{align*}
+
+The first equation always leads to :math:`c_0=0` since we start with :math:`c_{1}^n=0`
+for :math:`n=0`.
+The others imply
+
+.. math::
+         c_i = (1-\Delta t (\frac{\pi i}{L})^2) c_{i}^n{\thinspace .} 
+
+With the notation :math:`c^n_i` for :math:`c_i` at the :math:`n`-th time level, we can apply
+the relation above recursively and get
+
+.. math::
+         c^n_i = (1-\Delta t (\frac{\pi i}{L})^2)^n c^0_i{\thinspace .}
+
+Since only two of the coefficients are nonzero at time :math:`t=0`, we have
+the closed-form discrete solution
+
+.. math::
+         u^n_i = A(1-\Delta t (\frac{\pi}{L})^2)^n \cos(\pi x/L)
+        + B(1-\Delta t (\frac{10\pi }{L})^2)^n \cos(10\pi x/L){\thinspace .}
+
+.. _fem:deq:diffu:FE:fdvsP1fe:
+
+Comparing P1 elements with the finite difference method
+-------------------------------------------------------
+
+We can compute the :math:`M` and :math:`K` matrices using P1 elements in 1D.
+A uniform mesh on :math:`[0,L]` is introduced for this purpose.
+Since the boundary conditions are solely of Neumann type in this
+sample problem, we have no restrictions on the basis functions
+:math:`{\psi}_i` and can simply choose :math:`{\psi}_i = {\varphi}_i`, :math:`i=0,\ldots,N=N_n-1`.
+
+From the section :ref:`fem:deq:1D:comp:global` or
+:ref:`fem:deq:1D:comp:elmwise` we
+have that the :math:`K` matrix is the same as we get from the finite
+difference method: :math:`h[D_xD_x u]^n_i`, while from
+the section :ref:`fem:approx:fe:fd:feproj`
+we know that :math:`M` can be
+interpreted as the finite difference approximation
+:math:`h[u + \frac{1}{6}h^2D_xD_x u]^n_i`. The equation system :math:`Mc=b`
+in the algorithm is therefore equivalent to the finite difference scheme
+
+.. _Eq:fem:deq:diffu:FE:fdinterp:
+
+.. math::
+
+    \tag{276}
+    [D_t^+(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u + f]^n_i
+        
+        {\thinspace .}
+        
+
+(More precisely, :math:`Mc=b` divided by :math:`h` gives the equation above.)
+
+Lumping the mass matrix
+~~~~~~~~~~~~~~~~~~~~~~~
+
+As explained in
+the section :ref:`fem:deq:1D:approx:fem_vs_fdm`, one can
+turn the :math:`M` matrix into a diagonal matrix
+:math:`\hbox{diag}(h/2,h,\ldots,h,h/2)` by
+applying the Trapezoidal rule for integration. Then there is
+no need to solve a linear system at each time level, and the finite
+element scheme becomes identical to a standard finite difference method
+
+.. _Eq:fem:deq:diffu:FE:fdinterp:lumped:
+
+.. math::
+
+    \tag{277}
+    [D_t^+ u = {\alpha} D_xD_x u + f]^n_i
+        
+        {\thinspace .}
+        
+
+The Trapezoidal integration is not as accurate as exact integration and
+introduces an error. Normally, one thinks of any error as
+an overall decrease of the accuracy. Nevertheless, errors may cancel
+each other, and the error introduced by numerical integration may
+in certain problems
+lead to improved overall accuracy in the finite element method.
+The interplay of the errors in the current problem is
+analyzed in detail in the section :ref:`fem:deq:diffu:anal`.
+The effect of the error is at least not more severe than what is
+produced by the finite difference method since both are
+:math:`\mathcal{O}(h^2)`.
+
+.. index:: mass matrix
+
+.. index:: mass lumping
+
+.. index:: lumped mass matrix
+
+Making :math:`M` diagonal is usually referred to as *lumping the mass matrix*.
+There is an alternative method to using an integration rule
+based on the node points: one can sum the entries in each row, place
+the sum on the diagonal, and set all other entries in the row equal
+to zero. For P1 elements the methods of lumping the mass matrix give
+the same result.
+
+.. _fem:deq:diffu:BE:
+
+Discretization in time by a Backward Euler scheme
+=================================================
+
+Time discretization          (2)
+--------------------------------
+
+The Backward Euler scheme in time applied to our diffusion problem
+can be expressed as follows using the finite difference operator notation:
+
+.. math::
+        
+        [D_t^- u = {\alpha}\nabla^2 u + f(\boldsymbol{x}, t)]^n
+        {\thinspace .}
+        
+
+Here :math:`[D_t^- u]^n\approx (u^{n}-u^{n-1})/\Delta t`.
+Written out, and collecting the unknown :math:`u^n` on the left-hand side
+and all the known terms on the right-hand side,
+the time-discrete differential equation becomes
+
+.. _Eq:fem:deq:diffu:BE:eq:un:
+
+.. math::
+
+    \tag{278}
+    u^{n} - \Delta t \left( {\alpha}\nabla^2 u^n + f(\boldsymbol{x}, t_{n})\right) =
+        u^{n-1}
+        
+        {\thinspace .}
+        
+
+Equation :ref:`(278) <Eq:fem:deq:diffu:BE:eq:un>` can compute
+:math:`u^1,u^2,\dots,u^{N_t}`,
+if we have a start :math:`u^0=I` from the initial condition.
+However, :ref:`(278) <Eq:fem:deq:diffu:BE:eq:un>` is a partial differential
+equation in space and needs a solution method based on discretization
+in space. For this purpose we use an expansion as in
+:ref:`(264) <Eq:fem:deq:diffu:femapprox:n>`-:ref:`(265) <Eq:fem:deq:diffu:femapprox:np1>`.
+
+Variational forms          (2)
+------------------------------
+
+Inserting :ref:`(264) <Eq:fem:deq:diffu:femapprox:n>`-:ref:`(265) <Eq:fem:deq:diffu:femapprox:np1>`
+in :ref:`(278) <Eq:fem:deq:diffu:BE:eq:un>`, multiplying by any :math:`v\in V`
+(or :math:`{\psi}_i\in V`),
+and integrating by parts, as we did in the Forward Euler case, results
+in the variational form
+
+.. _Eq:fem:deq:diffu:BE:vf:u:n:
+
+.. math::
+
+    \tag{279}
+    \int_{\Omega} \left( u^{n}v
+        + \Delta t {\alpha}\nabla u^n\cdot\nabla v\right){\, \mathrm{d}x}
+        = \int_{\Omega} u^{n-1}  v{\, \mathrm{d}x} +
+        \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x},\quad\forall v\in V
+        
+        {\thinspace .}
+        
+
+Expressed with :math:`u` for the unknown :math:`u^n` and :math:`u^{n}` for the previous
+time level, as we have done before, the variational form becomes
+
+.. _Eq:fem:deq:diffu:BE:vf:u:
+
+.. math::
+
+    \tag{280}
+    \int_{\Omega} \left( uv
+        + \Delta t {\alpha}\nabla u\cdot\nabla v\right){\, \mathrm{d}x}
+        = \int_{\Omega} u^{n} v{\, \mathrm{d}x} +
+        \Delta t\int_{\Omega}f^n v{\, \mathrm{d}x},
+        
+        
+
+or with the more compact inner product notation,
+
+.. _Eq:fem:deq:diffu:BE:vf:u:short:
+
+.. math::
+
+    \tag{281}
+    (u,v) + \Delta t ({\alpha}\nabla u,\nabla v)
+        = (u^{n},v) +
+        \Delta t (f^n,v)
+        
+        {\thinspace .}
+        
+
+Linear systems
+--------------
+
+Inserting :math:`u=\sum_j c_j{\psi}_i` and :math:`u^{n}=\sum_j c_{j}^n{\psi}_i`,
+and choosing :math:`v` to be the basis functions :math:`{\psi}_i\in V`,
+:math:`i=0,\ldots,N`, together with doing some algebra, lead
+to the following linear system to be
+solved at each time level:
+
+.. _Eq:fem:deq:diffu:BE:vf:linsys:
+
+.. math::
+
+    \tag{282}
+    (M + \Delta t K)c = Mc_1 + \Delta t f,
+        
+        
+
+where :math:`M`, :math:`K`, and :math:`f` are as in the Forward Euler case.
+This time we really have to solve a linear system at each time level.
+The computational algorithm goes as follows.
+
+1. Compute :math:`M`, :math:`K`, and :math:`A=M + \Delta t K`
+
+2. Initialize :math:`u^0` by interpolation or projection
+
+3. For :math:`n=1,2,\ldots,N_t`:
+
+  a. compute :math:`b = Mc_1 + \Delta t f`
+
+  b. solve :math:`Ac = b`
+
+  c. set :math:`c_1 = c`
+
+In case of finite element basis functions, interpolation of the
+initial condition at the nodes means :math:`c_{j}^n = I(\boldsymbol{x}_j)`. Otherwise
+one has to solve the linear system :math:`\sum_j{\psi}_j(\boldsymbol{x}_i)c_j =
+I(\boldsymbol{x}_i)`, where :math:`\boldsymbol{x}_i` denotes an interpolation point.  Projection
+(or Galerkin's method) implies solving a linear system with :math:`M` as
+coefficient matrix: :math:`\sum_j M_{i,j}c_{j}^n = (I,{\psi}_i)`,
+:math:`i\in{\mathcal{I}_s}`.
+
+Finite difference operators corresponding to P1 elements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We know what kind of finite difference operators the :math:`M` and :math:`K`
+matrices correspond to (after dividing by :math:`h`), so
+:ref:`(282) <Eq:fem:deq:diffu:BE:vf:linsys>` can be interpreted as
+the following finite difference method:
+
+.. _Eq:fem:deq:diffu:BE:fdinterp:
+
+.. math::
+
+    \tag{283}
+    [D_t^-(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u + f]^n_i
+        
+        {\thinspace .}
+        
+
+The mass matrix :math:`M` can be lumped, as explained in the section :ref:`fem:deq:diffu:FE:fdvsP1fe`, and then the linear system arising
+from the finite element method with P1 elements corresponds
+to a plain Backward Euler finite difference method for the diffusion
+equation:
+
+.. _Eq:fem:deq:diffu:BE:fdinterp:lumped:
+
+.. math::
+
+    \tag{284}
+    [D_t^- u = {\alpha} D_xD_x u + f]^n_i
+        
+        {\thinspace .}
+        
+
+.. _fem:deq:diffu:Dirichlet:
+
+Dirichlet boundary conditions
+=============================
+
+Suppose now that the boundary condition :ref:`(259) <Eq:fem:deq:diffu:bcN>` is
+replaced by a mixed Neumann and Dirichlet condition,
+
+.. _Eq:_auto118:
+
+.. math::
+
+    \tag{285}
+    u(\boldsymbol{x},t) = u_0(\boldsymbol{x},t),\quad  \boldsymbol{x}\in\partial\Omega_D,
+        
+        
+
+.. _Eq:_auto119:
+
+.. math::
+
+    \tag{286}
+    -{\alpha}\frac{\partial}{\partial n} u(\boldsymbol{x},t) = g(\boldsymbol{x},t),\quad
+         \boldsymbol{x}\in\partial{\Omega}_N{\thinspace .}
+        
+        
+
+Using a Forward Euler discretization in time, the variational
+form at a time level becomes
+
+.. _Eq:_auto120:
+
+.. math::
+
+    \tag{287}
+    \int\limits_\Omega u^{n+1}v{\, \mathrm{d}x} =
+        \int\limits_\Omega (u^n - \Delta t{\alpha}\nabla u^n\cdot\nabla v){\, \mathrm{d}x} +
+        \Delta t\int\limits_\Omega fv {\, \mathrm{d}x} -
+        \Delta t\int\limits_{\partial\Omega_N} gv{\, \mathrm{d}s},\quad \forall v\in V{\thinspace .}
+        
+        
+
+Boundary function          (2)
+------------------------------
+
+The Dirichlet condition :math:`u=u_0` at :math:`\partial\Omega_D` can be incorporated
+through a boundary function :math:`B(\boldsymbol{x})=u_0(\boldsymbol{x})` and demanding that :math:`v=0`
+at :math:`\partial\Omega_D`. The expansion for :math:`u^n` is written as
+
+.. math::
+         u^n(\boldsymbol{x}) = u_0(\boldsymbol{x},t_n) + \sum_{j\in{\mathcal{I}_s}}c_j^n{\psi}_j(\boldsymbol{x}){\thinspace .}
+
+Inserting this expansion in the variational formulation and letting it
+hold for all basis functions :math:`{\psi}_i` leads to the linear system
+
+.. math::
+        \begin{align*}
+        \sum_{j\in{\mathcal{I}_s}} \left(\int\limits_\Omega {\psi}_i{\psi}_j{\, \mathrm{d}x}\right)
+        c^{n+1}_j &= \sum_{j\in{\mathcal{I}_s}}
+        \left(\int\limits_\Omega\left( {\psi}_i{\psi}_j -
+        \Delta t{\alpha}\nabla {\psi}_i\cdot\nabla{\psi}_j\right){\, \mathrm{d}x}\right) c_j^n - \\ 
+        &\quad  \int\limits_\Omega\left( u_0(\boldsymbol{x},t_{n+1}) - u_0(\boldsymbol{x},t_n)
+        + \Delta t{\alpha}\nabla u_0(\boldsymbol{x},t_n)\cdot\nabla
+        {\psi}_i\right){\, \mathrm{d}x} \\ 
+        & \quad + \Delta t\int\limits_\Omega f{\psi}_i{\, \mathrm{d}x} -
+        \Delta t\int\limits_{\partial\Omega_N} g{\psi}_i{\, \mathrm{d}s},
+        \quad i\in{\mathcal{I}_s}{\thinspace .}
+        \end{align*}
+
+Finite element basis functions          (2)
+-------------------------------------------
+
+When using finite elements, each basis function :math:`{\varphi}_i` is associated
+with a node :math:`\boldsymbol{x}_{i}`. We have a collection of nodes
+:math:`\{\boldsymbol{x}_i\}_{i\in{I_b}}` on the boundary :math:`\partial\Omega_D`.
+Suppose :math:`U_k^n` is the known
+Dirichlet value at :math:`\boldsymbol{x}_{k}` at time :math:`t_n` (:math:`U_k^n=u_0(\boldsymbol{x}_{k},t_n)`).
+The appropriate boundary function is then
+
+.. math::
+         B(\boldsymbol{x},t_n)=\sum_{j\in{I_b}} U_j^n{\varphi}_j{\thinspace .}
+
+The unknown coefficients :math:`c_j` are associated with the rest of the nodes,
+which have numbers :math:`\nu(i)`, :math:`i\in{\mathcal{I}_s} = \{0,\ldots,N\}`. The basis
+functions for :math:`V` are chosen as :math:`{\psi}_i = {\varphi}_{\nu(i)}`, :math:`i\in{\mathcal{I}_s}`,
+and all of these vanish at the boundary nodes as they should.
+The expansion for :math:`u^{n+1}` and :math:`u^n` become
+
+.. math::
+        \begin{align*}
+        u^n &= \sum_{j\in{I_b}} U_j^n{\varphi}_j + \sum_{j\in{\mathcal{I}_s}}c_{j}^n{\varphi}_{\nu(j)},\\ 
+        u^{n+1} &= \sum_{j\in{I_b}} U_j^{n+1}{\varphi}_j +
+        \sum_{j\in{\mathcal{I}_s}}c_{j}{\varphi}_{\nu(j)}{\thinspace .}
+        \end{align*}
+
+The equations for the unknown coefficients :math:`\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}` become
+
+.. math::
+        \begin{align*}
+        \sum_{j\in{\mathcal{I}_s}} \left(\int\limits_\Omega {\varphi}_i{\varphi}_j{\, \mathrm{d}x}\right)
+        c_j &= \sum_{j\in{\mathcal{I}_s}}
+        \left(\int\limits_\Omega\left( {\varphi}_i{\varphi}_j -
+        \Delta t{\alpha}\nabla {\varphi}_i\cdot\nabla{\varphi}_j\right){\, \mathrm{d}x}\right) c_{j}^n
+        - \\ 
+        &\quad  \sum_{j\in{I_b}}\int\limits_\Omega\left( {\varphi}_i{\varphi}_j(U_j^{n+1} - U_j^n)
+        + \Delta t{\alpha}\nabla {\varphi}_i\cdot\nabla
+        {\varphi}_jU_j^n\right){\, \mathrm{d}x} \\ 
+        &\quad + \Delta t\int\limits_\Omega f{\varphi}_i{\, \mathrm{d}x} -
+        \Delta t\int\limits_{\partial\Omega_N} g{\varphi}_i{\, \mathrm{d}s},
+        \quad i\in{\mathcal{I}_s}{\thinspace .}
+        \end{align*}
+
+Modification of the linear system          (2)
+----------------------------------------------
+
+Instead of introducing a boundary function :math:`B` we can work with
+basis functions associated with all the nodes and incorporate the
+Dirichlet conditions by modifying the linear system.
+Let :math:`{\mathcal{I}_s}` be the index set that counts all the nodes:
+:math:`\{0,1,\ldots,N=N_n-1\}`. The
+expansion for :math:`u^n` is then :math:`\sum_{j\in{\mathcal{I}_s}}c^n_j{\varphi}_j` and the
+variational form becomes
+
+.. math::
+        \begin{align*}
+        \sum_{j\in{\mathcal{I}_s}} \left(\int\limits_\Omega {\varphi}_i{\varphi}_j{\, \mathrm{d}x}\right)
+        c_j &= \sum_{j\in{\mathcal{I}_s}}
+        \left(\int\limits_\Omega\left( {\varphi}_i{\varphi}_j -
+        \Delta t{\alpha}\nabla {\varphi}_i\cdot\nabla{\varphi}_j\right){\, \mathrm{d}x}\right) c_{1,j}
+         \\ 
+        &\quad + \Delta t\int\limits_\Omega f{\varphi}_i{\, \mathrm{d}x} -
+        \Delta t\int\limits_{\partial\Omega_N} g{\varphi}_i{\, \mathrm{d}s}{\thinspace .}
+        \end{align*}
+
+We introduce the matrices :math:`M` and :math:`K` with entries
+:math:`M_{i,j}=\int\limits_\Omega{\varphi}_i{\varphi}_j{\, \mathrm{d}x}` and
+:math:`K_{i,j}=\int\limits_\Omega{\alpha}\nabla{\varphi}_i\cdot\nabla{\varphi}_j{\, \mathrm{d}x}`,
+respectively.
+In addition, we define the vectors :math:`c`, :math:`c_1`, and :math:`f` with
+entries :math:`c_i`, :math:`c_{1,i}`, and
+:math:`\int\limits_\Omega f{\varphi}_i{\, \mathrm{d}x} - \int\limits_{\partial\Omega_N}g{\varphi}_i{\, \mathrm{d}s}`, respectively.
+The equation system can then be written as
+
+.. _Eq:_auto121:
+
+.. math::
+
+    \tag{288}
+    Mc = Mc_1 - \Delta t Kc_1 + \Delta t f{\thinspace .}
+        
+        
+
+When :math:`M`, :math:`K`, and :math:`f` are assembled without paying attention to
+Dirichlet boundary conditions, we need to replace equation :math:`k`
+by :math:`c_k=U_k` for :math:`k` corresponding to all boundary nodes (:math:`k\in{I_b}`).
+The modification of :math:`M` consists in setting :math:`M_{k,j}=0`, :math:`j\in{\mathcal{I}_s}`, and
+the :math:`M_{k,k}=1`. Alternatively, a modification that preserves
+the symmetry of :math:`M` can be applied. At each time level one forms
+:math:`b = Mc_1 - \Delta t Kc_1 + \Delta t f` and sets :math:`b_k=U^{n+1}_k`,
+:math:`k\in{I_b}`, and solves the system :math:`Mc=b`.
+
+In case of a Backward Euler method, the system becomes
+:ref:`(282) <Eq:fem:deq:diffu:BE:vf:linsys>`. We can write the system
+as :math:`Ac=b`, with :math:`A=M + \Delta t K` and :math:`b = Mc_1 + f`.
+Both :math:`M` and :math:`K` needs to be modified because of Dirichlet
+boundary conditions, but the diagonal entries in :math:`K` should be
+set to zero and those in :math:`M` to unity. In this way, for :math:`k\in{I_b}` we
+have  :math:`A_{k,k}=1`.
+The right-hand side must read :math:`b_k=U^n_k` for :math:`k\in{I_b}` (assuming
+the unknown is sought at time level :math:`t_n`).
+
+.. _fem:deq:diffu:Dirichlet:ex:
+
+Example: Oscillating Dirichlet boundary condition
+-------------------------------------------------
+
+We shall address the one-dimensional initial-boundary value problem
+
+.. _Eq:fem:deq:diffu:Dirichlet:ex:pde:
+
+.. math::
+
+    \tag{289}
+    u_t = ({\alpha} u_x)_x + f,\quad  x\in\Omega =[0,L],\ t\in (0,T],
+         
+        
+
+.. _Eq:fem:deq:diffu:Dirichlet:ex:uic:
+
+.. math::
+
+    \tag{290}
+    u(x,0) = 0,\quad  x\in\Omega,
+        
+        
+
+.. _Eq:fem:deq:diffu:Dirichlet:ex:uL:
+
+.. math::
+
+    \tag{291}
+    u(0,t) = a\sin\omega t,\quad  t\in (0,T],
+        
+        
+
+.. _Eq:fem:deq:diffu:Dirichlet:ex:uR:
+
+.. math::
+
+    \tag{292}
+    u_x(L,t) = 0,\quad  t\in (0,T]{\thinspace .}
+        
+        
+
+A physical interpretation may be that :math:`u` is the temperature
+deviation from a constant mean temperature in a body :math:`\Omega`
+that is subject to an oscillating temperature (e.g., day and
+night, or seasonal, variations) at :math:`x=0`.
+
+We use a Backward Euler scheme in time and P1 elements of
+constant length :math:`h` in space.
+Incorporation of the Dirichlet condition at :math:`x=0` through
+modifying the linear system at each time level means that we
+carry out the computations as explained in the section :ref:`fem:deq:diffu:BE` and get a system :ref:`(282) <Eq:fem:deq:diffu:BE:vf:linsys>`.
+The :math:`M` and :math:`K` matrices computed without paying attention to
+Dirichlet boundary conditions become
+
+.. _Eq:_auto122:
+
+.. math::
+
+    \tag{293}
+    M = \frac{h}{6}
+        \left(
+        \begin{array}{cccccccccc}
+        2 & 1 & 0
+        &\cdots & \cdots & \cdots & \cdots & \cdots & 0 \\ 
+        1 & 4 & 1 & \ddots &   & &  & &  \vdots \\ 
+        0 & 1 & 4 & 1 &
+        \ddots & &  &  & \vdots \\ 
+        \vdots & \ddots &  & \ddots & \ddots & 0 &  & & \vdots \\ 
+        \vdots &  & \ddots & \ddots & \ddots & \ddots & \ddots & & \vdots \\ 
+        \vdots & &  & 0 & 1 & 4 & 1 & \ddots & \vdots \\ 
+        \vdots & & &  & \ddots & \ddots & \ddots &\ddots  & 0 \\ 
+        \vdots & & & &  &\ddots  & 1  & 4  & 1 \\ 
+        0 &\cdots & \cdots &\cdots & \cdots & \cdots  & 0 & 1 & 2
+        \end{array}
+        \right)
+        
+        
+
+and
+
+.. _Eq:_auto123:
+
+.. math::
+
+    \tag{294}
+    K = \frac{{\alpha}}{h}
+        \left(
+        \begin{array}{cccccccccc}
+        1 & -1 & 0 &\cdots & \cdots & \cdots & \cdots & \cdots & 0 \\ 
+        -1 & 2 & -1 & \ddots &   & &  & &  \vdots \\ 
+        0 & -1 & 2 & -1 & \ddots & &  &  & \vdots \\ 
+        \vdots & \ddots &  & \ddots & \ddots & 0 &  & & \vdots \\ 
+        \vdots &  & \ddots & \ddots & \ddots & \ddots & \ddots & & \vdots \\ 
+        \vdots & &  & 0 & -1 & 2 & -1 & \ddots & \vdots \\ 
+        \vdots & & &  & \ddots & \ddots & \ddots &\ddots  & 0 \\ 
+        \vdots & & & &  &\ddots  & -1  & 2  & -1 \\ 
+        0 &\cdots & \cdots &\cdots & \cdots & \cdots  & 0 & -1 & 1
+        \end{array}
+        \right)
+        
+        
+
+The right-hand side of the variational form contains :math:`Mc_1` since
+there is no source term (:math:`f`) and no boundary term from the
+integration by parts (:math:`u_x=0` at :math:`x=L` and we compute as if :math:`u_x=0` at
+:math:`x=0` too). We must incorporate the Dirichlet boundary
+condition :math:`c_0=a\sin\omega t_n` by ensuring that this is the
+first equation in the linear system.
+To this end,
+the first row in :math:`K` and :math:`M` is set to zero, but the diagonal
+entry :math:`M_{0,0}` is set to 1. The right-hand side is :math:`b=Mc_1`,
+and we set :math:`b_0 = a\sin\omega t_n`.
+Note that in this
+approach, :math:`N=N_n-1`, and :math:`c` equals the unknown :math:`u` at each node
+in the mesh. We can write the complete linear system as
+
+[**kam 20**: ensuring that it is the first equation in the system?]
+
+.. _Eq:_auto124:
+
+.. math::
+
+    \tag{295}
+    c_0 = a\sin\omega t_n,
+        
+        
+
+.. _Eq:_auto125:
+
+.. math::
+
+    \tag{296}
+    \frac{h}{6}(c_{i-1} + 4c_i + c_{i+1}) + \Delta t\frac{{\alpha}}{h}(-c_{i-1}
+        +2c_i - c_{i+1}) = \frac{h}{6}(c_{1,i-1} + 4c_{1,i} + c_{1,i+1}),
+        
+        
+
+.. math::
+          
+        \qquad i=1,\ldots,N_n-2,\nonumber
+        
+
+.. _Eq:_auto126:
+
+.. math::
+
+    \tag{297}
+    \frac{h}{6}(c_{i-1} + 2c_i) + \Delta t\frac{{\alpha}}{h}(-c_{i-1}
+        +c_i) = \frac{h}{6}(c_{1,i-1} + 2c_{1,i}),
+        
+        
+
+.. math::
+          
+        \qquad i=N_n-1{\thinspace .}\nonumber
+        
+
+The Dirichlet boundary condition can alternatively be implemented
+through a boundary function :math:`B(x,t)=a\sin\omega t\,{\varphi}_0(x)`:
+
+.. math::
+         u^n(x) = a\sin\omega t_n\,{\varphi}_0(x) +
+        \sum_{j\in{\mathcal{I}_s}} c_j{\varphi}_{\nu(j)}(x),\quad
+        \nu(j) = j+1{\thinspace .}
+
+Now, :math:`N=N_n-2` and the :math:`c` vector contains values of :math:`u` at nodes
+:math:`1,2,\ldots,N_n-1`. The right-hand side gets a contribution
+
+.. _Eq:fem:deq:diffu:Dirichlet:ex:bterm:
+
+.. math::
+
+    \tag{298}
+    \int\limits_0^L \left(
+        a(\sin\omega t_n - \sin\omega t_{n-1}){\varphi}_0{\varphi}_i
+        - \Delta t{\alpha} a\sin\omega t_n\nabla{\varphi}_0\cdot\nabla{\varphi}_i\right){\, \mathrm{d}x}
+        {\thinspace .}
+        
+        
+
+.. _fem:deq:diffu:anal:
+
+Accuracy of the finite element solution
+=======================================
+[**kam 21**: new intro]
+
+Illustrating example
+--------------------
+
+ * Two insulated metal pieces
+
+ * Run CN finite difference and finite element (just use FE code)
+
+ * Run Forward Euler
+
+ * Point to problems with non-physical oscillations, should be larger
+   in finite elements than in finite difference
+
+Methods of analysis
+-------------------
+
+There are three major tools for analyzing the accuracy of time-dependent
+finite element problems:
+
+ * Truncation error
+
+ * Finite element error analysis framework
+
+ * Amplification factor analysis
+
+The truncation error is the dominating tool used to analyze finite
+difference schemes, but very seldom (if at all) used in the finite
+element literature.  This is actually surprising, since finite
+elements also give rise to difference stencils of the same nature
+mathematical form as finite difference methods, and there is no reason
+why we should not use a simple tool as the truncation error to
+establish expected convergence rates of finite element methods.
+
+Instead, a more rigorous and powerful error analysis framework has
+been developed for finite element methods. This framework deals
+primarily with the spatial discretization and is not so superior for
+space-time problems.
+
+To explain the numerical artifacts from the previous section,
+both the truncation error and the error analysis framework fall too
+short, and we have turn to the method based on analyzing amplification
+factors. For wave equations, the counterpart is often referred to as analysis
+of dispersion relations.
+
+The idea of the method of analyzing amplification factors is to
+see how sinusoidal waves are amplified in time. For example, if high
+frequency components are damped much less than the analytical damping,
+we may see this as ripples or noise in the solution.
+
+Let us address the diffusion equation in 1D, :math:`u_t = {\alpha} u_{xx}` for
+:math:`x \in \Omega=(0,\pi)` and :math:`t \in (0,T]`.  For the case where we have
+homogeneous Dirichlet conditions and the initial condition is :math:`u(x, 0)
+= u_0(x)`, the solution to the problem can be expressed as
+
+.. math::
+        
+        u(x,t) = \sum_{k=1}^\infty B_k e^{-{\alpha} (k )^2 t} \sin(k x),
+        
+
+where :math:`B_k = \int_\Omega u_0 \sin(k x)`.  This is the well-known
+Fourier decomposition of a signal in sine waves (one can also use
+cosine functions or a combination of sines and cosines).  For a given
+wave :math:`\sin(kx)` with wave length :math:`\lambda = 2\pi/k`, this part of the
+signal will in time develop as :math:`e^{-{\alpha} (k )^2 t}`.  Smooth signals
+will need only a few long waves (:math:`B_k` decays rapidly with :math:`k`), while
+discontinuous or noisy signals will have an amount of short waves with
+significant amplitude (:math:`B_k` decays slowly with :math:`k`).
+
+The amplification factor is defined as
+:math:`{A_{\small\mbox{e}}} = e^{-{\alpha} (k )^2 \Delta t}` and expresses how much
+a wave with frequency :math:`k` is damped over a time step.
+The corresponding numerical amplification factor will vary with the
+discretization method and also discretization parameters in space.
+
+From the analytical expression for the amplification factor, we see
+that :math:`e^{-{\alpha} (k)^2}` is always less than 1. Further, we notice that
+the amplification factor has a strong dependency on the frequency of
+the Fourier component. For low frequency components (when :math:`k` is
+small), the amplification factor is relatively large although always
+less than 1.  For high frequency components, when :math:`k` approaches
+:math:`\infty`, the amplification factor goes to 0. Hence, high frequency
+components (rapid changes such as discontinuities or noise) present in
+the initial condition will be quickly dampened, while low frequency
+components stay for a longer time interval.
+
+The purpose of this section is to discuss the amplification factor
+of numerical schemes and compare the amplification factor of
+the scheme with the known analytical amplification factor.
+
+Fourier components and dispersion relations
+-------------------------------------------
+
+Let us again consider the diffusion equation in 1D,  :math:`u_t = {\alpha} u_{xx}`.
+To allow for general boundary conditions, we include
+both the :math:`\sin (k x)` and :math:`\cos(k x)`, or for
+convenience we expand the Fourier series in
+terms of :math:`\{e^{ikx}\}_{k=-\infty}^{\infty}`.
+Hence, we perform a separation in terms of the (Fourier)
+wave component
+
+.. math::
+         u=e^{\beta t + ikx}
+
+where
+:math:`\beta = -{\alpha} k^2` and :math:`i=\sqrt{-1}` is the imaginary unit.
+
+Discretizing in time such that :math:`t=n \Delta t`,
+this exact wave component can alternatively be written as
+
+.. _Eq:fem:deq:diffu:analysis:Ae:
+
+.. math::
+
+    \tag{299}
+    u = {A_{\small\mbox{e}}}^n e^{ikx},\quad {A_{\small\mbox{e}}} = e^{-{\alpha} k^2\Delta t}{\thinspace .}
+        
+        
+
+We remark that :math:`{A_{\small\mbox{e}}}` is a function of the parameter :math:`k`, but
+to avoid to clutter the notation here we write
+:math:`{A_{\small\mbox{e}}}` instead of :math:`A_{e,k}`. This convention will be used
+also for the discrete case.
+
+As we will show, many numerical schemes for the diffusion equation
+also have a similar wave component as solution:
+
+.. _Eq:fem:deq:diffu:analysis:uni0:
+
+.. math::
+
+    \tag{300}
+    u^n_q = A^n e^{ikx},
+        
+        
+
+where :math:`A` is an amplification factor to be calculated by inserting
+:ref:`(300) <Eq:fem:deq:diffu:analysis:uni0>` in the discrete equations.
+Normally :math:`A\neq{A_{\small\mbox{e}}}`, and the difference in the amplification factor is
+what introduces (visible) numerical errors.
+To compute :math:`A`, we need explicit expressions for the discrete equations
+for :math:`\left\{ {c}_j \right\}_{j\in{\mathcal{I}_s}}` in the finite element method. That is,
+we need to assemble the linear system and look at a general row in
+the system. This row can be written as a finite difference scheme,
+and the analysis of the finite element solution is therefore performed
+in the same way as for finite difference methods. Expressing the
+discrete finite element equations as finite difference operators turns
+out to be very convenient for the calculations.
+
+We introduce :math:`x_q=qh`, or :math:`x_q=q\Delta x`, for the node coordinates,
+to align the notation with
+that frequently used in finite difference methods.
+A convenient start of the calculations is to establish some
+results for various finite difference operators acting
+on the wave component
+
+.. _Eq:fem:deq:diffu:analysis:uni:
+
+.. math::
+
+    \tag{301}
+    u^n_q = A^n e^{ikq\Delta x}{\thinspace .}
+        
+        
+
+The forward Euler scheme (see :ref:`sec:form:fdop`) is
+
+.. math::
+        \begin{align*}
+        u_q'(t_n) &\approx [D_t^+ u_q]^n = \frac{u_q^{n+1} - u_q^{n}}{\Delta t} \\ 
+        &= \frac{A_q^{n+1} - A^{n}}{\Delta t}e^{ikq\Delta x} \\ 
+        &=A^n e^{ikq\Delta x}\frac{A-1}{\Delta t} {\thinspace .}
+        \end{align*}
+
+Similarly, the actions of the
+most common operators of relevance for the model problem at hand
+are listed below.
+
+.. _Eq:fem:deq:diffu:analysis:fe:A:
+
+.. math::
+
+    \tag{302}
+    [D_t^+ A^n e^{ikq\Delta x}]^n = A^n e^{ikq\Delta x}\frac{A-1}{\Delta t},
+        
+
+.. _Eq:fem:deq:diffu:analysis:be:A:
+
+.. math::
+
+    \tag{303}
+    [D_t^- A^n e^{ikq\Delta x}]^n = A^n e^{ikq\Delta x}\frac{1-A^{-1}}{\Delta t},
+        
+
+.. _Eq:fem:deq:diffu:analysis:cn:A:
+
+.. math::
+
+    \tag{304}
+    [D_t A^n e^{ikq\Delta x}]^{n+\frac{1}{2}} = A^{n+\frac{1}{2}} e^{ikq\Delta x}\frac{A^{\frac{1}{2}}-A^{-\frac{1}{2}}}{\Delta t} = A^ne^{ikq\Delta x}\frac{A-1}{\Delta t},
+        
+
+.. _Eq:fem:deq:diffu:analysis:ddx:A:
+
+.. math::
+
+    \tag{305}
+    [D_xD_x A^ne^{ikq\Delta x}]_q = -A^n \frac{4}{\Delta x^2}\sin^2\left(\frac{k\Delta x}{2}\right){\thinspace .}
+        
+
+Forward Euler discretization
+----------------------------
+
+We insert :ref:`(301) <Eq:fem:deq:diffu:analysis:uni>` in the
+Forward Euler scheme with P1 elements in space and :math:`f=0` (note that
+this type of analysis
+can only be carried out if :math:`f=0`) )
+
+.. _Eq:fem:deq:diffu:FE:fdinterp2:
+
+.. math::
+
+    \tag{306}
+    [D_t^+(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u]^n_q
+        
+        {\thinspace .}
+        
+
+We have (using :ref:`(302) <Eq:fem:deq:diffu:analysis:fe:A>`
+and :ref:`(305) <Eq:fem:deq:diffu:analysis:ddx:A>`
+
+.. math::
+         [D_t^+D_xD_x Ae^{ikx}]^n_q = [D_t^+A]^n [D_xD_x e^{ikx}]_q
+        = -A^ne^{ikp\Delta x}
+        \frac{A-1}{\Delta t}\frac{4}{\Delta x^2}\sin^2 (\frac{k\Delta x}{2})
+        {\thinspace .}  
+
+The term :math:`[D_t^+Ae^{ikx} + \frac{1}{6}\Delta x^2 D_t^+D_xD_x Ae^{ikx}]^n_q`
+then reduces to
+
+.. math::
+         \frac{A-1}{\Delta t} - \frac{1}{6}\Delta x^2 \frac{A-1}{\Delta t}
+        \frac{4}{\Delta x^2}\sin^2 (\frac{k\Delta x}{2}), 
+
+or
+
+.. math::
+         \frac{A-1}{\Delta t} \left(1 - \frac{2}{3}\sin^2 (k\Delta x/2)\right)
+        {\thinspace .}  
+
+Introducing :math:`p=k\Delta x/2` and :math:`F={\alpha}\Delta t/\Delta x^2`,
+the complete scheme becomes
+
+.. math::
+        
+        (A-1) \left(1 - \frac{2}{3}\sin^2 p\right)
+        = -4F\sin^2 p,
+
+from which we find :math:`A` to be
+
+.. _Eq:fem:deq:fiffu:analysis:A:fe:
+
+.. math::
+
+    \tag{307}
+    A = 1 - 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}
+        {\thinspace .}
+        
+
+How does this :math:`A` change the stability criterion compared to the
+Forward Euler finite difference scheme and centered differences in
+space? The stability criterion is :math:`|A|\leq 1`, which here implies
+:math:`A\leq 1` and :math:`A\geq -1`. The former is always fulfilled, while
+the latter leads to
+
+.. math::
+        
+        4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p} \leq 2{\thinspace .}
+        
+
+The factor :math:`\sin^2 p/(1 - \frac{2}{3}\sin^2 p)`
+can be plotted for :math:`p\in [0,\pi/2]`, and the maximum value goes to 3
+as :math:`p\rightarrow \pi/2`. The worst case for stability therefore occurs for
+the shortest possible wave, :math:`p=\pi/2`, and the stability criterion becomes
+
+.. _Eq:_auto127:
+
+.. math::
+
+    \tag{308}
+    F\leq \frac{1}{6}\quad\Rightarrow\quad \Delta t\leq \frac{\Delta x^2}{6{\alpha}},
+        
+        
+
+which is a factor 1/3 worse than for the standard Forward Euler
+finite difference method for the diffusion equation, which demands
+:math:`F\leq 1/2`.
+Lumping the mass matrix will, however, recover the finite difference
+method and therefore imply :math:`F\leq 1/2` for stability.
+In other words, introducing an error in the integration improves the
+stability by a factor of 3.
+
+Backward Euler discretization          (1)
+------------------------------------------
+
+We can use the same approach of analysis and insert
+:ref:`(301) <Eq:fem:deq:diffu:analysis:uni>` in the
+Backward Euler scheme with P1 elements in space and :math:`f=0`:
+
+.. _Eq:fem:deq:diffu:BE:fdinterp2:
+
+.. math::
+
+    \tag{309}
+    [D_t^-(u + \frac{1}{6}h^2D_xD_x u) = {\alpha} D_xD_x u]^n_i
+        
+        {\thinspace .}
+        
+
+Similar calculations as in the Forward Euler case lead to
+
+.. math::
+        
+        (1-A^{-1}) \left(1 - \frac{2}{3}\sin^2 p\right)
+        = -4F\sin^2 p,
+
+and hence
+
+.. math::
+        
+        A = \left( 1 + 4F\frac{\sin^2 p}{1 - \frac{2}{3}\sin^2 p}\right)^{-1}
+        {\thinspace .}
+        
+
+The quantity in the parentheses is always greater than unity, so
+:math:`|A|\leq 1` regardless of the size of :math:`F` and :math:`p`.
+As expected, the Backward Euler scheme is unconditionally stable.
+
+Comparing amplification factors
+-------------------------------
+
+It is of interest to compare :math:`A` and :math:`{A_{\small\mbox{e}}}` as functions of :math:`p`
+for some :math:`F` values. Figure
+:ref:`fem:deq:diffu:fig:A:BE` displays the amplification factors
+for the Backward Euler scheme corresponding to
+a coarse mesh with :math:`F=2` and a mesh at the stability limit
+of the Forward Euler scheme in the finite difference method,
+:math:`F=1/2`. Figures
+:ref:`fem:deq:diffu:fig:A:FE2` and :ref:`fem:deq:diffu:fig:A:BE2` shows how
+the accuracy increases with lower :math:`F` values for both the
+Forward and Backward Euler schemes, respectively.
+The striking fact, however, is that the accuracy of the finite element
+method is significantly less than the finite difference method for
+the same value of :math:`F`. Lumping the mass matrix to recover the
+numerical amplification factor :math:`A` of the finite difference method
+is therefore a good idea in this problem.
+
+.. _fem:deq:diffu:fig:A:FE2:
+
+.. figure:: diffu_A_factors_fine_FE.png
+   :width: 600
+
+   *Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation*
+
+.. _fem:deq:diffu:fig:A:BE:
+
+.. figure:: diffu_A_factors_coarse_BE.png
+   :width: 600
+
+   *Comparison of coarse-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation*
+
+.. _fem:deq:diffu:fig:A:BE2:
+
+.. figure:: diffu_A_factors_fine_BE.png
+   :width: 600
+
+   *Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation*
+
+.. _fem:deq:diffu:fig:A:CN:
+
+.. figure:: diffu_A_factors_coarse_CN.png
+   :width: 600
+
+   *Comparison of coarse-mesh amplification factors for Crank-Nicolson discretization of a 1D diffusion equation*
+
+.. _fem:deq:diffu:fig:A:CN2:
+
+.. figure:: diffu_A_factors_fine_CN.png
+   :width: 600
+
+   *Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation*
+
+[**hpl 22**: remaining tasks]
+Remaining tasks:
+
+ * Taylor expansion of the error in the amplification factor :math:`{A_{\small\mbox{e}}} - A`
+
+ * Taylor expansion of the error :math:`e = ({A_{\small\mbox{e}}}^n - A^n)e^{ikx}`
+
+ * :math:`L^2` norm of :math:`e`
+
+The difference between the exact and the numerical amplification factors
+gives insight into the order of the approximation. Considering for example the
+forward Euler scheme, the difference :math:`{A_{\small\mbox{e}}}-A`, where
+:math:`{A_{\small\mbox{e}}}` and :math:`A` are given in
+:ref:`(299) <Eq:fem:deq:diffu:analysis:Ae>` and :ref:`(307) <Eq:fem:deq:fiffu:analysis:A:fe>`
+is a complicated expression. However,  performing a Taylor expansion in terms of :math:`\Delta t`
+using ``sympy`` is straightforward:
+
+.. code-block:: ipy
+
+    >>> import sympy as sym
+    >>> k, dt, dx, alpha = sym.symbols("k dt dx alpha")
+    >>> p = k*dx/2
+    >>> F = alpha*dt/(dx*dx)
+    >>> Ae = sym.exp(-alpha*k**2*dt) # exact
+    >>> Af =  1 - 4*F*sym.sin(p)**2/(1 - 2.0/3.0*sym.sin(p)**2) # FE
+    >>> (Ae - Af).series(dt, n=2)
+    dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+    (-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2)) + O(dt**2)
+
+Hence, the differences between the numerical and exact amplification factor is first order in time,
+as expected.
+
+The :math:`L_2` error of the numerical solution at time step :math:`n` is
+
+.. math::
+        
+        \|u-u_e\|_{L_2} = \sqrt{\int_0^1 (u - u_e)^2 {\, \mathrm{d}x}} =
+        \sqrt{\int_0^1 (({A_{\small\mbox{e}}}^n - A^n)e^{ikx})^2 {\, \mathrm{d}x}}
+        
+
+Again this yields a complicated expression for hand-calculations, but
+the following ``sympy`` provides the estimate:
+
+.. code-block:: ipy
+
+    >>> n, i, x = sym.symbols("n i x")
+    >>> e = (Ae**n - Af**n)*sym.exp(i*k*x)
+    >>> L2_error_squared = sym.integrate(e**2, (x, 0, 1))
+    >>> sym.sqrt(L2_error_squared.series(dt, n=2))
+    O(dt)
+
+We remark here that it is an advantage to take the square-root after the deriving
+the Taylor-series.
+
+As we saw earlier, the amplification factor varied with :math:`k`, in
+particular with respect to the resolution. Let us therefore consider
+the error in the amplification factor :math:`A_e - A` at different
+resolutions for the :math:`k=1\ldots 100` at mesh sizes that under-resolve
+and properly resolve the first hundred components. That is, we vary
+:math:`{\, \mathrm{d}x}` from :math:`\frac{8}{100}` to :math:`\frac{1}{800}`.  Plotting the error in
+the amplification factor versus :math:`k` as follows,
+
+.. code-block:: python
+
+    from numpy import *
+    import matplitlib.pyplot as plt
+    dxs = [8*10**-2, 4*10**-2, 2*10**-2, 10**-2, 10**-2/2, 10**-2/4, 10**-2/8]
+    for dx in dxs:
+      k_max=100
+      k = arange(1, k_max, 1)
+      dt = 0.5*dx**2
+      alpha = 1
+      f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+      (-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
+    
+      plt.loglog(k, f)
+    plt.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
+    plt.show()
+
+.. FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus :math:`k`. .
+
+Figure :ref:`fem:deq:diffu:AeA:VS:k` shows that there is a polynomial
+relationship between the error of the amplification factor
+and :math:`k`, that is :math:`Ae-A` goes as :math:`k^4`. For well-resolved meshes,
+:math:`\Delta x \le 0.2 k` the amplification factor is always less than
+:math:`1/1000`. For the under-resolved meshes, e.g. :math:`\Delta x = 8 k`
+the error of the amplification factor is even larger than 1.
+
+.. _fem:deq:diffu:AeA:VS:dt:
+
+.. figure:: AeA_vs_dt.png
+   :width: 600
+
+   Error in the amplification factor versus :math:`\Delta t`
+
+From the previous analysis of forward Euler scheme, we know that
+the scheme is only stable as long as the stability criterion
+:math:`\Delta t \le \frac{1}{2} \Delta x^2` is satisfied. Let us therefore consider
+the error in the amplification factor with respect to :math:`\Delta t`.
+Figure :ref:`fem:deq:diffu:AeA:VS:dt` shows a clear tendency that
+lower frequencies (lower :math:`k`) are quickly dampened. In fact, the
+lower frequencies will be dampened even though the stability criterion
+is not satisfied. However, the stability criterion is important for the
+high frequency components of the error.
+
+[**kam 23**: I have to admit I not sure this is what we want to show]
+
+Exercises          (5)
+======================
+
+.. --- begin exercise ---
+
+.. _fem:deq:exer:diffu:analysis:CN:
+
+Exercise 38: Analyze a Crank-Nicolson scheme for the diffusion equation
+-----------------------------------------------------------------------
+
+Perform the analysis in the section :ref:`fem:deq:diffu:anal` for a 1D
+diffusion equation :math:`u_t = {\alpha} u_{xx}` discretized by the
+Crank-Nicolson scheme in time:
+
+.. math::
+         \frac{u^{n+1}- u^n}{\Delta t} = {\alpha} \frac{1}{2}\left(
+        \frac{\partial u^{n+1}}{\partial x^2} +
+        \frac{\partial u^{n}}{\partial x^2}\right),
+
+or written compactly with finite difference operators,
+
+.. math::
+         [D_t u = {\alpha} D_xD_x \overline{u}^t]^{n+\frac{1}{2}}{\thinspace .}
+
+(From a strict mathematical point of view, the :math:`u^n`
+and :math:`u^{n+1}` in these
+equations should be replaced by :math:`{u_{\small\mbox{e}}}^n` and :math:`{u_{\small\mbox{e}}}^{n+1}` to
+indicate that the unknown is the exact solution of the PDE
+discretized in time, but not yet in space, see
+the section :ref:`fem:deq:diffu:FE`.)
+Filename: ``fe_diffusion``.
+
+.. --- end exercise ---
+

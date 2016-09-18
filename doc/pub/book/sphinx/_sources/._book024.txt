@@ -1,0 +1,294 @@
+.. !split
+
+Convection-diffusion and Petrov-Galerkin methods
+================================================
+
+.. index:: convection-diffusion
+
+.. index:: Petrov-Galerkin methods
+
+Let us now return to the problem in the section :ref:`sec:varform:general:convdiff`
+
+.. _Eq:varform:conv:diff:pde:
+
+.. math::
+
+    \tag{250}
+    \boldsymbol{v}\cdot\nabla u + \beta u = \nabla\cdot\left( {\alpha}\nabla u\right) + f,
+        \quad \boldsymbol{x}\in\Omega,
+        
+
+.. _Eq:varform:conv:diff:bc1:
+
+.. math::
+
+    \tag{251}
+    u = u_0,\quad \boldsymbol{x}\in\partial\Omega_D,
+        
+
+.. _Eq:varform:conv:diff:bc2:
+
+.. math::
+
+    \tag{252}
+    -{\alpha}\frac{\partial u}{\partial n} = g,\quad \boldsymbol{x}\in\partial\Omega_N
+        {\thinspace .}
+        
+
+In the section :ref:`ch:convdiff` we investigated the simplified case in
+1D
+
+.. math::
+        \begin{align*}
+        -u_x - {\alpha} u_{xx} &= 0, \\ 
+        u(0) = 0, u(1) &= 1 {\thinspace .}
+        \end{align*}
+
+and the analytical solution was:
+
+.. math::
+        
+        u_e(x) = \frac{e^{-x/{\alpha}} - 1}{e^{-1/{\alpha}} - 1}.
+        
+
+The approximation
+with global functions failed when :math:`{\alpha}` was significantly smaller than
+:math:`\boldsymbol{v}`. The computed solution contained non-physical oscillations that
+were orders of magnitude larger than the true solution. The approximation
+did however improve as the number of degrees of freedom increased.
+
+The variational problem is:
+Find :math:`u\in V` such that
+
+.. math::
+        
+        a(u,v) = L(v) \forall v
+        
+
+where
+
+.. math::
+        \begin{align*}
+        a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x {\, \mathrm{d}x}, \\ 
+        L(v) &=  \int_0^1  0 v {\, \mathrm{d}x} = 0  .
+        \end{align*}
+
+A Galerkin approximation with a finite element approximation is obtained
+by letting :math:`u=\sum_{j\in{\mathcal{I}_s}} c_j{\psi}_j(x)` and
+:math:`v =  {\psi}_i(x)` which leads to a linear system
+of equations :math:`\sum_j A_{i,j}c_j=b_i` where
+
+.. math::
+        \begin{align*}
+        A_{i,j} &= \int_0^1
+        \mu {\psi}_i' {\psi}_j' + {\psi}_j' {\psi}_i {\, \mathrm{d}x}, \\ 
+        b_i &= \int_0^1 0 {\psi}_i {\, \mathrm{d}x} {\thinspace .}
+        \end{align*}
+
+Figure :ref:`varform:fe:convdiff:plot` shows the finite element solution
+on a coarse mesh of 10 elements for :math:`\mu=0.01`. Clearly, the finite
+element method has the same problem as was observed earlier in global
+functions in the section :ref:`sec:varform:general:convdiff`.
+
+.. FIGURE: [fig/fenics_conv_diff, width=400] Solution obtained with Galerkin approximation using linear elements :math:`N_e=10` and :math:`\mu=0.01`.
+
+For finite differences, the cure for these oscillations is *upwinding*.
+That is, instead
+of using a central difference scheme, we employ the following difference
+scheme:
+
+.. math::
+        \begin{align*}
+        \frac{du}{dx} (x_i) &= \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0,\\ 
+        \frac{du}{dx} (x_i) &= \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0{\thinspace .}
+        \end{align*}
+
+Using this scheme, oscillations will disappear as can be seen in
+Figure :ref:`varform:fe:convdiffstab:plot`.
+
+There is a relationship between upwinding and artificial diffusion.
+If we discretize :math:`u_x` with a central difference and add diffusion as
+:math:`\epsilon =h/2 \Delta` we get
+
+.. math::
+        \begin{align*}
+         \frac{u_{i+1}  -  u_{i-1}}{2 h}    &
+         \textrm{central scheme, first order derivative}  \\ 
+        + \frac{h}{2} \, \frac{-u_{i+1}   + 2 u_{i}    -u_{i-1}}{h^2}  &  \textrm{central scheme, second order derivate}   \\ 
+        & = \frac{u_{i} -u_{i-1}}{h} &  \textrm{upwind scheme}
+        \end{align*}
+
+.. FIGURE: [fig/fenics_conv_diff_stab, width=400] Solution obtained upwinding :math:`N_e=10` and :math:`\mu=0.01`.
+
+Hence, upwinding is equivalent to adding artificial diffusion with
+:math:`\epsilon=h/2`; that is, in both cases we actually solve the problem
+
+.. math::
+        -(\mu+\epsilon)u_{xx} + vu_x = f{\thinspace .}
+
+using a central difference scheme.
+
+Finite difference upwinding is difficult to express using finite
+elements methods, but it is closely to adding some kind of diffusion
+to the scheme.  A clever method of adding diffusion is the so-called
+*Petrov-Galerkin* method.  The Galerkin approximation consist of
+finding :math:`u\in V` such that for all :math:`v\in V` the variational
+formulation is satisfied.
+
+.. math::
+        \begin{align*}
+        a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x {\, \mathrm{d}x}, \\ 
+        L(v) &=  \int_0^1  0 v {\, \mathrm{d}x} = 0  .
+        \end{align*}
+
+The Petrov-Galerkin method is a seemingly innocent and straightforward
+extension of Galerkin where we want to find :math:`u\in V` such that for all
+:math:`w\in W` the variational formulation is fulfilled.
+
+.. math::
+        \begin{align*}
+        a(u, w) &= \int_0^1 -u_x w + \mu u_x w_x {\, \mathrm{d}x}, \\ 
+        L(w) &=  \int_0^1  0 w {\, \mathrm{d}x} = 0  .
+        \end{align*}
+
+However, :math:`W` cannot be chosen freely. For instance, to obtain a quadratic matrix
+the number of basis functions in   :math:`V` and :math:`W` must be the same. Let
+ :math:`w = v  + \beta \boldsymbol{v}\cdot\nabla w`.
+
+.. math::
+        \begin{align*}
+        A_{ij} &= a({\psi}_i, {\psi}_j + \beta v\cdot\nabla {\psi}_j )\\ 
+        &= \int_\Omega\mu\nabla {\psi}_i\cdot\nabla ({\psi}_j + \beta v\cdot\nabla {\psi}_j) {\, \mathrm{d}x} + \int_\Omega v\nabla {\psi}_i\cdot ({\psi}_j + \beta v\cdot\nabla {\psi}_j) {\, \mathrm{d}x}\\ 
+        &=\underbrace{
+        \int_\Omega\mu\nabla {\psi}_i \cdot \nabla {\psi}_j {\, \mathrm{d}x} + \int_\Omega v \cdot \nabla {\psi}_i\, {\psi}_j {\, \mathrm{d}x}}_
+        {\textrm{standard Galerkin}}
+        \\ 
+        &\quad
+        +\underbrace{
+        \beta\int_\Omega\mu\nabla {\psi}_i\cdot\nabla(v \cdot \nabla {\psi}_j) {\, \mathrm{d}x}
+        }_
+        {=0\ \textrm{for linear elements}}+
+        \underbrace{\beta\int_\Omega (v\cdot\nabla {\psi}_i) (v\cdot\nabla {\psi}_j) {\, \mathrm{d}x}}
+        _{\textrm{artificial diffusion in $v$ direction}}
+        \end{align*}
+
+The corresponding FEniCS code is
+
+.. code-block:: python
+
+    from fenics import *
+    import matplotlib.pyplot as plt
+    
+    def boundary(x):
+        return x[0] < 1E-15 or x[0] > 1.0 - 1E-15
+    
+    u_analytical = \ 
+       Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % \ 
+       (1.0e-2, 0.5))
+    mesh = UnitIntervalMesh(10)
+    V = FunctionSpace(mesh, "CG", 1)
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    
+    alpha = Constant(1.0e-2)
+    beta = Constant(0.5)
+    f = Constant(0)
+    h = mesh.hmin()
+    v = v - beta*h*v.dx(0) #Petrov-Galerkin
+    
+    a = (-u.dx(0)*v + alpha*u.dx(0)*v.dx(0) + beta*h*u.dx(0)*v.dx(0))*dx
+    L = f*v*dx
+    
+    bc = DirichletBC(V, u_analytical, boundary)
+    u = Function(V)
+    solve(a == L, u, bc)
+
+Notice that the Petrov-Galerkin method is here implemented as
+``v = v - beta*h*v.dx(0)``.
+
+Summary
+=======
+
+ * When approximating :math:`f` by :math:`u = \sum_j c_j{\varphi}_j`, the least squares
+   method and the Galerkin/projection method give the same result.
+   The interpolation/collocation method is simpler and yields different
+   (mostly inferior) results.
+
+ * Fourier series expansion can be viewed as a least squares or Galerkin
+   approximation procedure with sine and cosine functions.
+
+ * Basis functions should optimally be orthogonal or almost orthogonal,
+   because this gives little round-off errors when solving the linear
+   system, and the coefficient matrix becomes diagonal or sparse.
+   One way to obtain almost orthogonal basis functions is to localize the
+   basis by making the basis functions that have local support in only a few
+   cells of a mesh. This is utilized in the finite element method.
+
+ * Finite element basis functions are *piecewise* polynomials, normally
+   with discontinuous derivatives at the cell boundaries. The basis
+   functions overlap very little, leading to stable numerics and sparse
+   matrices.
+
+ * To use the finite element method for differential equations, we use
+   the Galerkin method or the method of weighted residuals
+   to arrive at a variational form. Technically, the differential equation
+   is multiplied by a test function and integrated over the domain.
+   Second-order derivatives are integrated by parts to allow for typical finite
+   element basis functions that have discontinuous derivatives.
+
+ * The least squares method is not much used for finite element solution
+   of differential equations of second order, because
+   it then involves second-order derivatives which cause trouble for
+   basis functions with discontinuous derivatives.
+
+ * We have worked with two common finite element terminologies and
+   associated data structures
+   (both are much used, especially the first one, while the other is more
+   general):
+
+    a. *elements*, *nodes*, and *mapping between local and global
+       node numbers*
+
+    b. an extended element concept consisting of *cell*, *vertices*,
+       *degrees of freedom*, *local basis functions*,
+       *geometry mapping*, and *mapping between
+       local and global degrees of freedom*
+
+ * The meaning of the word "element" is multi-fold: the geometry of a finite
+   element (also known as a cell), the geometry and its basis functions,
+   or all information listed under point 2 above.
+
+ * One normally computes integrals in the finite element method element
+   by element (cell by cell), either in a local reference coordinate
+   system or directly in the physical domain.
+
+ * The advantage of working in the reference coordinate system is that
+   the mathematical expressions for the basis functions depend on the
+   element type only, not the geometry of that element in the physical
+   domain.  The disadvantage is that a mapping must be used, and
+   derivatives must be transformed from reference to physical
+   coordinates.
+
+ * Element contributions to the global linear system are collected in
+   an element matrix and vector, which must be assembled into the
+   global system using the degree of freedom mapping (``dof_map``) or
+   the node numbering mapping (``elements``), depending on which terminology
+   that is used.
+
+ * Dirichlet conditions, involving prescribed values of :math:`u` at the
+   boundary, are mathematically taken care of via a boundary function that takes
+   on the right Dirichlet values, while the basis functions vanish at
+   such boundaries. The finite element method features a general
+   expression for the boundary function. In software implementations,
+   it is easier to drop the boundary function and the requirement that
+   the basis functions must vanish on Dirichlet boundaries and instead
+   manipulate the global matrix system (or the element matrix and vector)
+   such that the Dirichlet values are imposed on the unknown parameters.
+
+ * Neumann conditions, involving prescribed values of the derivative
+   (or flux) of :math:`u`, are incorporated in boundary terms arising from
+   integrating terms with second-order derivatives by part.
+   Forgetting to account for the boundary terms implies the
+   condition :math:`\partial u/\partial n=0` at parts of the boundary where
+   no Dirichlet condition is set.
+
