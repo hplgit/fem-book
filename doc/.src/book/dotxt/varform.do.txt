@@ -969,6 +969,7 @@ $V$.
 
 [kam: in the below, I cannot really find where it is stated that
 we need to adjust the right-hand side as well]
+[hpl: I don't understand.]
 
 !bsummary How to deal with nonzero Dirichlet conditions
 The general procedure of incorporating Dirichlet boundary
@@ -1997,17 +1998,15 @@ u(x) - u(1) = \int_1^x (-u_x) (-\dx) = 0 ,
 which means that $u(x) = u(1)$. Clearly only the boundary condition at $x=1$ is required
 and the solution is constant throughout the domain.
 
-If $0 < \epsilon \ll 1$ such that
-the term $-u_x$ is dominating,
-the solution is similar to the solution for $\epsilon=0$ in the interior.
-However,
-the second order term $-\epsilon u_{xx}$
-makes the problem a second order
-problem and two boundary conditions are required, one condition at each side.
-The boundary condition at $x=0$ forces the solution to be zero at that
-point and this creates a sharp gradient close to $x=0$.
-For this reason, the problem is called a *singular perturbation problem* as the problem changes
-fundamentally in the sense that different boundary conditions are required in the limiting
+If $0 < \epsilon \ll 1$ such that the term $-u_x$ is dominating, the
+solution is similar to the solution for $\epsilon=0$ in the interior.
+However, the second order term $-\epsilon u_{xx}$ makes the problem a
+second order problem and two boundary conditions are required, one
+condition at each side.  The boundary condition at $x=0$ forces the
+solution to be zero at that point and this creates a sharp gradient
+close to $x=0$.  For this reason, the problem is called a *singular
+perturbation problem* as the problem changes fundamentally in the
+sense that different boundary conditions are required in the limiting
 case $\epsilon=0$.
 
 The solution of the above problem is
@@ -2018,27 +2017,29 @@ u(x) = \frac{e^{-x/\epsilon} - 1}{ e^{-1/\epsilon} -1 } .
 \end{equation}
 !et
 
-FIGURE: [fig/conv-diff-analytical.png, width=400] Analytical solution to the convection-diffusion problem for varying $\epsilon$. label{convdiff:analytical}
+FIGURE: [fig/conv-diff-analytical, width=400] Analytical solution to the convection-diffusion problem for varying $\epsilon$. label{convdiff:analytical}
 
 
-The solution is plotted in Figure ref{convdiff:analytical} for different values of $\epsilon$.
-Clearly, as $\epsilon$ decrease the exponential function represents a sharper and sharper gradient.
-From a physical or engineering point of view, the equation (ref{convdiff:1D})  represents the simplest problem
-involving a common phenomenon of boundary layers.
-Boundary layers are common in all kinds of fluid flow and is a main problem when discretizing such equations.
-Boundary layers have the characteristics of the solution
-(ref{convdiff:1D:analytical}), that is; a sharp local exponential gradient.
-In fluid flow the parameter $\epsilon$ is often related to the inverse of the Reynolds number which frequently
-in engineering is significantly larger than $10^3$ as it was here.
-In these applications the boundary layer is extremely thin and the gradient extremely sharp.
+The solution is plotted in Figure ref{convdiff:analytical} for
+different values of $\epsilon$.  Clearly, as $\epsilon$ decrease the
+exponential function represents a sharper and sharper gradient.  From
+a physical or engineering point of view, the equation
+(ref{convdiff:1D}) represents the simplest problem involving a common
+phenomenon of boundary layers.  Boundary layers are common in all
+kinds of fluid flow and is a main problem when discretizing such
+equations.  Boundary layers have the characteristics of the solution
+(ref{convdiff:1D:analytical}), that is; a sharp local exponential
+gradient.  In fluid flow the parameter $\epsilon$ is often related to
+the inverse of the Reynolds number which frequently in engineering is
+significantly larger than $10^3$ as it was here.  In these
+applications the boundary layer is extremely thin and the gradient
+extremely sharp.
 
+In this chapter we will not embark on the fascinating and complex
+issue of boundary layer theory but only consider the numerical issues
+related to this phenomenon.  Let us as earlier therefore consider an
+approximate solution on the following form
 
-
-
-
-In this chapter we will not embark on the fascinating and complex issue of boundary layer
-theory but only consider the numerical issues related to this phenomenon.
-Let us as earlier therefore consider an approximate solution on the following form
 !bt
 \begin{equation}
 u(x) =  \hat{u}(x) + B(x) = \sum^{N-1}_{j=1} c_j \baspsi_j(x)  + B(x)
@@ -2049,9 +2050,10 @@ u(x) =  \hat{u}(x) + B(x) = \sum^{N-1}_{j=1} c_j \baspsi_j(x)  + B(x)
 As earlier $\{\baspsi_j(x)\}_{j=1}^{N-1}\}$ are zero at the boundary $x=0$
 and $x=1$ and the boundary conditions are accounted for by the function $B(x)$.
 Let
+
 !bt
 \begin{equation}
-B(x) = c_0 (1-x) + c_N x .
+B(x) = c_0 (1-x) + c_N x \tp
 \end{equation}
 !et
 
@@ -2064,7 +2066,7 @@ where we solve for $\hat{u} = u - B$. The homogeneous Dirichlet problem reads
 label{convdiff:1D:homo}
 \hat{u}(0) &= 0, \\
 \nonumber
-\hat{u}(1) &= 0 .
+\hat{u}(1) &= 0 \tp
 \nonumber
 \end{align}
 !et
@@ -2073,17 +2075,18 @@ The Galerkin formulation of (ref{convdiff:1D:homo}) is obtained as
 !bt
 \[
 \int_0^1
-(- \epsilon \hat{u}'' + \hat{u}' - 1) \baspsi_j \dx .
+(- \epsilon \hat{u}'' + \hat{u}' - 1) \baspsi_j \dx \tp
 \]
 !et
 Integration by parts leads to
 !bt
 \[
 \int_0^1
-\epsilon \hat{u}' \baspsi_i' + \hat{u}' \baspsi_i - 1 \baspsi_i \dx .
+\epsilon \hat{u}' \baspsi_i' + \hat{u}' \baspsi_i - 1 \baspsi_i \dx \tp
 \]
 !et
 In other words, we need to solve the linear system $\sum_j A_{i,j} c_j = b_i$ where
+
 !bt
 \begin{align*}
 A_{i,j} &= \int_0^1\epsilon \baspsi_j' \baspsi_i' + \baspsi_j' \baspsi_i \dx,\\
@@ -2091,60 +2094,62 @@ b_i &=\int_0^1 1 \baspsi_j \dx \tp
 \end{align*}
 !et
 
-A corresponding code where we also plot the behavior of the solution
-with respect to different $\epsilon$ is:
+A sketch of a
+corresponding code where we also plot the behavior of the solution
+with respect to different $\epsilon$ goes as follows.
+
 !bc pycod
+import matplotlib.pyplot as plt
 N = 8
-eps_vals =[1.0, 0.1, 0.01, 0.001]
-for eps in eps_vals:
-  A = sym.zeros((N-1), (N-1))
-  b = sym.zeros((N-1))
+psi = series(x, series_type, N)  # Lagrange, Bernstein, sin, ...
+eps_values =[1.0, 0.1, 0.01, 0.001]
+for eps in eps_valuess:
+    A = sym.zeros((N-1), (N-1))
+    b = sym.zeros((N-1))
 
-  for i in range(0, N-1):
-    integrand = f*psi[i]
-    integrand = sym.lambdify([x], integrand)
-    b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
-    for j in range(0, N-1):
-      integrand = eps*sym.diff(psi[i], x)* sym.diff(psi[j], x) \
-                  -sym.diff(psi[i], x)*psi[j]
-      integrand = sym.lambdify([x], integrand)
-      A[i,j] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+    for i in range(0, N-1):
+        integrand = f*psi[i]
+        integrand = sym.lambdify([x], integrand)
+        b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+        for j in range(0, N-1):
+            integrand = eps*sym.diff(psi[i], x)*\
+                 sym.diff(psi[j], x) - sym.diff(psi[i], x)*psi[j]
+            integrand = sym.lambdify([x], integrand)
+            A[i,j] = sym.mpmath.quad(integrand,
+                                     [Omega[0], Omega[1]])
 
-  c = A.LUsolve(b)
-  u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
+    c = A.LUsolve(b)
+    u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
 
-  U = sym.lambdify([x], u)
-  xx = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0))
-  UU = U(xx)
-  pylab.plot(xx, UU)
+    U = sym.lambdify([x], u, modules='numpy')
+    x_ = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0))
+    U_ = U(x_)
+    plt.plot(x_, U_)
 !ec
 
+FIGURE: [fig/Lagrange_convdiff_8, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
 
+FIGURE: [fig/Lagrange_convdiff_16, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
 
-
-
-FIGURE: [fig/Lagrange_convdiff_8.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
-
-FIGURE: [fig/Lagrange_convdiff_16.png, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
-
-The numerical solutions for different $\epsilon$ is shown in Figure ref{convdiff:osc:Lagrange8}
-and ref{convdiff:osc:Lagrange16} for $N=8$ and $N=16$, respectively.
-From these figures we can make two observations. The first observation is that
-the numerical solution contains non-physical oscillations that grows as
-$\epsilon$ decreases. These oscillations are so strong that for $N=8$, the
-numerical solutions do not resemble the true solution at all
-for  $\epsilon$  less than $1/10$. The true solution
-is always in the interval $[0,1]$ while the numerical solution has values
-larger than 2 for $\epsilon=1/100$ and larger than 10 for $\epsilon=1/1000$.
-The second observation is that the numerical solutions appear to improve
-as $N$ increases. While the numerical solution is outside the interval $[0,1]$
-for $\epsilon$ less than $1/10$ the magnitude of the oscillations clearly
-has decreased.
+The numerical solutions for different $\epsilon$ is shown in Figure
+ref{convdiff:osc:Lagrange8} and ref{convdiff:osc:Lagrange16} for $N=8$
+and $N=16$, respectively.  From these figures we can make two
+observations. The first observation is that the numerical solution
+contains non-physical oscillations that grows as $\epsilon$
+decreases. These oscillations are so strong that for $N=8$, the
+numerical solutions do not resemble the true solution at all for
+$\epsilon$ less than $1/10$. The true solution is always in the
+interval $[0,1]$ while the numerical solution has values larger than 2
+for $\epsilon=1/100$ and larger than 10 for $\epsilon=1/1000$.  The
+second observation is that the numerical solutions appear to improve
+as $N$ increases. While the numerical solution is outside the interval
+$[0,1]$ for $\epsilon$ less than $1/10$ the magnitude of the
+oscillations clearly has decreased.
 
 We will return to this example later and show examples of
 techniques that can be used to improve the approximation.
 The complete source code can be found in
- "`test_epsilon`":"${fem_src}/conv_diff.py".
+ "`conv_diff_global.py`":"${fem_src}/conv_diff_global.py".
 
 
 
@@ -3674,25 +3679,27 @@ In the first cell, the value at local node 0 is known so only the value
 at local node 1 is unknown. The associated element vector entry becomes
 
 !bt
-\[
-\tilde b_0^{(1)} = \int_{-1}^1 \left(f\refphi_1 -
+\begin{align*}
+\tilde b_0^{(1)} &= \int_{-1}^1 \left(f\refphi_1 -
 C\frac{2}{h}\frac{d\refphi_0}{dX}\frac{2}{h}\frac{d\refphi_1}{dX}\right)
-\frac{h}{2} \dX = \frac{h}{2} 2\int_{-1}^1 \refphi_1  \dX
+\frac{h}{2} \dX \\
+& = \frac{h}{2} 2\int_{-1}^1 \refphi_1  \dX
 - C\frac{2}{h}(-\frac{1}{2})\frac{2}{h}\frac{1}{2}\frac{h}{2}\cdot 2
 = h + C\frac{1}{h}\tp
-\]
+\end{align*}
 !et
 The value at local node 1 in the last cell is known so the
 element vector here is
 
 !bt
-\[
-\tilde b_0^{N_e} = \int_{-1}^1 \left(f\refphi_0 -
+\begin{align*}
+\tilde b_0^{N_e} &= \int_{-1}^1 \left(f\refphi_0 -
 D\frac{2}{h}\frac{d\refphi_1}{dX}\frac{2}{h}\frac{d\refphi_0}{dX}\right)
-\frac{h}{2} \dX = \frac{h}{2} 2\int_{-1}^1 \refphi_0  \dX
+\frac{h}{2} \dX\\
+& = \frac{h}{2} 2\int_{-1}^1 \refphi_0  \dX
 - D\frac{2}{h}\frac{1}{2}\frac{2}{h}(-\frac{1}{2})\frac{h}{2}\cdot 2
 = h + D\frac{1}{h}\tp
-\]
+\end{align*}
 !et
 The contributions from the $B(x)$ function to the global right-hand side
 vector becomes $C/h$ for $b_0$ and $D/h$ for $b_N$, exactly as we
@@ -6311,7 +6318,7 @@ on a coarse mesh of 10 elements for $\mu=0.01$. Clearly, the finite
 element method has the same problem as was observed earlier in global
 functions in Section ref{sec:varform:general:convdiff}.
 
-#FIGURE: [fig/fenics_conv_diff.png, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
+FIGURE: [fig/fenics_conv_diff, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 For finite differences, the cure for these oscillations is *upwinding*.
 That is, instead
@@ -6339,7 +6346,7 @@ $\epsilon =h/2 \Delta $ we get
 \end{eqnarray*}
 !et
 
-#FIGURE: [fig/fenics_conv_diff_stab.png, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+FIGURE: [fig/fenics_conv_diff_stab, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
 Hence, upwinding is equivalent to adding artificial diffusion with
 $\epsilon=h/2$; that is, in both cases we actually solve the problem

@@ -82,7 +82,8 @@ def approximate(f, d, N_e, numint, Omega=[0,1], filename='tmp'):
                   [ 0.23692689,  0.47862867,  0.56888889,
                     0.47862867,  0.23692689]]
     elif numint is not None:
-        print 'Numerical rule %s is not supported for numerical computing' % numint
+        print 'Numerical rule %s is not supported '\
+              'for numerical computing' % numint
         sys.exit(1)
 
 

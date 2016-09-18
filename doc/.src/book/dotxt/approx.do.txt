@@ -2145,9 +2145,9 @@ label{bernstein:basis}
 \end{equation}
 !et
 
-FIGURE: [fig/Bernstein_basis8.png] The nine functions of a Bernstein basis of order 8. label{Bernstein_basis_8}
+FIGURE: [fig/Bernstein_basis8] The nine functions of a Bernstein basis of order 8. label{Bernstein_basis_8}
 
-FIGURE: [fig/Lagrange_basis8.png] The nine functions of a Lagrange basis of order 8. label{Lagrange_basis_8}
+FIGURE: [fig/Lagrange_basis8] The nine functions of a Lagrange basis of order 8. label{Lagrange_basis_8}
 
 
 
@@ -2215,7 +2215,7 @@ To quantify the behavior of the error as well as the
 complexity of the computations we  compute the approximation
 with increasing number of basis functions and time
 the computations by using `time.clock` (returning the CPU time so far
-in the program). A code example is as
+in the program). A code example goes as
 follows:
 
 !bc pycod
@@ -2245,10 +2245,10 @@ We run the analysis as follows
 !bc pycod
 Omega = [0, 1]
 x = sym.Symbol("x")
-gauss_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
+gaussian_bell = sym.exp(-(x-0.5)**2) - sym.exp(-0.5**2)
 step = sym.Piecewise((1, 0.25 < x), (0, True)) - \
        sym.Piecewise((1, 0.75 < x), (0, True))
-func = gauss_bell
+func = gaussian_bell
 
 import pylab
 series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
@@ -2265,18 +2265,18 @@ Below we list the numerical error for different $N$  when approximating the Gaus
 |------------------------------------------------------------------|
 |  N          |  2        |  4          |  8         |  16         |
 |--c----------|--c--------|--c----------|--c---------|--c----------|
-|  Taylor     |  0.0983   |  0.00263    |  7.83e-07  |  3.57e-10   |
-|  sine       |  0.0027   |  0.00061    |  0.00012   |  2.17e-05   |
-|  Bernstein  |  0.0021   |  4.45e-05   |  8.73e-09  |  4.49e-15   |
-|  Lagrange   |  0.0021   |  4.45e-05   |  8.73e-09  |  2.45e-12   |
+|  Taylor     |  9.83e-02   |  2.63e-03   |  7.83e-07  |  3.57e-10   |
+|  sine       |  2.70e-03   |  6.10e-04   |  1.20e-04  |  2.17e-05   |
+|  Bernstein  |  2.10e-03   |  4.45e-05   |  8.73e-09  |  4.49e-15   |
+|  Lagrange   |  2.10e-03   |  4.45e-05   |  8.73e-09  |  2.45e-12   |
 |------------------------------------------------------------------|
 
 It is quite clear that the different methods have different
 properties.  For example, the Lagrange basis for $N=16$ is 145 times
 more accurate than the Taylor basis. However, Bernstein is actually
-more than 500 times more accurate than Lagrange. The approximations
-obtained by sines are far behind the polynomial approximations for
-$N>4$.
+more than 500 times more accurate than the Lagrange basis! The
+approximations obtained by sines are far behind the polynomial
+approximations for $N>4$.
 
 The corresponding CPU time of the required computations also vary quite a bit:
 
@@ -2291,15 +2291,12 @@ The corresponding CPU time of the required computations also vary quite a bit:
 
 Here, the timings are in seconds.  The Taylor basis is the most
 efficient and is in fact more than 60 times faster than the Lagrange
-basis for $N=16$.
+basis for $N=16$ (with our naive implementation of basic formulas).
 
 In order to get a more precise idea of how the approximation methods
-behave as $N$ increase we assume a simple model which may be used in
-a regression analysis.  There are two natural models of the accuracy
-(and the computational complexity) in terms of $N$: polynomial and
-exponential.
-
-Let us therefore consider the following models:
+behave as $N$ increases, we investigate two simple data models which
+may be used in a regression analysis.  These two are the polynomial
+and exponential model defined by
 
 !bt
 \begin{align}
@@ -2309,7 +2306,6 @@ label{sec:approx:exp:model}
 E_{2}(N) &= \alpha_{2} \exp(\beta_2 N)
 \end{align}
 !et
-
 Taking the logarithm of (ref{sec:approx:pol:model}) we
 obtain
 
@@ -2318,20 +2314,25 @@ obtain
 \log (E_1(N)) = \beta_1 \log(N) + log(\alpha_1)
 \]
 !et
-Hence, letting $x=\log(N)$ and $y=\log (E_1(N))$,
-we obtain $y = a x + b$ with $a=\beta_1$ and $b= log(\alpha_1)$.
-Then, we may perform a regression analysis
-as earlier with respect to the basis functions $(1,x)$ and obtain an estimate of
-the order of convergence in terms of $\beta_1$ . For the second model (ref{sec:approx:exp:model}),
-we take the natural logarithm and obtain
+Hence, letting $x=\log(N)$ be the independent variable and $y=\log
+(E_1(N))$ the dependent one, we simply have the straight line $y = a x
++ b$ with $a=\beta_1$ and $b= log(\alpha_1)$.  Then, we may perform a
+regression analysis as earlier with respect to the basis functions
+$(1,x)$ and obtain an estimate of the order of convergence in terms of
+$\beta_1$ . For the second model (ref{sec:approx:exp:model}), we take
+the natural logarithm and obtain
 
 !bt
 \[
 \ln (E_2(N)) = \beta_2 N + \ln(\alpha_2)
 \]
 !et
-Again, regression analysis provides the means to estimate the convergence, but here we let $x=N$,
+Again, regression analysis provides the means to estimate the convergence,
+but here we let $x=N$ be the independent variable,
 $y=\ln (E_2(N))$, $a=\beta_2$ and $b= \ln(\alpha_2)$.
+To summarize, the polynomial model should have the data around a straight
+line in a log-log plot, while the exponential model has its date around
+a straight line in a log plot with the logarithmic scale on the $y$ axis.
 
 Before we perform the regression analysis, a good rule is to inspect
 the behavior visually in log and log-log plots. Figure
@@ -2346,9 +2347,9 @@ plot. Here, the Bernstein approximation appears to be a linear line
 which suggests that the convergence is exponential.
 
 
-FIGURE: [fig/Bell_convergence_loglog.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot.  label{fem:approx:bell:loglogfig}
+FIGURE: [fig/Bell_convergence_loglog] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log-log plot.  label{fem:approx:bell:loglogfig}
 
-FIGURE: [fig/Bell_convergence_semilogy.png] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot.  label{fem:approx:bell:semilogfig}
+FIGURE: [fig/Bell_convergence_semilogy] Convergence of least square approximation using basis function in terms of the Taylor, sinusoidal, Bernstein and Lagrange basis in a log plot.  label{fem:approx:bell:semilogfig}
 
 The following program computes the order of convergence for
 the sines using the polynomial model (ref{sec:approx:pol:model})
@@ -2356,6 +2357,8 @@ while the Bernstein approximation is estimates
 in terms of model (ref{sec:approx:exp:model}). We avoid to
 compute estimates for the Taylor and Lagrange approximations as neither
 the log-log plot nor the log plot demonstrated linear behavior.
+
+[hpl: Any comment about the `regression_with_noise` function?]
 
 !bc pycod
 N_values = [2, 4, 8, 16, 32]
@@ -2368,22 +2371,24 @@ x = sym.Symbol('x')
 psi = [1, x]
 
 u, c = regression_with_noise(log2(Sinusoidal), psi, log2(N_values))
-print "estimated model for sine: %3.2e*N**(%3.2e)" % (2**(c[0]), c[1])
+print "estimated model for sine: %3.2e*N**(%3.2e)" % \
+      (2**(c[0]), c[1])
 
 # Check the numbers estimated by the model by manual inspection
 for N in N_values:
-    print 2**c[0] * N **c[1]
+    print 2**c[0] * N**c[1]
 
 u, c = regression_with_noise(log(Bernstein), psi, N_values)
-print "estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % (exp(c[0]), c[1])
+print "estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % \
+      (exp(c[0]), c[1])
 
 # Check the numbers estimated by the model by manual inspection
 for N in N_values:
     print exp(c[0]) * exp(N * c[1])
 !ec
 
-The program estimates the sine approximation convergences as $
-1.43e-02\cdot N^{-2.3}$, which means that the convergence is slightly
+The program estimates the sine approximation convergences as
+$1.43e-02\cdot N^{-2.3}$, which means that the convergence is slightly
 above second order.  The Bernstein approximation on the other hand is
 $8.01e-02 \cdot \exp(-1.92e+00 N)$.
 
@@ -2396,11 +2401,11 @@ alone. However, for completeness we include a log-log plot in Figure
 ref{fem:comp:bell:loglogfig} to illustrate the polynomial increase in
 CPU time with respect to N.
 
-FIGURE: [fig/Bell_computations_loglog.png] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
+FIGURE: [fig/Bell_computations_loglog] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
 
 
 The complete code can be found in
-"`conv_rate_estimates.py`": "${fem_src}/conv_rate_estimates.py".
+"`convergence_rate_local.py`": "${fem_src}/convergence_rate_local.py".
 
 !split
 ======= Approximation of functions in higher dimensions =======
@@ -3944,9 +3949,9 @@ by the coordinates of the local nodes in the element.
 
 # #define PHI_WLABEL
 # #ifdef PHI_WLABEL
-FIGURE: [fig/phi/mpl_fe_basis_p2_4e_lab, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
+FIGURE: [fig/phi/fe_basis_p2_4e_lab, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
 # #else
-FIGURE: [fig/phi/mpl_fe_basis_p2_4e, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
+FIGURE: [fig/phi/fe_basis_p2_4e, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
 # #endif
 
 === Properties of $\basphi_i$ ===
@@ -4096,9 +4101,9 @@ first, which easily generalize to any $d > 2$, and then look at the
 special case $d=1$.
 
 # #ifdef PHI_WLABEL
-FIGURE: [fig/phi/mpl_fe_basis_p1_4e_lab, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
+FIGURE: [fig/phi/fe_basis_p1_4e_lab, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
 # #else
-FIGURE: [fig/phi/mpl_fe_basis_p1_4e, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
+FIGURE: [fig/phi/fe_basis_p1_4e, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
 # #endif
 
 
@@ -4160,7 +4165,7 @@ while
 $\basphi_3$ and $\basphi_6$ are made up of Lagrange polynomials on two
 neighboring elements.
 
-FIGURE: [fig/phi/mpl_fe_basis_p3_4e, width=600 frac=0.9]  Illustration of the piecewise cubic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P3}
+FIGURE: [fig/phi/fe_basis_p3_4e, width=600 frac=0.9]  Illustration of the piecewise cubic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P3}
 
 idx{chapeau function} idx{hat function} idx{finite element basis function}
 
@@ -5944,7 +5949,7 @@ for N_e in 4, 8:
 !ec
 Figure ref{fem:approx:fe:element:impl:fig:P0:x2} shows the result.
 
-[kam: does not seem to work, something for yappi]
+[kam: does not seem to work, something for Yapi.]
 
 FIGURE: [fig/fe_p0_x2_4e_8e, width=600] Approximation of a parabola by 4 (left) and 8 (right) P0 elements. label{fem:approx:fe:element:impl:fig:P0:x2}
 
