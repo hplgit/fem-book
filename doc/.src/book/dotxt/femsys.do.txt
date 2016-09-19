@@ -817,13 +817,31 @@ A trick now is to divide by $a(x)$ on both sides to obtain
 !et
 and hence
 !bt
+\[
+u(x) = \frac{C}{a(x)} x + D
+\]
+!et
+The boundary conditions demand that $u(0) = 0$, which means that $D=0$. 
+In order to obtain an expression for $u(1)=1$ 
+we note that $u$ is 
+a piecewise linear function. 
+with $u' = C$ for $x\in(0,0.5)$
+and $u'=\frac{C}{a_0}$ for $x\in(0.5,1)$. 
+We may therefore express $u(1)$ as 
+$u(1) = u(0) + u'|_{x=0.25} 0.5 + u'|_{x=0.75} 0.5 = 0.5 (C + \frac{C}{a_0}) = 1$. 
+In other words, $C=\frac{2 a_0}{a_0 +1}$. 
+!bt
 \begin{equation}
 label{varcoeff:analytical:solution}
-u(x) = \frac{C}{a(x)} x + D
+u(x) = 
+\left\{ \begin{array}{ll}
+\frac{2 a_0}{a_0 +1}   x & \mbox{ for } 0 < x \le 0.5 \\
+\frac{2}{a_0 +1} (x-0.5) + \frac{a_0}{a_0 +1}  & \mbox{ for } 0.5 < x \le 1
+\end{array}
+\right. 
 \end{equation}
 !et
-The boundary conditions demand that $u(0) = 0$, which means that $D=0$
-and $u(1) = 1$ fixate $C$ to be $a(1) = a_0$.
+
 
 To obtain a variational form of this problem suitable for
 finite element simulation, we transform the problem
@@ -944,7 +962,7 @@ b^{(u)}_i &= (0,\baspsi^{(u)}_i)= 0 \tp
 
 
 
-#FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu:mx}
+FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu:mx}
 
 
 

@@ -976,7 +976,10 @@ $V$.
 we need to adjust the right-hand side as well]
 [hpl: I don't understand what you mean.]
 [kam: I was not sure how to write the homogenous Dirichlet
-problem. In the convection diffusion example I used hat{u}.]
+problem. In the convection diffusion example I used $\hat{u}$.
+There was also the issue with boundary function when we have jump
+in the coeff in Darcy problem. The right hand side will then 
+after this trick not be a cont. function.]
 
 !bsummary How to deal with nonzero Dirichlet conditions
 The general procedure of incorporating Dirichlet boundary
