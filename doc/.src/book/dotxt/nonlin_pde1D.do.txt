@@ -393,10 +393,10 @@ A big question is whether there are significant differences in accuracy
 between taking the products of arithmetic means or taking the arithmetic
 mean of products. Exercise ref{nonlin:exer:products:arith:mean} investigates
 this question, and the answer is that the approximation is
-$\Oof{\Delta t^2}$ in both cases.
+$\Oof{\Delta t^2}$ in both cases. 
 
 
-[kam: mean value notation. Refer to appedix?]
+
 
 
 !split

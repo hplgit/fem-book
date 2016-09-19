@@ -975,6 +975,8 @@ $V$.
 [kam: in the below, I cannot really find where it is stated that
 we need to adjust the right-hand side as well]
 [hpl: I don't understand what you mean.]
+[kam: I was not sure how to write the homogenous Dirichlet
+problem. In the convection diffusion example I used hat{u}.]
 
 !bsummary How to deal with nonzero Dirichlet conditions
 The general procedure of incorporating Dirichlet boundary

@@ -551,8 +551,7 @@ being $\frac{1}{4}\Delta t u^n(u^{n+1}-u^n)\approx \frac{1}{4}\Delta t^2
 u^\prime u$, i.e., a difference of size $\Delta t^2$).
 !enotice
 
-[kam: this is the first time I've seen this $\overline{u}^t $ notation.
-It is not in the appendix either. ]
+
 
 ===== Newton's method =====
 label{nonlin:timediscrete:logistic:Newton}
@@ -997,7 +996,7 @@ if we interpret $u$ as a vector $u=(u_0(t),u_1(t),\ldots,u_N(t))$
 and $f$ as a vector function with components
 $(f_0(u,t),f_1(u,t),\ldots,f_N(u,t))$.
 
-[kam: Here we don't use bf] 
+
 
 Most solution methods for scalar ODEs, including
 the Forward and Backward Euler schemes and the
@@ -1008,7 +1007,7 @@ applying the scalar scheme to each component of the system.  For
 example, here is a backward difference scheme applied to each
 component,
 
-[kam: I think we should write $f_0(u_0^n, \ldots, u_N,t_n)$]
+
 
 !bt
 \begin{align*}
