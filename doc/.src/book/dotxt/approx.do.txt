@@ -2704,7 +2704,7 @@ for i in range(len(basis)):
     A[i,j] = integral(psi_i*psi_j)
 !ec
 We remark that `sympy` may even write the output in LaTeX or C++ format
-using the functions  `latex` and  `ccode`. 
+using the functions  `latex` and  `ccode`.
 
 ===== Implementation =====
 label{fem:approx:2D:global:code}
@@ -3942,12 +3942,7 @@ by the coordinates of the local nodes in the element.
 #$\basphi_i(x)=0$ when $x\notin\Omega^{(e)}$.
 
 
-# #define PHI_WLABEL
-# #ifdef PHI_WLABEL
-FIGURE: [fig/phi/mpl_fe_basis_p2_4e_lab, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
-# #else
-FIGURE: [fig/phi/gpl_fe_basis_p2_4e, width=600]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
-# #endif
+FIGURE: [fig/phi/mpl_fe_basis_p2_4e_lab, width=600 frac=1]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
 
 === Properties of $\basphi_i$ ===
 
@@ -4095,11 +4090,7 @@ we think it is better to understand the construction of quadratic functions
 first, which easily generalize to any $d > 2$, and then look at the
 special case $d=1$.
 
-# #ifdef PHI_WLABEL
-FIGURE: [fig/phi/mpl_fe_basis_p1_4e_lab, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
-# #else
-FIGURE: [fig/phi/gpl_fe_basis_p1_4e, width=600]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
-# #endif
+FIGURE: [fig/phi/mpl_fe_basis_p1_4e_lab, width=600 frac=1]  Illustration of the piecewise linear basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P1}
 
 
 We have the same four elements on $\Omega = [0,1]$.  Now there are no
@@ -4160,7 +4151,7 @@ while
 $\basphi_3$ and $\basphi_6$ are made up of Lagrange polynomials on two
 neighboring elements.
 
-FIGURE: [fig/phi/mpl_fe_basis_p3_4e, width=600 frac=0.9]  Illustration of the piecewise cubic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P3}
+FIGURE: [fig/phi/mpl_fe_basis_p3_4e_lab, width=600 frac=1]  Illustration of the piecewise cubic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P3}
 
 idx{chapeau function} idx{hat function} idx{finite element basis function}
 

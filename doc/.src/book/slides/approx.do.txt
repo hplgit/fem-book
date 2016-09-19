@@ -1130,7 +1130,7 @@ elements = [[0, 1, 2], [2, 3, 4], [4, 5, 6], [6, 7, 8]]
 !split
 ===== Some corresponding basis functions (P2 elements) =====
 
-FIGURE: [fig/phi/mpl_fe_basis_p2_4e, width=600]
+FIGURE: [fig/phi/mpl_fe_basis_p2_4e, width=800]
 
 !split
 ===== Examples on elements with four nodes (P3 elements) =====
@@ -1148,7 +1148,7 @@ elements = [[i*d+j for j in range(d+1)] for i in range(num_elements)]
 !split
 ===== Some corresponding basis functions (P3 elements) =====
 
-FIGURE: [fig/phi/mpl_fe_basis_p3_4e, width=600]
+FIGURE: [fig/phi/mpl_fe_basis_p3_4e, width=800]
 
 !split
 ===== The numbering does not need to be regular from left to right =====
