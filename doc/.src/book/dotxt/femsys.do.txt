@@ -817,37 +817,54 @@ A trick now is to divide by $a(x)$ on both sides to obtain
 !et
 and hence
 !bt
+\[
+u(x) = \frac{C}{a(x)} x + D
+\]
+!et
+The boundary conditions demand that $u(0) = 0$, which means that $D=0$. 
+In order to obtain an expression for $u(1)=1$ 
+we note that $u$ is 
+a piecewise linear function. 
+with $u' = C$ for $x\in(0,0.5)$
+and $u'=\frac{C}{a_0}$ for $x\in(0.5,1)$. 
+We may therefore express $u(1)$ as 
+$u(1) = u(0) + u'|_{x=0.25} 0.5 + u'|_{x=0.75} 0.5 = 0.5 (C + \frac{C}{a_0}) = 1$. 
+In other words, $C=\frac{2 a_0}{a_0 +1}$. 
+!bt
 \begin{equation}
 label{varcoeff:analytical:solution}
-u(x) = \frac{C}{a(x)} x + D
+u(x) = 
+\left\{ \begin{array}{ll}
+\frac{2 a_0}{a_0 +1}   x & \mbox{ for } 0 < x \le 0.5 \\
+\frac{2}{a_0 +1} (x-0.5) + \frac{a_0}{a_0 +1}  & \mbox{ for } 0.5 < x \le 1
+\end{array}
+\right. 
 \end{equation}
 !et
-The boundary conditions demand that $u(0) = 0$, which means that $D=0$
-and $u(1) = 1$ fixate $C$ to be $a(1) = a_0$.
 
-To obtain a variational form of this problem suitable for
-finite element simulation, we transform the problem
-to a homogeneous Dirichlet problem.
-Let the solution be $u(x) = B(x) + \sum_{j\in\If} c_j\baspsi_j(x)$ where
-$B(x)=x$.
 
-[kam: the right hand side is hard to compute. Perhaps find
-a problem with homogeneous BC. Or perhaps just comment that we take the
-linear algebra approach.
-Can take the opportunity to say that the BC trick requires extra regularity
-and that we instead do the LA approach.  
-]
+We remark that in this example, we need to be careful when dealing with the boundary function. 
+Let
+!bt
+\[ u(x) = B(x) + \sum_{j\in\If}c_j\baspsi_j(x) \]
+!et
+A suitable boundary function is $B(x)=x$. I order to evaluate the right-hand side
+we would then need to evaluate 
 
 The variational problem derived from a standard Galerkin method reads: Find $u$ such that
 !bt
 \[
-\int_{\Omega} a u' v' \, dx = \int_\Omega f v dx
+\int_{\Omega} a u' v' \, dx = \int_\Omega f v dx + \mbox{boundary terms}
 \]
 !et
 
 We observe that in the variational problem, the discontinuity of $a$ does not cause any problem
 as the differentiation is moved from $a$ (and $u'$) to $v$ by using integration by parts.
-Letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and $v=\baspsi_i(x)$ the corresponding linear system is $\sum_j A_{i,j}c_j=b_i$
+As earlier, to include the boundary conditions,  we may use a boundary function such that 
+!bt
+\[ u(x) = B(x) + \sum_{j\in\If}c_j\baspsi_j(x) \]
+!et
+and further letting  $v=\baspsi_i(x)$,  the corresponding linear system is $\sum_j A_{i,j}c_j=b_i$
 with
 
 
@@ -855,14 +872,48 @@ with
 \begin{align*}
 A_{i,j} &= (a \baspsi_j', \baspsi_i') = \int_{\Omega} a(x) \baspsi_j'(x)
 \baspsi_i'(x)\dx,\\
-b_i &= (f,\baspsi_i)= 0 \tp
+b_i &= (a B',\baspsi_i')= \dx \tp
 \end{align*}
 !et
 
+In FEniCS, the linear algebra approach is used and the boundary conditions are inserted 
+in the element matrix as described in Section ref{fem:bc:elmat:mod}. 
 The solution of the problem is shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotu} at different mesh resolutions.
 The analytical solution in (ref{varcoeff:analytical:solution}) is a piecewise polynomial, linear
 for $x$ in $[0,\half)$ and $(\half,1]$ and it seems that the numerical strategy gives a good approximation
 of the solution.
+The FEniCS program generating the plot is
+!bc pycod
+class A(Expression):
+    def eval(self, value, x):
+        value[0] = 1
+        if x[0] >= 0.5: value[0] = 0.1
+
+class DirichletBoundary(SubDomain):
+    def inside(self, x, on_boundary):
+        return on_boundary
+
+p_bc = f = Expression("x[0]")
+Ns = [2, 8, 32]
+for N in Ns:
+    mesh = UnitIntervalMesh(N)
+    V = FunctionSpace(mesh, "CG", 1)
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    a_coeff = A()
+    a = a_coeff*inner(grad(u), grad(v))*dx
+    f = Constant(0)
+    L = f*v*dx
+    bc = DirichletBC(V, p_bc, DirichletBoundary())
+    u = Function(V)
+    solve(a == L, u, bc)
+
+    plt.plot(V.dofmap().tabulate_all_coordinates(mesh), u.vector().array())
+    plt.hold(True)
+plt.legend(["N=%d"%N for N in Ns], loc="upper left")
+plt.savefig('darcy_a1D.png'); plt.savefig('darcy_a1D.pdf')
+plt.show()
+!ec 
 
 The flux $a u'$ is often a quantity of interest. Because the flux involves differentiation with respect
 to $x$ we do not have an direct access to it and 
@@ -880,6 +931,11 @@ b_i &= (a u',\baspsi_i)=  \int_\Omega a(x)  \sum_j c_j\baspsi_j'(x) \dx\tp
 \end{align*}
 !et
 
+Computing the flux by taking the Galerkin projection as described in Section ref{fem:approx:fenics:2D}
+is implemented in the `project` method in FEniCS and is obtained as
+!bc pycod
+aux = project(-a_coeff*u.dx(0), V)
+!ec
 As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux}, this
 approach does not produce a good approximation of the flux.
 
@@ -944,7 +1000,7 @@ b^{(u)}_i &= (0,\baspsi^{(u)}_i)= 0 \tp
 
 
 
-#FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu:mx}
+FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu:mx}
 
 
 

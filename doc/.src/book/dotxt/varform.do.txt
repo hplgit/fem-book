@@ -975,6 +975,11 @@ $V$.
 [kam: in the below, I cannot really find where it is stated that
 we need to adjust the right-hand side as well]
 [hpl: I don't understand what you mean.]
+[kam: I was not sure how to write the homogenous Dirichlet
+problem. In the convection diffusion example I used $\hat{u}$.
+There was also the issue with boundary function when we have jump
+in the coeff in Darcy problem. The right hand side will then
+after this trick not be a cont. function.]
 
 !bsummary How to deal with nonzero Dirichlet conditions
 The general procedure of incorporating Dirichlet boundary
@@ -4048,6 +4053,7 @@ label{fem:deq:1D:ex1:Ab:glob3:symm}
 !et
 
 ===== Modification of the element matrix and vector =====
+label{fem:bc:elmat:mod}
 
 The modifications of the global linear system can alternatively
 be done for the element matrix and vector. Let us perform the
@@ -6302,7 +6308,7 @@ FIGURE: [fig/borehole1, width=800 frac=1] Solution for (scaled) fluid pressure a
 
 How can we solve a 3D version of this problem? Then we would make a long
 cylinder. The assumption is that nothing changes in the third direction, so
-$\partial/\partial z=0$. This meaans that the cross sections at the end of
+$\partial/\partial z=0$. This means that the cross sections at the end of
 the cylinder have homogeneous Neumann conditions $\partial u/\partial n=0$.
 Therefore, nothing changes in the variational form.
 Actually, all we have to do is to a generate a 3D box and use the same
@@ -7505,7 +7511,7 @@ if necessary.
 !ehint
 
 ===== Exercise: Solve a 1D Laplace problem with FEniCS =====
-label{fem:fenics:borehole:exer:3D}
+label{fem:fenics:borehole:exer:1D}
 file=borehole_fenics1D
 
 Solve the problem in Section ref{fem:varform:fenics} in 1D, using

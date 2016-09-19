@@ -1937,10 +1937,6 @@ procedure is starting to fall apart as the approximate solution is around 0.9 at
 where it should have
 been $1.0$. At `N=30` the approximate solution is around $5\cdot10^8 $ at $x=1$.
 
-[kam: Not sure of this. Need to test. Seems like an unstable variant
-of Lagrange which is somewhat strange when combined with interpolation which
-should produce the identity matrix]
-
 
 === Successful example ===
 
@@ -2707,9 +2703,8 @@ for i in range(len(basis)):
     psi_j = basis[j]
     A[i,j] = integral(psi_i*psi_j)
 !ec
-We remark that `sympy` may even write the output in LaTeX or C++ format.
-[kam: place this comment somwehere else?]
-
+We remark that `sympy` may even write the output in LaTeX or C++ format
+using the functions  `latex` and  `ccode`. 
 
 ===== Implementation =====
 label{fem:approx:2D:global:code}
@@ -6449,8 +6444,6 @@ mapping itself always applies the P1 basis functions.
 
 FIGURE: [fig/ElmT3n2D_map, width=400] Affine mapping of a P1 element. label{fem:approx:fe:map:fig:2DP1}
 
-
-[kam: Worked example here? ]
 
 ===== Isoparametric mapping of the reference cell =====
 
