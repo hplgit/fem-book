@@ -6113,24 +6113,20 @@ The Dirichlet conditions make a nonzero solution.
 Suppose we have a function `make_mesh` that can make the mesh for us.
 All we need to do in the solver and that has not been exemplified
 before, is to define $V$ with proper Dirichlet conditions.
-It is easy to do so as long as the Neumann conditions are zero. Otherwise,
-we will have to do a line integral along the boundary and that brings in
-quite some concepts in FEniCS about how to mark boundaries cite{ftut1}.
-Fortunately, a lot of problems have homogeneous Neumann conditions (thanks
-to symmetries!), so the example here can be extended and become useful
-in many contexts.
+This might seem a bit complicated, but we introduce *markers* at the
+boundary for marking the Dirichlet boundaries. The inner boundary has
+marker 1 and the outer has marker 2. In this way, we can recognize the
+nodes that are on the boundary. It is usually a part of the mesh making
+process to compute both the mesh and its markers, so `make_mesh` returns
+a `Mesh` object as `mesh` and a `MeshFunction` object `markers`.
+Setting Dirichlet conditions in the solver is then a matter of
+introducing `DirichletBC` objects, one for each part of the boundary
+marked by `markers`, and then we collect all such Dirichlet conditions
+in a list that is used by the assembly process to incorporate the
+Dirichlet  conditions in the linear system.
+The code goes like this:
 
-We have to write functions for testing whether a point is on a Dirichlet
-boundary or not:
-
-@@@CODE-4 src/borehole_fenics.py fromto: V = FunctionSpace@bc_inner =
-Note here that we test with a tolerance since the points on the boundary
-may be subject to rounding errors when making the mesh coordinates.
-
-We then use the `DirichletBC` object to make different kinds of
-Dirichlet conditions, here two, and collect them in a list `bcs:
-
-@@@CODE-4 src/borehole_fenics.py fromto: bc_inner =@# Define variational problem
+@@@CODE-4 src/borehole_fenics.py fromto: V = FunctionSpace@# Define variational
 
 The next step is to define the variational problem and solve it:
 
@@ -6172,30 +6168,79 @@ though short names corresponding to the mathematics are nicer...
 
 ===== Making the mesh =====
 
-The hardest part of a finite element problem is very often to make the mesh.
-Here the idea is to first make a rectangle, then make the denser toward the
-left end, and then bend it to get the form of the part of a hole.
+The hardest part of a finite element problem is very often to make the
+mesh.  This is particularly the case in large industrial projects, but
+also often academic projects quickly lead to time-consuming work with
+constructing finite element meshes. In the present example we create
+the mesh for the symmetric problem by deforming an originally
+rectangular mesh.  The rectangular mesh is made by the FEniCS object
+`RectangleMesh` on $[a,b]\times [0,1]$.  Therefore, we stretch the
+mesh towards the left before we bend the rectangle onto to ``a piece
+of cake''. Figure ref{fem:varform:fenics:mesh1:fig1} shows an example
+on the resulting mesh. The stretching gives us refinement in the
+radial direction because we expect the variations to be quite large in
+this direction, but uniform in $\theta$ direction.
 
-Let $x$ and $y$ be the coordinates of a vertex in the mesh that is
-a rectangle $(0,a)\times (0,b)$.
-The stretching towards $x=a$ is done by mapping
+We first make the rectangle and set boundary markers here for the inner
+and outer boundaries (since these are particularly simple: $x=a$ and $x=b$).
+Here is how we make
+the rectangular mesh from lower left corner $(a,0)$ to upper left corner
+$(b,1)$ with `nr` quadrilateral cells in $x$ direction (later to become
+the radial direction) and `nt` quadrilateral cells in the $y$ direction:
+
+!bc pycod
+mesh = RectangleMesh(Point(a, 0), Point(b, 1), nr, nt, 'crossed')
+!ec
+Each quadrilateral cell is divided into two triangles with right or left
+going diagonals, or four triangles using both diagonals. These choices
+of producing triangles from rectangles are named `right`, `left`, and
+`crossed`. Recall that FEniCS can only work with cells of triangular
+shape only and where the sides are straight. This means that we need a
+good resolution in $\theta$ direction to represent a circular boundary.
+With isoparametric elements, it is easier to get a higher-order polynomial
+approximation of curved boundaries.
+
+We must then mark the boundaries for boundary conditions. Since we do not need
+to do anything with the homogeneous Neumann conditions, we can just mark
+the inner and outer boundary of the hole cylinder. This is very easy to do
+as long as the mesh is a rectangle since then the specifications of the
+boundaries are $x=a$ and $x=b$. The relevant FEniCS code requires the
+user to define a subclass of `SubDomain` and implement a function `inside`
+for indicating whether a given point `x` is on the desired boundary or not:
+
+FIGURE: [fig/borehole_mesh1, width=600 frac=0.8] Finite element mesh for a porous medium outside a bore hole (hollow cylinder). label{fem:varform:fenics:mesh1:fig1}
+
+@@@CODE-4 src/borehole_fenics.py fromto: # x=a becomes@# --- Deform
+With the instances `inner` and `outer` we fill a marker object, called
+`MeshFunction` in FEniCS. For this purpose we must introduce our own
+convention of numbering boundaries: here we use for 1 for all points on
+the inner boundary and 2 for the outer boundary, while all other points
+are marked by 0. The solver applies the `markers` object to set
+the right Dirichlet boundary conditions.
+
+The next step is to deform the mesh. Given coordinates $x$, we can map
+these onto a stretched coordinate $\bar x$ by
 
 !bt
 \begin{equation}
-\bar x = a + (b-a)\left({x-a\over b-a}\right)^s\tp
+\bar x = a + (b-a)\left({x-a\over b-a}\right)^s,
 \end{equation}
 !et
-A stretching towards $x=b$ is given by
+where $s$ is a parameter that controls the amount of stretching.
+The formula above gives a stretching towards $x=a$, while the next one
+stretches the coordinates towards $x=b$:
 
 !bt
 \begin{equation}
 \bar x = a + (b-a)\left({x-a\over b-a}\right)^{1/s}\tp
 \end{equation}
 !et
-The parameter $s$ controls the amount of stretching.
-The code below shows the details of mapping the coordinates of FEniCS mesh.
+The code shown later
+shows the details of mapping coordinates in a FEniCS mesh object.
 
-Mapping of a rectangle onto a our geometry is done by
+The final step is to map the rectangle to a part of a hollow cylinder.
+Mathematically, a point $(x,y)$ in the rectangle is mapped onto $\bar x,
+\bar y)$ in our final geometry:
 
 !bt
 \begin{equation*}
@@ -6203,15 +6248,13 @@ Mapping of a rectangle onto a our geometry is done by
 \end{equation*}
 !et
 
-We are now ready for the Python code that codes these formulas and manipulates
-the FEniCS mesh:
+The relevant FEniCS code becomes
 
-@@@CODE src/borehole_fenics.py fromto: def make_mesh@def solver
+@@@CODE-4 src/borehole_fenics.py fromto: # --- Deform mesh@def solver
 Fortunately, the solver is independent of all the details of the mesh making.
-#We can instead generate a simple `RectangleMesh`.
-
 We could also have used the mesh tool `mshr` in FEniCS, but with our
 approach here we have full control of the refinement towards the hole.
+
 
 ===== Solving a problem =====
 
@@ -6238,10 +6281,34 @@ in a domain with inner radius 1 and $\bar u=0$, and outer radius
 \[ \beta = \frac{a}{b},\]
 !et
 with $\bar u = 1$. Our solver can solve this problem by setting
-`alpha=1`, `u_a=0`, `u_b=0`, `x_a=1`, `x_b=beta`.
+`alpha=1`, `u_a=1`, and `u_b=0`. We see that the dimensionless
+parameter $\beta$ goes to the mesh and not to the solver.
+Figure ref{fem:varform:fenics:sol1:fig2} shows a solution for $\beta =2$
+on a mesh with $4\cdot 20\cdot 20 = 1600$ triangles, 25 degree opening,
+and P1 elements.
+Switching to higher-order, say P3, is a matter of changing the `degree`
+parameter that goes to the function `V` in the solver:
 
-[hpl: Show plots from paraview.]
-[hpl: Do 3D automatically.]
+!bc pycod
+mesh, markers = make_mesh(Theta=25*pi/180, a=1, b=2,
+                          nr=20, nt=20, s=1.9)
+beta = 2
+solver(mesh, markers,
+       alpha=1, u_a=1, u_b=0, degree=3, filename='borehole1')
+!ec
+The complete code is found in "`borehole_fenics.py`": "${fem_src}/borehole_fenics.py". All fluids flow in the same way as long as the geometry is the same!
+
+FIGURE: [fig/borehole1, width=800 frac=1] Solution for (scaled) fluid pressure around a bore hole in a porous medium. label{fem:varform:fenics:sol1:fig2}
+
+How can we solve a 3D version of this problem? Then we would make a long
+cylinder. The assumption is that nothing changes in the third direction, so
+$\partial/\partial z=0$. This meaans that the cross sections at the end of
+the cylinder have homogeneous Neumann conditions $\partial u/\partial n=0$.
+Therefore, nothing changes in the variational form.
+Actually, all we have to do is to a generate a 3D box and use the same
+stretching and mapping to make the cylinder, and run the solver without
+changes!
+
 [hpl: Do 1D Dirichlet model problem from previous sections (exercise!).]
 
 
@@ -7425,6 +7492,32 @@ In order to answer the question,
 it is necessary to search the web or the literature for an accurate
 estimate of the maximum $u$ value at $x=y=1/2$.
 !esubex
+
+===== Exercise: Solve a 3D Laplace problem with FEniCS =====
+label{fem:fenics:borehole:exer:3D}
+file=borehole_fenics3D
+
+Solve the problem in Section ref{fem:varform:fenics} in 3D.
+
+!bhint
+Use `BoxMesh` as starting point. Consult the FEniCS tutorial cite{ftut1}
+if necessary.
+!ehint
+
+===== Exercise: Solve a 1D Laplace problem with FEniCS =====
+label{fem:fenics:borehole:exer:3D}
+file=borehole_fenics1D
+
+Solve the problem in Section ref{fem:varform:fenics} in 1D, using
+the radial formulation $(ru')'=0$.
+
+!bhint
+Use `IntervalMesh` for generating the mesh and introduce a stretching if
+desired. Consult the FEniCS tutorial cite{ftut1}
+so you can extract the solution in an array
+and make your own curve plot of it.
+!ehint
+
 
 # #ifdef 2DO
 ===== Exercise: Solve a 2D Poisson equation utilizing symmetry =====
