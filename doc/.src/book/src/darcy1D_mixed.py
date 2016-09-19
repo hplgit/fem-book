@@ -2,7 +2,7 @@
 from fenics import *
 import matplotlib.pyplot as plt
 
-class K(Expression): 
+class A(Expression): 
     def eval(self, value, x): 
 	value[0] = 1
 	if x[0] > 0.5: value[0] = 0.1 
@@ -20,9 +20,9 @@ for N in Ns:
 
     f = Constant(0)
     n = FacetNormal(mesh)
-    k = K()
+    a_coeff = A()
 
-    a = (1/k)*u*v*dx + u.dx(0)*q*dx - v.dx(0)*p*dx  
+    a = (1/a_coeff)*u*v*dx + u.dx(0)*q*dx - v.dx(0)*p*dx  
     L = f*q*dx - p_bc*v*n[0]*ds  
 
     up = Function(W)
@@ -58,9 +58,9 @@ for N in Ns:
 
     f = Constant(0)
     n = FacetNormal(mesh)
-    k = K()
+    a_coeff = A()
 
-    a = (1/k)*u*v*dx + u.dx(0)*q*dx - v.dx(0)*p*dx  
+    a = (1/a_coeff)*u*v*dx + u.dx(0)*q*dx - v.dx(0)*p*dx  
     L = f*q*dx - p_bc*v*n[0]*ds  
 
     up = Function(W)

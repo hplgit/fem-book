@@ -4053,6 +4053,7 @@ label{fem:deq:1D:ex1:Ab:glob3:symm}
 !et
 
 ===== Modification of the element matrix and vector =====
+label{fem:bc:elmat:mod}
 
 The modifications of the global linear system can alternatively
 be done for the element matrix and vector. Let us perform the
