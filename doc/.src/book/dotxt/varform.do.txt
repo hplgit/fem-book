@@ -3097,10 +3097,10 @@ h^{-1},
 label{fem:approx:fe:Dphi:1:formula2}
 \end{equation}
 !et
-Figure ref{fem:approx:fe:fig:dP1} shows $\basphi_2'(x)$ and $\basphi_3'(x)$.
+Figure ref{fem:approx:fe:fig:dP1:2} shows $\basphi_2'(x)$ and $\basphi_3'(x)$.
 
 
-FIGURE: [fig/fe_mesh1D_dphi_2_3, width=400]  Illustration of the derivative of piecewise linear basis functions associated with nodes in cell 2.  label{fem:approx:fe:fig:dP1}
+FIGURE: [fig/fe_mesh1D_dphi_2_3, width=400]  Illustration of the derivative of piecewise linear basis functions associated with nodes in cell 2.  label{fem:approx:fe:fig:dP1:2}
 
 We realize that $\basphi_i'$ and $\basphi_j'$ has no overlap, and hence their
 product vanishes, unless $i$ and $j$ are nodes belonging to the same
@@ -3117,7 +3117,7 @@ A_{i-1,i}&=\int_0^L\basphi_{i}'(x)\basphi_{i+1}'(x) \dx,
 for $i=1,\ldots,N+1$, but for $i=1$, $A_{i-1,i-2}$ is not defined,
 and for $i=N+1$, $A_{i-1,i}$ is not defined.
 
-From Figure ref{fem:approx:fe:fig:dP1},
+From Figure ref{fem:approx:fe:fig:dP1:2},
 we see that $\basphi_{i-1}'(x)$ and $\basphi_i'(x)$ have overlap of one
 cell $\Omega^{(i-1)}=[\xno{i-1},\xno{i}]$ and that their product
 then is $-1/h^{2}$. The integrand is constant and therefore
