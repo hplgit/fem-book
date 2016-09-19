@@ -7522,6 +7522,12 @@ Use `IntervalMesh` for generating the mesh and introduce a stretching if
 desired. Consult the FEniCS tutorial cite{ftut1}
 so you can extract the solution in an array
 and make your own curve plot of it.
+
+This problem can be solved without markers, see the section on
+multiple Dirichlet conditions in the tutorial cite{ftut1} (it is even
+easier to solve by saying that the solution at the boundary
+obeys a linear function from $u_a$ to $u_b$ and use this as the only
+Dirichlet condition).
 !ehint
 
 
