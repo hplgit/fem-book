@@ -827,13 +827,14 @@ we note that $u$ is
 a piecewise linear function. 
 with $u' = C$ for $x\in(0,0.5)$
 and $u'=\frac{C}{a_0}$ for $x\in(0.5,1)$. 
-We may therefore express $u(1)$ as 
-$u(1) = u(0) + u'|_{x=0.25} 0.5 + u'|_{x=0.75} 0.5 = 0.5 (C + \frac{C}{a_0}) = 1$. 
-In other words, $C=\frac{2 a_0}{a_0 +1}$. 
+We may therefore express $u(1)$ in terms of 
+$u(0)$ plus the derivatives at the midpoints of the two intervals, i.e.,  
+$u(1) = u(0) + \half u'(0.25)  + \half u'(0.75)  = 0.5 (C + \frac{C}{a_0}) = 1$. 
+In other words, $C=\frac{2 a_0}{a_0 +1}$ and the analytical solution becomes
 !bt
 \begin{equation}
 label{varcoeff:analytical:solution}
-u(x) = 
+u_e(x) = 
 \left\{ \begin{array}{ll}
 \frac{2 a_0}{a_0 +1}   x & \mbox{ for } 0 < x \le 0.5 \\
 \frac{2}{a_0 +1} (x-0.5) + \frac{a_0}{a_0 +1}  & \mbox{ for } 0.5 < x \le 1
@@ -843,23 +844,16 @@ u(x) =
 !et
 
 
-We remark that in this example, we need to be careful when dealing with the boundary function. 
-Let
-!bt
-\[ u(x) = B(x) + \sum_{j\in\If}c_j\baspsi_j(x) \]
-!et
-A suitable boundary function is $B(x)=x$. I order to evaluate the right-hand side
-we would then need to evaluate 
 
 The variational problem derived from a standard Galerkin method reads: Find $u$ such that
 !bt
 \[
-\int_{\Omega} a u' v' \, dx = \int_\Omega f v dx + \mbox{boundary terms}
+\int_{\Omega} a u' v' \, \dx = \int_\Omega f v dx + \int_{\partial \Omega} a u' v \ds
 \]
 !et
 
-We observe that in the variational problem, the discontinuity of $a$ does not cause any problem
-as the differentiation is moved from $a$ (and $u'$) to $v$ by using integration by parts.
+We observe that in this variational formulation, the discontinuity of $a$ does not cause any problem
+as the differentiation is moved from $a$ (and $u'$) to $v$ by using integration by parts (or Green's lemma).
 As earlier, to include the boundary conditions,  we may use a boundary function such that 
 !bt
 \[ u(x) = B(x) + \sum_{j\in\If}c_j\baspsi_j(x) \]
@@ -872,7 +866,7 @@ with
 \begin{align*}
 A_{i,j} &= (a \baspsi_j', \baspsi_i') = \int_{\Omega} a(x) \baspsi_j'(x)
 \baspsi_i'(x)\dx,\\
-b_i &= (a B',\baspsi_i')= \dx \tp
+b_i &= -\int_{\Omega} a B' v' \dx + \int_{\partial \Omega} a \frac{\partial B'}{\partial n} v  \ds \tp
 \end{align*}
 !et
 
@@ -955,13 +949,14 @@ label{fem:sys:up:1D:eq:Darcy}
 \tp
 \end{align}
 !et
+Equation (ref{fem:sys:up:1D:eq:Darcy}) is Darcy's law for a porous media. 
 A straightforward calculation shows that inserting (ref{fem:sys:up:1D:eq:Darcy}) into (ref{fem:sys:up:1D:eq:mass}) yields
 the equation (ref{femsys:varcoeff:1D}). We also note that we have replaced the second order differential
 equation with a system of two first order differential equations.
 
 It is common to swap the order of the equations and also divide equation
-(ref{fem:sys:up:1D:eq:Darcy}) by $a$ in order to get a symmetric system of
-equations. Then variational formulation of the problem, having the two unknowns $w$ and $u$
+(ref{fem:sys:up:1D:eq:Darcy}) by $a$. 
+Then variational formulation of the problem, having the two unknowns $w$ and $u$
 and corresponding test functions  $v^{(w)}$ and $v^{(u)}$,
  becomes
 !bt
@@ -972,11 +967,26 @@ label{fem:sys:up:1D:eq:mass:var}
 \int_\Omega \frac{\partial w}{\partial x} v^{(u)} \dx &= 0\tp
 \end{align}
 !et
-and letting
+To obtain a suitable variation formulation we perform integration by parts on
+the last term of (ref{fem:sys:up:1D:eq:Darcy:var}) to 
+obtain
+!bt
+\[
+\int_\Omega  \frac{\partial u}{\partial x} v^{(w)} \dx  = 
+- \int_\Omega  \frac{\partial u}{\partial x} \frac{\partial v^{(w)}}{\partial x} \dx 
++ \int_{\partial\Omega}  u v^{(w)} \dx
+\]
+!et
+Notice that the Dirichlet conditions of 
+(ref{femsys:varcoeff:1D}) becomes a Neumann condition in this mixed formulation. 
+Vice versa, a Neumann condition in (ref{femsys:varcoeff:1D}) 
+becomes a Dirichlet condition in the mixed case. 
+
+To obtain a linear system of equation, let 
 $u=\sum_{j\in\If} c_j\baspsi_j^{(u)}$,
 $w=\sum_{j\in\If} c_j\baspsi_j^{(w)}$,
 $v^{(u)} =  \baspsi_i^{(u)}$, and
-$v^{(w)} =  \baspsi_i^{(w)}$, we obtain the following system
+$v^{(w)} =  \baspsi_i^{(w)}$. We obtain the following system
 of linear equations
 !bt
 \[
@@ -990,9 +1000,9 @@ where
 !bt
 \begin{align*}
 A^{(w,w)}_{i,j} &=  \int_{\Omega} \frac{1}{a(x)} \baspsi^{(w)}_j(x) \baspsi^{(w)}_i(x)\dx & i,j = 0\ldots N^{(w)}-1, \\
-A^{(w,u)}_{i,j} &=  \int_{\Omega} \frac{\partial}{\partial x} \baspsi^{(u)}_j(x) \baspsi^{(w)}_i(x)\dx &  i=0\ldots N^{(w)}-1, j=0, \ldots N^{(u)}-1, \\
-A^{(u,w)}_{i,j} &= A^{(w,u)}_{j,i}, \\
-b^{(w)}_i &= (0,\baspsi^{(w)}_i)= 0, \\
+A^{(w,u)}_{i,j} &=  -\int_{\Omega} \frac{\partial}{\partial x} \baspsi^{(w)}_j(x) \baspsi^{(u)}_i(x)\dx &  i=0\ldots N^{(w)}-1, j=0, \ldots N^{(u)}-1, \\
+A^{(u,w)}_{i,j} &= -A^{(w,u)}_{j,i}, \\
+b^{(w)}_i &= \int_\Omega a B \frac{\partial}{\partial x}\baspsi^{(w)}_i) - [a B\baspsi^{(w)}_i]^1_0, \\
 b^{(u)}_i &= (0,\baspsi^{(u)}_i)= 0 \tp
 \end{align*}
 !et
@@ -1026,9 +1036,7 @@ well presented in many books, e.g. cite{Brenner_Scott, Braess, Silvester_et_al_2
 
 FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
 
-[kam: Not sure why the I don't get $a_0$. Need to debug. ]
-[kam: integration by parts done above, but not commented. Also bc, not considered.]
-[kam: wrong figure]
+
 
 ======= Exercises =======
 
