@@ -39,8 +39,8 @@ def mesh_uniform(N_e, d, Omega=[0,1], symbolic=False):
     return vertices, cells, dof_map
 
 def element_matrix(phi, Omega_e, symbolic=True, numint=None):
-    n = len(phi)
-    A_e = sym.zeros((n, n))
+    n = int(len(phi))
+    A_e = sym.zeros(n,n)
     X = sym.Symbol('X')
     if symbolic:
         h = sym.Symbol('h')
@@ -65,7 +65,7 @@ def element_matrix(phi, Omega_e, symbolic=True, numint=None):
 
 def element_vector(f, phi, Omega_e, symbolic=True, numint=None):
     n = len(phi)
-    b_e = sym.zeros((n, 1))
+    b_e = sym.zeros(n, 1)
     # Make f a function of X (via f.subs to avoid real numbers from lambdify)
     X = sym.Symbol('X')
     if symbolic:
@@ -133,8 +133,8 @@ def assemble(vertices, cells, dof_map, phi, f,
     N_n = len(list(set(np.array(dof_map).ravel())))
     N_e = len(cells)
     if symbolic:
-        A = sym.zeros((N_n, N_n))
-        b = sym.zeros((N_n, 1))    # note: (N_n, 1) matrix
+        A = sym.zeros(N_n, N_n)
+        b = sym.zeros(N_n, 1)    # note: (N_n, 1) matrix
     else:
         A = np.zeros((N_n, N_n))
         b = np.zeros(N_n)

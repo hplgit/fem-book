@@ -5944,7 +5944,6 @@ for N_e in 4, 8:
 !ec
 Figure ref{fem:approx:fe:element:impl:fig:P0:x2} shows the result.
 
-[kam: does not seem to work, something for Yapi.]
 
 FIGURE: [fig/fe_p0_x2_4e_8e, width=600] Approximation of a parabola by 4 (left) and 8 (right) P0 elements. label{fem:approx:fe:element:impl:fig:P0:x2}
 

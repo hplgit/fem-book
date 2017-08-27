@@ -21,8 +21,6 @@ gauss_exact = sym.exp(-x**2) - sym.exp(-1)
 
 u = approximate(gauss_exact, symbolic, 1, N, None, Omega) 
 
-
-# usikker på om jeg skal bruke x eller vertices nedenfor: 
 vertices = np.array(vertices)
 gauss_bell = np.exp(-vertices**2)
 gauss_bell -= gauss_bell[0]
