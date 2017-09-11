@@ -10,6 +10,8 @@ a very strong algorithmic focus (``how to compute''), but formulate
 the method in the abstract form with variational forms and function
 spaces.
 
+[kam: check the references]
+
 One highly valued feature of the finite element method is the prospect
 of rigorous analysis provided by the functional analysis framework. In
 particular, for elliptic problems (or in general symmetric problems)

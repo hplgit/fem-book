@@ -3,7 +3,7 @@
 label{ch:femtime}
 
 The finite element method is normally used for discretization in
-space. There are three alternative strategies for performing
+space. There are at least three different strategies for performing
 a discretization in time:
 
  o Use *finite differences* for time derivatives to arrive at
@@ -12,15 +12,15 @@ a discretization in time:
  o Discretize in space by finite elements first, and then solve
    the resulting system of ordinary differential equations (ODEs) by
    some *standard library* for ODEs.
- o Use discontinuous finite elements in the spatial direction separately.
+ o Discretize in space and time simultaneously by space-time finite elements.
 
 With the first strategy, we discretize in time prior to the space
 discretization, while the second strategy consists of doing exactly
 the opposite. It should come as no surprise that in many situations
 these two strategies end up in exactly the same systems to be solved, but
-this is not always the case.  The third approach reproduces standard
+this is not always the case.  Also the third approach reproduces standard
 finite difference schemes such as the Backward Euler and the Crank-Nicolson
-schemes, but offers an interesting framework for deriving higher-order
+schemes for lower-order elements, but offers an interesting framework for deriving higher-order
 methods. In this chapter we shall be concerned with
 the first strategy,
 which is the most common strategy as it turns the time-dependent
@@ -53,7 +53,7 @@ label{fem:deq:diffu:bcN}
 \end{align}
 !et
 Here, $u(\x,t)$ is the unknown function, $\dfc$ is a constant, and
-$f(\x,t)$ and $I(x)$ are given functions. We have assigned the particular
+$f(\x,t)$ and $I(\x)$ are given functions. We have assigned the particular
 boundary condition (ref{fem:deq:diffu:bcN}) to minimize
 the details on handling boundary conditions in the finite element method.
 
@@ -286,6 +286,10 @@ label{fem:deq:diffu:FE:vf:u:short}
 \end{equation}
 !et
 
+To simplify the notation for the solution at recent previous time steps 
+and avoid notation like `u_nm1`, `u_nm2`, `u_nm3`, etc.,  we will let $u_1$ denote the solution at previous time step, 
+$u_2$ is the solution two time steps ago, etc.  
+
 ===== Deriving the linear systems =====
 
 In the following, we adopt the previously introduced convention that
@@ -469,8 +473,7 @@ Lc_0 &= Lc_{0}^0 - \Delta t \cdot 0\cdot c_{0}^0,\\
 \frac{\pi^2 i^2}{2L} c_{i}^n,\quad i>0\tp
 \end{align*}
 !et
-The first equation always leads to $c_0=0$ since we start with $c_{1}^n=0$
-for $n=0$.
+The first equation leads to $c_0=0$ for any $n$ since we start with $c_{1}^0=0$ and $K_{0,0}=0$. 
 The others imply
 
 !bt
@@ -662,7 +665,11 @@ solved at each time level:
 label{fem:deq:diffu:BE:vf:linsys}
 \end{equation}
 !et
-where $M$, $K$, and $f$ are as in the Forward Euler case.
+where $M$, $K$, and $f$ are as in the Forward Euler case
+and we use the previously introduced notation $c = \{c_i\}$ and $c_1 = \{c_{i}^n\}$.
+
+
+
 This time we really have to solve a linear system at each time level.
 The computational algorithm goes as follows.
 
@@ -749,7 +756,7 @@ at $\partial\Omega_D$. The expansion for $u^n$ is written as
 \[ u^n(\x) = u_0(\x,t_n) + \sum_{j\in\If}c_j^n\baspsi_j(\x)\tp\]
 !et
 Inserting this expansion in the variational formulation and letting it
-hold for all basis functions $\baspsi_i$ leads to the linear system
+hold for all test functions $v\in V$, i.e., all basis functions $\baspsi_i$ leads to the linear system
 
 !bt
 \begin{align*}
@@ -934,21 +941,20 @@ K = \frac{\dfc}{h}
 \right)
 \end{equation}
 !et
-The right-hand side of the variational form contains $Mc_1$ since
-there is no source term ($f$) and no boundary term from the
+The right-hand side of the variational form contains  no source term ($f$) and no boundary term from the
 integration by parts ($u_x=0$ at $x=L$ and we compute as if $u_x=0$ at
-$x=0$ too). We must incorporate the Dirichlet boundary
-condition $c_0=a\sin\omega t_n$ by ensuring that this is the
+$x=0$ too) and we are therefore left with $Mc_1$. However, we must incorporate the Dirichlet boundary
+condition $c_0=a\sin\omega t_n$. Let us assume that our numbering of nodes is such that
+$\If = \{0,1,\ldots,N=N_n-1\}$.
+The Dirichlet condition can then be incorporated
+  by ensuring that this is the
 first equation in the linear system.
 To this end,
 the first row in $K$ and $M$ is set to zero, but the diagonal
 entry $M_{0,0}$ is set to 1. The right-hand side is $b=Mc_1$,
 and we set $b_0 = a\sin\omega t_n$.
-Note that in this
-approach, $N=N_n-1$, and $c$ equals the unknown $u$ at each node
-in the mesh. We can write the complete linear system as
+We can write the complete linear system as
 
-[kam: ensuring that it is the first equation in the system?]
 
 !bt
 \begin{align}
