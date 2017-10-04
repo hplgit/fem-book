@@ -1036,6 +1036,9 @@ mathematical form as finite difference methods, and there is no reason
 why we should not use a simple tool as the truncation error to
 establish expected convergence rates of finite element methods.
 
+[kam: Galerkin orthogonality -> zero truncation error in a certain sense, 
+how to do this??]
+
 Instead, a more rigorous and powerful error analysis framework has
 been developed for finite element methods. This framework deals
 primarily with the spatial discretization and is not so superior for
@@ -1402,7 +1405,7 @@ plt.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
 plt.show()
 !ec
 
-#FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$. label{fem:deq:diffu:AeA:VS:k}.
+FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$. label{fem:deq:diffu:AeA:VS:k}.
 
 Figure ref{fem:deq:diffu:AeA:VS:k} shows that there is a polynomial
 relationship between the error of the amplification factor
@@ -1425,6 +1428,7 @@ is not satisfied. However, the stability criterion is important for the
 high frequency components of the error.
 
 
+[kam: should take away some of the lines in the two last figures]
 [kam: I have to admit I not sure this is what we want to show]
 
 ======= Exercises =======

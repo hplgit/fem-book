@@ -1311,10 +1311,6 @@ over all functions $v\in V$. That is,
 
 === Derivation ===
 
-[kam:
-need that F is convex and a is positive, symmetric, right? Check
-]
-
 To see this, we write $F(u)\leq F(\eta)$, $\forall\eta\in V$ instead
 and set $\eta=u + \epsilon v$, where $v\in V$ is an
 arbitrary function in $V$.
@@ -6411,9 +6407,8 @@ $\epsilon =h/2 \Delta $ we get
 
 !bt
 \begin{align*}
- \frac{u_{i+1}  -  u_{i-1}}{2 h}    &
- \textrm{central scheme, first order derivative}  \\
-+ \frac{h}{2} \, \frac{-u_{i+1}   + 2 u_{i}    -u_{i-1}}{h^2}  &  \textrm{central scheme, second order derivate}   \\
+& \frac{u_{i+1}  -  u_{i-1}}{2 h}    & \textrm{central scheme, first order derivative}  \\
++& \frac{h}{2} \, \frac{-u_{i+1}   + 2 u_{i}    -u_{i-1}}{h^2}  &  \textrm{central scheme, second order derivate}   \\
 & = \frac{u_{i} -u_{i-1}}{h} &  \textrm{upwind scheme}
 \end{align*}
 !et
