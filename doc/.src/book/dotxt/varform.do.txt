@@ -427,6 +427,8 @@ formulations which, in contrast to the differential equation $R=0$,
 instead demand that an average of $R$ is zero: $(R,v)=0$ for all $v$ in some space.
 !enotice
 
+[kam: section - Weighted residual method and truncation error] 
+
 ===== Test and trial functions =====
 
 idx{trial function} idx{test function} idx{trial space} idx{test space}
@@ -1805,8 +1807,6 @@ The `solver` code below is a condensed version of the real one, with
 the purpose of showing how to automate the Galerkin or least squares
 method for solving differential equations in 1D with global basis functions:
 
-[kam: this point has been made many times already]
-
 !bc pycod
 def solver(integrand_lhs, integrand_rhs, psi, Omega,
            boundary_lhs=None, boundary_rhs=None, symbolic=True):
@@ -2924,11 +2924,6 @@ integration by parts.
 ========= Variational formulations with finite elements =========
 label{ch:varform:fe}
 
-[hpl: Cannot remember why we need an opening example with *global* polynomials
-in a chapter about local polynomials. Could it just be the property of
-Galerkin recovering the exact solution? Chaperwise it fits better in the
-previous one...]
-[kam: have now moved it before abstract forms in previous chapter]
 
 We shall now take the ideas from previous chapters and put together such that
 we can solve PDEs using the flexible finite element basis functions.

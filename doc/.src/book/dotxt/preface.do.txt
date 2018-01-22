@@ -3,14 +3,12 @@ although we discuss many other choices of basis functions and other
 applications than partial differential equations. The
 literature on finite elements contains books of many different
 flavors, ranging from the abstract view of the method
-cite{JohnsonFEM87,Quarteroni_Valli,Brenner_Scott,Braess} via more
-intuitive, algorithmic treatment of the subject cite{}, to the
-structural engineering view on the method cite{}. The present book has
+cite{JohnsonFEM87,Quarteroni_Valli,Brenner_Scott,Braess} to a more 
+practical, algorithmic treatment of the subject cite{zienkiewicz1977finite}. The present book has
 a very strong algorithmic focus (``how to compute''), but formulate
 the method in the abstract form with variational forms and function
 spaces.
 
-[kam: check the references]
 
 One highly valued feature of the finite element method is the prospect
 of rigorous analysis provided by the functional analysis framework. In
