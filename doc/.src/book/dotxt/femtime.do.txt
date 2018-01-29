@@ -1310,6 +1310,8 @@ the same value of $F$. Lumping the mass matrix to recover the
 numerical amplification factor $A$ of the finite difference method
 is therefore a good idea in this problem.
 
+[kam: update figures such that "/" is not there at y-axis]
+
 FIGURE: [fig/diffu_A_factors_fine_FE, width=600 frac=1] Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:FE2}
 
 FIGURE: [fig/diffu_A_factors_coarse_BE, width=600 frac=1] Comparison of coarse-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:BE}
