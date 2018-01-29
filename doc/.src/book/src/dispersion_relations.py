@@ -42,7 +42,7 @@ for method in methods:
         if method == 'FE':
             plot([0, pi/2], [-1, -1], 'k--')
         title('Method: %s' % method)
-        xlabel('$p$'); ylabel(r'$A/A_{\rm e}$')
+        xlabel('$p$'); ylabel(r'$A, A_{\rm e}$')
         filestem = 'diffu_A_factors_%s_%s' % \
                    ('coarse' if F_values == F_values_coarse else 'fine', method)
         savefig(filestem + '.png')
