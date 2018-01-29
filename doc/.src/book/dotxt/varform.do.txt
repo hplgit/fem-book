@@ -427,7 +427,37 @@ formulations which, in contrast to the differential equation $R=0$,
 instead demand that an average of $R$ is zero: $(R,v)=0$ for all $v$ in some space.
 !enotice
 
-[kam: section - Weighted residual method and truncation error] 
+===== The method of weighted residual and the truncation error ===== 
+label{varform:trunc}
+
+In finite difference methods the concept *truncation error* is 
+often used to analyze schemes. In our case the 
+continuous problem is:  
+\[ 
+\mathcal{L} u = 0,  
+\]
+and the corresponding discrete problem is: 
+\[ 
+\mathcal{L}_h u_h = 0 .  
+\]
+The truncation error is defined in terms of *the discrete operator* 
+$\mathcal{L}_h$ applied to *the continuous solution* $u$ as follows:  
+\[
+t_h =  \mathcal{L}_h u.  
+\]
+A finite difference method is consistent if $\|t_h\| \rightarrow 0$ as $h\rightarrow 0$.  
+
+To relate the truncation error to the weighted residual, we multiply by 
+a test function $v$ and integrate
+\[
+(t_h, w) = (\mathcal{L}_h u, v) = (\mathcal{L} u, v) = (\mathcal{L} u_h, v) = (R, v) = 0  \quad \forall v\in W.   
+\]
+Hence, both the truncation error and the residual are orthogonal 
+to our test space $W$ and hence consistent.  
+
+
+
+
 
 ===== Test and trial functions =====
 

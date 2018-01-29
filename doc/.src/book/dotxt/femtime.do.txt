@@ -1029,24 +1029,14 @@ finite element problems:
  * Amplification factor analysis
 
 The truncation error is the dominating tool used to analyze finite
-difference schemes, but very seldom (if at all) used in the finite
-element literature.  This is actually surprising, since finite
-elements also give rise to difference stencils of the same nature
-mathematical form as finite difference methods, and there is no reason
-why we should not use a simple tool as the truncation error to
-establish expected convergence rates of finite element methods.
+difference schemes. As we saw in Section \ref{varform:trunc}
+the truncation error analysis is closely related to the 
+method of weighted residuals. A comprehensive mathematical
+analysis can be found in cite{thomee}. 
 
-[kam: Galerkin orthogonality -> zero truncation error in a certain sense, 
-how to do this??]
-
-Instead, a more rigorous and powerful error analysis framework has
-been developed for finite element methods. This framework deals
-primarily with the spatial discretization and is not so superior for
-space-time problems.
-
-To explain the numerical artifacts from the previous section,
-both the truncation error and the error analysis framework fall too
-short, and we have turn to the method based on analyzing amplification
+To explain the numerical artifacts from the previous section 
+and highlight the difference between the finite difference
+and the finite element methods, we turn to the method based on analyzing amplification
 factors. For wave equations, the counterpart is often referred to as analysis
 of dispersion relations.
 

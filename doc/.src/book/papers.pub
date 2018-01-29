@@ -584,3 +584,15 @@
    note:      \url{http://hplgit.github.io/web4sciapps/doc/web/index.html}
    url:       http://hplgit.github.io/web4sciapps/doc/web/index.html
    entrytype: misc
+** The finite element method
+   key:       zienkiewicz1977finite
+   author:    Zienkiewicz, Olgierd Cecil and Taylor, Robert Leroy
+   year:      1977
+   publisher: McGraw-hill London
+** Galerkin finite element methods for parabolic problems
+   key:       thomee
+   author: V. Thomée  
+   published: Springer-Verlag; 
+   year:      1984 
+
+
