@@ -1385,6 +1385,13 @@ O(dt)
 exp(-alpha*dt*k**2) - 1 + alpha*dt*k**2 + O(dx)
 !ec
 
+Hence, if the error obtained by our numerical scheme
+is dominated by the error in the amplification factor, we 
+may expect it to die out quite quickly in terms of $k$. 
+To improve the error, we must decrease $\Delta t$ as 
+decreasing the $\Delta x$ will not improve the error
+in the amplification factor.  
+
 #As we saw earlier, the amplification factor varied with $k$, in
 #particular with respect to the resolution. Let us therefore consider
 #the error in the amplification factor $A_e - A$ at different
