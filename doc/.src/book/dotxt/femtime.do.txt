@@ -2,8 +2,7 @@
 ========= Time-dependent variational forms =========
 label{ch:femtime}
 
-The finite element method is normally used for discretization in
-space. There are at least three different strategies for performing
+There are at least three different strategies for performing
 a discretization in time:
 
  o Use *finite differences* for time derivatives to arrive at
@@ -18,7 +17,7 @@ With the first strategy, we discretize in time prior to the space
 discretization, while the second strategy consists of doing exactly
 the opposite. It should come as no surprise that in many situations
 these two strategies end up in exactly the same systems to be solved, but
-this is not always the case.  Also the third approach reproduces standard
+this is not always the case.  Also the third approach often reproduces standard
 finite difference schemes such as the Backward Euler and the Crank-Nicolson
 schemes for lower-order elements, but offers an interesting framework for deriving higher-order
 methods. In this chapter we shall be concerned with
@@ -473,7 +472,7 @@ Lc_0 &= Lc_{0}^0 - \Delta t \cdot 0\cdot c_{0}^0,\\
 \frac{\pi^2 i^2}{2L} c_{i}^n,\quad i>0\tp
 \end{align*}
 !et
-The first equation leads to $c_0=0$ for any $n$ since we start with $c_{1}^0=0$ and $K_{0,0}=0$. 
+The first equation leads to $c_0=0$ for any $n$ since we start with $c_{0}^0=0$ and $K_{0,0}=0$. 
 The others imply
 
 !bt
@@ -669,7 +668,6 @@ where $M$, $K$, and $f$ are as in the Forward Euler case
 and we use the previously introduced notation $c = \{c_i\}$ and $c_1 = \{c_{i}^n\}$.
 
 
-
 This time we really have to solve a linear system at each time level.
 The computational algorithm goes as follows.
 
@@ -749,7 +747,7 @@ form at a time level becomes
 
 
 The Dirichlet condition $u=u_0$ at $\partial\Omega_D$ can be incorporated
-through a boundary function $B(\x)=u_0(\x)$ and demanding that $v=0$
+through a boundary function $B(\x)=u_0(\x)$ and demanding that the basis functions  $\baspsi_j=0$
 at $\partial\Omega_D$. The expansion for $u^n$ is written as
 
 !bt
@@ -787,7 +785,7 @@ The appropriate boundary function is then
 !et
 The unknown coefficients $c_j$ are associated with the rest of the nodes,
 which have numbers $\nu(i)$, $i\in\If = \{0,\ldots,N\}$. The basis
-functions for $V$ are chosen as $\baspsi_i = \basphi_{\nu(i)}$, $i\in\If$,
+functions of $V$ are chosen as $\baspsi_i = \basphi_{\nu(i)}$, $i\in\If$,
 and all of these vanish at the boundary nodes as they should.
 The expansion for $u^{n+1}$ and $u^n$ become
 
@@ -1009,15 +1007,15 @@ element vector corresponding to the extra term
 
 ======= Accuracy of the finite element solution =======
 label{fem:deq:diffu:anal}
-[kam: new intro]
-
-===== Illustrating example =====
-
- * Two insulated metal pieces
- * Run CN finite difference and finite element (just use FE code)
- * Run Forward Euler
- * Point to problems with non-physical oscillations, should be larger
-   in finite elements than in finite difference
+#[kam: new intro]
+#
+#===== Illustrating example =====
+#
+# * Two insulated metal pieces
+# * Run CN finite difference and finite element (just use FE code)
+# * Run Forward Euler
+# * Point to problems with non-physical oscillations, should be larger
+#   in finite elements than in finite difference
 
 ===== Methods of analysis =====
 
@@ -1031,8 +1029,9 @@ finite element problems:
 The truncation error is the dominating tool used to analyze finite
 difference schemes. As we saw in Section \ref{varform:trunc}
 the truncation error analysis is closely related to the 
-method of weighted residuals. A comprehensive mathematical
-analysis can be found in cite{thomee}. 
+method of weighted residuals. A mathematical
+analysis in terms of the finite difference methods and truncation errors can be found in cite{tveitowinther}, 
+while the finite elements for parabolic problems using Galerkin is analyzed in  cite{thomee}. 
 
 To explain the numerical artifacts from the previous section 
 and highlight the difference between the finite difference
@@ -1052,26 +1051,26 @@ homogeneous Dirichlet conditions and the initial condition is $u(x, 0)
 
 !bt
 \[
-u(x,t) = \sum_{k=1}^\infty B_k e^{-\dfc (k )^2 t} \sin(k x),
+u(x,t) = \sum_{k=1}^\infty B_k e^{-\dfc k^2 t} \sin(k x),
 \]
 !et
 where $B_k = \int_\Omega u_0 \sin(k x)$.  This is the well-known
 Fourier decomposition of a signal in sine waves (one can also use
 cosine functions or a combination of sines and cosines).  For a given
 wave $\sin(kx)$ with wave length $\lambda = 2\pi/k$, this part of the
-signal will in time develop as $e^{-\dfc (k )^2 t}$.  Smooth signals
+signal will in time develop as $e^{-\dfc k^2 t}$.  Smooth signals
 will need only a few long waves ($B_k$ decays rapidly with $k$), while
 discontinuous or noisy signals will have an amount of short waves with
 significant amplitude ($B_k$ decays slowly with $k$).
 
 The amplification factor is defined as
-$\Aex = e^{-\dfc (k )^2 \Delta t}$ and expresses how much
+$\Aex = e^{-\dfc k^2 \Delta t}$ and expresses how much
 a wave with frequency $k$ is damped over a time step.
 The corresponding numerical amplification factor will vary with the
 discretization method and also discretization parameters in space.
 
 From the analytical expression for the amplification factor, we see
-that $e^{-\dfc (k)^2}$ is always less than 1. Further, we notice that
+that $e^{-\dfc k^2}$ is always less than 1. Further, we notice that
 the amplification factor has a strong dependency on the frequency of
 the Fourier component. For low frequency components (when $k$ is
 small), the amplification factor is relatively large although always
@@ -1120,7 +1119,7 @@ also have a similar wave component as solution:
 
 !bt
 \begin{equation}
-u^n_q = A^n e^{ikx},
+u^n = A^n e^{ikx},
 label{fem:deq:diffu:analysis:uni0}
 \end{equation}
 !et
@@ -1155,7 +1154,7 @@ The forward Euler scheme (see ref{sec:form:fdop}) is
 !bt
 \begin{align*}
 u_q'(t_n) &\approx [D_t^+ u_q]^n = \frac{u_q^{n+1} - u_q^{n}}{\Delta t} \\
-&= \frac{A_q^{n+1} - A^{n}}{\Delta t}e^{ikq\Delta x} \\
+&= \frac{A^{n+1} - A^{n}}{\Delta t}e^{ikq\Delta x} \\
 &=A^n e^{ikq\Delta x}\frac{A-1}{\Delta t} \tp
 \end{align*}
 !et
@@ -1186,7 +1185,7 @@ can only be carried out if $f=0$) )
 
 !bt
 \begin{equation}
-[D_t^+(u + \frac{1}{6}h^2D_xD_x u) = \dfc D_xD_x u]^n_q
+[D_t^+(u + \frac{1}{6}h^2D_xD_x u)] = \dfc D_xD_x u]^n_q
 label{fem:deq:diffu:FE:fdinterp2}
 \tp
 \end{equation}
@@ -1301,18 +1300,26 @@ for the Backward Euler scheme corresponding to
 a coarse mesh with $F=2$ and a mesh at the stability limit
 of the Forward Euler scheme in the finite difference method,
 $F=1/2$. Figures
-ref{fem:deq:diffu:fig:A:FE2} and ref{fem:deq:diffu:fig:A:BE2} shows how
+ref{fem:deq:diffu:fig:A:FE} and ref{fem:deq:diffu:fig:A:BE} shows how
 the accuracy increases with lower $F$ values for both the
 Forward and Backward Euler schemes, respectively.
+Figure ref{fem:deq:diffu:fig:A:FE} clearly shows that $p=\pi/2$ is the worst
+case. Accuracy increases with smaller $\Delta t$ for $F=\frac{1}{6}$ to $F=\frac{1}{12}$ 
+as the distance between the exact and appropriate amplitudes decreases for all $p$. 
+Backward Euler is stable for all $\Delta t$ which means that we can employ larger
+$F$ than the forward Euler scheme. Figure  
+ref{fem:deq:diffu:fig:A:BE} shows the amplification factors for $F=1/2$ and $F=2$ for a coarse
+discretization, while Figure ref{fem:deq:diffu:fig:A:BE2} shows the improvements on a finer mesh.  
+Corresponding figures for the second order Crank-Nicolson method are 
+ref{fem:deq:diffu:fig:A:CN} and ref{fem:deq:diffu:fig:A:CN2}. 
 The striking fact, however, is that the accuracy of the finite element
 method is significantly less than the finite difference method for
 the same value of $F$. Lumping the mass matrix to recover the
 numerical amplification factor $A$ of the finite difference method
 is therefore a good idea in this problem.
 
-[kam: update figures such that "/" is not there at y-axis]
 
-FIGURE: [fig/diffu_A_factors_fine_FE, width=600 frac=1] Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:FE2}
+FIGURE: [fig/diffu_A_factors_fine_FE, width=600 frac=1] Comparison of fine-mesh amplification factors for Forward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:FE}
 
 FIGURE: [fig/diffu_A_factors_coarse_BE, width=600 frac=1] Comparison of coarse-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:BE}
 
@@ -1322,13 +1329,6 @@ FIGURE: [fig/diffu_A_factors_coarse_CN, width=600 frac=1] Comparison of coarse-m
 
 FIGURE: [fig/diffu_A_factors_fine_CN, width=600 frac=1] Comparison of fine-mesh amplification factors for Backward Euler discretization of a 1D diffusion equation. label{fem:deq:diffu:fig:A:CN2}
 
-
-[hpl: remaining tasks]
-Remaining tasks:
-
- * Taylor expansion of the error in the amplification factor $\Aex - A$
- * Taylor expansion of the error $e = (\Aex^n - A^n)e^{ikx}$
- * $L^2$ norm of $e$
 
 
 The difference between the exact and the numerical amplification factors
@@ -1372,56 +1372,68 @@ O(dt)
 We remark here that it is an advantage to take the square-root after the deriving
 the Taylor-series.
 
-As we saw earlier, the amplification factor varied with $k$, in
-particular with respect to the resolution. Let us therefore consider
-the error in the amplification factor $A_e - A$ at different
-resolutions for the $k=1\ldots 100$ at mesh sizes that under-resolve
-and properly resolve the first hundred components. That is, we vary
-$\dx$ from $\frac{8}{100}$ to $\frac{1}{800}$.  Plotting the error in
-the amplification factor versus $k$ as follows,
+We may also compute the expansion in terms of $k$ and $\Delta x$ for both the amplification 
+factor or the $L2$ error of the error in the amplification factor and we find that
+both are first order in $\Delta t$, forth order in $k$, and zeroth order in $\Delta x$. 
 
-!bc pycod
-from numpy import *
-import matplitlib.pyplot as plt
-dxs = [8*10**-2, 4*10**-2, 2*10**-2, 10**-2, 10**-2/2, 10**-2/4, 10**-2/8]
-for dx in dxs:
-  k_max=100
-  k = arange(1, k_max, 1)
-  dt = 0.5*dx**2
-  alpha = 1
-  f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
-  (-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
-
-  plt.loglog(k, f)
-plt.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
-plt.show()
+!bc ipy
+>>> (Ae-Af).series(k, n=4) 
+O(k**4)
+>>> (Ae-Af).series(dt, n=1) 
+O(dt)
+>>> (Ae-Af).series(dx, n=1) 
+exp(-alpha*dt*k**2) - 1 + alpha*dt*k**2 + O(dx)
 !ec
 
-FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$. label{fem:deq:diffu:AeA:VS:k}.
+#As we saw earlier, the amplification factor varied with $k$, in
+#particular with respect to the resolution. Let us therefore consider
+#the error in the amplification factor $A_e - A$ at different
+#resolutions for the $k=1\ldots 100$ at mesh sizes that under-resolve
+#and properly resolve the first hundred components. That is, we vary
+#$\dx$ from $\frac{8}{100}$ to $\frac{1}{800}$.  Plotting the error in
+#the amplification factor versus $k$ as follows,
+#
+#!bc pycod
+#from numpy import *
+#import matplitlib.pyplot as plt
+#dxs = [8*10**-2, 4*10**-2, 2*10**-2, 10**-2, 10**-2/2, 10**-2/4, 10**-2/8]
+#for dx in dxs:
+#  k_max=100
+#  k = arange(1, k_max, 1)
+#  dt = 0.5*dx**2
+#  alpha = 1
+#  f = (Ae - Af).series(dt, n=2)
+#  f = dt*(-alpha*k**2 + 4*alpha*sin(dx*k/2)**2/
+#  (-0.666666666666667*dx**2*sin(dx*k/2)**2 + dx**2))
+#
+#  plt.loglog(k, f)
+#plt.legend(["dx=%3.2e" % dx for dx in dxs], loc="lower left")
+#plt.show()
+#!ec
 
-Figure ref{fem:deq:diffu:AeA:VS:k} shows that there is a polynomial
-relationship between the error of the amplification factor
-and $k$, that is $Ae-A$ goes as $k^4$. For well-resolved meshes,
-$\Delta x \le 0.2 k$ the amplification factor is always less than
-$1/1000$. For the under-resolved meshes, e.g. $\Delta x = 8 k$
-the error of the amplification factor is even larger than 1.
+#FIGURE: [fig/AeA_vs_k, width=600 frac=1] Error in the amplification factor versus $k$. label{fem:deq:diffu:AeA:VS:k}.
+#
+#Figure ref{fem:deq:diffu:AeA:VS:k} shows that there is a polynomial
+#relationship between the error of the amplification factor
+#and $k$, that is $Ae-A$ goes as $k^4$. For well-resolved meshes,
+#$\Delta x \le 0.2 k$ the amplification factor is always less than
+#$1/1000$. For the under-resolved meshes, e.g. $\Delta x = 8 k$
+#the error of the amplification factor is even larger than 1.
 
 
-FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}.
+#FIGURE: [fig/AeA_vs_dt, width=600 frac=1] Error in the amplification factor versus $\Delta t$ label{fem:deq:diffu:AeA:VS:dt}.
+#
+#From the previous analysis of forward Euler scheme, we know that
+#the scheme is only stable as long as the stability criterion
+#$\Delta t \le \half \Delta x^2$ is satisfied. Let us therefore consider
+#the error in the amplification factor with respect to $\Delta t$.
+#Figure ref{fem:deq:diffu:AeA:VS:dt} shows a clear tendency that
+#lower frequencies (lower $k$) are quickly dampened. In fact, the
+#lower frequencies will be dampened even though the stability criterion
+#is not satisfied. However, the stability criterion is important for the
+#high frequency components of the error.
 
-From the previous analysis of forward Euler scheme, we know that
-the scheme is only stable as long as the stability criterion
-$\Delta t \le \half \Delta x^2$ is satisfied. Let us therefore consider
-the error in the amplification factor with respect to $\Delta t$.
-Figure ref{fem:deq:diffu:AeA:VS:dt} shows a clear tendency that
-lower frequencies (lower $k$) are quickly dampened. In fact, the
-lower frequencies will be dampened even though the stability criterion
-is not satisfied. However, the stability criterion is important for the
-high frequency components of the error.
 
-
-[kam: should take away some of the lines in the two last figures]
-[kam: I have to admit I not sure this is what we want to show]
 
 ======= Exercises =======
 
