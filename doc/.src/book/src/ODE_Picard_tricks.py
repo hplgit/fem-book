@@ -24,12 +24,12 @@ solver2.set_initial_condition(1)
 tp = linspace(0, 4, 11)
 u1, t = solver1.solve(tp)
 u2, t = solver2.solve(tp)
-print 'Picard it:', solver1.num_iterations_total
-print 'Picard2 it:', solver2.num_iterations_total
+print('Picard it:', solver1.num_iterations_total)
+print('Picard2 it:', solver2.num_iterations_total)
 
-from scitools.std import plot
-plot(t, u1, t, u2, legend=('Picard', 'Picard2'))
-raw_input()
+import matplotlib.pyplot as plt
+plt.plot(t, u1, t, u2, legend=('Picard', 'Picard2'))
+plt.show()
 
 """
 f(u,t) = -u**3:

@@ -98,7 +98,7 @@ import sys
 try:
     task = sys.argv[1]
 except IndexError:
-    print 'Usage: %s approx_intro | approx_easy | approx_hard' % sys.argv[0]
+    print('Usage: %s approx_intro | approx_easy | approx_hard' % sys.argv[0])
     sys.exit(1)
 
 approx(task.split('_')[1])

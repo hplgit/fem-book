@@ -1,5 +1,7 @@
 import sympy as sym
-import numpy, matplotlib.pyplot as plt
+import numpy
+import matplotlib.pyplot as plt
+import mpmath
 
 def lagrange_series(x, N):
     psi = []
@@ -38,7 +40,7 @@ def series(x, series_type, N):
     if series_type=="sin"  : return sin_series(x, N)
     elif series_type=="Bernstein"  : return bernstein_series(x, N)
     elif series_type=="Lagrange"  : return lagrange_series(x, N)
-    else: print "series type unknown " # sys.exit(0)
+    else: print("series type unknown ") # sys.exit(0)
 
 def epsilon_experiment(N, series_type, Omega,
                        eps_values = [1.0, 0.1, 0.01, 0.001]):
@@ -51,15 +53,13 @@ def epsilon_experiment(N, series_type, Omega,
 
         for i in range(0, N-1):
             integrand = f*psi[i]
-            integrand = sym.lambdify([x], integrand)
-            b[i,0] = sym.mpmath.quad(integrand,
-                                     [Omega[0], Omega[1]])
+            integrand = sym.lambdify([x], integrand, 'mpmath')
+            b[i,0] = mpmath.quad(integrand, [Omega[0], Omega[1]])
             for j in range(0, N-1):
-	        integrand = eps*sym.diff(psi[i], x)*\
+                integrand = eps*sym.diff(psi[i], x)*\
                   sym.diff(psi[j], x) - sym.diff(psi[i], x)*psi[j]
-	        integrand = sym.lambdify([x], integrand)
-                A[i,j] = sym.mpmath.quad(integrand,
-                                         [Omega[0], Omega[1]])
+                integrand = sym.lambdify([x], integrand, 'mpmath')
+                A[i,j] = mpmath.quad(integrand, [Omega[0], Omega[1]])
 
         c = A.LUsolve(b)
         u = sum(c[r,0]*psi[r] for r in range(N-1)) + x

@@ -14,13 +14,13 @@ def least_squares(f, psi, Omega, symbolic=True, print_latex=False):
     spanned by the functions in the list psi.
     """
     N = len(psi) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     x, y = sym.symbols('x y')
-    print '...evaluating matrix...'
+    print('...evaluating matrix...')
     for i in range(N+1):
         for j in range(i, N+1):
-            print '(%d,%d)' % (i, j)
+            print('(%d,%d)' % (i, j))
 
             integrand = psi[i]*psi[j]
             if symbolic:
@@ -29,7 +29,7 @@ def least_squares(f, psi, Omega, symbolic=True, print_latex=False):
                                  (y, Omega[1][0], Omega[1][1]))
             if not symbolic or isinstance(I, sym.Integral):
                 # Could not integrate symbolically, use numerical int.
-                print 'numerical integration of', integrand
+                print('numerical integration of', integrand)
                 integrand = sym.lambdify([x,y], integrand)
                 I = sym.mpmath.quad(integrand,
                                    [Omega[0][0], Omega[0][1]],
@@ -42,30 +42,30 @@ def least_squares(f, psi, Omega, symbolic=True, print_latex=False):
                              (y, Omega[1][0], Omega[1][1]))
         if not symbolic or isinstance(I, sym.Integral):
             # Could not integrate symbolically, use numerical int.
-            print 'numerical integration of', integrand
+            print('numerical integration of', integrand)
             integrand = sym.lambdify([x,y], integrand)
             I = sym.mpmath.quad(integrand,
                                [Omega[0][0], Omega[0][1]],
                                [Omega[1][0], Omega[1][1]])
         b[i,0] = I
-    print
-    print 'A:\n', A, '\nb:\n', b
+    print()
+    print('A:\n', A, '\nb:\n', b)
     if symbolic:
         c = A.LUsolve(b)  # symbolic solve
         # c is a sympy Matrix object, numbers are in c[i,0]
         c = [c[i,0] for i in range(c.shape[0])]
     else:
         c = sym.mpmath.lu_solve(A, b)  # numerical solve
-    print 'coeff:', c
+    print('coeff:', c)
 
     u = sum(c[i]*psi[i] for i in range(len(psi)))
-    print 'approximation:', u
-    print 'f:', sym.expand(f)
+    print('approximation:', u)
+    print('f:', sym.expand(f))
     if print_latex:
-        print sym.latex(A, mode='plain')
-        print sym.latex(b, mode='plain')
-        print sym.latex(c, mode='plain')
-    return u, c
+        print(sym.latex(A, mode='plain'))
+        print(sym.latex(b, mode='plain'))
+        print(sym.latex(c, mode='plain'))
+    return u
 
 
 def comparison_plot(f, u, Omega, plotfile='tmp', title=''):
@@ -117,4 +117,4 @@ def comparison_plot(f, u, Omega, plotfile='tmp', title=''):
     plt.show()
 
 if __name__ == '__main__':
-    print 'Module file not meant for execution.'
+    print('Module file not meant for execution.')

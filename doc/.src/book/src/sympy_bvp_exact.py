@@ -8,13 +8,13 @@ u_ip1 = u_i.subs(i, i+1)
 
 # General equation
 R = 1/h**2*(-u_im1 + 2*u_i - u_ip1) - 2
-print R
+print(R)
 R = simplify(R)
-print R
+print(R)
 
 # Right boundary equation
 R = 1/h**2*(-u_im1 + u_i) - b_L/h - 1
 R = R.subs(i, N)
-print R
+print(R)
 R = simplify(R)
-print R
+print(R)

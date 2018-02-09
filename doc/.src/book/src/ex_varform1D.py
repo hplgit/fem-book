@@ -52,7 +52,7 @@ def case0(f, N=3):
     u_bar = solver(integrand_lhs, integrand_rhs, phi, Omega,
                   verbose=True, symbolic=True)
     u = B + u_bar
-    print 'solution u:', sym.simplify(sym.expand(u))
+    print('solution u:', sym.simplify(sym.expand(u)))
 
     # Calculate analytical solution
 
@@ -63,12 +63,12 @@ def case0(f, N=3):
     C1, C2 = sym.symbols('C1 C2')
     u_e = -f2 + C1*x + C2
     # Find C1 and C2 from the boundary conditions u(0)=0, u(1)=1
-    s = sym.solver([u_e.subs(x,0) - 1, u_e.subs(x,1) - 0], [C1, C2])
+    s = sym.solvers.solve([u_e.subs(x,0) - 1, u_e.subs(x,1) - 0], [C1, C2])
     # Form the exact solution
     u_e = -f2 + s[C1]*x + s[C2]
-    print 'analytical solution:', u_e
+    print('analytical solution:', u_e)
     #print 'error:', u - u_e  # many terms - which cancel
-    print 'error:', sym.expand(u - u_e)
+    print('error:', sym.expand(u - u_e))
 
 
 def case1(N, basis='sines'):
@@ -154,7 +154,7 @@ def case2(N):
         for eq in eqs:
             eqs[eq] = sym.simplify(eqs[eq])
 
-    print 'Check of exact solution:', diff_eq(u_e, x)
+    print('Check of exact solution:', diff_eq(u_e, x))
 
     def integrand_lhs(phi, i, j):
         return phi[1][i]*phi[1][j]
@@ -173,20 +173,20 @@ def case2(N):
     Omega = [0, L]
     phi = phi_factory('poly3', N, 1)
     #phi = phi_factory('Lagrange', N, 1)
-    print phi[0]
+    print(phi[0])
     u = {'G1': solver(integrand_lhs, integrand_rhs, phi, Omega,
-                     boundary_lhs, boundary_rhs, verbose=True) + B,
+                      boundary_lhs, boundary_rhs, verbose=True) + B,
          'exact': u_e}
-    print 'numerical solution:', u['G1']
-    print 'simplified:', sym.simplify(u['G1'])
-    print 'u exact', u['exact']
+    print('numerical solution:', u['G1'])
+    print('simplified:', sym.simplify(u['G1']))
+    print('u exact', u['exact'])
     # Change from symblic to numerical computing for plotting.
     # That is, replace C and D symbols by numbers
     # (comparison_plot takes the expressions with x to functions of x
     # so C and D must have numbers).
     for name in u:
         u[name] = u[name].subs(C, 2).subs(D, -2)
-    print 'u:', u
+    print('u:', u)
     C = 2;  D = -2  # Note that these are also remembered by u_e
     comparison_plot(u, [0, 1])
 
@@ -238,7 +238,7 @@ def case3(N, a=1, a_symbols={}, f=0, f_symbols={},
         BC2 = u.subs(x,1) - 0
         s = sym.solve([BC1, BC2], [C1, C2])
         u_exact = -f2 + s[C1]*x + s[C2]
-    print 'u_exact:', u_exact
+    print('u_exact:', u_exact)
 
     def integrand_lhs(phi, i, j):
         return a*phi[1][i]*phi[1][j]
@@ -261,7 +261,7 @@ def case3(N, a=1, a_symbols={}, f=0, f_symbols={},
         phi = phi_factory('poly', N, 1)
     elif basis == 'Lagrange':
         phi = phi_factory('Lagrange', N, 1)
-        print 'len phi:', len(phi)
+        print('len phi:', len(phi))
         B = phi[0][0]*1 + phi[0][-1]*0
         phi[0] = phi[0][1:-1]
         phi[1] = phi[1][1:-1]
@@ -269,7 +269,7 @@ def case3(N, a=1, a_symbols={}, f=0, f_symbols={},
         phi = phi_factory('sines', N, 1)
     else:
         raise ValueError('basis=%s must be poly, Lagrange or sines' % basis)
-    print 'Basis functions:', phi[0]
+    print('Basis functions:', phi[0])
 
     dBdx = sym.diff(B, x)
 
@@ -277,13 +277,13 @@ def case3(N, a=1, a_symbols={}, f=0, f_symbols={},
     phi_sum = solver(integrand_lhs, integrand_rhs, phi, Omega,
                     boundary_lhs, boundary_rhs, verbose=verbose,
                     symbolic=symbolic)
-    print 'sum c_j*phi_j:', phi_sum
+    print('sum c_j*phi_j:', phi_sum)
     name = 'numerical, N=%d' % N
     u = {name: phi_sum + B, 'exact': sym.simplify(u_exact)}
-    print 'Numerical solution:', u[name]
+    print('Numerical solution:', u[name])
     if verbose:
-        print '...simplified to', sym.simplify(u[name])
-        print '...exact solution:', sym.simplify(u['exact'])
+        print('...simplified to', sym.simplify(u[name]))
+        print('...exact solution:', sym.simplify(u['exact']))
 
     f_str = str(f).replace(' ', '')
     a_str = str(a).replace(' ', '')
@@ -295,10 +295,10 @@ def case3(N, a=1, a_symbols={}, f=0, f_symbols={},
     if all_symbols:
         for s in all_symbols:
             value = all_symbols[s]
-            print 'symbol', s, 'gets value', value
+            print('symbol', s, 'gets value', value)
             u[name] = u[name].subs(s, value)
             u['exact'] = u['exact'].subs(s, value)
-    print 'Numerical u_exact formula before plot:', u_exact
+    print('Numerical u_exact formula before plot:', u_exact)
     comparison_plot(u, [0, 1], filename)
 
 
@@ -318,11 +318,10 @@ def comparison_plot(u, Omega, filename='tmp.eps'):
         u[name] = u[name](xcoor)
     legends = []
     for name in u:
-        plot(xcoor, u[name])
-        hold('on')
+        plt.plot(xcoor, u[name])
         legends.append(name)
-    legend(legends)
-    savefig(filename)
+    plt.legend(legends)
+    plt.savefig(filename)
 
 x, b = sym.symbols('x b')
 

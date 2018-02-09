@@ -1,8 +1,7 @@
 from approx1D import least_squares_numerical
 import sympy as sym
 from numpy import tanh, sin, pi, linspace
-#import matplotlib.pyplot as plt
-import scitools.std as plt
+import matplotlib.pyplot as plt
 import time, os
 
 x = linspace(0, 2*pi, 1001)
@@ -50,13 +49,13 @@ def a(N):
                                    orthogonal_basis=True)
     os.system('rm -f *.png')
     u_sum = 0
-    print 'XXX c', c
+    print('XXX c', c)
     for i in range(N+1):
         u_sum = u_sum + c[i]*psi(x, i)
-        plt.plot(x, f(x), '-', x, u_sum, '-',
-                 legend=['exact', 'approx'],
-                 title='Highest frequency component: sin(%d*x)' % (2*i+1),
-                 axis=[x[0], x[-1], -1.5, 1.5])
+        plt.plot(x, f(x), '-', x, u_sum, '-')
+        plt.legend(['exact', 'approx'])
+        plt.title('Highest frequency component: sin(%d*x)' % (2*i+1))
+        plt.axis([x[0], x[-1], -1.5, 1.5])
         plt.savefig('tmp_frame%04d.png' % i)
         time.sleep(0.3)
     cmd = 'avconv -r 2 -i tmp_frame%04d.png -vcodec libtheora movie.ogg'

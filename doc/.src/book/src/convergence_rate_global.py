@@ -55,7 +55,7 @@ def series(series_type, N):
   elif series_type== "Sinusoidal" : return Sinusoidal_series(N)
   elif series_type== "Bernstein"  : return Bernstein_series(N)
   elif series_type== "Lagrange"   : return Lagrange_series(N)
-  else: print "series type unknown " # sys.exit(0)
+  else: print("series type unknown ") # sys.exit(0)
 
 def convergence_rate_analysis(series_type, func): 
   Ns =[2, 4, 8, 16]
@@ -89,10 +89,10 @@ for series_type in series_types:
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   plt.loglog(Ns, norms)
 
-  print series_type,  "Ns ", Ns  
-  print " norms ", norms  
-  print " cpu_time ", cpu_times 
-  print ""
+  print(series_type,  "Ns ", Ns)  
+  print(" norms ", norms)  
+  print(" cpu_time ", cpu_times) 
+  print("")
 
 plt.legend(series_types, loc="lower left")
 plt.savefig("Bell_convergence_loglog.png")
@@ -117,10 +117,10 @@ for series_type in series_types:
   Ns, norms, cpu_times = convergence_rate_analysis(series_type, func)
   plt.semilogy(Ns, norms)
   plt.hold(True)
-  print series_type,  "Ns ", Ns  
-  print " norms ", norms  
-  print " cpu_time ", cpu_times 
-  print ""
+  print(series_type,  "Ns ", Ns)  
+  print(" norms ", norms)  
+  print(" cpu_time ", cpu_times) 
+  print("")
 
 plt.legend(series_types, loc="lower left")
 #plt.show()
