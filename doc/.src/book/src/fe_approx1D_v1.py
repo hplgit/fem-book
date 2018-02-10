@@ -1,6 +1,6 @@
-from scitools.std import plot, savefig, hold, axis, legend
 import numpy as np
 import sympy as sym
+import matplotlib.pyplot as plt
 
 def mesh(N_e, d, Omega=[0,1]):
     """
@@ -97,7 +97,7 @@ def locate_element_scalar(x, elements, nodes):
 def locate_element_vectorized(x, elements, nodes):
     """Return number of element containing point x. Vectorized version."""
     elements = np.asarray(elements)
-    print elements[:,-1]
+    print(elements[:,-1])
     element_right_boundaries = nodes[elements[:,-1]]
     return searchsorted(element_right_boundaries, x)
 
@@ -188,7 +188,7 @@ def element_vector(f, phi, Omega_e, symbolic=True):
     for r in range(n):
         I = sym.integrate(f*phi[r]*detJ, (X, -1, 1))
         if isinstance(I, sym.Integral):
-            print 'numerical integration of', f*phi[r]*detJ
+            print('numerical integration of', f*phi[r]*detJ)
             # Ensure h is numerical
             h = Omega_e[1] - Omega_e[0]
             detJ = h/2
@@ -218,7 +218,7 @@ def assemble(nodes, elements, phi, f, symbolic=True):
 def approximate(f, symbolic=False, d=1, N_e=4,
                 Omega=[0, 1], filename='tmp.eps'):
     phi = basis(d)
-    print 'phi basis (reference element):\n', phi
+    print('phi basis (reference element):\n', phi)
     # Exemplify element matrix and vector
     Omega_e = [0.1, 0.2]
     A_e = element_matrix(phi, Omega_e=Omega_e,
@@ -228,8 +228,8 @@ def approximate(f, symbolic=False, d=1, N_e=4,
         Omega_e=[1*h, 2*h]
     b_e = element_vector(f, phi, Omega_e=Omega_e,
                          symbolic=symbolic, numint=numint)
-    print 'Element matrix:\n', A_e
-    print 'Element vector:\n', b_e
+    print('Element matrix:\n', A_e)
+    print('Element vector:\n', b_e)
 
     if symbolic:
         nodes, elements = mesh_symbolic(N_e, d, Omega)
@@ -237,32 +237,31 @@ def approximate(f, symbolic=False, d=1, N_e=4,
         nodes, elements = mesh(N_e, d, Omega)
     A, b = assemble(nodes, elements, phi, f, symbolic=symbolic)
 
-    print 'nodes:', nodes
-    print 'elements:', elements
-    print 'A:\n', A
-    print 'b:\n', b
-    print sym.latex(A, mode='plain')
+    print('nodes:', nodes)
+    print('elements:', elements)
+    print('A:\n', A)
+    print('b:\n', b)
+    print(sym.latex(A, mode='plain'))
     #print sym.latex(b, mode='plain')
 
     c = A.LUsolve(b)
-    print 'c:\n', c
-    print 'Plain interpolation:'
+    print('c:\n', c)
+    print('Plain interpolation:')
     x = sym.Symbol('x')
     f = sym.lambdify([x], f, modules='numpy')
     try:
         f_at_nodes = [f(xc) for xc in nodes]
     except NameError as e:
         raise NameError('numpy does not support special function:\n%s' % e)
-    print f_at_nodes
+    print(f_at_nodes)
     if not symbolic:
         xf = np.linspace(Omega[0], Omega[1], 10001)
         U = np.asarray(c)
         xu, u = u_glob(U, elements, nodes)
-        from scitools.std import plot
-        plot(xu, u, 'r-',
-             xf, f(xf), 'b-',
-             legend=('u', 'f'),
-             savefig=filename)
+        plt.plot(xu, u, 'r-',
+                 xf, f(xf), 'b-')
+        plt.legend('u', 'f')
+        plt.savefig(filename)
 
 
 # Extended versions with numerical integration (Midpoint, Trap., Simpson)
@@ -311,7 +310,7 @@ def element_vector(f, phi, Omega_e, symbolic=True, numint=None):
         for r in range(n):
             I = sym.integrate(f*phi[r]*detJ, (X, -1, 1))
             if isinstance(I, sym.Integral):
-                print 'numerical integration of', f*phi[r]*detJ
+                print('numerical integration of', f*phi[r]*detJ)
                 # Ensure h is numerical
                 h = Omega_e[1] - Omega_e[0]
                 detJ = h/2
@@ -369,7 +368,7 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
             numint = None
 
     phi = basis(d)
-    print 'phi basis (reference element):\n', phi
+    print('phi basis (reference element):\n', phi)
     integration_msg = """
     Symbolic integration failed, and then numerical integration
     encountered an undefined symbol (because of the symbolic expressions):
@@ -386,8 +385,8 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
                              symbolic=symbolic, numint=numint)
     except NameError as e:
         raise NameError(integration_msg % e)
-    print 'Element matrix:\n', A_e
-    print 'Element vector:\n', b_e
+    print('Element matrix:\n', A_e)
+    print('Element vector:\n', b_e)
 
     if symbolic:
         try:
@@ -400,41 +399,40 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
     A, b = assemble(nodes, elements, phi, f,
                     symbolic=symbolic, numint=numint)
 
-    print 'nodes:', nodes
-    print 'elements:', elements
-    print 'A:\n', A
-    print 'b:\n', b
+    print('nodes:', nodes)
+    print('elements:', elements)
+    print('A:\n', A)
+    print('b:\n', b)
     #print sym.latex(A, mode='plain')
     #print sym.latex(b, mode='plain')
 
     c = A.LUsolve(b)
-    print 'c:\n', c
-    print 'Plain interpolation:'
+    print('c:\n', c)
+    print('Plain interpolation:')
     x = sym.Symbol('x')
     f = sym.lambdify([x], f, modules='numpy')
     try:
         f_at_nodes = [f(xc) for xc in nodes]
     except NameError as e:
         raise NameError('numpy does not support special function:\n%s' % e)
-    print f_at_nodes
+    print(f_at_nodes)
     if not symbolic and filename is not None:
         xf = np.linspace(Omega[0], Omega[1], 10001)
         U = np.asarray(c)
         xu, u = u_glob(U, elements, nodes)
-        from scitools.std import plot
-        plot(xu, u, 'r-',
-             xf, f(xf), 'b-',
-             legend=('u', 'f'),
-             savefig=filename)
+        plt.plot(xu, u, 'r-',
+                 xf, f(xf), 'b-')
+        plt.legend('u', 'f')
+        plt.savefig(filename)
 
 
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 2:
-        print """Usage %s function arg1 arg2 arg3 ...""" % sys.argv[0]
+        print("""Usage %s function arg1 arg2 arg3 ...""" % sys.argv[0])
         sys.exit(0)
     cmd = '%s(%s)' % (sys.argv[1], ', '.join(sys.argv[2:]))
-    print cmd
+    print(cmd)
     x = sym.Symbol('x')  # needed in eval when expression f contains x
     eval(cmd)
 

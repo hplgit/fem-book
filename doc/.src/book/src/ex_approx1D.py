@@ -45,8 +45,8 @@ def run_parabola_by_taylor_leastsq_illconditioning(N=2):
     u, c = least_squares(f, psi=[x**i for i in range(N+1)], Omega=[1, 2])
     # Note: in least_squares there is extra code for numerical solution
     # of the systems
-    print 'f:', sym.expand(f)
-    print 'u:', sym.expand(u)
+    print('f:', sym.expand(f))
+    print('u:', sym.expand(u))
     comparison_plot(f, u, [1, 2], 'parabola_ls_taylor%d' % N)
 
 def run_parabola_by_sines_leastsq(boundary_term=False):
@@ -75,13 +75,14 @@ def run_sin_by_powers(N):
 
 def run_Lagrange_poly(N):
     # Test of symbolic and numeric evaluation of Lagrange polynomials
+    x = sym.Symbol('x')
     psi, points = Lagrange_polynomials_01(x, N)
-    print psi
-    print points
+    print(psi)
+    print(points)
     x = 0.5
     psi, points = Lagrange_polynomials_01(x, N)
-    print psi
-    print points
+    print(psi)
+    print(points)
 
 
 def run_sin_by_Lagrange_leastsq(N, ymin=-1.2, ymax=1.2):
@@ -234,7 +235,7 @@ def run_abs_by_Lagrange_interp_(N, ymin=None, ymax=None):
     plt.figure()
     xcoor = np.linspace(0, 1, 1001)
     legends = []
-    for i in (2, (N+1)/2+1):
+    for i in (2, (N+1)//2+1):
         fn = sym.lambdify([x], psi[i])
         ycoor = fn(xcoor)
         plt.plot(xcoor, ycoor)
@@ -257,13 +258,13 @@ def run_abs_by_Lagrange_interp__Cheb(N, ymin=None, ymax=None):
                     filename='Lagrange_interp_abs_Cheb_%d' % (N+1),
                     plot_title='Interpolation by Lagrange polynomials '\
                     'of degree %d' % N, ymin=ymin, ymax=ymax)
-    print 'Interpolation points:', points
+    print('Interpolation points:', points)
 
     # Make figures of Lagrange polynomials (psi)
     plt.figure()
     xcoor = np.linspace(0, 1, 1001)
     legends = []
-    for i in (2, (N+1)/2+1):
+    for i in (2, (N+1)//2+1):
         fn = sym.lambdify([x], psi[i])
         ycoor = fn(xcoor)
         plt.plot(xcoor, ycoor)
@@ -277,7 +278,7 @@ def run_abs_by_Lagrange_interp__Cheb(N, ymin=None, ymax=None):
     plt.savefig('Lagrange_basis_Cheb_%d.png' % (N+1))
 
 def run_abs_by_Lagrange_interp__conv(N=[3, 6, 12, 24]):
-    f = sym.abs(1-2*x)
+    f = sym.Abs(1-2*x)
     f = sym.sin(2*sym.pi*x)
     fn = sym.lambdify([x], f, modules='numpy')
     resolution = 50001
@@ -295,16 +296,16 @@ def run_abs_by_Lagrange_interp__conv(N=[3, 6, 12, 24]):
         Einf.append(e.max())
         E2.append(np.sqrt(np.sum(e*e/e.size)))
         h.append(1./_N)
-    print Einf
-    print E2
-    print h
-    print N
+    print(Einf)
+    print(E2)
+    print(h)
+    print(N)
     # Assumption: error = CN**(-N)
-    print 'convergence rates:'
+    print('convergence rates:')
     for i in range(len(E2)):
         C1 = E2[i]/(N[i]**(-N[i]/2))
         C2 = Einf[i]/(N[i]**(-N[i]/2))
-        print N[i], C1, C2
+        print(N[i], C1, C2)
     # Does not work properly...
 
 
@@ -312,4 +313,7 @@ if __name__ == '__main__':
     # Run from command line:
     # python ex_approx1D.py run_parabola_by_linear_regression
     cmd = sys.argv[1]
-    eval(cmd + '()')
+    args = ''
+    if len(sys.argv) > 2:
+        args = ','.join(sys.argv[2:])
+    eval('{0}({1})'.format(cmd, args))

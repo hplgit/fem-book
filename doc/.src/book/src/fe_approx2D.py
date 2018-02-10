@@ -1,6 +1,6 @@
 # Preliminary functions for 2D finite element approximation
 
-from scitools.std import plot, savefig, hold, axis, legend
+import matplotlib.pyplot as plt
 import numpy as np
 import sympy as sym
 
@@ -35,14 +35,14 @@ def mesh(nx, ny, x=[0,1], y=[0,1], diagonal='right'):
         cells = np.zeros((2*nx*ny, 3), dtype=np.int)
 
     vertex = 0
-    for iy in xrange(ny+1):
-        for ix in xrange(nx+1):
+    for iy in range(ny+1):
+        for ix in range(nx+1):
             vertices[vertex,:] = x[ix], y[iy]
             vertex += 1
 
     if diagonal == 'crossed':
-        for iy in xrange(ny):
-            for ix in xrange(nx):
+        for iy in range(ny):
+            for ix in range(nx):
                 x_mid = 0.5*(x[ix+1] + x[ix])
                 y_mid = 0.5*(y[iy+1] + y[iy])
                 vertices[vertex,:] = x_mid, y_mid
@@ -51,8 +51,8 @@ def mesh(nx, ny, x=[0,1], y=[0,1], diagonal='right'):
     cell = 0
     if diagonal is None:
         # Quadrilateral elements
-        for iy in xrange(ny):
-            for ix in xrange(nx):
+        for iy in range(ny):
+            for ix in range(nx):
                 v0 = iy*(nx + 1) + ix
                 v1 = v0 + 1
                 v2 = v0 + nx+1
@@ -60,8 +60,8 @@ def mesh(nx, ny, x=[0,1], y=[0,1], diagonal='right'):
                 cells[cell,:] = v0, v1, v3, v2;  cell += 1
 
     elif diagonal == 'crossed':
-        for iy in xrange(ny):
-            for ix in xrange(nx):
+        for iy in range(ny):
+            for ix in range(nx):
                 v0 = iy*(nx+1) + ix
                 v1 = v0 + 1
                 v2 = v0 + (nx+1)
@@ -77,7 +77,7 @@ def mesh(nx, ny, x=[0,1], y=[0,1], diagonal='right'):
     else:
         local_diagonal = diagonal
         # Set up alternating diagonal
-        for iy in xrange(ny):
+        for iy in range(ny):
             if diagonal == "right/left":
                 if iy % 2 == 0:
                     local_diagonal = "right"
@@ -89,7 +89,7 @@ def mesh(nx, ny, x=[0,1], y=[0,1], diagonal='right'):
                     local_diagonal = "left"
                 else:
                     local_diagonal = "right"
-            for ix in xrange(nx):
+            for ix in range(nx):
                 v0 = iy*(nx + 1) + ix
                 v1 = v0 + 1
                 v2 = v0 + nx+1
@@ -110,7 +110,7 @@ def mesh(nx, ny, x=[0,1], y=[0,1], diagonal='right'):
 
 def plot_mesh(vertices, cells, materials=None, plotfile='tmp.png'):
     cell_vertex_coordinates = []
-    for e in xrange(cells.shape[0]):
+    for e in range(cells.shape[0]):
         local_vertex_numbers = cells[e,:]
         local_coordinates = vertices[local_vertex_numbers,:]
         cell_vertex_coordinates.append(local_coordinates)
@@ -145,6 +145,7 @@ def demo():
     vertices[:,0] = x
     vertices[:,1] = y
     plot_mesh(vertices, cells, materials=np.zeros(cells.shape[0], dtype=np.int), plotfile='tmp_circle')
+    # FIXME: resulting plot is empty
     import sys
     sys.exit(0)
 

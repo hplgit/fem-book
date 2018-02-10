@@ -13,12 +13,12 @@ x = sym.Symbol('x')
 psi = [1, x]
 
 u, c = regression_with_noise(log2(Sinusoidal), psi, log2(Ns))
-print "estimated model for sine: %3.2e*N**(%3.2e)" % \
-      (2**(c[0]), c[1])
+print("estimated model for sine: %3.2e*N**(%3.2e)" % \
+      (2**(c[0]), c[1]))
 
 # check the numbers estimated by the model by manual inspection
 for N in Ns:
-  print 2**c[0] * N **c[1]
+  print(2**c[0] * N **c[1])
 
 X = log2(Ns)
 U = sym.lambdify([x], u)
@@ -30,11 +30,11 @@ plt.legend(["data", "model"])
 plt.show()
 
 u, c = regression_with_noise(log(Bernstein), psi, Ns)
-print "estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % (exp(c[0]), c[1])
+print("estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % (exp(c[0]), c[1]))
 
 # check the numbers estimated by the model by manual inspection
 for N in Ns:
-  print exp(c[0]) * exp(N * c[1])
+  print(exp(c[0]) * exp(N * c[1]))
 
 X = Ns
 U = sym.lambdify([x], u)

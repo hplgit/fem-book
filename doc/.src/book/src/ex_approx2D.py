@@ -21,18 +21,20 @@ def taylor(x, y, Nx, Ny):
 def run_linear():
     f = (1+x**2)*(1+2*y**2)
     psi = taylor(x, y, 1, 1)
-    print psi
+    print(psi)
     Omega = [[0, 2], [0, 2]]
     u = least_squares(f, psi, Omega)
     comparison_plot(f, u, Omega, plotfile='approx2D_bilinear')
-    print '\n\n**** Include second order terms:'
+    print('\n\n**** Include second order terms:')
     psi = taylor(x, y, 2, 2)
     u = least_squares(f, psi, Omega)
 
 
 if __name__ == '__main__':
-    functions = \
-        [eval(fname) for fname in dir() if fname.startswith('run_')]
-    from scitools.misc import function_UI
-    cmd = function_UI(functions, sys.argv)
-    eval(cmd)
+    # Run from command line:
+    # python ex_approx2D.py run_linear
+    cmd = sys.argv[1]
+    args = ''
+    if len(sys.argv) > 2:
+        args = ','.join(sys.argv[2:])
+    eval('{0}({1})'.format(cmd, args))

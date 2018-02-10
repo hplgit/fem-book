@@ -28,12 +28,15 @@ def problem():
     u2.rename('u2', 'u2')
     u2_error = errornorm(f, u2, 'L2')
 
-    print 'L2 errors: e1=%g, e2=%g' % (u1_error, u2_error)
+    print('L2 errors: e1=%g, e2=%g' % (u1_error, u2_error))
     # Simple plotting
+    import matplotlib.pyplot as plt
     plot(f, title='f', mesh=mesh)
+    plt.show()
     plot(u1, title='u1')
+    plt.show()
     plot(u2, title='u2')
+    plt.show()
 
 if __name__ == '__main__':
     problem()
-    interactive()  # Enable plotting

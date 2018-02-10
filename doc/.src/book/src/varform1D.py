@@ -4,8 +4,9 @@ basis functions in function spaces and a variational formulation
 of the differential equation problem.
 """
 import sympy as sym
-from scitools.std import plot, hold, legend, savefig, linspace, \
-     title, xlabel, axis
+import numpy as np
+import mpmath
+import matplotlib.pyplot as plt
 
 
 def solver(integrand_lhs, integrand_rhs, psi, Omega,
@@ -21,30 +22,30 @@ def solver(integrand_lhs, integrand_rhs, psi, Omega,
     contributions from the boundary (boundary integrals, which are point
     values in 1D).
 
-    if symbolic is False, all integrals are calculated by sympy.mpmath.quad
+    if symbolic is False, all integrals are calculated by mpmath.quad
     to high precision.
     if verbose is True, integrations and linear system A*c=b are printed
     during the computations.
     """
     N = len(psi[0]) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     x = sym.Symbol('x')
-    print '...evaluating matrix...',
+    print('...evaluating matrix...', end=' ')
     for i in range(N+1):
         for j in range(i, N+1):
             integrand = integrand_lhs(psi, i, j)
             if verbose:
-                print '(%d,%d):' % (i, j), integrand
+                print('(%d,%d):' % (i, j), integrand)
             if symbolic:
                 I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
                 if isinstance(I, sym.Integral):
                     symbolic = False  # force numerical integration hereafter
-                    print 'numerical integration of', integrand
+                    print('numerical integration of', integrand)
             if not symbolic:
-                integrand_ = sym.lambdify([x], integrand)
+                integrand_ = sym.lambdify([x], integrand, 'mpmath')
                 try:
-                    I = sym.mpmath.quad(integrand_, [Omega[0], Omega[1]])
+                    I = mpmath.quad(integrand_, [Omega[0], Omega[1]])
                 except NameError as e:
                     raise NameError('Numerical integration of\n%s\nrequires symbol %s to be given a value' %
                                     (integrand, str(e).split()[2]))
@@ -53,33 +54,34 @@ def solver(integrand_lhs, integrand_rhs, psi, Omega,
             A[i,j] = A[j,i] = I
         integrand = integrand_rhs(psi, i)
         if verbose:
-            print 'rhs:', integrand
+            print('rhs:', integrand)
         if symbolic:
             I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
             if isinstance(I, sym.Integral):
                 symbolic = False
-                print 'numerical integration of', integrand
+                print('numerical integration of', integrand)
         if not symbolic:
-            integrand_ = sym.lambdify([x], integrand)
+            integrand_ = sym.lambdify([x], integrand, 'mpmath')
             try:
-                I = sym.mpmath.quad(integrand_, [Omega[0], Omega[1]])
+                I = mpmath.quad(integrand_, [Omega[0], Omega[1]])
             except NameError as e:
                 raise NameError('Numerical integration of\n%s\nrequires symbol %s to be given a value' %
                                 (integrand, str(e).split()[2]))
         if boundary_rhs is not None:
             I += boundary_rhs(psi, i)
         b[i,0] = I
-    print
-    if verbose: print 'A:\n', A, '\nb:\n', b
+    print()
+    if verbose: print('A:\n', A, '\nb:\n', b)
     c = A.LUsolve(b)
     #c = sym.mpmath.lu_solve(A, b)
     c = [c[i,0] for i in range(c.shape[0])]
-    if verbose: print 'coeff:', c
+    if verbose: print('coeff:', c)
     u = 0
     for i in range(len(psi[0])):
         u += c[i]*psi[0][i]
-    if verbose: print 'approximation:', u
-    return u, c
+    if verbose: print('approximation:', u)
+    #return u, c
+    return u
 
 def collocation(term_lhs, term_rhs, psi, points):
     """
@@ -94,8 +96,8 @@ def collocation(term_lhs, term_rhs, psi, points):
     psi[0][i], ... at a point.
     """
     N = len(psi[0]) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     # Wrap psi in Python functions (psi_) rather than expressions
     # so that we can evaluate psi_ at points[i] (alternative to subs?)
     x = sym.Symbol('x')
@@ -105,13 +107,13 @@ def collocation(term_lhs, term_rhs, psi, points):
         psi_[derivative] = [sym.lambdify([x], psi[derivative][i],
                                         modules="sympy")
                             for i in range(N+1)]
-    print '...evaluating matrix...',
+    print('...evaluating matrix...', end=' ')
     for i in range(N+1):
         for j in range(N+1):
-            print '(%d,%d)' % (i, j)
+            print('(%d,%d)' % (i, j))
             A[i,j] = term_lhs(psi_, points, i, j)
         b[i,0] = term_rhs(psi_, points, i)
-    print
+    print()
 
     # Drop symbolic expressions (and symbolic solve) for
     # all but the smallest problems (troubles maybe caused by
@@ -120,13 +122,13 @@ def collocation(term_lhs, term_rhs, psi, points):
     if N > 2:
         A = A.evalf()
         b = b.evalf()
-    print 'A:\n', A, '\nb:\n', b
+    print('A:\n', A, '\nb:\n', b)
     c = A.LUsolve(b)
-    print 'coeff:', c
+    print('coeff:', c)
     u = 0
     for i in range(len(psi_[0])):
         u += c[i,0]*psi_[0][i](x)
-    print 'approximation:', u
+    print('approximation:', u)
     return u
 
 def comparison_plot(u, Omega, u_e=None, filename='tmp.eps',
@@ -145,25 +147,24 @@ def comparison_plot(u, Omega, u_e=None, filename='tmp.eps',
         Omega[1] = float(Omega[1].evalf())
 
     resolution = 401  # no of points in plot
-    xcoor = linspace(Omega[0], Omega[1], resolution)
+    xcoor = np.linspace(Omega[0], Omega[1], resolution)
     # Vectorized functions expressions does not work with
     # lambdify'ed functions without the modules="numpy"
     approx = u(xcoor)
-    plot(xcoor, approx)
+    plt.plot(xcoor, approx)
     legends = ['approximation']
     if u_e is not None:
         exact  = u_e(xcoor)
-        hold('on')
-        plot(xcoor, exact)
+        plt.plot(xcoor, exact)
         legends = ['exact']
-    legend(legends)
-    title(plot_title)
-    xlabel('x')
+    plt.legend(legends)
+    plt.title(plot_title)
+    plt.xlabel('x')
     if ymin is not None and ymax is not None:
-        axis([xcoor[0], xcoor[-1], ymin, ymax])
-    savefig(filename)
+        plt.axis([xcoor[0], xcoor[-1], ymin, ymax])
+    plt.savefig(filename)
 
 if __name__ == '__main__':
-    print 'Module file not meant for execution.'
+    print('Module file not meant for execution.')
 
 

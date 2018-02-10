@@ -1,6 +1,7 @@
 import numpy as np
 import sympy as sym
 import sys
+import mpmath
 
 def mesh_uniform(N_e, d, Omega=[0,1], symbolic=False):
     """
@@ -67,7 +68,7 @@ def locate_element_scalar(x, elements, nodes):
 def locate_element_vectorized(x, elements, nodes):
     """Return number of element containing point x. Vectorized version."""
     elements = np.asarray(elements)
-    print elements[:,-1]
+    print(elements[:,-1])
     element_right_boundaries = nodes[elements[:,-1]]
     return searchsorted(element_right_boundaries, x)
 
@@ -96,7 +97,7 @@ def u_glob(U, elements, nodes, resolution_per_element=51):
         u_element = 0
         for r in range(len(local_nodes)):
             i = local_nodes[r]  # global node number
-            u_element += U[i]*phi[r](X)
+            u_element += U[i]*phi[r].evalf(X)
         u_patches.append(u_element)
     x = np.concatenate(x_patches)
     u = np.concatenate(u_patches)
@@ -105,7 +106,7 @@ def u_glob(U, elements, nodes, resolution_per_element=51):
 
 def element_matrix(phi, Omega_e, symbolic=True):
     n = len(phi)
-    A_e = sym.zeros((n, n))
+    A_e = sym.zeros(n, n)
     X = sym.Symbol('X')
     if symbolic:
         h = sym.Symbol('h')
@@ -120,7 +121,7 @@ def element_matrix(phi, Omega_e, symbolic=True):
 
 def element_vector(f, phi, Omega_e, symbolic=True):
     n = len(phi)
-    b_e = sym.zeros((n, 1))
+    b_e = sym.zeros(n, 1)
     # Make f a function of X (via f.subs to avoid floats from lambdify)
     X = sym.Symbol('X')
     if symbolic:
@@ -134,18 +135,18 @@ def element_vector(f, phi, Omega_e, symbolic=True):
         if symbolic:
             I = sym.integrate(f*phi[r]*detJ, (X, -1, 1))
         if not symbolic or isinstance(I, sym.Integral):
-            print 'numerical integration of', f*phi[r]*detJ
+            print('numerical integration of', f*phi[r]*detJ)
             # Ensure h is numerical
             h = Omega_e[1] - Omega_e[0]
             detJ = h/2
-            integrand = sym.lambdify([X], f*phi[r]*detJ)
-            I = sym.mpmath.quad(integrand, [-1, 1])
+            integrand = sym.lambdify([X], f*phi[r]*detJ, 'mpmath')
+            I = mpmath.quad(integrand, [-1, 1])
         b_e[r] = I
     return b_e
 
 def exemplify_element_matrix_vector(f, d, symbolic=True):
     phi = basis(d)
-    print 'phi basis (reference element):\n', phi
+    print('phi basis (reference element):\n', phi)
     Omega_e = [0.1, 0.2]
     A_e = element_matrix(phi, Omega_e=Omega_e, symbolic=symbolic)
     if symbolic:
@@ -153,14 +154,14 @@ def exemplify_element_matrix_vector(f, d, symbolic=True):
         Omega_e=[1*h, 2*h]
     b_e = element_vector(f, phi, Omega_e=Omega_e,
                          symbolic=symbolic)
-    print 'Element matrix:\n', A_e
-    print 'Element vector:\n', b_e
+    print('Element matrix:\n', A_e)
+    print('Element vector:\n', b_e)
 
 def assemble(nodes, elements, phi, f, symbolic=True):
     N_n, N_e = len(nodes), len(elements)
     if symbolic:
-        A = sym.zeros((N_n, N_n))
-        b = sym.zeros((N_n, 1))    # note: (N_n, 1) matrix
+        A = sym.zeros(N_n, N_n)
+        b = sym.zeros(N_n, 1)    # note: (N_n, 1) matrix
     else:
         A = np.zeros((N_n, N_n))
         b = np.zeros(N_n)
@@ -179,16 +180,16 @@ def assemble(nodes, elements, phi, f, symbolic=True):
 def approximate(f, symbolic=False, d=1, N_e=4,
                 Omega=[0, 1], filename='tmp'):
     phi = basis(d)
-    print 'phi basis (reference element):\n', phi
+    print('phi basis (reference element):\n', phi)
 
     nodes, elements = mesh_uniform(N_e, d, Omega, symbolic)
     A, b = assemble(nodes, elements, phi, f, symbolic=symbolic)
 
-    print 'nodes:', nodes
-    print 'elements:', elements
-    print 'A:\n', A
-    print 'b:\n', b
-    print sym.latex(A, mode='plain')
+    print('nodes:', nodes)
+    print('elements:', elements)
+    print('A:\n', A)
+    print('b:\n', b)
+    print(sym.latex(A, mode='plain'))
     #print sym.latex(b, mode='plain')
 
     if symbolic:
@@ -197,23 +198,23 @@ def approximate(f, symbolic=False, d=1, N_e=4,
     else:
         c = np.linalg.solve(A, b)
 
-    print 'c:\n', c
+    print('c:\n', c)
 
-    print 'Plain interpolation/collocation:'
+    print('Plain interpolation/collocation:')
     x = sym.Symbol('x')
     f = sym.lambdify([x], f, modules='numpy')
     try:
         f_at_nodes = [f(xc) for xc in nodes]
     except NameError as e:
         raise NameError('numpy does not support special function:\n%s' % e)
-    print f_at_nodes
+    print(f_at_nodes)
 
     if not symbolic and filename is not None:
         xf = np.linspace(Omega[0], Omega[1], 10001)
         U = np.asarray(c)  # c is a plain array
         xu, u = u_glob(U, elements, nodes)
-        import scitools.std as plt
-        #import matplotlib.pyplot as plt
+        #import scitools.std as plt
+        import matplotlib.pyplot as plt
         plt.plot(xu, u, '-',
                  xf, f(xf), '--')
         plt.legend(['u', 'f'])
@@ -291,7 +292,7 @@ def dphi_r(r, X, d, point_distribution='uniform'):
         elif r == 2:
             return X + 0.5
     else:
-        print 'dphi_r only supports d=0,1,2, not %d' % d
+        print('dphi_r only supports d=0,1,2, not %d' % d)
         return None
 
 

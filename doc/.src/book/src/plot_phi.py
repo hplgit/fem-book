@@ -1,4 +1,4 @@
-import scitools.std as plt
+import matplotlib.pyplot as plt
 from fe_approx1D import mesh_uniform, phi_glob
 import numpy as np
 
@@ -9,7 +9,7 @@ def plot_fe_mesh(nodes, elements, element_marker=[0, 0.1]):
     element_boundaries = all_x_L + [nodes[-1]]
     for x in element_boundaries:
         plt.plot([x, x], element_marker, 'm--')  # m gives dotted lines
-    plt.plot(nodes, [0]*len(nodes), 'ro2')
+    plt.plot(nodes, [0]*len(nodes), 'ro')
 
 def fe_basis_function_figure(d, target_elm=[1], N_e=3,
                              derivative=0, filename='tmp.pdf',
@@ -49,28 +49,20 @@ def fe_basis_function_figure(d, target_elm=[1], N_e=3,
                 if color_counter > len(colors) - 1:
                     color_counter = 0  # restart colors
 
-                plt.hold('on')
                 if labels:
-                    if plt.backend == 'gnuplot':
-                        if derivative == 0:
-                            plt.legend(r'basis func. %d' % i,
-                                       loc='upper right')
-                        else:
-                            plt.legend(r'derivative of basis func. %d' % i,
-                                       loc='upper right')
-                    elif plt.backend == 'matplotlib':
-                        if derivative == 0:
-                            plt.legend(r'\varphi_%d' % i, loc='upper right')
-                        else:
-                            plt.legend(r"\varphi_%d'(x)" % i, loc='upper right')
+                    if derivative == 0:
+                        plt.legend(r'\varphi_%d' % i, loc='upper right')
+                    else:
+                        plt.legend(r"\varphi_%d'(x)" % i, loc='upper right')
                 phi_drawn.append(i)
 
     #plt.axis([nodes[0], nodes[-1], ymin-0.1, ymax+0.1])
     plot_fe_mesh(nodes, elements, element_marker=[ymin-0.1, ymax+0.1])
-    plt.plot([0, 0], [0, 0], '-',
-             axis=[nodes[0], nodes[-1], ymin-0.1, ymax+0.1],
-             daspect=[0.2, 1, 1], daspactmode='manual')
-    plt.hold('off')
+    plt.plot([0, 0], [0, 0], '-')
+    plt.axis([nodes[0], nodes[-1], ymin-0.1, ymax+0.1])
+    plt.axes.set_aspect('')
+    #plt.daspect([0.2, 1, 1])
+    #plt.daspactmode('manual')
     plt.savefig(filename)
 
 def draw_basis_functions():
@@ -181,7 +173,7 @@ def u_P1():
 if __name__ == '__main__':
     import sys
     if len(sys.argv) == 1:
-        print 'Usage: %s phi | pattern | u_sines | u_P1 [num_elements] [d] [uniform | random]' % sys.argv[0]
+        print('Usage: %s phi | u_sines | u_P1 | pattern [num_elements] [d] [uniform | random]' % sys.argv[0])
         sys.exit(1)
     if sys.argv[1] == 'phi':
         draw_basis_functions()
@@ -194,7 +186,7 @@ if __name__ == '__main__':
 
         # Shuffle nodes in random order if necessary
         if uniform == 'random':
-            global_node_numbering = range(0, num_nodes)
+            global_node_numbering = list(range(0, num_nodes))
             import random
             random.shuffle(global_node_numbering)
             for e in range(len(elements)):

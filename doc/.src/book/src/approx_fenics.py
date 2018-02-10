@@ -42,7 +42,7 @@ def problem(f, nx=8, ny=8, degrees=[1,2]):
     of given degrees, on a nx times ny mesh. f is a SymPy expression.
     """
     f = sym.printing.ccode(f)
-    f = fe.Expression(f)
+    f = fe.Expression(f, degree=2)
     mesh = fe.RectangleMesh(
         fe.Point(-1, 0), fe.Point(1, 2), 2, 2)
     for degree in degrees:
@@ -54,7 +54,7 @@ def problem(f, nx=8, ny=8, degrees=[1,2]):
             V = fe.FunctionSpace(mesh, 'P', degree)
         u = fe.project(f, V)
         u_error = fe.errornorm(f, u, 'L2')
-        print '||u-f||=%g' % u_error, degree
+        print('||u-f||=%g' % u_error, degree)
         comparison_plot2D(
             u, f,
             n=50,

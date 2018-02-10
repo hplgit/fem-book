@@ -38,7 +38,7 @@ def GaussLegendre(f, n):
 import numint, numpy as np
 
 def experiment(f, f_integrated):
-    x_points = range(1, 21) + [32, 64, 96, 100, 128, 256, 512, 1024]
+    x_points = list(range(1, 21)) + [32, 64, 96, 100, 128, 256, 512, 1024]
     GL_errors = []
     Tz_errors = []
     for n in x_points:
@@ -47,10 +47,10 @@ def experiment(f, f_integrated):
         I_ex = f_integrated(1)
         GL_errors.append(abs(I_ex - I_GL))
         Tz_errors.append(abs(I_ex - I_Tz))
-        print '%4d %12.4E %12.4E' % (n, I_ex - I_Tz, I_ex - I_GL)
+        print('%4d %12.4E %12.4E' % (n, I_ex - I_Tz, I_ex - I_GL))
 
 experiment(H, integral_of_H)
-print '\n---- and now a smooth function ----'
+print('\n---- and now a smooth function ----')
 experiment(cosine, integral_of_cosine)
 
 

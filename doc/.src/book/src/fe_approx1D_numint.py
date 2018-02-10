@@ -3,6 +3,7 @@ import sys
 from math import sqrt
 import numpy as np
 import sympy as sym
+import mpmath
 """
 This module extends and replaces functions in the module fe_approx1D.
 Two major changes are implemented:
@@ -50,7 +51,7 @@ def element_matrix(phi, Omega_e, symbolic=True, numint=None):
     if numint is None:
         for r in range(n):
             for s in range(r, n):
-                print phi[r]
+                print(phi[r])
                 A_e[r,s] = sym.integrate(phi[r]*phi[s]*detJ, (X, -1, 1))
                 A_e[s,r] = A_e[r,s]
     else:
@@ -83,17 +84,17 @@ def element_vector(f, phi, Omega_e, symbolic=True, numint=None):
                 # Ensure h is numerical
                 h = Omega_e[1] - Omega_e[0]
                 detJ = h/2
-                f_func = sym.lambdify([X], f)
+                f_func = sym.lambdify([X], f, 'mpmath')
                 # phi is function
                 integrand = lambda X: f_func(X)*phi[r](X)*detJ
                 #integrand = integrand.subs(sym.pi, np.pi)
                 # integrand may still contain symbols like sym.pi that
                 # prevents numerical evaluation...
                 try:
-                    I = sym.mpmath.quad(integrand, [-1, 1])
+                    I = mpmath.quad(integrand, [-1, 1])
                 except Exception as e:
-                    print 'Could not integrate f*phi[r] numerically:'
-                    print e
+                    print('Could not integrate f*phi[r] numerically:')
+                    print(e)
                     sys.exit(0)
             b_e[r] = I
     else:
@@ -123,13 +124,12 @@ def exemplify_element_matrix_vector(f, d, symbolic=True, numint=False):
                              symbolic=symbolic, numint=numint)
     except NameError as e:
         raise NameError(integration_msg % e)
-    print 'Element matrix:\n', A_e
-    print 'Element vector:\n', b_e
+    print('Element matrix:\n', A_e)
+    print('Element vector:\n', b_e)
 
 
 def assemble(vertices, cells, dof_map, phi, f,
              symbolic=True, numint=None):
-    import sets
     N_n = len(list(set(np.array(dof_map).ravel())))
     N_e = len(cells)
     if symbolic:
@@ -182,7 +182,7 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
                       [sym.Rational(5,9), sym.Rational(8,9),
                        sym.Rational(5,9)]]
         elif numint is not None:
-            print 'Numerical rule %s is not supported for symbolic computing' % numint
+            print('Numerical rule %s is not supported for symbolic computing' % numint)
             numint = None
     else:
         if numint == 'Trapezoidal':
@@ -203,7 +203,7 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
             numint = [[-0.90617985, -0.53846931, -0.        ,  0.53846931,  0.90617985],
                       [ 0.23692689,  0.47862867,  0.56888889,  0.47862867,  0.23692689]]
         elif numint is not None:
-            print 'Numerical rule %s is not supported for numerical computing' % numint
+            print('Numerical rule %s is not supported for numerical computing' % numint)
             numint = None
 
 
@@ -218,11 +218,11 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
 
     A, b = assemble(vertices, cells, dof_map, phi, f, symbolic=symbolic, numint=numint)
 
-    print 'cells:', cells
-    print 'vertices:', vertices
-    print 'dof_map:', dof_map
-    print 'A:\n', A
-    print 'b:\n', b
+    print('cells:', cells)
+    print('vertices:', vertices)
+    print('dof_map:', dof_map)
+    print('A:\n', A)
+    print('b:\n', b)
     #print sym.latex(A, mode='plain')
     #print sym.latex(b, mode='plain')
 
@@ -232,16 +232,16 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
     else:
         c = np.linalg.solve(A, b)
 
-    print 'c:\n', c
+    print('c:\n', c)
 
     x = sym.Symbol('x')
     f = sym.lambdify([x], f, modules='numpy')
 
     if collocation and not symbolic:
-        print 'Plain interpolation/collocation:'
+        print('Plain interpolation/collocation:')
         # Should use vertices, but compute all nodes!
         f_at_vertices = [f(xc) for xc in vertices]
-        print f_at_vertices
+        print(f_at_vertices)
 
     if filename is not None:
         title = 'P%d, N_e=%d' % (d, N_e)

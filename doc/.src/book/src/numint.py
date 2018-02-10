@@ -33,16 +33,16 @@ def GaussLegendre(num_points):
         weights[0] = 2
     elif n % 2 == 0:
         for i in range(len(x[n])):
-            points[n/2+i] = x[n][i]
-            points[n/2-1-i] = -x[n][i]
-            weights[n/2+i] = w[n][i]
-            weights[n/2-1-i] = w[n][i]
+            points[n//2+i] = x[n][i]
+            points[n//2-1-i] = -x[n][i]
+            weights[n//2+i] = w[n][i]
+            weights[n//2-1-i] = w[n][i]
     else:
         for i in range(len(x[n])):
-            points[n/2+i] = x[n][i]
-            points[n/2-i] = -x[n][i]
-            weights[n/2+i] = w[n][i]
-            weights[n/2-i] = w[n][i]
+            points[n//2+i] = x[n][i]
+            points[n//2-i] = -x[n][i]
+            weights[n//2+i] = w[n][i]
+            weights[n//2-i] = w[n][i]
     return points, weights
 
 def NewtonCotes(num_points):
@@ -305,7 +305,7 @@ def quadrature_for_tetrahedra(num_points):
             4.33449846426335728E-01,  6.65501535736642813E-02,
             4.33449846426335728E-01,  6.65501535736642813E-02,
             4.33449846426335728E-01])
-        points = points.reshape((len(points)/3, 3)).tolist()
+        points = points.reshape((len(points)//3, 3)).tolist()
     elif n == 24:
         weights = [
             6.65379170969464506E-03,  6.65379170969464506E-03,
@@ -357,7 +357,7 @@ def quadrature_for_tetrahedra(num_points):
             2.69672331458315867E-01,  6.36610018750175299E-02,
             6.36610018750175299E-02,  6.36610018750175299E-02,
             6.36610018750175299E-02,  6.03005664791649076E-01])
-        points = points.reshape((len(points)/3, 3)).tolist()
+        points = points.reshape((len(points)//3, 3)).tolist()
     elif n == 31:
         weights = [
             9.70017636684296702E-04,  9.70017636684296702E-04,
@@ -424,7 +424,7 @@ def quadrature_for_tetrahedra(num_points):
             1.00000000000000000E-01,  1.00000000000000000E-01,
             1.00000000000000000E-01,  1.00000000000000000E-01,
             6.00000000000000000E-01])
-        points = points.reshape((len(points)/3, 3)).tolist()
+        points = points.reshape((len(points)//3, 3)).tolist()
     elif n == 45:
         weights = [
             -3.93270066412926145E-02,  4.08131605934270525E-03,
@@ -519,7 +519,7 @@ def quadrature_for_tetrahedra(num_points):
             3.79700484718286102E-02,  3.79700484718286102E-02,
             3.79700484718286102E-02,  3.79700484718286102E-02,
             1.93746475248804382E-01])
-        points = points.reshape((len(points)/3, 3)).tolist()
+        points = points.reshape((len(points)//3, 3)).tolist()
     return points, weights
 
 x = {}

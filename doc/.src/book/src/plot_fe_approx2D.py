@@ -19,6 +19,8 @@ class Gnuplotter:
         self._plot = []
 
     def _gnuwrite(self, command):
+        import builtins
+        builtins.unicode = str
         self.commands.write(unicode(command))
 
     def hold(self, mode):

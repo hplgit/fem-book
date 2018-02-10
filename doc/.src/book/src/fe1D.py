@@ -101,8 +101,8 @@ def finite_element1D_naive(
         phi = basis(d)
 
         if verbose:
-            print 'e=%2d: [%g,%g] h=%g d=%d' % \
-                  (e, Omega_e[0], Omega_e[1], h, d)
+            print('e=%2d: [%g,%g] h=%g d=%d' % \
+                  (e, Omega_e[0], Omega_e[1], h, d))
 
         # Element matrix and vector
         n = d+1  # No of dofs per element
@@ -133,7 +133,7 @@ def finite_element1D_naive(
             b_e[r] += brhs(e, phi, r, X, x, h)
 
         if verbose:
-            print 'A^(%d):\n' % e, A_e;  print 'b^(%d):' % e, b_e
+            print('A^(%d):\n' % e, A_e);  print('b^(%d):' % e, b_e)
 
         # Incorporate essential boundary conditions
         modified = False
@@ -151,8 +151,8 @@ def finite_element1D_naive(
                 modified = True
 
         if verbose and modified:
-            print 'after essential boundary conditions:'
-            print 'A^(%d):\n' % e, A_e;  print 'b^(%d):' % e, b_e
+            print('after essential boundary conditions:')
+            print('A^(%d):\n' % e, A_e);  print('b^(%d):' % e, b_e)
 
         # Assemble
         for r in range(n):
@@ -165,8 +165,8 @@ def finite_element1D_naive(
     c = np.linalg.solve(A, b)
     timing['solve'] = time.clock() - t1
     if verbose:
-        print 'Global A:\n', A; print 'Global b:\n', b
-        print 'Solution c:\n', c
+        print('Global A:\n', A); print('Global b:\n', b)
+        print('Solution c:\n', c)
     return c, A, b, timing
 
 
@@ -199,8 +199,8 @@ def finite_element1D(
         phi = basis(d)
 
         if verbose:
-            print 'e=%2d: [%g,%g] h=%g d=%d' % \
-                  (e, Omega_e[0], Omega_e[1], h, d)
+            print('e=%2d: [%g,%g] h=%g d=%d' % \
+                  (e, Omega_e[0], Omega_e[1], h, d))
 
         # Element matrix and vector
         n = d+1  # No of dofs per element
@@ -231,7 +231,7 @@ def finite_element1D(
             b_e[r] += brhs(e, phi, r, X, x, h)
 
         if verbose:
-            print 'A^(%d):\n' % e, A_e;  print 'b^(%d):' % e, b_e
+            print('A^(%d):\n' % e, A_e);  print('b^(%d):' % e, b_e)
 
         # Incorporate essential boundary conditions
         modified = False
@@ -249,8 +249,8 @@ def finite_element1D(
                 modified = True
 
         if verbose and modified:
-            print 'after essential boundary conditions:'
-            print 'A^(%d):\n' % e, A_e;  print 'b^(%d):' % e, b_e
+            print('after essential boundary conditions:')
+            print('A^(%d):\n' % e, A_e);  print('b^(%d):' % e, b_e)
 
         # Assemble
         for r in range(n):
@@ -264,9 +264,9 @@ def finite_element1D(
     c = scipy.sparse.linalg.spsolve(A.tocsr(), b, use_umfpack=True)
     timing['solve'] = time.clock() - t1
     if verbose:
-        print 'Global A:\n', A
-        print 'Nonzero (i,j) in A:', list(A.keys())
-        print 'Global b:\n', b;  print 'Solution c:\n', c
+        print('Global A:\n', A)
+        print('Nonzero (i,j) in A:', list(A.keys()))
+        print('Global b:\n', b);  print('Solution c:\n', c)
     return c, A, b, timing
 
 
@@ -378,8 +378,8 @@ def test_finite_element1D():
                 diff = (case['u_exact'](x) - c).max()
                 msg = 'naive:  case "%s", N_e=%d, d=%d, diff=%g' % \
                       (name, N_e, d, diff)
-                print msg, 'assemble: %.2f' % timing['assemble'], \
-                      'solve: %.2f' % timing['solve']
+                print(msg, 'assemble: %.2f' % timing['assemble'], \
+                      'solve: %.2f' % timing['solve'])
                 assert diff < tol, msg
 
                 c, A, b, timing = finite_element1D(
@@ -393,8 +393,8 @@ def test_finite_element1D():
                 diff = (case['u_exact'](x) - c).max()
                 msg = 'sparse: case "%s", N_e=%d, d=%d, diff=%g' % \
                       (name, N_e, d, diff)
-                print msg, 'assemble: %.2f' % timing['assemble'], \
-                      'solve: %.2f' % timing['solve']
+                print(msg, 'assemble: %.2f' % timing['assemble'], \
+                      'solve: %.2f' % timing['solve'])
                 assert diff < tol, msg
 
 def investigate_efficiency():
@@ -421,7 +421,7 @@ def investigate_efficiency():
             verbose=False)
             msg = 'naive:  N_e=%d, d=%d: assemble=%.2e solve=%.2e' % \
                   (N_e, d, timing['assemble'], timing['solve'])
-            print msg
+            print(msg)
 
             c, A, b, timing = finite_element1D(
                 vertices, cells, dof_map, essbc,
@@ -431,7 +431,7 @@ def investigate_efficiency():
             verbose=False)
             msg = 'sparse: N_e=%d, d=%d: assemble=%.2e solve=%.2e' % \
                   (N_e, d, timing['assemble'], timing['solve'])
-            print msg
+            print(msg)
 
 if __name__ == '__main__':
     test_finite_element1D()

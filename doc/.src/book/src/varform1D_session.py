@@ -7,15 +7,15 @@ e_colloc = x*(L-x) - 2*L**2*sym.pi**(-2)*sym.sin(sym.pi*x/L)
 
 # Verify max error for x=L/2
 dedx_Galerkin = sym.diff(e_Galerkin, x)
-print dedx_Galerkin.subs(x, L/2)
+print(dedx_Galerkin.subs(x, L/2))
 dedx_colloc = sym.diff(e_colloc, x)
-print dedx_colloc.subs(x, L/2)
+print(dedx_colloc.subs(x, L/2))
 
 # Compute max error: x=L/2, evaluate numerical, and simplify
-print 'Max error Galerkin/least.sq.:', \
-      sym.simplify(e_Galerkin.subs(x, L/2).evalf(n=3))
-print 'Max error colloc.:', \
-      sym.simplify(e_colloc.subs(x, L/2).evalf(n=3))
+print('Max error Galerkin/least.sq.:', \
+      sym.simplify(e_Galerkin.subs(x, L/2).evalf(n=3)))
+print('Max error colloc.:', \
+      sym.simplify(e_colloc.subs(x, L/2).evalf(n=3)))
 import sys
 #sys.exit(0)
 
@@ -27,19 +27,19 @@ i, j = sym.symbols('i j', integer=True)
 integrand = (i+1)*(j+1)*(1-x)**(i+j)
 A_ij = sym.integrate(integrand, (x, 0, 1))
 A_ij = sym.simplify(A_ij)
-print A_ij
+print(A_ij)
 psi_i = (1-x)**(i+1)
 integrand = 2*psi_i - D*(i+1)*(1-x)**i
 b_i = sym.integrate(integrand, (x, 0, 1)) - C*psi_i.subs(x, 0)
 b_i = sym.factor(sym.simplify(b_i))
-print b_i
-print sym.expand(2 - (2+i)*(D+C))
+print(b_i)
+print(sym.expand(2 - (2+i)*(D+C)))
 
 # Solving model2 problem with f(x) and fe1D.py
 from u_xx_f_sympy import model2, x, C, D, L
 m = 2
 u = model2(x**m, L, C, D)
-print u
+print(u)
 #u_exact = lambda x: D + C*(x-L) + (1./6)*(L**3 - x**3)
 u_exact = sym.lambdify([x, C, D, L], u)
 
@@ -76,7 +76,7 @@ c, A, b, timing = finite_element1D_naive(
 from fe1D import u_glob
 x, u, nodes = u_glob(c, cells, vertices, dof_map)
 u_e = u_exact(x, C, D, L)
-print u_exact(nodes, C, D, L) - c  # difference at the nodes
+print(u_exact(nodes, C, D, L) - c)  # difference at the nodes
 import matplotlib.pyplot as plt
 plt.plot(x, u, 'b-', x, u_e, 'r--')
 plt.legend(['finite elements, d=%d' %d, 'exact'], loc='upper left')

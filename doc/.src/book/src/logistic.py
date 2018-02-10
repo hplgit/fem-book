@@ -9,8 +9,8 @@ def FE_logistic(u0, dt, Nt):
 
 def quadratic_roots(a, b, c):
     delta = b**2 - 4*a*c
-    r2 = (-b + sqrt(delta))/float(2*a)
-    r1 = (-b - sqrt(delta))/float(2*a)
+    r2 = (-b + np.sqrt(delta))/float(2*a)
+    r1 = (-b - np.sqrt(delta))/float(2*a)
     return r1, r2
 
 def BE_logistic(u0, dt, Nt, choice='Picard',
@@ -66,7 +66,8 @@ def CN_logistic(u0, dt, Nt):
         u[n+1] = (1 + 0.5*dt)/(1 + dt*u[n] - 0.5*dt)*u[n]
     return u
 
-from scitools.std import *
+import numpy as np
+import matplotlib.pyplot as plt
 
 def quadratic_root_goes_to_infinity():
     """
@@ -77,22 +78,22 @@ def quadratic_root_goes_to_infinity():
         a = dt
         b = 1 - dt
         c = -0.1
-        print dt, quadratic_roots(a, b, c)
+        print(dt, quadratic_roots(a, b, c))
 
 def sympy_analysis():
-    print 'sympy calculations'
+    print('sympy calculations')
     import sympy as sym
     dt, u_1, u = sym.symbols('dt u_1 u')
     r1, r2 = sym.solve(dt*u**2 + (1-dt)*u - u_1, u)
-    print r1
-    print r2
-    print r1.series(dt, 0, 2)
-    print r2.series(dt, 0, 2)
-    print r1.limit(dt, 0)
-    print r2.limit(dt, 0)
+    print(r1)
+    print(r2)
+    print(r1.series(dt, 0, 2))
+    print(r2.series(dt, 0, 2))
+    print(r1.limit(dt, 0))
+    print(r2.limit(dt, 0))
 
 sympy_analysis()
-print '-----------------------------------------------------'
+print('-----------------------------------------------------')
 T = 9
 try:
     dt = float(sys.argv[1])
@@ -113,23 +114,25 @@ u_BE4, iter_BE4 = BE_logistic(0.1, dt, N, 'Newton', eps_r, omega)
 u_CN = CN_logistic(0.1, dt, N)
 
 from numpy import mean
-print 'Picard mean no of iterations (dt=%g):' % dt, int(round(mean(iter_BE3)))
-print 'Newton mean no of iterations (dt=%g):' % dt, int(round(mean(iter_BE4)))
+print('Picard mean no of iterations (dt=%g):' % dt, int(round(mean(iter_BE3))))
+print('Newton mean no of iterations (dt=%g):' % dt, int(round(mean(iter_BE4))))
 
 t = np.linspace(0, dt*N, N+1)
-plot(t, u_FE, t, u_BE2, t, u_BE3, t, u_BE31, t, u_BE4, t, u_CN,
-     legend=['FE', 'BE exact', 'BE Picard', 'BE Picard1', 'BE Newton', 'CN gm'],
-     title='dt=%g, eps=%.0E' % (dt, eps_r), xlabel='t', ylabel='u',
-     legend_loc='lower right')
-filestem = 'logistic_N%d_eps%03d' % (N, log10(eps_r))
-savefig(filestem + '_u.png')
-savefig(filestem + '_u.pdf')
-figure()
-plot(range(1, len(iter_BE3)+1), iter_BE3, 'r-o',
-     range(1, len(iter_BE4)+1), iter_BE4, 'b-o',
-     legend=['Picard', 'Newton'], title='dt=%g, eps=%.0E' % (dt, eps_r),
-     axis=[1, N+1, 0, max(iter_BE3 + iter_BE4)+1],
-     xlabel='Time level', ylabel='No of iterations')
-savefig(filestem + '_iter.png')
-savefig(filestem + '_iter.pdf')
-#raw_input()
+plt.plot(t, u_FE, t, u_BE2, t, u_BE3, t, u_BE31, t, u_BE4, t, u_CN)
+plt.legend(['FE', 'BE exact', 'BE Picard', 'BE Picard1', 'BE Newton', 'CN gm'])
+plt.title('dt=%g, eps=%.0E' % (dt, eps_r))
+plt.xlabel('t')
+plt.ylabel('u')
+filestem = 'logistic_N%d_eps%03d' % (N, np.log10(eps_r))
+plt.savefig(filestem + '_u.png')
+plt.savefig(filestem + '_u.pdf')
+plt.figure()
+plt.plot(list(range(1, len(iter_BE3)+1)), iter_BE3, 'r-o',
+         list(range(1, len(iter_BE4)+1)), iter_BE4, 'b-o')
+plt.legend(['Picard', 'Newton'])
+plt.title('dt=%g, eps=%.0E' % (dt, eps_r))
+plt.axis([1, N+1, 0, max(iter_BE3 + iter_BE4)+1])
+plt.xlabel('Time level')
+plt.ylabel('No of iterations')
+plt.savefig(filestem + '_iter.png')
+plt.savefig(filestem + '_iter.pdf')

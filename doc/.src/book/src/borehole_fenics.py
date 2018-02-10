@@ -80,7 +80,8 @@ def solver(
     vtkfile << u
 
     u.rename('u', 'u'); plot(u); plot(mesh)
-    interactive()
+    import matplotlib.pyplot as plt
+    plt.show()
     return u
 
 def problem():

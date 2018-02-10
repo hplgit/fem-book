@@ -1,5 +1,5 @@
-from scitools.std import plot, savefig, hold, axis, legend
 import numpy as np
+import matplotlib.pyplot as plt
 
 def mesh(N_e, d, Omega=[0,1]):
     """
@@ -121,37 +121,36 @@ def approximate(f, d=1, N_e=4, numint='Gauss-Legendre2',
         
     c = A.LUsolve(b)
 
-    print 'nodes:', nodes
-    print 'elements:', elements
-    print 'A:\n', A
-    print 'b:\n', b
-    print sym.latex(A, mode='plain')
+    print('nodes:', nodes)
+    print('elements:', elements)
+    print('A:\n', A)
+    print('b:\n', b)
+    print(sym.latex(A, mode='plain'))
     #print sym.latex(b, mode='plain')
 
     c = A.LUsolve(b)
-    print 'c:\n', c
-    print 'Plain interpolation:'
+    print('c:\n', c)
+    print('Plain interpolation:')
     x = sym.Symbol('x')
     f = sym.lambdify([x], f, modules='numpy')
     f_at_nodes = [f(xc) for xc in nodes]
-    print f_at_nodes
+    print(f_at_nodes)
     if not symbolic:
         xf = np.linspace(0, 1, 10001)
         U = np.asarray(c)
         xu, u = u_glob(U, elements, nodes)
-        from scitools.std import plot
-        plot(xu, u, 'r-',
-             xf, f(xf), 'b-',
-             legend=('u', 'f'),
-             savefig=filename)
+        plt.plot(xu, u, 'r-',
+                 xf, f(xf), 'b-')
+        plt.legend('u', 'f')
+        plt.savefig(filename)
 
 
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 2:
-        print """Usage %s function arg1 arg2 arg3 ...""" % sys.argv[0]
+        print("""Usage %s function arg1 arg2 arg3 ...""" % sys.argv[0])
         sys.exit(0)
     cmd = '%s(%s)' % (sys.argv[1], ', '.join(sys.argv[2:]))
-    print cmd
+    print(cmd)
     eval(cmd)
 

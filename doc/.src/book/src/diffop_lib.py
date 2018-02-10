@@ -43,15 +43,15 @@ func_list = [ft1, ft2, ft3, f_expiwt, f_expwt]
 import inspect
 
 for func in func_list:
-    print '\n--- Function:', inspect.getsource(func), '---'
+    print('\n--- Function:', inspect.getsource(func), '---')
     for op in op_list:
-        print '\nOperator:', op.__name__
+        print('\nOperator:', op.__name__)
         f = func
         e = op(f)
         e = simplify(expand(e))
-        print 'simplify(expand(operator(function)):', e
+        print('simplify(expand(operator(function)):', e)
         if func in [f_expiwt, f_expwt]:
             e = e/f(t)
         e = e.subs(t, n*dt)
-        print 't -> n*dt:', expand(e)
-        print 'factor(simplify(expand(e))):', factor(simplify(expand(e)))
+        print('t -> n*dt:', expand(e))
+        print('factor(simplify(expand(e))):', factor(simplify(expand(e))))

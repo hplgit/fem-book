@@ -1,5 +1,7 @@
 import sympy as sym 
-import numpy, pylab 
+import mpmath
+import numpy
+import pylab
 import time
 
 def lagrange_series(N): 
@@ -37,7 +39,7 @@ def sin_series(N):
 
 def taylor_series(N): 
   # FIXME: do not satisfy bc  
-  print "Cannot with current BC implementation" 
+  print("Cannot with current BC implementation") 
   return 
   psi = []
   for k in range(1,N): 
@@ -50,7 +52,7 @@ def series(series_type, N):
   elif series_type=="sin"  : return sin_series(N)
   elif series_type=="Bernstein"  : return bernstein_series(N)
   elif series_type=="Lagrange"  : return lagrange_series(N)
-  else: print "series type unknown " # sys.exit(0)
+  else: print("series type unknown ") # sys.exit(0)
 
 
 
@@ -78,7 +80,7 @@ for N in Ns:
       if integrand_type == "mass": integrand = bpsi[i]*bpsi[j] 
       if integrand_type == "stiffness": integrand = sym.diff(bpsi[i],x)*sym.diff(bpsi[j],x) 
       integrand = sym.lambdify([x], integrand)
-      A[i,j] = sym.mpmath.quad(integrand, [0, 1]) 
+      A[i,j] = mpmath.quad(integrand, [0, 1]) 
   t1 = time.time()
   bqtime.append(t1-t0)
 
@@ -92,7 +94,7 @@ for N in Ns:
       if integrand_type == "mass": integrand = lpsi[i]*lpsi[j] 
       if integrand_type == "stiffness" : integrand = sym.diff(lpsi[i],x)*sym.diff(lpsi[j],x) 
       integrand = sym.lambdify([x], integrand)
-      A[i,j] = sym.mpmath.quad(integrand, [0,1]) 
+      A[i,j] = mpmath.quad(integrand, [0,1]) 
   t1 = time.time()
   lqtime.append(t1-t0)
  
@@ -123,10 +125,10 @@ for N in Ns:
   lstime.append(t1-t0)
  
  
-print "Berstein quadrature ", bqtime
-print "Lagrange quadrature ", lqtime
-print "Bernstein symbolic ", bstime
-print "Lagrange symbolic ", lstime
+print("Berstein quadrature ", bqtime)
+print("Lagrange quadrature ", lqtime)
+print("Bernstein symbolic ", bstime)
+print("Lagrange symbolic ", lstime)
 
 import pylab 
 pylab.loglog(Ns, bqtime)

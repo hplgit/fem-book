@@ -1,5 +1,6 @@
 import sympy as sym 
-import numpy, pylab 
+import numpy
+import pylab
 import time
 
 def lagrange_series(N): 
@@ -37,7 +38,7 @@ def sin_series(N):
 
 def taylor_series(N): 
   # FIXME: do not satisfy bc  
-  print "Cannot with current BC implementation" 
+  print("Cannot with current BC implementation") 
   return 
   psi = []
   for k in range(1,N): 
@@ -50,7 +51,7 @@ def series(series_type, N):
   elif series_type=="sin"  : return sin_series(N)
   elif series_type=="Bernstein"  : return bernstein_series(N)
   elif series_type=="Lagrange"  : return lagrange_series(N)
-  else: print "series type unknown " # sys.exit(0)
+  else: print("series type unknown ") # sys.exit(0)
 
 
 
@@ -59,7 +60,6 @@ x = sym.Symbol("x")
 h= 0.001
 X = numpy.arange(0, 1, h)
 psi = series("Bernstein", 8)
-import pylab 
 for i in range(len(psi)): 
   psii = sym.lambdify([x], psi[i])
   psiii = psii(X)
@@ -67,7 +67,6 @@ for i in range(len(psi)):
 pylab.show()
 
 psi = series("Lagrange", 8)
-import pylab 
 for i in range(len(psi)): 
   psii = sym.lambdify([x], psi[i])
   psiii = psii(X)

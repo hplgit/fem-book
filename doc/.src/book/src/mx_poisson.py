@@ -30,7 +30,7 @@ def series(series_type, N):
   if series_type=="Taylor" : return taylor_series(N)
   elif series_type=="sin"  : return sin_series(N)
   elif series_type=="bernstein"  : return bernstein_series(N)
-  else: print "series type unknown " # sys.exit(0)
+  else: print("series type unknown ") # sys.exit(0)
 
 
 N = 10 
@@ -61,35 +61,36 @@ for i in range(0, N+1):
 
 for i in range(0, N+1):  
   integrand = f*psi[i]
-  print integrand
+  print(integrand)
   b[i,0] = integrate(integrand, (x, Omega[0], Omega[1])) 
 
 for i in range(0, M+1):  
   integrand = g*eta[i]
-  print integrand
+  print(integrand)
   b[N+1+i,0] = integrate(integrand, (x, Omega[0], Omega[1])) 
 
 
    
 
 # bc 
-A[0,:] = zeros((1,N+1+M+1)) 
+A[0,:] = zeros(1,N+1+M+1)
 A[0,0] = 1 
 b[0] = 1 
 
-A[N,:] = zeros((1,N+1+M+1)) 
+A[N,:] = zeros(1,N+1+M+1)
 A[N,N] = 1 
 b[N] = 0 
 
 
-print A
+print(A)
 
 #c = A.LUsolve(b)
+# FIXME: pinvsolve does not work and there is no info about this function
 c = A.pinvsolve(b)
-print c 
+print(c) 
 u = sum(c[r,0]*psi[r] for r in range(N+1))
 
-print u 
+print(u) 
 
 
 import numpy, pylab 

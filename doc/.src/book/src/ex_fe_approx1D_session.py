@@ -10,13 +10,13 @@ x, L = sym.symbols('x L')
 #A_ij = sym.integrate(sym.sin((i+1)*sym.pi*x/L)*sym.sin((j+1)*sym.pi*x/L),
 #                    (x, 0, L))
 A_ii = sym.integrate(sym.sin((i+1)*sym.pi*x/L)**2, (x, 0, L))
-print A_ii
+print(A_ii)
 f = 2
 a = 2*L/(sym.pi**2*(i+1)**2)
 c_i = a*sym.integrate(f*sym.sin((i+1)*sym.pi*x/L), (x, 0, L))
 c_i = sym.simplify(c_i)
-print c_i
-print sym.latex(c_i, mode='plain')
+print(c_i)
+print(sym.latex(c_i, mode='plain'))
 #sys.exit(0)
 
 x, x_m, h, X = sym.symbols('x x_m h X')
@@ -24,30 +24,30 @@ x, x_m, h, X = sym.symbols('x x_m h X')
 from fe_approx1D_numint import *
 c = approximate(sym.sin(x), symbolic=True, d=1, N_e=4, numint='Trapezoidal',
                 Omega=[0,sym.pi])
-print c
+print(c)
 c = approximate(sym.sin(x), symbolic=True, d=1, N_e=4, numint='Simpson',
                 Omega=[0,sym.pi])
-print c
+print(c)
 #sys.exit(0)
 from fe_approx1D import *
 
 # "Hand"-integration of element matrix and vector
 A_00 = sym.integrate(h/8*(1-X)**2, (X, -1, 1))
-print A_00
-print sym.latex(A_00, mode='plain')
+print(A_00)
+print(sym.latex(A_00, mode='plain'))
 A_10 = sym.integrate(h/8*(1+X)*(1-X), (X, -1, 1))
-print A_10
-print sym.latex(A_10, mode='plain')
+print(A_10)
+print(sym.latex(A_10, mode='plain'))
 A_11 = sym.integrate(h/8*(1+X)**2, (X, -1, 1))
-print A_11
-print sym.latex(A_11, mode='plain')
+print(A_11)
+print(sym.latex(A_11, mode='plain'))
 x = x_m + h/2*X
 b_0 = sym.integrate(h/4*x*(1-x)*(1-X), (X, -1, 1))
 b_1 = sym.integrate(h/4*x*(1-x)*(1+X), (X, -1, 1))
-print b_0
-print b_1
-print sym.latex(b_0, mode='plain')
-print sym.latex(b_1, mode='plain')
+print(b_0)
+print(b_1)
+print(sym.latex(b_0, mode='plain'))
+print(sym.latex(b_1, mode='plain'))
 
 phi = basis(d=1)
 phi
@@ -91,10 +91,10 @@ A
 from fe_approx1D_numint import *
 c = approximate(sym.sin(x), symbolic=True, d=1, N_e=4, numint='Trapezoidal',
                 Omega=[0,sym.pi])
-print c
+print(c)
 c = approximate(sym.sin(x), symbolic=True, d=1, N_e=4, numint='Simpson',
                 Omega=[0,sym.pi])
-print c
+print(c)
 
 # The integration does not work with sin(pi*x), but works fine with
 # sin(x) on [0,pi] instead.
@@ -102,5 +102,5 @@ print c
 #            Omega=[0,1])
 c = approximate(sym.sin(x), symbolic=True, d=1, N_e=2, numint=None,
                 Omega=[0,sym.pi])
-print sym.simplify(c[1,0].subs('h', sym.pi/2))
+print(sym.simplify(c[1,0].subs('h', sym.pi/2)))
 

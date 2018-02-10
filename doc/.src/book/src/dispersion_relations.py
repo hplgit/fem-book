@@ -35,8 +35,6 @@ for method in methods:
             legends.append('F=%s, FEM' % F_name)
             legends.append('F=%s, FDM' % F_name)
             plt.plot(p, A_FEM, p, A_FDM)
-            #hold('on')
-            plt.hold(True)
         plt.plot(p, A_e)
         legends.append('exact')
         plt.legend(legends, loc='lower left')
@@ -48,4 +46,3 @@ for method in methods:
                    ('coarse' if F_values == F_values_coarse else 'fine', method)
         plt.savefig(filestem + '.png')
         plt.savefig(filestem + '.pdf')
-raw_input()
