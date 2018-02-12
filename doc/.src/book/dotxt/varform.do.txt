@@ -5759,8 +5759,6 @@ tools for the analysis. These tools are based on converting finite
 element equations to finite difference form and studying Fourier wave
 components.
 
-[kam: This is really two remarks in one and we can split
-and put them in more appropriate place. Time is dealt with later. ]
 
 === Abstract variational forms ===
 
