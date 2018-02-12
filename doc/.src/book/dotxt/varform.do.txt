@@ -1919,7 +1919,7 @@ The application can be coded as follows with `sympy`:
 
 !bc pycod
 import sympy as sym
-x, b = sym.symbols('x b')
+x, b = sym.symbols("x b")
 f = b
 B = 1 - x**3
 dBdx = sym.diff(B, x)
@@ -1938,16 +1938,12 @@ def integrand_rhs(psi, i):
 Omega = [0, 1]
 
 from varform1D import solver
-u_bar, c = solver(integrand_lhs, integrand_rhs, psi, Omega,
+u_bar = solver(integrand_lhs, integrand_rhs, psi, Omega,
                   verbose=True, symbolic=True)
 u = B + u_bar
-print 'solution u:', sym.simplify(sym.expand(u))
+print ("solution u:", sym.simplify(sym.expand(u)))
 !ec
 
-[kam: does not work]
-[hpl: We must get it to work. It's a small extension of the
-code for approximation and very natural to include when we have so much
-material already on `sympy` for implementing algorithms.]
 
 The printout of `u` reads `-b*x**2/2 + b*x/2 - x + 1`.  Note that
 expanding `u`, before simplifying, is necessary in the present case to
