@@ -23,10 +23,10 @@ def least_squares(f, psi, Omega):
     psi_sym = psi[:]  # take a copy, needed for forming u later
     psi = [sym.lambdify([x, y, z], psi[i]) for i in range(len(psi))]
 
-    print '...evaluating matrix...'
+    print('...evaluating matrix...')
     for i in range(N+1):
         for j in range(i, N+1):
-            print '(%d,%d)' % (i, j)
+            print('(%d,%d)' % (i, j))
 
             integrand = lambda x, y, z: psi[i](x,y,z)*psi[j](x,y,z)
             I, err = scipy.integrate.nquad(
@@ -42,13 +42,13 @@ def least_squares(f, psi, Omega):
              [Omega[1][0], Omega[1][1]],
              [Omega[2][0], Omega[2][1]]])
         b[i] = I
-    print
+    print()
     c = np.linalg.solve(A, b)
     if N <= 10:
-        print 'A:\n', A, '\nb:\n', b
-        print 'coeff:', c
+        print('A:\n', A, '\nb:\n', b)
+        print('coeff:', c)
     u = sum(c[i]*psi_sym[i] for i in range(len(psi_sym)))
-    print 'approximation:', u
+    print('approximation:', u)
     return u, c
 
 def sine_basis(Nx, Ny, Nz):
@@ -78,7 +78,7 @@ def test_least_squares():
     # Check that u exactly reproduces f
     u, c = least_squares(f, psi, Omega=[[0,1], [0,1], [0,1]])
     diff = np.abs(np.array(c) - np.array(f_coeff)).max()
-    print 'diff:', diff
+    print('diff:', diff)
     tol = 1E-15
     assert diff < tol
 

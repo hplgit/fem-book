@@ -763,8 +763,8 @@ import sympy as sym
 
 def least_squares(f, psi, Omega):
     N = len(psi) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     x = sym.Symbol('x')
     for i in range(N+1):
         for j in range(i, N+1):
@@ -818,8 +818,8 @@ the `least_squares` function such that it falls back on
 numerical integration if the symbolic integration is unsuccessful.
 In the latter case, the returned value from `sympy`'s
 `integrate` function is an object of type `Integral`.
-We can test on this type and utilize the `mpmath` module in
-`sympy` to perform numerical integration of high precision.
+We can test on this type and utilize the `mpmath` module
+to perform numerical integration of high precision.
 Even when `sympy` manages to integrate symbolically, it can
 take an undesirable long time. We therefore include an
 argument `symbolic` that governs whether or not to try
@@ -829,8 +829,8 @@ improved version of the previous function `least_squares`:
 !bc pycod
 def least_squares(f, psi, Omega, symbolic=True):
     N = len(psi) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     x = sym.Symbol('x')
     for i in range(N+1):
         for j in range(i, N+1):
@@ -838,22 +838,26 @@ def least_squares(f, psi, Omega, symbolic=True):
             if symbolic:
                 I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
             if not symbolic or isinstance(I, sym.Integral):
-                # Could not integrate symbolically,
-                # fall back on numerical integration
-                integrand = sym.lambdify([x], integrand)
-                I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+                # Could not integrate symbolically, use numerical int.
+                integrand = sym.lambdify([x], integrand, 'mpmath')
+                I = mpmath.quad(integrand, [Omega[0], Omega[1]])
             A[i,j] = A[j,i] = I
 
         integrand = psi[i]*f
         if symbolic:
             I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
         if not symbolic or isinstance(I, sym.Integral):
-            integrand = sym.lambdify([x], integrand)
-            I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            # Could not integrate symbolically, use numerical int.
+            integrand = sym.lambdify([x], integrand, 'mpmath')
+            I = mpmath.quad(integrand, [Omega[0], Omega[1]])
         b[i,0] = I
-    c = A.LUsolve(b)  # symbolic solve
-    # c is a sympy Matrix object, numbers are in c[i,0]
-    c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
+    if symbolic:
+        c = A.LUsolve(b)  # symbolic solve
+        # c is a sympy Matrix object, numbers are in c[i,0]
+        c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
+    else:
+        c = mpmath.lu_solve(A, b)  # numerical solve
+        c = [c[i,0] for i in range(c.rows)]
     u = sum(c[i]*psi[i] for i in range(len(psi)))
     return u, c
 !ec
@@ -928,9 +932,9 @@ The answer is quickly found by running
 >>> x = sym.Symbol('x')
 >>> f = 10*(x-1)**2-1
 >>> u, c = least_squares(f=f, psi=[1, x, x**2], Omega=[1, 2])
->>> print u
+>>> print(u)
 10*x**2 - 20*x + 9
->>> print sym.expand(f)
+>>> print(sym.expand(f))
 10*x**2 - 20*x + 9
 !ec
 
@@ -1204,7 +1208,7 @@ FIGURE: [fig/noisy_parabola_by_linear_regression, width=800]  Approximation of a
 We can fit a parabola instead of a straight line, as done in
 Figure ref{fem:approx:global:linear:regression:fig3}. When $m$ becomes large,
 the fitted parabola and the original parabola without noise become very close.
-# python ex_approx1D.py run_noisy_parabola_by_quaddratic_regression
+# python ex_approx1D.py run_noisy_parabola_by_quadratic_regression
 
 FIGURE: [fig/noisy_parabola_by_quadratic_regression, width=800]  Approximation of a parabola with noise by a parabola.  label{fem:approx:global:linear:regression:fig3}
 
@@ -1297,8 +1301,8 @@ column while the other columns correspond to results obtained
 by three different methods:
 
   * Column 2: The matrix and vector are converted to
-    the data structure  `sympy.mpmath.fp.matrix` and the
-    `sympy.mpmath.fp.lu_solve` function is used to solve the system.
+    the data structure  `mpmath.fp.matrix` and the
+    `mpmath.fp.lu_solve` function is used to solve the system.
   * Column 3: The matrix and vector are converted to
     `numpy` arrays with data type `numpy.float32`
     (single precision floating-point number) and solved by
@@ -1524,13 +1528,13 @@ def least_squares_orth(f, psi, Omega, symbolic=True):
         if symbolic:
             I = sym.integrate(integrand,  (x, Omega[0], Omega[1]))
         if not symbolic or isinstance(I, sym.Integral):
-            print 'numerical integration of', integrand
-            integrand = sym.lambdify([x], integrand)
-            I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            print('numerical integration of', integrand)
+            integrand = sym.lambdify([x], integrand, 'mpmath')
+            I = mpmath.quad(integrand, [Omega[0], Omega[1]])
         b[i] = I
     c = [b[i]/A[i] for i in range(len(b))]
     u = 0
-    u = sum(c[i,0]*psi[i] for i in range(len(psi)))
+    u = sum(c[i]*psi[i] for i in range(len(psi)))
     return u, c
 !ec
 This function is found in the file `approx1D.py`. Observe that
@@ -1557,7 +1561,7 @@ as input. The output is a mesh function
 with values `u` on the mesh with points in the array `x`.
 Three numerical integration methods are offered:
 `scipy.integrate.quad` (precision set to $10^{-8}$),
-`sympy.mpmath.quad` (about machine precision), and a Trapezoidal
+`mpmath.quad` (about machine precision), and a Trapezoidal
 rule based on the points in `x` (unknown accuracy, but
 increasing with the number of mesh points in `x`).
 
@@ -1569,18 +1573,18 @@ def least_squares_numerical(f, psi, N, x,
     A = np.zeros((N+1, N+1))
     b = np.zeros(N+1)
     Omega = [x[0], x[-1]]
-    dx = x[1] - x[0]
+    dx = x[1] - x[0]       # assume uniform partition
 
     for i in range(N+1):
         j_limit = i+1 if orthogonal_basis else N+1
         for j in range(i, j_limit):
-            print '(%d,%d)' % (i, j)
+            print('(%d,%d)' % (i, j))
             if integration_method == 'scipy':
                 A_ij = scipy.integrate.quad(
                     lambda x: psi(x,i)*psi(x,j),
                     Omega[0], Omega[1], epsabs=1E-9, epsrel=1E-9)[0]
             elif integration_method == 'sympy':
-                A_ij = sym.mpmath.quad(
+                A_ij = mpmath.quad(
                     lambda x: psi(x,i)*psi(x,j),
                     [Omega[0], Omega[1]])
             else:
@@ -1593,7 +1597,7 @@ def least_squares_numerical(f, psi, N, x,
                 lambda x: f(x)*psi(x,i), Omega[0], Omega[1],
                 epsabs=1E-9, epsrel=1E-9)[0]
         elif integration_method == 'sympy':
-            b_i = sym.mpmath.quad(
+            b_i = mpmath.quad(
                 lambda x: f(x)*psi(x,i), [Omega[0], Omega[1]])
         else:
             values = f(x)*psi(x,i)
@@ -1624,7 +1628,7 @@ u, c = least_squares_numerical(lambda x: tanh(x-pi), psi, N, x,
 
 __Remark.__
 The `scipy.integrate.quad` integrator is usually much faster than
-`sympy.mpmath.quad`.
+`mpmath.quad`.
 
 !split
 ======= Interpolation =======
@@ -1681,13 +1685,12 @@ for the coefficients $\sequencei{c}$:
 !bc pycod
 def interpolation(f, psi, points):
     N = len(psi) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     psi_sym = psi  # save symbolic expression
-    # Turn psi and f into Python functions
     x = sym.Symbol('x')
-    psi = [sym.lambdify([x], psi[i]) for i in range(N+1)]
-    f = sym.lambdify([x], f)
+    psi = [sym.lambdify([x], psi[i], 'mpmath') for i in range(N+1)]
+    f = sym.lambdify([x], f, 'mpmath')
     for i in range(N+1):
         for j in range(N+1):
             A[i,j] = psi[j](points[i])
@@ -1695,7 +1698,7 @@ def interpolation(f, psi, points):
     c = A.LUsolve(b)
     # c is a sympy Matrix object, turn to list
     c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
-    u = sym.simplify(sum(c[i,0]*psi_sym[i] for i in range(N+1)))
+    u = sym.simplify(sum(c[i]*psi_sym[i] for i in range(N+1)))
     return u, c
 !ec
 The `interpolation` function is a part of the `approx1D`
@@ -2061,8 +2064,8 @@ integration.
 !bc pycod
 def least_squares(f, psi, Omega):
     N = len(psi) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     x = sym.Symbol('x')
     for i in range(N+1):
         for j in range(i, N+1):
@@ -2071,14 +2074,14 @@ def least_squares(f, psi, Omega):
             if isinstance(I, sym.Integral):
                 # Could not integrate symbolically, fall back
                 # on numerical integration with mpmath.quad
-                integrand = sym.lambdify([x], integrand)
-                I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+                integrand = sym.lambdify([x], integrand, 'mpmath')
+                I = mpmath.quad(integrand, [Omega[0], Omega[1]])
             A[i,j] = A[j,i] = I
         integrand = psi[i]*f
         I = sym.integrate(integrand, (x, Omega[0], Omega[1]))
         if isinstance(I, sym.Integral):
-            integrand = sym.lambdify([x], integrand)
-            I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            integrand = sym.lambdify([x], integrand, 'mpmath')
+            I = mpmath.quad(integrand, [Omega[0], Omega[1]])
         b[i,0] = I
     c = A.LUsolve(b)
     c = [sym.simplify(c[i,0]) for i in range(c.shape[0])]
@@ -2246,7 +2249,7 @@ step = sym.Piecewise((1, 0.25 < x), (0, True)) - \
        sym.Piecewise((1, 0.75 < x), (0, True))
 func = gaussian_bell
 
-import pylab
+import pylab as plt
 series_types = ["Taylor", "Sinusoidal", "Bernstein", "Lagrange"]
 for series_type in series_types:
     N_values, norms, cpu_times = \
@@ -2367,20 +2370,20 @@ x = sym.Symbol('x')
 psi = [1, x]
 
 u, c = regression_with_noise(log2(Sinusoidal), psi, log2(N_values))
-print "estimated model for sine: %3.2e*N**(%3.2e)" % \
-      (2**(c[0]), c[1])
+print("estimated model for sine: %3.2e*N**(%3.2e)" % \
+      (2**(c[0]), c[1]))
 
 # Check the numbers estimated by the model by manual inspection
 for N in N_values:
-    print 2**c[0] * N**c[1]
+    print(2**c[0] * N**c[1])
 
 u, c = regression_with_noise(log(Bernstein), psi, N_values)
-print "estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % \
-      (exp(c[0]), c[1])
+print("estimated model for Bernstein: %3.2e*exp(%3.2e*N)" % \
+      (exp(c[0]), c[1]))
 
 # Check the numbers estimated by the model by manual inspection
 for N in N_values:
-    print exp(c[0]) * exp(N * c[1])
+    print(exp(c[0]) * exp(N * c[1]))
 !ec
 
 The program estimates the sine approximation convergences as
@@ -2695,7 +2698,7 @@ def integral(integrand):
   return I
 
 basis = [1, x, y, x*y]
-A = sym.Matrix(sym.zeros([4,4]))
+A = sym.Matrix(sym.zeros(4,4))
 
 for i in range(len(basis)):
   psi_i = basis[i]
@@ -2733,13 +2736,13 @@ The 2D version of numerical integration becomes
 
 !bc pycod
 if isinstance(I, sym.Integral):
-    integrand = sym.lambdify([x,y], integrand)
-    I = sym.mpmath.quad(integrand,
-                       [Omega[0][0], Omega[0][1]],
-                       [Omega[1][0], Omega[1][1]])
+    integrand = sym.lambdify([x,y], integrand, 'mpmath')
+    I = mpmath.quad(integrand,
+                    [Omega[0][0], Omega[0][1]],
+                    [Omega[1][0], Omega[1][1]])
 !ec
 The right-hand side integrals are modified in a similar way.
-(We should add that `sympy.mpmath.quad` is sufficiently fast
+(We should add that `mpmath.quad` is sufficiently fast
 even in 2D, but `scipy.integrate.nquad` is much faster.)
 
 Third, we must construct a list of 2D basis functions. Here are two
@@ -2766,9 +2769,9 @@ a bilinear function can be computed symbolically by
 >>> psi = taylor(x, y, 1, 1)
 >>> Omega = [[0, 2], [0, 2]]
 >>> u, c = least_squares(f, psi, Omega)
->>> print u
+>>> print(u)
 8*x*y - 2*x/3 + 4*y/3 - 1/9
->>> print sym.expand(f)
+>>> print(sym.expand(f))
 2*x**2*y**2 + x**2 + 2*y**2 + 1
 !ec
 We may continue with adding higher powers to the basis:
@@ -2776,9 +2779,9 @@ We may continue with adding higher powers to the basis:
 !bc ipy
 >>> psi = taylor(x, y, 2, 2)
 >>> u, c = least_squares(f, psi, Omega)
->>> print u
+>>> print(u)
 2*x**2*y**2 + x**2 + 2*y**2 + 1
->>> print u-f
+>>> print(u-f)
 0
 !ec
 For $N_x\geq 2$ and $N_y\geq 2$ we recover the exact function $f$, as
@@ -3189,7 +3192,7 @@ coefficient matrix has entries $A_{i,j}=\int_0^1\baspsi_i\baspsi_j\dx$
 and the right-hand side has entries $b_i=\int_0^1\baspsi_i\dx$.
 We can use `sympy` do carry out the integrals:
 
-@@@CODE exer/parabola_sin.py fromto: # Do the calculat@print sym\.latex
+@@@CODE exer/parabola_sin.py fromto: # Do the calculat@print(sym\.latex
 Looking at the results, we get the linear system
 
 !bt
@@ -4791,7 +4794,7 @@ h/3
 h/6
 >>> x = x_m + h/2*X
 >>> b_0 = sym.integrate(h/4*x*(1-x)*(1-X), (X, -1, 1))
->>> print b_0
+>>> print(b_0)
 -h**3/24 + h**2*x_m/6 - h**2/12 - h*x_m**2/2 + h*x_m/2
 !ec
 
@@ -4801,7 +4804,7 @@ For inclusion of formulas in documents (like the present one), `sympy` can print
 expressions in LaTeX format:
 
 !bc ipy
->>> print sym.latex(b_0, mode='plain')
+>>> print(sym.latex(b_0, mode='plain'))
 - \frac{1}{24} h^{3} + \frac{1}{6} h^{2} x_{m}
 - \frac{1}{12} h^{2} - \half h x_{m}^{2}
 + \half h x_{m}
@@ -4884,7 +4887,7 @@ with a list of symbolic expressions for $\basphi_r$
 !bc pycod
 def element_matrix(phi, Omega_e, symbolic=True):
     n = len(phi)
-    A_e = sym.zeros((n, n))
+    A_e = sym.zeros(n, n)
     X = sym.Symbol('X')
     if symbolic:
         h = sym.Symbol('h')
@@ -4924,7 +4927,7 @@ procedure:
 !bc pycod
 def element_vector(f, phi, Omega_e, symbolic=True):
     n = len(phi)
-    b_e = sym.zeros((n, 1))
+    b_e = sym.zeros(n, 1)
     # Make f a function of X
     X = sym.Symbol('X')
     if symbolic:
@@ -4962,8 +4965,8 @@ def element_vector(f, phi, Omega_e, symbolic=True):
         if not symbolic or isinstance(I, sym.Integral):
             h = Omega_e[1] - Omega_e[0]  # Ensure h is numerical
             detJ = h/2
-            integrand = sym.lambdify([X], f*phi[r]*detJ)
-            I = sym.mpmath.quad(integrand, [-1, 1])
+            integrand = sym.lambdify([X], f*phi[r]*detJ, 'mpmath')
+            I = mpmath.quad(integrand, [-1, 1])
         b_e[r] = I
         ...
 !ec
@@ -4984,8 +4987,8 @@ takes the following form
 def assemble(nodes, elements, phi, f, symbolic=True):
     N_n, N_e = len(nodes), len(elements)
     if symbolic:
-        A = sym.zeros((N_n, N_n))
-        b = sym.zeros((N_n, 1))    # note: (N_n, 1) matrix
+        A = sym.zeros(N_n, N_n)
+        b = sym.zeros(N_n, 1)    # note: (N_n, 1) matrix
     else:
         A = np.zeros((N_n, N_n))
         b = np.zeros(N_n)
@@ -6637,7 +6640,7 @@ def problem():
     u2.rename('u2', 'u2')
     u2_error = errornorm(f, u2, 'L2')
 
-    print 'L2 errors: e1=%g, e2=%g' % (u1_error, u2_error)
+    print('L2 errors: e1=%g, e2=%g' % (u1_error, u2_error))
     # Simple plotting
     plot(f, title='f', mesh=mesh)
     plot(u1, title='u1')
@@ -6709,13 +6712,13 @@ Here is how we can specify `f` in SymPy and use it in FEniCS as an
 >>> import sympy as sym
 >>> x, y = sym.symbols('x[0] x[1]')
 >>> f = 2*x*y - x**2
->>> print f
+>>> print(f)
 -x[0]**2 + 2*x[0]*x[1]
 >>> f = sym.printing.ccode(f)   # Translate to C code
->>> print f
+>>> print(f)
 -pow(x[0], 2) + 2*x[0]*x[1]
 >>> import fenics as fe
->>> f = fe.Expression(f)
+>>> f = fe.Expression(f, degree=2)
 !ec
 Here, the function `ccode` generates C code and we use
 `x` and `y` as placeholders for
@@ -6793,12 +6796,12 @@ we want to integrate the function above with following type of computations:
 
 !bc pycod
 import fenics as fe
-f = fe.Expression('2*x[0]*x[1] - pow(x[0], 2)')
+f = fe.Expression('2*x[0]*x[1] - pow(x[0], 2)', degree=2)
 mesh = fe.RectangleMesh(fe.Point(1,-1), fe.Point(2,1), 2, 2)
 V = fe.FunctionSpace(mesh, 'P', 2)
 u = fe.project(f, V)
 err = fe.errornorm(f, u, 'L2')
-print err
+print(err)
 !ec
 However, we can now easily compare different type of elements and
 mesh resolutions:
@@ -7405,7 +7408,7 @@ implementation.
 
 !bhint
 Drop symbolic integration since it is in general too slow for 3D problems.
-Also use `scipy.integrate.nquad` instead of `sympy.mpmath.quad`
+Also use `scipy.integrate.nquad` instead of `mpmath.quad`
 for numerical integration, since it is much faster.
 !ehint
 
@@ -7414,7 +7417,7 @@ We take a copy of `approx2D.py` and drop the `comparison_plot` function since
 plotting in 3D is much more complicated (could make a special version with
 curves through lines in the 3D domain, for instance).
 Furthermore, we remove the lines with symbolic integration and replace
-the calls to `sym.mpmath.quad` by calls to
+the calls to `mpmath.quad` by calls to
 `scipy.integrate.nquad`. The resulting function becomes
 
 @@@CODE exer/approx3D.py fromto: import sympy@def sine_basis

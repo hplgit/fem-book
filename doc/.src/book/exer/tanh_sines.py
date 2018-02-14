@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-approx'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 import sympy as sym
 from approx1D import least_squares_orth, comparison_plot
 import matplotlib.pyplot as plt

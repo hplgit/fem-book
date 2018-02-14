@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-approx'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 import sympy as sym
 from approx1D import least_squares, comparison_plot
 from math import pi
@@ -39,7 +39,7 @@ for V, psi in enumerate(psi_bases):
                             (N, V, k, domain_no) + ext
                             for k in range(2, 6)]) + \
                   ' sin_powers_N%d_V%d_Omega%d.' % (N, V, domain_no) + ext
-            print cmd
+            print(cmd)
             os.system(cmd)
 
 # Show the standard Taylor series approximation

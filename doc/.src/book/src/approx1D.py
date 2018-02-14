@@ -177,14 +177,13 @@ def least_squares_numerical(f, psi, N, x,
     numerically. integration_method can be `scipy` or `trapezoidal`
     (the latter uses x as mesh for evaluating f).
     """
+    import scipy.integrate
     A = np.zeros((N+1, N+1))
     b = np.zeros(N+1)
     if not callable(f) or not callable(psi):
         raise TypeError('f and psi must be callable Python functions')
     Omega = [x[0], x[-1]]
     dx = x[1] - x[0]       # assume uniform partition
-
-    import scipy.integrate
 
     print('...evaluating matrix...', end=' ')
     for i in range(N+1):
@@ -232,7 +231,7 @@ def interpolation(f, psi, points):
     b = sym.zeros(N+1, 1)
     # Wrap psi and f in Python functions rather than expressions
     # so that we can evaluate psi at points[i] (alternative to subs?)
-    psi_sym = psi # save symbolic expression
+    psi_sym = psi  # save symbolic expression
     x = sym.Symbol('x')
     psi = [sym.lambdify([x], psi[i], 'mpmath') for i in range(N+1)]
     f = sym.lambdify([x], f, 'mpmath')
