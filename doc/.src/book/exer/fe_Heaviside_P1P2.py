@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-approx'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 from fe_approx1D_numint import mesh_uniform, u_glob
 from fe_approx1D import basis
 import numpy as np
@@ -31,7 +31,6 @@ def element_vector(f, phi, Omega_e, numint):
 
 
 def assemble(vertices, cells, dof_map, phi, f, numint):
-    import sets
     N_n = len(list(set(np.array(dof_map).ravel())))
     N_e = len(cells)
     A = np.zeros((N_n, N_n))
@@ -40,8 +39,8 @@ def assemble(vertices, cells, dof_map, phi, f, numint):
         Omega_e = [vertices[cells[e][0]], vertices[cells[e][1]]]
         A_e = element_matrix(phi[e], Omega_e, numint)
         b_e = element_vector(f, phi[e], Omega_e, numint)
-        #print 'element', e
-        #print b_e
+        #print('element', e)
+        #print(b_e)
         for r in range(len(dof_map[e])):
             for s in range(len(dof_map[e])):
                 A[dof_map[e][r],dof_map[e][s]] += A_e[r,s]
@@ -82,8 +81,8 @@ def approximate(f, d, N_e, numint, Omega=[0,1], filename='tmp'):
                   [ 0.23692689,  0.47862867,  0.56888889,
                     0.47862867,  0.23692689]]
     elif numint is not None:
-        print 'Numerical rule %s is not supported '\
-              'for numerical computing' % numint
+        print('Numerical rule %s is not supported '\
+              'for numerical computing' % numint)
         sys.exit(1)
 
 
@@ -99,13 +98,13 @@ def approximate(f, d, N_e, numint, Omega=[0,1], filename='tmp'):
     A, b = assemble(vertices, cells, dof_map, phi, f,
                     numint=numint)
 
-    print 'cells:', cells
-    print 'vertices:', vertices
-    print 'dof_map:', dof_map
-    print 'A:\n', A
-    print 'b:\n', b
+    print('cells:', cells)
+    print('vertices:', vertices)
+    print('dof_map:', dof_map)
+    print('A:\n', A)
+    print('b:\n', b)
     c = np.linalg.solve(A, b)
-    print 'c:\n', c
+    print('c:\n', c)
 
     if filename is not None:
         title = 'P%d, N_e=%d' % (d, N_e)
@@ -141,7 +140,7 @@ def exercise():
             cmd += ' '.join(['fe_Heaviside_P%d_%de' % (d, N_e)
                              for N_e in N_e_values])
             cmd += ' fe_Heaviside_P%d' % d
-            print cmd
+            print(cmd)
             os.system(cmd)
 
 if __name__ == '__main__':

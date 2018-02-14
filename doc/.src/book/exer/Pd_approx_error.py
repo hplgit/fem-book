@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-approx'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 from fe_approx1D_numint import approximate, mesh_uniform, u_glob
 from sympy import sqrt, exp, sin, Symbol, lambdify, simplify
 import numpy as np
@@ -31,7 +31,7 @@ for case in cases:
                     d=d, N_e=N_e, Omega=Omega,
                     filename='tmp_%s_d%d_e%d' % (case, d, N_e))
             except np.linalg.linalg.LinAlgError as e:
-                print str(e)
+                print(str(e))
                 continue
             vertices, cells, dof_map = mesh_uniform(
                 N_e, d, Omega, symbolic=False)
@@ -54,8 +54,8 @@ for case in cases:
             r = log(E[i+1]/E[i])/log(h[i+1]/h[i])
             results[case][d]['r'].append(round(r, 2))
 
-print results
+print(results)
 for case in results:
     for d in sorted(results[case]):
-        print 'case=%s d=%d, r: %s' % \
-              (case, d, results[case][d]['r'])
+        print('case=%s d=%d, r: %s' % \
+              (case, d, results[case][d]['r']))

@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-approx'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 from approx1D import regression, comparison_plot
 from Lagrange import Lagrange_polynomials
 import sympy as sym
@@ -14,21 +14,21 @@ for s in 5, 20:
     for distribution in 'uniform', 'Chebyshev':
         for N in N_values:
             # Compute the points from a 2*N Lagrange polynomial
-	    dummy, points = Lagrange_polynomials(
+            dummy, points = Lagrange_polynomials(
                 x, 2*N, Omega,
                 point_distribution=distribution)
             # Compute phi from N points Lagrange polynomial
-	    phi, dummy = Lagrange_polynomials(
+            phi, dummy = Lagrange_polynomials(
                 x, N, Omega,
                 point_distribution=distribution)
             points = np.array(points, dtype=float)
             point_values = -np.tanh(s*(points-0.5))
 
-	    u, c = regression(f, phi, points)
-	    filename = 'tmp_tanh_%d_%d_%s' % (N, s, distribution)
-	    comparison_plot(f, u, Omega, filename,
-			    plot_title='s=%g, N=%d, %s points' %
-			    (s, N, distribution),
+            u, c = regression(f, phi, points)
+            filename = 'tmp_tanh_%d_%d_%s' % (N, s, distribution)
+            comparison_plot(f, u, Omega, filename,
+                            plot_title='s=%g, N=%d, %s points' %
+                            (s, N, distribution),
                             points=points, point_values=point_values,
                             points_legend='%s points' % (2*N))
         # Combine plot files (2x2)

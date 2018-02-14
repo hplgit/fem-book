@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-approx'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 from fe_approx1D_numint import approximate, u_glob
 from sympy import tanh, Symbol, lambdify
 x = Symbol('x')
