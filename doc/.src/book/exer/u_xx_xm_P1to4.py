@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-varform'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 from u_xx_f_sympy import model2, x
 import sympy as sym
 import numpy as np
@@ -14,7 +14,7 @@ m_values = [0, 1, 2, 3, 4]
 d_values = [1, 2, 3, 4]
 for m in m_values:
     u = model2(x**m, L, C, D)
-    print '\nm=%d, u: %s' % (m, u)
+    print('\nm=%d, u: %s' % (m, u))
     u_exact = sym.lambdify([x], u)
 
     for d in d_values:
@@ -40,8 +40,8 @@ for m in m_values:
         # (Recall that x is a symbol, use xc for coordinates)
         xc, u, nodes = u_glob(c, vertices, cells, dof_map)
         u_e = u_exact(xc)
-        print 'Max diff at nodes, d=%d:' % d, \
-              np.abs(u_exact(nodes) - c).max()
+        print('Max diff at nodes, d=%d:' % d, \
+              np.abs(u_exact(nodes) - c).max())
         plt.figure()
         plt.plot(xc, u, 'b-', xc, u_e, 'r--')
         plt.legend(['finite elements, d=%d' %d, 'exact'],
@@ -53,7 +53,7 @@ for m in m_values:
         cmd += ' '.join(['tmp_%d_%d.' % (m, d) + ext
                          for d in d_values])
         cmd += ' u_xx_xm%d_P1to4.' % m + ext
-        print cmd
+        print(cmd)
         os.system(cmd)
 
 #plt.show()

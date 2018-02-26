@@ -14,7 +14,7 @@ for r in range(d+1):
     for s in range(d+1):
         integrand = dpsi_dX[r]*dpsi_dX[s]*2/h
         A[r,s] = sym.integrate(integrand, (X, -1, 1))
-print A
+print(A)
 
 # Element vector
 # f*psi[r]*h/2, f=1
@@ -23,4 +23,4 @@ b = np.empty(d+1, dtype=object)
 for r in range(d+1):
     integrand = -psi[r]*h/2
     b[r] = sym.integrate(integrand, (X, -1, 1))
-print b
+print(b)

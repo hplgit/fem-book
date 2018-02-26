@@ -690,8 +690,8 @@ x, L = sym.symbols('x L')
 f = 2
 a = 2*L/(sym.pi**2*(i+1)**2)
 c_i = a*sym.integrate(f*sym.sin((i+1)*sym.pi*x/L), (x, 0, L))
-c_i = simplify(c_i)
-print c_i
+c_i = sym.simplify(c_i)
+print(c_i)
 !ec
 The answer becomes
 
@@ -1100,7 +1100,7 @@ b_i: ((-C + D)*(i + 2) + 2)/(i + 2)
 !ec
 We can now choose some $N$ and form the linear system, say for $N=1$:
 
-@@@CODE src/u_xx_2_CD.py fromto: N = 1@print 'A:'
+@@@CODE src/u_xx_2_CD.py fromto: N = 1@print('A:'
 The system becomes
 
 !bt
@@ -1133,10 +1133,10 @@ and the boundary conditions are satisfied:
 
 !bc pycod
 u = sum(c[r,0]*psi_i.subs(i, r) for r in range(N+1)) + D*x
-print 'u:', simplify(u)
-print "u'':", simplify(diff(u, x, x))
-print 'BC x=0:', simplify(diff(u, x).subs(x, 0))
-print 'BC x=1:', simplify(u.subs(x, 1))
+print('u:', simplify(u))
+print("u'':", simplify(diff(u, x, x)))
+print('BC x=0:', simplify(diff(u, x).subs(x, 0)))
+print('BC x=1:', simplify(u.subs(x, 1)))
 !ec
 The output becomes
 
@@ -1788,8 +1788,8 @@ import sympy as sym
 def solver(integrand_lhs, integrand_rhs, psi, Omega,
            boundary_lhs=None, boundary_rhs=None):
     N = len(psi[0]) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     x = sym.Symbol('x')
     for i in range(N+1):
         for j in range(i, N+1):
@@ -1841,8 +1841,8 @@ method for solving differential equations in 1D with global basis functions:
 def solver(integrand_lhs, integrand_rhs, psi, Omega,
            boundary_lhs=None, boundary_rhs=None, symbolic=True):
     N = len(psi[0]) - 1
-    A = sym.zeros((N+1, N+1))
-    b = sym.zeros((N+1, 1))
+    A = sym.zeros(N+1, N+1)
+    b = sym.zeros(N+1, 1)
     x = sym.Symbol('x')
     for i in range(N+1):
         for j in range(i, N+1):
@@ -1852,8 +1852,8 @@ def solver(integrand_lhs, integrand_rhs, psi, Omega,
                 if isinstance(I, sym.Integral):
                     symbolic = False  # force num.int. hereafter
             if not symbolic:
-                integrand = sym.lambdify([x], integrand)
-                I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+                integrand_ = sym.lambdify([x], integrand, 'mpmath')
+                I = mpmath.quad(integrand_, [Omega[0], Omega[1]])
             if boundary_lhs is not None:
                 I += boundary_lhs(psi, i, j)
             A[i,j] = A[j,i] = I
@@ -1863,8 +1863,8 @@ def solver(integrand_lhs, integrand_rhs, psi, Omega,
             if isinstance(I, sym.Integral):
                 symbolic = False
         if not symbolic:
-            integrand = sym.lambdify([x], integrand)
-            I = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+            integrand_ = sym.lambdify([x], integrand, 'mpmath')
+            I = mpmath.quad(integrand_, [Omega[0], Omega[1]])
         if boundary_rhs is not None:
             I += boundary_rhs(psi, i)
         b[i,0] = I
@@ -1938,10 +1938,10 @@ def integrand_rhs(psi, i):
 Omega = [0, 1]
 
 from varform1D import solver
-u_bar = solver(integrand_lhs, integrand_rhs, psi, Omega,
+u_bar, _ = solver(integrand_lhs, integrand_rhs, psi, Omega,
                   verbose=True, symbolic=True)
 u = B + u_bar
-print ("solution u:", sym.simplify(sym.expand(u)))
+print("solution u:", sym.simplify(sym.expand(u)))
 !ec
 
 
@@ -1965,8 +1965,8 @@ f2 = sym.integrate(f1, x) + C2
 s = sym.solve([u_e.subs(x,0) - 1, u_e.subs(x,1) - 0], [C1, C2])
 # Form the exact solution
 u_e = -f2 + s[C1]*x + s[C2]
-print 'analytical solution:', u_e
-print 'error:', sym.simplify(sym.expand(u - u_e))
+print('analytical solution:', u_e)
+print('error:', sym.simplify(sym.expand(u - u_e)))
 !ec
 The last line prints `0`, which is not surprising when
 $\uex(x)$ is a parabola and our approximate $u$ contains polynomials up to
@@ -2128,19 +2128,18 @@ N = 8
 psi = series(x, series_type, N)  # Lagrange, Bernstein, sin, ...
 eps_values =[1.0, 0.1, 0.01, 0.001]
 for eps in eps_valuess:
-    A = sym.zeros((N-1), (N-1))
-    b = sym.zeros((N-1))
+    A = sym.zeros(N-1, N-1)
+    b = sym.zeros(N-1)
 
     for i in range(0, N-1):
         integrand = f*psi[i]
-        integrand = sym.lambdify([x], integrand)
-        b[i,0] = sym.mpmath.quad(integrand, [Omega[0], Omega[1]])
+        integrand = sym.lambdify([x], integrand, 'mpmath')
+        b[i,0] = mpmath.quad(integrand, [Omega[0], Omega[1]])
         for j in range(0, N-1):
             integrand = eps*sym.diff(psi[i], x)*\
                  sym.diff(psi[j], x) - sym.diff(psi[i], x)*psi[j]
-            integrand = sym.lambdify([x], integrand)
-            A[i,j] = sym.mpmath.quad(integrand,
-                                     [Omega[0], Omega[1]])
+            integrand = sym.lambdify([x], integrand, 'mpmath')
+            A[i,j] = mpmath.quad(integrand, [Omega[0], Omega[1]])
 
     c = A.LUsolve(b)
     u = sum(c[r,0]*psi[r] for r in range(N-1)) + x
@@ -2173,7 +2172,7 @@ oscillations clearly has decreased.
 We will return to this example later and show examples of
 techniques that can be used to improve the approximation.
 The complete source code can be found in
- "`conv_diff_global.py`":"${fem_src}/conv_diff_global.py".
+ "`conv_diff.py`":"${fem_src}/conv_diff.py".
 
 
 
@@ -2522,7 +2521,7 @@ The decay is most pronounced for the first terms:
 
 !bc pyshell
 >>> for i in range(10):
-...   print (float(2*i+3)/(2*i+1))**3
+...   print(float(2*i+3)/(2*i+1))**3
 ...
 27.0
 4.62962962963
@@ -4867,14 +4866,14 @@ proved in a `sympy` session:
 >>> # General equation
 >>> R = 1/h**2*(-u_im1 + 2*u_i - u_ip1) - 2
 >>> R = simplify(R)
->>> print R
+>>> print(R)
 0
 >>>
 >>> # Right boundary equation
 >>> R = 1/h**2*(-u_im1 + u_i) - b_L/h - 1
 >>> R = R.subs(i, N)
 >>> R = simplify(R)
->>> print R
+>>> print(R)
 0
 !ec
 
@@ -5215,7 +5214,7 @@ u_exact = lambda x: D + C*(x-L) + (1./6)*(L**3 - x**3)
 from fe1D import u_glob
 x, u, nodes = u_glob(c, cells, vertices, dof_map)
 u_e = u_exact(x, C, D, L)
-print u_exact(nodes, C, D, L) - c  # difference at the nodes
+print(u_exact(nodes, C, D, L) - c)  # difference at the nodes
 
 import matplotlib.pyplot as plt
 plt.plot(x, u, 'b-', x, u_e, 'r--')
@@ -6019,7 +6018,7 @@ dimensions, we are (in principle!) very close to solving a
 PDE problem in FEniCS. Building on the Section ref{fe:approx:fenics},
 we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
 There is much more to FEniCS than what is shown in this example, but it
-illustrates the fact that when we go beyond 1D, there is exists
+illustrates the fact that when we go beyond 1D, there exists
 software which leverage the full power of the finite element method as
 a method for solving any problem on any mesh in any number of
 space dimensions.
@@ -6504,7 +6503,7 @@ def boundary(x):
 
 u_analytical = \ 
    Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % \ 
-   (alpha_value, alpha_value))  
+   (alpha_value, alpha_value), degree=2)
 
 mesh = UnitIntervalMesh(10)
 V = FunctionSpace(mesh, "CG", 1)

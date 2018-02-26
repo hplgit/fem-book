@@ -1,5 +1,5 @@
 import os, sys
-sys.path.insert(0, os.path.join(os.pardir, 'src-varform'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 
 def sympy_solution():
     from sympy import symbols, Rational, solve
@@ -92,6 +92,11 @@ def P1_solution():
         c = np.linalg.solve(A, b)
 
         # Plot solution
+        print('c:', c)
+        print('vertices:', vertices)
+        print('cells:', cells)
+        print('len(cells):', len(cells))
+        print('dof_map:', dof_map)
         xc, u, nodes = u_glob(c, vertices, cells, dof_map)
         plt.plot(xc, u)
         legends.append('$N_e=%d$' % N_e)
@@ -101,7 +106,7 @@ def P1_solution():
     plt.savefig('tmp3.png'); plt.savefig('tmp3.pdf')
 
 if __name__ == '__main__':
-    print sympy_solution()
+    print(sympy_solution())
     plot_sine_solution()
     P1_solution()
     plt.show()

@@ -49,8 +49,8 @@ def case0(f, N=3):
 
     Omega = [0, 1]
 
-    u_bar = solver(integrand_lhs, integrand_rhs, phi, Omega,
-                  verbose=True, symbolic=True)
+    u_bar, _ = solver(integrand_lhs, integrand_rhs, phi, Omega,
+                      verbose=True, symbolic=True)
     u = B + u_bar
     print('solution u:', sym.simplify(sym.expand(u)))
 
@@ -107,9 +107,9 @@ def case1(N, basis='sines'):
     Omega = [0, 1]
     phi = phi_factory(basis, N, 2)
     u = {}  # dict of solutions corresponding to different methods
-    u['LS'] = solver(integrand_lhs_LS, integrand_rhs_LS, phi, Omega)
-    u['G1'] = solver(integrand_lhs_G1, integrand_rhs_G1, phi, Omega)
-    u['G2'] = solver(integrand_lhs_G2, integrand_rhs_G2, phi, Omega)
+    u['LS'] = solver(integrand_lhs_LS, integrand_rhs_LS, phi, Omega)[0]
+    u['G1'] = solver(integrand_lhs_G1, integrand_rhs_G1, phi, Omega)[0]
+    u['G2'] = solver(integrand_lhs_G2, integrand_rhs_G2, phi, Omega)[0]
     u['exact'] = x*(D + L - x)
     # Test different collocation points
     points = []
@@ -175,7 +175,7 @@ def case2(N):
     #phi = phi_factory('Lagrange', N, 1)
     print(phi[0])
     u = {'G1': solver(integrand_lhs, integrand_rhs, phi, Omega,
-                      boundary_lhs, boundary_rhs, verbose=True) + B,
+                      boundary_lhs, boundary_rhs, verbose=True)[0] + B,
          'exact': u_e}
     print('numerical solution:', u['G1'])
     print('simplified:', sym.simplify(u['G1']))
@@ -274,9 +274,9 @@ def case3(N, a=1, a_symbols={}, f=0, f_symbols={},
     dBdx = sym.diff(B, x)
 
     verbose = True if symbolic else False
-    phi_sum = solver(integrand_lhs, integrand_rhs, phi, Omega,
-                    boundary_lhs, boundary_rhs, verbose=verbose,
-                    symbolic=symbolic)
+    phi_sum, _ = solver(integrand_lhs, integrand_rhs, phi, Omega,
+                        boundary_lhs, boundary_rhs, verbose=verbose,
+                        symbolic=symbolic)
     print('sum c_j*phi_j:', phi_sum)
     name = 'numerical, N=%d' % N
     u = {name: phi_sum + B, 'exact': sym.simplify(u_exact)}
