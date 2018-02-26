@@ -140,3 +140,4 @@ variational
 vectorized
 vu
 workflow
+jit

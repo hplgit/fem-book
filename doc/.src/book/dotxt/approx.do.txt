@@ -6579,27 +6579,14 @@ reference functions, mappings, numerical integration and so on,
 becomes overwhelming because of all the flexibility and choices of
 elements. For this purpose, we *must*, except in the simplest cases
 with P1 elements, use some well-developed, existing computer
-library. Here we shall use "FEniCS": "http://fenicsproject.org", which
-is a free, open finite element package for advanced computations. The
-package can be programmed in C++ or Python. How it works is best
-illustrated by an example.
-
+library. 
 ===== Example on approximation in 2D using FEniCS =====
 label{fem:approx:fenics:2D}
 
-Our previous programs for doing 1D approximation by finite element basis
-function had a focus on all the
-small details needed to compute the solution. When going to 2D and 3D,
-the basic algorithms are the same, but the amount of computational
-details with basis functions, reference functions, mappings,
-numerical integration and so on, becomes overwhelming because of all
-the flexibility and choices of elements. For this purpose, we *must*,
-except in the simplest cases with P1 elements, use some well-developed,
-existing computer library. Here we shall use
-"FEniCS": "http://fenicsproject.org", which is a free, open finite
-element package for advanced computations. The package can be programmed
-in C++ or Python. How it works is best illustrated by an example.
-
+Here we shall use "FEniCS": "http://fenicsproject.org", which
+is a free, open finite element package for advanced computations. The
+package can be programmed in C++ or Python. How it works is best
+illustrated by an example.
 
 === Mathematical problem ===
 
@@ -6610,7 +6597,7 @@ then divided into rectangles and then into triangles.
 === The code ===
 
 Observe that the code employs the basic concepts from 1D, but is
-capable of using any element in FEniCS on any mesh in any number of
+capable of using *any* element in FEniCS on *any* mesh in *any* number of
 space dimensions (!).
 
 !bc pycod
@@ -6681,8 +6668,9 @@ $V$.  We define the unknown $u$ in the variational form $a=a(u,v) = \int uv\dx$
 as a `TrialFunction` object and the test function $v$ as a
 `TestFunction` object. Then we define the variational form through
 the integrand `u*v*dx`. The linear form $L$ is similarly defined as
-`f*v*dx`. Here, `f` must be an `Expression` object in FEniCS, i.e., a
-formula defined by its implementation in C++. With `a` and `L` defined,
+`f*v*dx`. Here, `f` is an `Expression` object in FEniCS, i.e., a
+formula defined in terms of a C++ expression. This expression is in turn
+jit-compiled into a Python object for fast evaluation. With `a` and `L` defined,
 we re-define `u` to be a finite element function `Function`, which is
 now the unknown scalar field to be computed by the simple expression
 `solve(a == L, u)`. We remark that the above function `approx`
@@ -6764,7 +6752,7 @@ label{fem:approx:fenics:2D:2}
 === Interpolation and projection ===
 
 The operation with defining `a`, `L`, and solving for a `u` is so
-common that it can be done by single FEniCS command `project`:
+common that it has been implemented in the FEniCS function `project`:
 
 !bc pycod
 u = project(f, V)
