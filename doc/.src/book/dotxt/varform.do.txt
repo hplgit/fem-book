@@ -6018,10 +6018,10 @@ dimension in FEniCS, and know how to derive variational forms in higher
 dimensions, we are (in principle!) very close to solving a
 PDE problem in FEniCS. Building on the Section ref{fe:approx:fenics},
 we shall now solve a quite general 1D/2D/3D Poisson problem in FEniCS.
-There is very much more FEniCS programming than this example, but it
-illustrates our fact that when we go beyond 1D, there is exists
+There is much more to FEniCS than what is shown in this example, but it
+illustrates the fact that when we go beyond 1D, there is exists
 software which leverage the full power of the finite element method as
-a method for solving ``any'' problem in any number of
+a method for solving any problem on any mesh in any number of
 space dimensions.
 
 ===== Mathematical problem =====
@@ -6029,7 +6029,9 @@ label{fem:varform:fenics:problem}
 
 The following model describes the pressure $u$ in the flow around a
 bore hole of radius $a$ in a porous medium. If the hole is long in the
-vertical direction, we can model it by a 2D domain in the cross section.
+vertical direction (z-direction) then it is natural to assume that the 
+vertical changes are small and $u_z\approx\mbox{constant}$. 
+Therefore, we can model it by a 2D domain in the cross section.
 
 !bt
 \begin{alignat}{2}
@@ -6102,10 +6104,10 @@ function $v$ and integrate the second-order derivatives by part:
 
 !bt
 \begin{align*}
-\int_\Omega \nabla\cdot (\dfc\nabla u) v \dx &= 0,\quad \forall v\in V\\
+\int_\Omega \nabla\cdot (\dfc\nabla u) v \dx 
 &= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx + \int_{\Gamma_N}\dfc
 \frac{\partial u}{\partial n}v\ds\\
-&= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx\tp
+&= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx\tp,\quad \forall v\in V\\
 \end{align*}
 !et
 We are left with a problem of the form: find $u$ such that
@@ -6118,14 +6120,15 @@ L(v) &= \int_\Omega 0v\dx \tp
 \end{align}
 !et
 We write the integrand as $0v\dx$ even though $L=0$, because it is necessary
-in FEniCS to specify $L$ as a linear form and not the number zero.
+in FEniCS to specify $L$ as a linear form (i.e., a
+test function and some form of integration need to be present) and not the number zero.
 The Dirichlet conditions make a nonzero solution.
 
 ===== The FEniCS solver =====
 
-Suppose we have a function `make_mesh` that can make the mesh for us.
-All we need to do in the solver and that has not been exemplified
-before, is to define $V$ with proper Dirichlet conditions.
+We suppose that we have a function `make_mesh` that can make the mesh for us. More
+details about this function will be provided later. 
+A next step is then to  to define proper Dirichlet conditions.
 This might seem a bit complicated, but we introduce *markers* at the
 boundary for marking the Dirichlet boundaries. The inner boundary has
 marker 1 and the outer has marker 2. In this way, we can recognize the
@@ -6141,20 +6144,22 @@ The code goes like this:
 
 @@@CODE-4 src/borehole_fenics.py fromto: V = FunctionSpace@# Define variational
 
+Here, `u_a` and `u_b` are constants (floats) set by the user. In general, 
+anything that can be evaluated pointwise can be used, such as `Expression`, 
+`Function`, and `Constant`. 
 The next step is to define the variational problem and solve it:
 
 @@@CODE-4 src/borehole_fenics.py fromto: # Define variational problem@# Save solution
 In order to avoid `L=0` (`L` equal to the float zero), we have to
 tell FEniCS that is a linear form, so zero must be specified as `Constant(0)`.
 
-Note that everything is the same as for the approximation problem,
+Note that everything is the same as for the approximation problem in Section ref{fe:approx:fenics},
 except for the Dirichlet conditions and the formulas for `a` and
 `L`. FEniCS has, of course, access to very efficient solution methods,
 so we could add arguments to the `solve` call to apply
 state-of-the-art iterative methods and preconditioners for large-scale
 problems. However, for this little 2D case a standard sparse Gaussian
-elimination, as implied by `solve(a = L, u, bcs)` is the most
-efficient and reliable approach.
+elimination, as implied by `solve(a = L, u, bcs)` a sufficient approach.
 
 Finally, we can save the solution to file for using professional
 visualization software and, if desired, add a quick plotting using the
@@ -6171,12 +6176,12 @@ file "`borehole_fenics.py`": "${fem_src}/borehole_fenics.py":
 !bnotice Be careful with name clashes!
 It is easy when coding mathematics to use variable names that correspond
 to one-letter names in the mathematics. For example, in the mathematics
-of this problem there are to $a$ variables: the radius of the inner
+of this problem there are two $a$ variables: the radius of the inner
 boundary and the bilinear form in the variational formulation.
 Using `a` for the inner boundary in `solver` does not work: it is
 quickly overwritten by the bilinear form. We therefore have to introduce
 `x_a`. Long variable names are to be preferred for safe programming,
-though short names corresponding to the mathematics are nicer...
+though short names corresponding to the mathematics are often nicer.
 !enotice
 
 ===== Making the mesh =====
@@ -6226,7 +6231,7 @@ FIGURE: [fig/borehole_mesh1, width=600 frac=0.8] Finite element mesh for a porou
 @@@CODE-4 src/borehole_fenics.py fromto: # x=a becomes@# --- Deform
 With the instances `inner` and `outer` we fill a marker object, called
 `MeshFunction` in FEniCS. For this purpose we must introduce our own
-convention of numbering boundaries: here we use for 1 for all points on
+convention of numbering boundaries: here we use 1 for all points on
 the inner boundary and 2 for the outer boundary, while all other points
 are marked by 0. The solver applies the `markers` object to set
 the right Dirichlet boundary conditions.
@@ -6322,8 +6327,6 @@ Actually, all we have to do is to a generate a 3D box and use the same
 stretching and mapping to make the cylinder, and run the solver without
 changes!
 
-[hpl: Do 1D Dirichlet model problem from previous sections (exercise!).]
-
 
 !split
 ======= Convection-diffusion and Petrov-Galerkin methods =======
@@ -6345,10 +6348,8 @@ label{varform:conv:diff:bc2}
 \tp
 \end{alignat}
 !et
-
 In Section ref{ch:convdiff} we investigated the simplified case in
 1D
-
 !bt
 \begin{align*}
 -u_x - \dfc u_{xx} &= 0, \\
@@ -6356,7 +6357,6 @@ u(0) = 0, u(1) &= 1 \tp
 \end{align*}
 !et
 and the analytical solution was:
-
 !bt
 \[
 u_e(x) = \frac{e^{-x/\dfc} - 1}{e^{-1/\dfc} - 1}.
@@ -6371,10 +6371,9 @@ did however improve as the number of degrees of freedom increased.
 
 The variational problem is:
 Find $u\in V$ such that
-
 !bt
 \[
-a(u,v) = L(v) \forall v
+a(u,v) = L(v), \quad \forall v \in V
 \]
 !et
 where
@@ -6385,7 +6384,6 @@ a(u, v) &= \int_0^1 -u_x v + \mu u_x v_x \dx, \\
 L(v) &=  \int_0^1  0 v \dx = 0  .
 \end{align*}
 !et
-
 A Galerkin approximation with a finite element approximation is obtained
 by letting $u=\sum_{j\in\If} c_j\baspsi_j(x)$ and
 $v =  \baspsi_i(x)$ which leads to a linear system
@@ -6394,7 +6392,7 @@ of equations $\sum_j A_{i,j}c_j=b_i$ where
 !bt
 \begin{align*}
 A_{i,j} &= \int_0^1
-\mu \baspsi_i' \baspsi_j' + \baspsi_j' \baspsi_i \dx, \\
+\mu \baspsi_i' \baspsi_j' + \baspsi_i' \baspsi_j \dx, \\
 b_i &= \int_0^1 0 \baspsi_i \dx \tp
 \end{align*}
 !et
@@ -6404,7 +6402,7 @@ on a coarse mesh of 10 elements for $\mu=0.01$. Clearly, the finite
 element method has the same problem as was observed earlier in global
 functions in Section ref{sec:varform:general:convdiff}.
 
-#FIGURE: [fig/fenics_conv_diff, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
+FIGURE: [fig/fenics_conv_diff, width=400] Solution obtained with Galerkin approximation using linear elements $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiff:plot}
 
 For finite differences, the cure for these oscillations is *upwinding*.
 That is, instead
@@ -6413,8 +6411,8 @@ scheme:
 
 !bt
 \begin{align*}
-\frac{du}{dx} (x_i) &= \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0,\\
-\frac{du}{dx} (x_i) &= \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0\tp
+\frac{du}{dx}|_{x=x_i} &= \frac{1}{h}[u_{i+1}-u_{i}] \quad   \mbox{ if } \ v < 0,\\
+\frac{du}{dx}|_{x=x_i} &= \frac{1}{h}[u_{i}-u_{i-1}] \quad  \mbox{ if } \ v > 0\tp
 \end{align*}
 !et
 Using this scheme, oscillations will disappear as can be seen in
@@ -6432,7 +6430,7 @@ $\epsilon =h/2 \Delta $ we get
 \end{align*}
 !et
 
-#FIGURE: [fig/fenics_conv_diff_stab, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
+FIGURE: [fig/fenics_conv_diff_stab, width=400] Solution obtained upwinding $N_e=10$ and $\mu=0.01$. label{varform:fe:convdiffstab:plot}
 
 Hence, upwinding is equivalent to adding artificial diffusion with
 $\epsilon=h/2$; that is, in both cases we actually solve the problem
@@ -6465,27 +6463,34 @@ a(u, w) &= \int_0^1 -u_x w + \mu u_x w_x \dx, \\
 L(w) &=  \int_0^1  0 w \dx = 0  .
 \end{align*}
 !et
-However, $W$ cannot be chosen freely. For instance, to obtain a quadratic matrix
-the number of basis functions in   $V$ and $W$ must be the same. Let
- $w = v  + \beta \v\cdot\nabla w$.
+$W$ can in principle be chosen freely, but in general we wish to obtain a quadratic matrix
+and hence the number of basis functions in  $V$ and $W$ should be the same. Let
+ $w = v  + \beta \v\cdot\nabla v$. In our simplified 1D case we had $\v=(1,0)$. 
 
 !bt
 \begin{align*}
 A_{ij} &= a(\baspsi_i, \baspsi_j + \beta v\cdot\nabla \baspsi_j )\\
-&= \int_\Omega\mu\nabla \baspsi_i\cdot\nabla (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx + \int_\Omega v\nabla \baspsi_i\cdot (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx\\
+&= \int_\Omega\mu\nabla \baspsi_i\cdot\nabla (\baspsi_j + \beta \v\cdot\nabla \baspsi_j) \dx + \int_\Omega \v\nabla \baspsi_i\cdot (\baspsi_j + \beta v\cdot\nabla \baspsi_j) \dx\\
 &=\underbrace{
-\int_\Omega\mu\nabla \baspsi_i \cdot \nabla \baspsi_j \dx + \int_\Omega v \cdot \nabla \baspsi_i\, \baspsi_j \dx}_
+\int_\Omega\mu\nabla \baspsi_i \cdot \nabla \baspsi_j \dx + \int_\Omega \v \cdot \nabla \baspsi_i\, \baspsi_j \dx}_
 {\textrm{standard Galerkin}}
 \\
 &\quad
 +\underbrace{
-\beta\int_\Omega\mu\nabla \baspsi_i\cdot\nabla(v \cdot \nabla \baspsi_j) \dx
+\beta\int_\Omega\mu\nabla \baspsi_i\cdot\nabla(\v \cdot \nabla \baspsi_j) \dx
 }_
 {=0\ \textrm{for linear elements}}+
-\underbrace{\beta\int_\Omega (v\cdot\nabla \baspsi_i) (v\cdot\nabla \baspsi_j) \dx}
-_{\textrm{artificial diffusion in $v$ direction}}
+\underbrace{\beta\int_\Omega (v\cdot\nabla \baspsi_i) (\v\cdot\nabla \baspsi_j) \dx}
+_{\textrm{artificial diffusion in $\v$ direction}}
 \end{align*}
 !et
+In general also the right hand side is altered, given a source term $f$ then 
+\[
+b_i = L(\baspsi_i) =  \int_\Omega f (\baspsi_i + \beta \v\cdot\nabla\baspsi_i \dx = 0  .
+\]
+The modification of the right-hand side is important as a strongly consistent scheme is obtained. 
+In fact, since it is a Petrov-Galerkin projection, it can be shown that the truncation error (see ref{varform:trunc})
+is zero regardless of the mesh size $h$. 
 
 The corresponding FEniCS code is
 
@@ -6496,16 +6501,21 @@ import matplotlib.pyplot as plt
 def boundary(x):
     return x[0] < 1E-15 or x[0] > 1.0 - 1E-15
 
-u_analytical = \
-   Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % \
-   (1.0e-2, 0.5))
+
+u_analytical = \ 
+   Expression("(exp(-x[0]/%e) - 1)/ (exp(-1/%e) - 1)" % \ 
+   (alpha_value, alpha_value))  
+
 mesh = UnitIntervalMesh(10)
 V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
 
-alpha = Constant(1.0e-2)
-beta = Constant(0.5)
+alpha_value = 1.0e-2 
+alpha = Constant(alpha_value)
+beta_value = 0.5 
+beta = Constant(beta_value)
+
 f = Constant(0)
 h = mesh.hmin()
 v = v - beta*h*v.dx(0) #Petrov-Galerkin
@@ -6519,7 +6529,9 @@ solve(a == L, u, bc)
 !ec
 
 Notice that the Petrov-Galerkin method is here implemented as
-`v = v - beta*h*v.dx(0)`.
+`v = v - beta*h*v.dx(0)`. Furthermore, we represent $\alpha$ and $\beta$ as
+constants rather than floats in Python because we then avoid re-compilation every 
+time we change these parameters.
 
 ======= Summary =======
 
@@ -6537,7 +6549,7 @@ Notice that the Petrov-Galerkin method is here implemented as
    cells of a mesh. This is utilized in the finite element method.
  * Finite element basis functions are *piecewise* polynomials, normally
    with discontinuous derivatives at the cell boundaries. The basis
-   functions overlap very little, leading to stable numerics and sparse
+   functions overlap very little, leading to stable and efficient numerics involves sparse
    matrices.
  * To use the finite element method for differential equations, we use
    the Galerkin method or the method of weighted residuals
