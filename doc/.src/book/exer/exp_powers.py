@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.pardir, 'src-approx'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 from approx1D import least_squares, comparison_plot
 import matplotlib.pyplot as plt
 import sympy as sym
@@ -14,7 +14,6 @@ Omega = [0, 8]
 for N in 2,4,6:
     psi = [x**i for i in range(N+1)]
     u, c = least_squares(f,psi,Omega)
-    print N, u
-    plt.figure()
+    print(N, u)
     comparison_plot(f, u, Omega, filename='tmp_exp_%d' % N,
                     plot_title='N=%d' % N)
