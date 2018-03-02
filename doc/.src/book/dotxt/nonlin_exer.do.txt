@@ -236,7 +236,7 @@ appropriate tolerance is for testing the asymptotic limit.
 !bsol
 The test function may look like
 
-@@@CODE exer/logistic_p.py fromto: def test_asympt@from scitools.std
+@@@CODE exer/logistic_p.py fromto: def test_asympt@import numpy
 It is important with a sufficiently small `eps_r` tolerance for the
 asymptotic value to be accurate (using `eps_r=1E-3` leads to a value
 0.92 at $t=T$ instead of 0.994 when `eps_r=1E-5`).
@@ -252,7 +252,7 @@ the number of iterations is to $\Delta t$ and $p$.
 !bsol
 Appropriate code is
 
-@@@CODE exer/logistic_p.py fromto: from scitools.std@raw_input
+@@@CODE exer/logistic_p.py fromto: import numpy as np@plt.show()
 
 [hpl: Not finished!]
 !esol

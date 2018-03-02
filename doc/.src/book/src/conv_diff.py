@@ -48,8 +48,8 @@ def epsilon_experiment(N, series_type, Omega,
     psi = series(x, series_type, N)
     f = 1
     for eps in eps_values:
-        A = sym.zeros((N-1), (N-1))
-        b = sym.zeros((N-1))
+        A = sym.zeros(N-1, N-1)
+        b = sym.zeros(N-1)
 
         for i in range(0, N-1):
             integrand = f*psi[i]

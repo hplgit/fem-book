@@ -22,7 +22,7 @@ class TwoPtBoundaryValueProblem(object):
         # with respect to the integration constants c_0, c_1
         eq = self.get_bc(u)
         eq = [sym.simplify(eq_) for eq_ in eq]
-        print 'BC eq:', eq
+        print('BC eq:', eq)
         self.u = self.apply_bc(eq, u)
 
     def apply_bc(self, eq, u):
@@ -40,7 +40,7 @@ class TwoPtBoundaryValueProblem(object):
         """Return the residuals in the equation and BCs."""
         R_eq = sym.diff(sym.diff(self.u, x)*self.a, x) + self.f
         R_0, R_L = self.get_bc(self.u)
-        residuals = [sym.simplify(R) for R in R_eq, R_0, R_L]
+        residuals = [sym.simplify(R) for R in (R_eq, R_0, R_L)]
         return residuals
 
     def get_bc(self, u):
@@ -77,27 +77,27 @@ class Model4(TwoPtBoundaryValueProblem):
 def test_TwoPtBoundaryValueProblem():
     f = 2
     model = Model1(f)
-    print 'Model 1, u:', model.get_solution()
+    print('Model 1, u:', model.get_solution())
     for R in model.get_residuals():
         assert R == 0
 
     f = x
     model = Model2(f)
-    print 'Model 2, u:', model.get_solution()
+    print('Model 2, u:', model.get_solution())
     for R in model.get_residuals():
         assert R == 0
 
     f = 0
     a = 1 + x**2
     model = Model3(f, a=a)
-    print 'Model 3, u:', model.get_solution()
+    print('Model 3, u:', model.get_solution())
     for R in model.get_residuals():
         assert R == 0
 
 def demo_Model4():
     f = 0
     model = Model4(f, a=sym.sqrt(1+x))
-    print 'Model 4, u:', model.get_solution()
+    print('Model 4, u:', model.get_solution())
 
 if __name__ == '__main__':
     test_TwoPtBoundaryValueProblem()

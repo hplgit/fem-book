@@ -79,10 +79,11 @@ def test_asymptotic_value():
         computed = arr[-1]
         tol = 0.01
         msg = 'expected=%s, computed=%s' % (expected, computed)
-        print msg
+        print(msg)
         assert abs(expected - computed) < tol
 
-from scitools.std import *
+import numpy as np
+import matplotlib.pyplot as plt
 
 def demo():
     T = 12
@@ -106,29 +107,31 @@ def demo():
                                   'Newton', eps_r, omega)
     u_CN = CN_logistic(p, 0.1, dt, N)
 
-    print 'Picard mean no of iterations (dt=%g):' % dt, \
-          int(round(mean(iter_BE3)))
-    print 'Newton mean no of iterations (dt=%g):' % dt, \
-          int(round(mean(iter_BE4)))
+    print('Picard mean no of iterations (dt=%g):' % dt, \
+          int(round(np.mean(iter_BE3))))
+    print('Newton mean no of iterations (dt=%g):' % dt, \
+          int(round(np.mean(iter_BE4))))
 
     t = np.linspace(0, dt*N, N+1)
-    plot(t, u_FE, t, u_BE3, t, u_BE31, t, u_BE4, t, u_CN,
-         legend=['FE', 'BE Picard', 'BE Picard1', 'BE Newton', 'CN gm'],
-         title='dt=%g, eps=%.0E' % (dt, eps_r), xlabel='t', ylabel='u',
-         legend_loc='lower right')
-    filestem = 'logistic_N%d_eps%03d' % (N, log10(eps_r))
-    savefig(filestem + '_u.png')
-    savefig(filestem + '_u.pdf')
-    figure()
-    plot(range(1, len(iter_BE3)+1), iter_BE3, 'r-o',
-         range(1, len(iter_BE4)+1), iter_BE4, 'b-o',
-         legend=['Picard', 'Newton'],
-         title='dt=%g, eps=%.0E' % (dt, eps_r),
-         axis=[1, N+1, 0, max(iter_BE3 + iter_BE4)+1],
-         xlabel='Time level', ylabel='No of iterations')
-    savefig(filestem + '_iter.png')
-    savefig(filestem + '_iter.pdf')
-    raw_input()
+    plt.plot(t, u_FE, t, u_BE3, t, u_BE31, t, u_BE4, t, u_CN)
+    plt.legend(['FE', 'BE Picard', 'BE Picard1', 'BE Newton', 'CN gm'])
+    plt.title('dt=%g, eps=%.0E' % (dt, eps_r))
+    plt.xlabel('t')
+    plt.ylabel('u')
+    filestem = 'logistic_N%d_eps%03d' % (N, np.log10(eps_r))
+    plt.savefig(filestem + '_u.png')
+    plt.savefig(filestem + '_u.pdf')
+    plt.figure()
+    plt.plot(list(range(1, len(iter_BE3)+1)), iter_BE3, 'r-o',
+             list(range(1, len(iter_BE4)+1)), iter_BE4, 'b-o')
+    plt.legend(['Picard', 'Newton'])
+    plt.title('dt=%g, eps=%.0E' % (dt, eps_r))
+    plt.axis([1, N+1, 0, max(iter_BE3 + iter_BE4)+1])
+    plt.xlabel('Time level')
+    plt.ylabel('No of iterations')
+    plt.savefig(filestem + '_iter.png')
+    plt.savefig(filestem + '_iter.pdf')
+    plt.show()
 
 def test_solvers():
     p = 2.5
@@ -149,9 +152,9 @@ def test_solvers():
                                       'Newton', eps_r, omega)
         u_CN = CN_logistic(p, 0.1, dt, N)
 
-        print u_FE[-1], u_BE31[-1], u_BE3[-1], u_CN[-1]
+        print(u_FE[-1], u_BE31[-1], u_BE3[-1], u_CN[-1])
         for u_x in u_FE, u_BE31, u_BE3, u_CN:
-            print u_x[-1]
+            print(u_x[-1])
             assert abs(u_x[-1] - 1) < tol, 'u=%.16f' % u_x[-1]
 
     """

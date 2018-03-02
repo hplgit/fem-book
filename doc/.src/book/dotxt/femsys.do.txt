@@ -718,15 +718,14 @@ for N in Ns:
     T = Function(V)
     solve(a == L, T, bc)
 
-    plt.plot(V.dofmap().tabulate_all_coordinates(mesh), T.vector().array())
-    plt.hold(True)
+    plt.plot(V.tabulate_dof_coordinates(), T.vector().get_local())
     plt.legend(["N=%d"%N for N in Ns], loc="upper left")
 plt.show()
 !ec
 
 
 Most of the FEniCS code should be familiar to the reader, but 
-we remark that we use the function `V.dofmap().tabulate_all_coordinates(mesh)` to obtain the coordinates of the nodal points. This is a general
+we remark that we use the function `V.tabulate_dof_coordinates()` to obtain the coordinates of the nodal points. This is a general
 function that works for any finite element implemented in 
 FEniCS and also in a parallel setting. 
 
@@ -738,7 +737,7 @@ The `sympy` code
 !bc pycod
 import sympy as sym
 
-r, R = sym.symbols("r R")
+r, R, mu, beta, C, D, T0 = sym.symbols("r R mu beta C D T0")
 rwr = sym.integrate(-(beta/mu)*r, r) + C
 w = sym.integrate(rwr/r, r) + D
 s = sym.solve([sym.diff(w,r).subs(r, 0)-0,  # r=0 condition
@@ -887,14 +886,14 @@ class DirichletBoundary(SubDomain):
     def inside(self, x, on_boundary):
         return on_boundary
 
-p_bc = f = Expression("x[0]")
+p_bc = f = Expression("x[0]", degree=2)
 Ns = [2, 8, 32]
 for N in Ns:
     mesh = UnitIntervalMesh(N)
     V = FunctionSpace(mesh, "CG", 1)
     u = TrialFunction(V)
     v = TestFunction(V)
-    a_coeff = A()
+    a_coeff = A(degree=2)
     a = a_coeff*inner(grad(u), grad(v))*dx
     f = Constant(0)
     L = f*v*dx
@@ -902,8 +901,7 @@ for N in Ns:
     u = Function(V)
     solve(a == L, u, bc)
 
-    plt.plot(V.dofmap().tabulate_all_coordinates(mesh), u.vector().array())
-    plt.hold(True)
+    plt.plot(V.tabulate_dof_coordinates(), u.vector().get_local())
 plt.legend(["N=%d"%N for N in Ns], loc="upper left")
 plt.savefig('darcy_a1D.png'); plt.savefig('darcy_a1D.pdf')
 plt.show()

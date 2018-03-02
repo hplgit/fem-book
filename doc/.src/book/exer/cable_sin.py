@@ -26,7 +26,7 @@ def check_integral_b():
         exact = 2/(pi*(2*i+1))
         numerical = midpoint_rule(
             f=lambda x: sin((2*i+1)*pi*x/2))
-        print i, abs(exact - numerical)
+        print(i, abs(exact - numerical))
 
 def sine_sum(x, N):
     s = 0
@@ -46,7 +46,6 @@ def plot_sine_sum():
     N_values = 0, 1, 10
     for k in N_values:
         plt.plot(x, u[k])
-        plt.hold('on')
     plt.plot(x, u_e)
     plt.legend(['N=%d' % k for k in N_values] + ['exact'],
                loc='upper right')
@@ -64,7 +63,7 @@ def check_integral_d():
             exact = 0
         numerical = midpoint_rule(
             f=lambda x: sin((i+1)*pi*x/2))
-        print i, abs(exact - numerical)
+        print(i, abs(exact - numerical))
 
 def check_integral_d_sympy_answer():
     from numpy import pi, sin
@@ -72,7 +71,7 @@ def check_integral_d_sympy_answer():
         exact = 2/(pi*(i+1))
         numerical = midpoint_rule(
             f=lambda x: sin((i+1)*pi*x/2))
-        print i, abs(exact - numerical)
+        print(i, abs(exact - numerical))
 
 def sine_sum_d(x, N):
     s = 0
@@ -97,7 +96,6 @@ def plot_sine_sum_d():
     N_values = 0, 1, 2, 3, 20
     for k in N_values:
         plt.plot(x, u[k])
-        plt.hold('on')
     plt.plot(x, u_e)
     plt.legend(['N=%d' % k for k in N_values] + ['exact'],
                loc='upper right')
@@ -108,12 +106,12 @@ def plot_sine_sum_d():
 
 if __name__ == '__main__':
     import sys
-    print model()
-    print 'sine 2*i+1 integral:'
+    print(model())
+    print('sine 2*i+1 integral:')
     check_integral_b()
-    print 'sine i+1 integral, sympy answer:'
+    print('sine i+1 integral, sympy answer:')
     check_integral_d_sympy_answer()
-    print 'sine i+1 integral:'
+    print('sine i+1 integral:')
     check_integral_d()
     #sys.exit(0)
     plot_sine_sum()

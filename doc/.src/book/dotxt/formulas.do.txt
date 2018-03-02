@@ -224,10 +224,10 @@ for func in func_list:
         f = func
         e = op(f)
         e = simplify(expand(e))
-        print e
+        print(e)
         if func in [f_expiwt, f_expwt]:
             e = e/f(t)
         e = e.subs(t, n*dt)
-        print expand(e)
-        print factor(simplify(expand(e)))
+        print(expand(e))
+        print(factor(simplify(expand(e))))
 !ec

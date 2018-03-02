@@ -20,7 +20,7 @@ def make_mesh(Theta, a, b, nr, nt, s):
             return on_boundary and abs(x[0] - b) < tol
 
     inner = Inner(); outer = Outer();
-    markers = FacetFunction('size_t', mesh)
+    markers = MeshFunction('size_t', mesh, mesh.topology().dim() - 1)
     markers.set_all(0)
     inner.mark(markers, 1)
     outer.mark(markers, 2)

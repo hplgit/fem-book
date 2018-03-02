@@ -278,7 +278,7 @@ Assuming $u=0$ on the boundary, we can in FEniCS generate a triangular
 mesh over a rectangular domain $[-1,-1]\times [-1,1]$ as follows:
 
 !bc pycod
-mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+mesh = RectangleMesh(Point(-1, -1), Point(1, 1), 10, 10)
 bc = DirichletBC(V, 0, 'on_boundary')
 !ec
 
@@ -293,7 +293,7 @@ that solves the Poisson equation by the finite element method:
 
 !bc pycod
 from fenics import *
-mesh = RectangleMesh((-1, -1), (1, 1), nx=10, ny=10)
+mesh = RectangleMesh(Point(-1, -1), Point(1, 1), 10, 10)
 V = FunctionSpace(mesh, 'P', 2)  # quadratic polynomials
 bc = DirichletBC(V, 0, 'on_boundary')
 u = TrialFunction(V)

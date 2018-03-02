@@ -1,5 +1,5 @@
 import os, sys
-sys.path.insert(0, os.path.join(os.pardir, 'src-varform'))
+sys.path.insert(0, os.path.join(os.pardir, 'src'))
 from varform1D import solver
 import sympy as sym
 x, b = sym.symbols('x b')
@@ -22,7 +22,7 @@ Omega = [0, 1]
 
 u, c = solver(integrand_lhs, integrand_rhs, psi, Omega,
               verbose=True, symbolic=True)
-print 'Galerkin solution u:', sym.simplify(sym.expand(u))
+print('Galerkin solution u:', sym.simplify(sym.expand(u)))
 
 # Least squares
 psi = {0: [x**(i+2) for i in range(N+1)]}
@@ -39,4 +39,4 @@ Omega = [0, 1]
 
 u, c = solver(integrand_lhs, integrand_rhs, psi, Omega,
               verbose=True, symbolic=True)
-print 'solution u:', sym.simplify(sym.expand(u))
+print('solution u:', sym.simplify(sym.expand(u)))

@@ -73,15 +73,14 @@ def solver(integrand_lhs, integrand_rhs, psi, Omega,
     print()
     if verbose: print('A:\n', A, '\nb:\n', b)
     c = A.LUsolve(b)
-    #c = sym.mpmath.lu_solve(A, b)
+    #c = mpmath.lu_solve(A, b)
     c = [c[i,0] for i in range(c.shape[0])]
     if verbose: print('coeff:', c)
     u = 0
     for i in range(len(psi[0])):
         u += c[i]*psi[0][i]
     if verbose: print('approximation:', u)
-    #return u, c
-    return u
+    return u, c
 
 def collocation(term_lhs, term_rhs, psi, points):
     """
