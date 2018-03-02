@@ -272,9 +272,9 @@ expansions of the roots:
 (dt - sqrt(dt**2 + 4*dt*u_1 - 2*dt + 1) - 1)/(2*dt)
 >>> r2
 (dt + sqrt(dt**2 + 4*dt*u_1 - 2*dt + 1) - 1)/(2*dt)
->>> print r1.series(dt, 0, 2)    # 2 terms in dt, around dt=0
+>>> print(r1.series(dt, 0, 2))    # 2 terms in dt, around dt=0
 -1/dt + 1 - u_1 + dt*(u_1**2 - u_1) + O(dt**2)
->>> print r2.series(dt, 0, 2)
+>>> print(r2.series(dt, 0, 2))
 u_1 + dt*(-u_1**2 + u_1) + O(dt**2)
 !ec
 We see that the `r1` root, corresponding to
@@ -292,9 +292,9 @@ is simply to compute the limits of the two roots as $\Delta t\rightarrow 0$
 and see if a limit unreasonable:
 
 !bc pyshell
->>> print r1.limit(dt, 0)
+>>> print(r1.limit(dt, 0))
 -oo
->>> print r2.limit(dt, 0)
+>>> print(r2.limit(dt, 0))
 u_1
 !ec
 
@@ -736,7 +736,7 @@ def BE_logistic(u0, dt, Nt, choice='Picard',
 The Crank-Nicolson method utilizing a linearization based on the
 geometric mean gives a simpler algorithm:
 
-@@@CODE src/logistic.py fromto: def CN_logistic@from scitools
+@@@CODE src/logistic.py fromto: def CN_logistic@import numpy
 
 We may run experiments with the model problem
 (ref{nonlin:timediscrete:logistic:eq}) and the different strategies for
