@@ -674,16 +674,16 @@ we see that the fourth order polynomial is poorly approximated at coarse resolut
 that the approximation quickly improves.
 
 
-
-
 FIGURE: [fig/cooling_w, width=800] The solution $w$ of (ref{fem:sys:wT:ex1D:weq}) with $\beta=\mu=1$ for different mesh resolutions. label{femsys:cooling:w:plot}
 
-The figure ref{femsys:cooling:w:plot} shows $T$ for different resolutions. The same tendency is apparent
+The figure ref{femsys:cooling:T:plot} shows $T$ for different resolutions. The same tendency is apparent
 although the coarse grid solutions are worse for $T$ than for $w$. The solutions at $N=16$ and $N=32$, however, 
 appear almost identical. 
 
 
 FIGURE: [fig/cooling_T, width=800] The solution $T$ of (ref{fem:sys:wT:ex1D:Teq}) for $\kappa=H=1$. label{femsys:cooling:T:plot}
+
+Below we include the code used to solve this problem in FEniCS and plot it using `matplotlib`.  
 
 !bc pycod
 def boundary(x):
@@ -718,7 +718,8 @@ for N in Ns:
     T = Function(V)
     solve(a == L, T, bc)
 
-    plt.plot(V.tabulate_dof_coordinates(), T.vector().get_local())
+    x = V.tabulate_dof_coordinates()
+    plt.plot(x, T.vector().get_local())
     plt.legend(["N=%d"%N for N in Ns], loc="upper left")
 plt.show()
 !ec
@@ -728,8 +729,6 @@ Most of the FEniCS code should be familiar to the reader, but
 we remark that we use the function `V.tabulate_dof_coordinates()` to obtain the coordinates of the nodal points. This is a general
 function that works for any finite element implemented in 
 FEniCS and also in a parallel setting. 
-
-[kam: do not need extensive description as it should be covered elsewhere]
 
 The calculations for (ref{fem:sys:wT:ex1Dr:weq})
 and (ref{fem:sys:wT:ex1Dr:Teq}) are similar.
@@ -762,11 +761,8 @@ T(r) &= \frac{1}{64 \mu} \left(R^{4} \beta^{2} + 64 T_{0} \mu - \beta^{2} r^{4}\
 \end{align*}
 !et
 
-[kam: so how do we do we conclude this? FEniCS simulation in 3D or
-FEniCS simulation in 1D with r? Or perhaps both? There are some
-stuff happening with piecewise integration in the presence of the r.]
-
-
+The radial solution corresponds to the analytical solution in 3D and is very useful for the purpose 
+of verifying the code of multi-physics flow problems. 
 
 
 ===== Another example in 1D =====
@@ -900,12 +896,17 @@ for N in Ns:
     bc = DirichletBC(V, p_bc, DirichletBoundary())
     u = Function(V)
     solve(a == L, u, bc)
-
-    plt.plot(V.tabulate_dof_coordinates(), u.vector().get_local())
+    x = V.tabulate_dof_coordinates()
+    plt.plot(x, u.vector().get_local())
 plt.legend(["N=%d"%N for N in Ns], loc="upper left")
 plt.savefig('darcy_a1D.png'); plt.savefig('darcy_a1D.pdf')
 plt.show()
 !ec 
+
+Figure ref{femsys:varcoeff:1D:Galerkin:plotu} shows the solution $u$. Clearly we have a good approximation already on a mesh with just two elements
+as the solution is piecewise linear as found in (ref{varcoeff:analytical:solution}).  
+
+FIGURE: [fig/darcy_a1D, width=800] Solution of the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu}
 
 The flux $a u'$ is often a quantity of interest. Because the flux involves differentiation with respect
 to $x$ we do not have an direct access to it and 
@@ -930,8 +931,10 @@ aux = project(-a_coeff*u.dx(0), V)
 !ec
 As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux}, this
 approach does not produce a good approximation of the flux.
+Moreover, the approximation does not seem to improve as the mesh is refined. 
 
-FIGURE: [fig/darcy_a1D, width=800] Solution of the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu}
+FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
+
 
 
 
@@ -1010,6 +1013,10 @@ b^{(u)}_i &= (0,\baspsi^{(u)}_i)= 0 \tp
 
 FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotu:mx}
 
+FIGURE: [fig/darcy_adx1D_mx, width=800] The corresponding flux $a u'$ for the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux:mx}
+
+
+
 
 
 It is interesting to note that the standard Galerkin formulation
@@ -1031,8 +1038,6 @@ We will not discuss the reasons for the need of compatibility here
 as it is rather mathematical and 
 well presented in many books, e.g. cite{Brenner_Scott, Braess, Silvester_et_al_2015}.
 
-
-FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
 
 
 
