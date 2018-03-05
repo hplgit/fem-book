@@ -14,14 +14,14 @@ for N in Ns:
     mesh = UnitIntervalMesh(N)
     P1 = FiniteElement("CG", mesh.ufl_cell(), 1)
     P2 = FiniteElement("DG", mesh.ufl_cell(), 0)
-    TH = P1 * P2
-    W = FunctionSpace(mesh, TH)
+    P1xP2 = P1 * P2
+    W = FunctionSpace(mesh, P1xP2)
     u, p = TrialFunctions(W)
     v, q = TestFunctions(W)
 
     f = Constant(0)
     n = FacetNormal(mesh)
-    a_coeff = A(degree=2)
+    a_coeff = A(degree=1)
 
     a = (1/a_coeff)*u*v*dx + u.dx(0)*q*dx - v.dx(0)*p*dx  
     L = f*q*dx - p_bc*v*n[0]*ds  
