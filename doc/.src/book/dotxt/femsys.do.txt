@@ -931,7 +931,8 @@ aux = project(-a_coeff*u.dx(0), V)
 !ec
 As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux}, this
 approach does not produce a good approximation of the flux.
-Moreover, the approximation does not seem to improve as the mesh is refined. 
+Moreover, the approximation close to the jump does not seem to 
+improve as the mesh is refined. 
 
 FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
 
@@ -1016,8 +1017,14 @@ FIGURE: [fig/darcy_a1D_mx, width=800] Solution of the mixed Darcy problem with d
 FIGURE: [fig/darcy_adx1D_mx, width=800] The corresponding flux $a u'$ for the mixed Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux:mx}
 
 
-
-
+In Figure ref{femsys:varcoeff:1D:Galerkin:plotu:mx} the solution 
+$u$ obtained by solving the of system  (ref{fem:sys:up:1D:eq:Darcy})
+using piecewise linear elements for $w$ and piecewise constants for $u$. 
+Clearly, $u$ converges towards the analytical solution as the mesh 
+is refined. In Figure ref{femsys:varcoeff:1D:Galerkin:plotsux:mx}
+we display the flux $a u'$. The flux appears to be a constant  
+as predicted by our analytical solution (ref{varcoeff:analytical:solution})
+and in our case $a_0=0.1$ which makes $C=\frac{2 a_0}{a_0 +1} \approx 0.18$.  
 
 It is interesting to note that the standard Galerkin formulation
 of the problem results in a perfect approximation of $u$, while
@@ -1036,10 +1043,12 @@ The polynomial spaces of the different unknowns have to be compatible
 and the accuracy of the different unknowns depend on each other. 
 We will not discuss the reasons for the need of compatibility here
 as it is rather mathematical and 
-well presented in many books, e.g. cite{Brenner_Scott, Braess, Silvester_et_al_2015}.
+well presented in many books, e.g. cite{brezzi2012mixed, Brenner_Scott, Braess, Silvester_et_al_2015}.
 
 
+The complete code for the mixed Darcy example is 
 
+@@@CODE src/darcy1D_mixed.py 
 
 ======= Exercises =======
 

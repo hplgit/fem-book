@@ -1100,7 +1100,7 @@ b_i: ((-C + D)*(i + 2) + 2)/(i + 2)
 !ec
 We can now choose some $N$ and form the linear system, say for $N=1$:
 
-@@@CODE src/u_xx_2_CD.py fromto: N = 1@print('A:'
+@@@CODE src/u_xx_2_CD.py fromto: N = 1@print\('A:'
 The system becomes
 
 !bt

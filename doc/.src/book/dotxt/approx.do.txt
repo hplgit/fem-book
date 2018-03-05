@@ -3192,7 +3192,7 @@ coefficient matrix has entries $A_{i,j}=\int_0^1\baspsi_i\baspsi_j\dx$
 and the right-hand side has entries $b_i=\int_0^1\baspsi_i\dx$.
 We can use `sympy` do carry out the integrals:
 
-@@@CODE exer/parabola_sin.py fromto: # Do the calculat@print(sym\.latex
+@@@CODE exer/parabola_sin.py fromto: # Do the calculat@print\(sym\.latex
 Looking at the results, we get the linear system
 
 !bt
