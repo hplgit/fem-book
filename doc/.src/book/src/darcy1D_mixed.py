@@ -2,13 +2,28 @@
 from fenics import *
 import matplotlib.pyplot as plt
 
+class uExact(Expression): 
+    def __init__(self, **kwargs): 
+      self.a0 = kwargs["a0"]
+      self.a  = 1 
+    def eval(self, value, x): 
+      if x[0] < 0.5: 
+          value[0] = (2.0*self.a0 / (self.a0 +1)) / self.a * x[0] 
+      else: 
+          value[0] = ((2.0*self.a0 / (self.a0 +1)) / self.a0) * x[0] \
+                   + (self.a0-1)/(self.a0+1)   
+
+
 class A(Expression): 
+    def __init__(self, **kwargs): 
+      self.a0 = kwargs["a0"]
     def eval(self, value, x): 
         value[0] = 1
-        if x[0] > 0.5: value[0] = 0.1 
+        if x[0] > 0.5: value[0] = self.a0 
 
 p_bc = Expression("x[0]", degree=2)
 
+a0 = 0.1 
 Ns = [2, 8, 32]
 for N in Ns: 
     mesh = UnitIntervalMesh(N)
@@ -21,7 +36,7 @@ for N in Ns:
 
     f = Constant(0)
     n = FacetNormal(mesh)
-    a_coeff = A(degree=1)
+    a_coeff = A(degree=1, a0=a0)
 
     a = (1/a_coeff)*u*v*dx + u.dx(0)*q*dx - v.dx(0)*p*dx  
     L = f*q*dx - p_bc*v*n[0]*ds  
@@ -40,11 +55,17 @@ for N in Ns:
         a[0] = xs[i]  
         p.eval(b, a)  
         ps[i] = b 
-
     plt.plot(xs, ps)
 
 
-plt.legend(["N=%d"%N for N in Ns], loc="upper left")
+CG1 = FunctionSpace(mesh, "CG", 1)
+p_exact = project(uExact(a0=a0, degree=1), CG1)
+p_exact4plot = numpy.array([p_exact(x) for x in xs])
+plt.plot(xs, p_exact4plot)
+legend = ["N=%d"%N for N in Ns]
+legend.append("analytical solution")
+
+plt.legend(legend, loc="upper left")
 plt.savefig('darcy_a1D_mx.png'); plt.savefig('darcy_a1D_mx.pdf'); 
 plt.show()
 

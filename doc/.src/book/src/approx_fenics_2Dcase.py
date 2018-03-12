@@ -22,13 +22,16 @@ def problem():
     u1 = approx(f, V1)
     u1.rename('u1', 'u1')
     u1_error = errornorm(f, u1, 'L2')
+    u1_norm = norm(u1, 'L2')
 
     V2 = FunctionSpace(mesh, 'P', 2)
     u2 = approx(f, V2)
     u2.rename('u2', 'u2')
     u2_error = errornorm(f, u2, 'L2')
+    u2_norm = norm(u2, 'L2')
 
     print('L2 errors: e1=%g, e2=%g' % (u1_error, u2_error))
+    print('L2 norms:  n1=%g, n2=%g' % (u1_norm, u2_norm))
     # Simple plotting
     import matplotlib.pyplot as plt
     plot(f, title='f', mesh=mesh)

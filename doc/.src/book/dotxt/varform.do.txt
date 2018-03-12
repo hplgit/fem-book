@@ -6106,7 +6106,7 @@ function $v$ and integrate the second-order derivatives by part:
 \int_\Omega \nabla\cdot (\dfc\nabla u) v \dx 
 &= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx + \int_{\Gamma_N}\dfc
 \frac{\partial u}{\partial n}v\ds\\
-&= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx\tp,\quad \forall v\in V\\
+&= -\int_\Omega \dfc\nabla u\cdot\nabla v\dx,\quad \forall v\in V\\
 \end{align*}
 !et
 We are left with a problem of the form: find $u$ such that
@@ -6158,7 +6158,7 @@ except for the Dirichlet conditions and the formulas for `a` and
 so we could add arguments to the `solve` call to apply
 state-of-the-art iterative methods and preconditioners for large-scale
 problems. However, for this little 2D case a standard sparse Gaussian
-elimination, as implied by `solve(a = L, u, bcs)` a sufficient approach.
+elimination, as implied by `solve(a = L, u, bcs)` is a sufficient approach.
 
 Finally, we can save the solution to file for using professional
 visualization software and, if desired, add a quick plotting using the
@@ -6464,7 +6464,8 @@ L(w) &=  \int_0^1  0 w \dx = 0  .
 !et
 $W$ can in principle be chosen freely, but in general we wish to obtain a quadratic matrix
 and hence the number of basis functions in  $V$ and $W$ should be the same. Let
- $w = v  + \beta \v\cdot\nabla v$. In our simplified 1D case we had $\v=(1,0)$. 
+ $w = v  + \beta h \v\cdot\nabla v$. In our simplified 1D case we had $\v=(1,0)$, $h$ 
+is the element size and $\beta$ is a tunable parameter.  
 
 !bt
 \begin{align*}
@@ -6532,6 +6533,16 @@ Notice that the Petrov-Galerkin method is here implemented as
 constants rather than floats in Python because we then avoid re-compilation every 
 time we change these parameters.
 
+The Petrov-Galerkin method  is consistent (the weighted residual is 
+zero) because it is a projection method. The projection is taken onto the space $W$ rather than $V$
+and this may in particular on coarse meshes have a dramatic effect.  On
+coarse meshes the numerical solutions obtained  is usually a lot better than the Galerkin approach because the method
+makes the boundary layer smoother. However, on fine meshes that is able to resolve the boundary 
+layer, the approximation is often better with a standard Galerkin approach.  
+There are many extensions of the method, but it still remains a problem to find a proper and robust 
+method for the convection-diffusion problem where unphysical oscillations do not show up and 
+the boundary layer is not artificially smoothed. 
+
 ======= Summary =======
 
  * When approximating $f$ by $u = \sum_j c_j\basphi_j$, the least squares
@@ -6541,14 +6552,14 @@ time we change these parameters.
  * Fourier series expansion can be viewed as a least squares or Galerkin
    approximation procedure with sine and cosine functions.
  * Basis functions should optimally be orthogonal or almost orthogonal,
-   because this gives little round-off errors when solving the linear
-   system, and the coefficient matrix becomes diagonal or sparse.
-   One way to obtain almost orthogonal basis functions is to localize the
+   because this makes the coefficient matrix become diagonal or sparse and 
+   results in little round-off errors when solving the linear
+   system.    One way to obtain almost orthogonal basis functions is to localize the
    basis by making the basis functions that have local support in only a few
    cells of a mesh. This is utilized in the finite element method.
  * Finite element basis functions are *piecewise* polynomials, normally
    with discontinuous derivatives at the cell boundaries. The basis
-   functions overlap very little, leading to stable and efficient numerics involves sparse
+   functions overlap very little, leading to stable and efficient numerics involving sparse
    matrices.
  * To use the finite element method for differential equations, we use
    the Galerkin method or the method of weighted residuals

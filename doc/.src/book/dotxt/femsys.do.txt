@@ -166,7 +166,7 @@ due to internal friction.
 
 Observe that the system (ref{fem:sys:wT:ex:weq})-(ref{fem:sys:wT:ex:Teq}) has
 only a one-way coupling: $T$ depends on $w$, but $w$ does not depend on
-$T$, because we can solve (ref{fem:sys:wT:ex:weq}) with respect
+$T$. Hence, we can solve (ref{fem:sys:wT:ex:weq}) with respect
 to $w$ and then (ref{fem:sys:wT:ex:Teq}) with respect to $T$.
 Some may argue that this is not a real system of PDEs, but just two scalar
 PDEs. Nevertheless, the one-way coupling
@@ -832,7 +832,7 @@ label{varcoeff:analytical:solution}
 u_e(x) = 
 \left\{ \begin{array}{ll}
 \frac{2 a_0}{a_0 +1}   x & \mbox{ for } 0 < x \le 0.5 \\
-\frac{2}{a_0 +1} (x-0.5) + \frac{a_0}{a_0 +1}  & \mbox{ for } 0.5 < x \le 1
+\frac{2}{a_0 +1} x) + \frac{a_0-1}{a_0 +1}  & \mbox{ for } 0.5 < x \le 1
 \end{array}
 \right. 
 \end{equation}
@@ -872,36 +872,8 @@ The analytical solution in (ref{varcoeff:analytical:solution}) is a piecewise po
 for $x$ in $[0,\half)$ and $(\half,1]$ and it seems that the numerical strategy gives a good approximation
 of the solution.
 The FEniCS program generating the plot is
-!bc pycod
-class A(Expression):
-    def eval(self, value, x):
-        value[0] = 1
-        if x[0] >= 0.5: value[0] = 0.1
 
-class DirichletBoundary(SubDomain):
-    def inside(self, x, on_boundary):
-        return on_boundary
-
-p_bc = f = Expression("x[0]", degree=2)
-Ns = [2, 8, 32]
-for N in Ns:
-    mesh = UnitIntervalMesh(N)
-    V = FunctionSpace(mesh, "CG", 1)
-    u = TrialFunction(V)
-    v = TestFunction(V)
-    a_coeff = A(degree=2)
-    a = a_coeff*inner(grad(u), grad(v))*dx
-    f = Constant(0)
-    L = f*v*dx
-    bc = DirichletBC(V, p_bc, DirichletBoundary())
-    u = Function(V)
-    solve(a == L, u, bc)
-    x = V.tabulate_dof_coordinates()
-    plt.plot(x, u.vector().get_local())
-plt.legend(["N=%d"%N for N in Ns], loc="upper left")
-plt.savefig('darcy_a1D.png'); plt.savefig('darcy_a1D.pdf')
-plt.show()
-!ec 
+@@@CODE src/darcy1D.py fromto: from fenics@plt.show()
 
 Figure ref{femsys:varcoeff:1D:Galerkin:plotu} shows the solution $u$. Clearly we have a good approximation already on a mesh with just two elements
 as the solution is piecewise linear as found in (ref{varcoeff:analytical:solution}).  
@@ -1048,7 +1020,10 @@ well presented in many books, e.g. cite{brezzi2012mixed, Brenner_Scott, Braess, 
 
 The complete code for the mixed Darcy example is 
 
-@@@CODE src/darcy1D_mixed.py 
+@@@CODE src/darcy1D_mixed.py fromto: for N in Ns@plt.show() 
+
+Here, we remark that we in order to plot the discontinuous solution
+properly we re-sampled the solution on a fine mesh. In general for discontinuous elements one should be careful with the way the solution is plotted. Interpolating into a continuous field may not be desirable.  
 
 ======= Exercises =======
 
