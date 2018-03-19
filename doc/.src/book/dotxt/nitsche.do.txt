@@ -360,7 +360,7 @@ u &=0,\quad (x,y)\in\partial\Omega_D,\\
    (any solution $u+\hbox{const}$ is also a solution).
 !enotice
 
-===== Penalty method for optimization with constraints =====
+===== Penalty and Nitsche's methods for optimization with constraints =====
 label{nitsche:pde:opt:penalty}
 
 The attention is now on optimization of a functional $F(u)$
@@ -394,24 +394,21 @@ integrated over the boundary $\partial\Omega_N$, to
 the functional $F(u)$, just as we do in the penalty method (the
 factor $\frac{1}{2}$ can be incorporated in $\lambda$, but makes the
 final result look nicer).
+
+
+
 The condition $\partial u/\partial n=g$
 on $\partial\Omega_N$ is no longer relevant, so we replace
 the $g$ by the unknown $\partial u/\partial n$ in the
 boundary integral term in (ref{nitsche:Fu:functional1}).
 The new functional becomes
-
-[kam: there is a mismatch between text and equations here. If
-we replace $g$ with $\partial u/\partial n$ it seems we get a 
-symmetric form right away as we get $u  \partial u/\partial n $. ]
-
 !bt
 \begin{equation} F(u) =
 \int\limits_\Omega ||\nabla u||^2 \dx -
 \int\limits_\Omega fu \dx -
-\int\limits_{\partial\Omega_N} \frac{\partial u}{\partial n}  u \ds + \,
 \frac{1}{2}\int\limits_{\partial\Omega_N}\lambda (u-\uN)^2 \ds,\quad
 u\in V,
-label{nitsche:Fu:functional2}
+label{nitsche:Fu:penalty:simple}
 \end{equation}
 !et
 In $F(\tilde u)$, insert $\tilde u=u+\epsilon v$,
@@ -423,60 +420,107 @@ The result becomes
 \begin{equation} \frac{\delta F}{\delta u} =
 \int\limits_\Omega \nabla u\cdot\nabla v \dx -
 \int\limits_\Omega fv \dx -
-\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds +
 \int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds
 =0\tp
-label{nitcshe:varform:Poisson2s}
+label{nitcshe:varform:penalty:simple2}
 \end{equation}
 !et
 
-!bnotice Remark.
-We can drop the essential condition $u=0$ on $\partial\Omega_E$ and
-just use the method above to enforce $u=\uN$ on the entire boundary
-$\partial\Omega$.
-!enotice
-
-#The formulation (ref{nitcshe:varform:Poisson2s}) for incorporating
-#boundary conditions weakly is due to Nitsche
-
-__Symmetrization.__
-Using the formulation (ref{nitcshe:varform:Poisson2s}) for finite
-element computations has one disadvantage: the variational form
-is no longer symmetric, and the coefficient matrix in the associated
-linear system becomes non-symmetric. We see this if we
-rewrite (ref{nitcshe:varform:Poisson2s}) as
-
+We may then ask ourselves which equation and which boundary conditions
+is solved for when minimizing this functional. We therefore do integration
+by parts in order to obtain the strong formulation. We remember the Gauss-Green's 
+lemma: 
 !bt
-\[ a(u,v) = L(v),\quad\forall v\in V,\]
+\[ \int\limits_\Omega (\nabla^2 u)v\dx =
+-\int\limits_\Omega \nabla u\cdot \nabla v\dx
++ \int\limits_{\partial\Omega_N} \frac{\partial u}{\partial n}v\ds\tp
+\]
 !et
-with
-
+Hence, from (ref{nitcshe:varform:penalty:simple2})
+and using Gauss-Green's lemma, we obtain: 
+!bt
+\begin{equation} \frac{\delta F}{\delta u} =
+\int\limits_\Omega - \Delta u \, v \dx -
+\int\limits_\Omega fv \dx -
+\int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds
++ \int\limits_{\partial\Omega} \frac{\partial u}{\partial n}v\ds
+=0\tp
+label{nitcshe:varform:penalty:simple3}
+\end{equation}
+!et
+In other words, our problem on strong form reads: 
 !bt
 \begin{align*}
-a(u,v) &=
-\int\limits_\Omega \nabla u\cdot\nabla v \dx
--\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
-+ \int\limits_{\partial\Omega_N}\lambda uv \ds,\\
-L(v) &= \int\limits_\Omega fv \dx +
-\int\limits_{\partial\Omega_N}\lambda \uN v \ds
-\tp
+-\Delta u &= f, \quad x \in \Omega, \\ 
+\frac{\partial u}{\partial n} &= \lambda (u-\uN) , \quad x \in \partial \Omega_N \tp 
 \end{align*}
 !et
-The lack of symmetry is
-evident in that we cannot interchange $u$ and $v$ in $a(u,v)$, that is; 
-$a(u,v)\not=a(v,u)$. 
-The standard finite element method results in a symmetric bilinear form
-and a corresponding matrix for 
-the Poisson problem and we would like to regain this property. 
-The problematic non-symmetric term
-is the line integral of $v \partial u/\partial n$.
-If we had another term $u \partial v/\partial n$, the sum would be
-symmetric. The idea is therefore to subtract $\int_{\partial\Omega_N}
-u \partial v/\partial n\ds$ from both $a(u,v)$ and $L(v)$.
-Since $u=\uN$ on $\partial\Omega_N$ we subtract
-$\int_{\partial\Omega_N}
-u\partial v/\partial n\ds = \int_{\partial\Omega_N}
-\uN\partial v/\partial n\ds$ in $L(v)$:
+This means that the minimizing problem corresponds to solving a problem with Robin conditions.
+
+Nitsche's method consists of changing the above functional in order to obtain the
+true boundary conditions. As we saw in the previous calculations, integration by parts 
+introduced the term $\frac{\partial u}{\partial n}$ in the strong formulations.   
+Hence, a natural idea is to subtract such a term from the functional. 
+
+!bt
+\begin{equation} F(u) =
+\int\limits_\Omega ||\nabla u||^2 \dx -
+\int\limits_\Omega fu \dx -
+\int\limits_{\partial\Omega_N} \frac{\partial u}{\partial n}  (u -\uN) \ds + \,
+\frac{1}{2}\int\limits_{\partial\Omega_N}\lambda (u-\uN)^2 \ds \tp
+label{nitsche:Fu:functional2}
+\end{equation}
+!et
+In $F(\tilde u)$, insert $\tilde u=u+\epsilon v$,
+differentiate with respect
+to $\epsilon$, and let $\epsilon\rightarrow 0$.
+The result becomes
+
+!bt
+\begin{align*} \frac{\delta F}{\delta u} &=
+\int\limits_\Omega \nabla u\cdot\nabla v \dx -
+\int\limits_\Omega fv \dx \\ 
+&-
+\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds  +  
+\int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}(u-\uN) \ds +
+\int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds
+=0\tp
+label{nitcshe:varform:Poisson2s}
+\end{align*}
+!et
+
+If we again perform integration by parts to obtain the strong form and boundary conditions, 
+we get 
+
+!bt
+\begin{align*} \frac{\delta F}{\delta u} =
+\int\limits_\Omega -\Delta u\, v \dx -
+\int\limits_\Omega fv \dx -
+\int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}(u-\uN) \ds +
+\int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds
+=0\tp
+\end{align*}
+!et
+
+In other words, our problem on strong form reads: 
+!bt
+\begin{align*}
+-\Delta u &= f, \quad x \in \Omega,  \\ 
+u &= \uN, \quad x \in \partial \Omega_N \tp   
+\end{align*}
+!et
+and the condition $u=\uN$ is enforced both in terms of the penalty parameter $\lambda$
+by the term 
+$\int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds$
+and in terms of equations involving the derivatives of the test function $v$,  
+$\int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}(u-\uN) \ds$.  
+One may question why to terms are needed in order to enforce the boundary condition 
+in general this may not be needed and the penalty term may sometimes be dropped. 
+However, the advantage of including the penalty term is that it keeps the functional
+convex and the bilinear form becomes becomes both positive and symmetric. 
+
+
+We summarize the final formulation in terms of a weak formulation: 
 
 !bt
 \begin{align*}
@@ -491,26 +535,6 @@ L(v) &= \int\limits_\Omega fv \dx
 \tp
 \end{align*}
 !et
-This formulation is known as Nitsche's method, but it is actually
-a standard penalty method.
-
-We can also easily derive this formulation from the partial differential
-equation problem. We multiply $-\nabla^2 u=f$ by $v$ and integrate over
-$\Omega$. Integration by parts leads to
-
-!bt
-\[ \int\limits_\Omega (\nabla^2 u)v\dx =
--\int\limits_\Omega \nabla u\cdot \nabla v\dx
-+ \int\limits_{\partial\Omega} \frac{\partial u}{\partial n}v\ds\tp
-\]
-!et
-Now, $u=0$ and therefore $v=0$ on $\partial\Omega_D$ so the
-line integral reduces to an integral over $\partial\Omega_N$, where
-we have no condition and hence no value for $\partial u/\partial n$,
-so we leave the integral as is.
-Then we add the boundary penalization term $\lambda\int_{\partial\Omega_N}
-(u-\uN)v\ds$. The result becomes identical to (ref{nitcshe:varform:Poisson2s}).
-We can thereafter add the symmetrization terms if desired.
 
 ===== Lagrange multiplier method for optimization with constraints =====
 label{nitsche:pde:opt:Lagrange}
