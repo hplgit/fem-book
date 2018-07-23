@@ -141,3 +141,5 @@ vectorized
 vu
 workflow
 jit
+cosinusoidal
+

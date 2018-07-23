@@ -56,6 +56,22 @@ $f(\x,t)$ and $I(\x)$ are given functions. We have assigned the particular
 boundary condition (ref{fem:deq:diffu:bcN}) to minimize
 the details on handling boundary conditions in the finite element method.
 
+!bnotice
+For systems of PDEs the strategy for discretization in time may have great impact on
+overall efficiency and accuracy. The Navier-Stokes equations for 
+an incompressible Newtonian fluid is a prime example where many methods have been proposed
+and where there are notable differences between the different methods. Furthermore, 
+the differences often depend significantly on the application.   
+Discretization in time *before* discretization in space allows for manipulations
+of the equations and schemes that are very efficient compared to  
+schemes based on discretizing in space first.     
+The schemes are so-called operator-splitting schemes or projection based schemes. These schemes do, however,  
+suffer from loss of accuracy particularly in terms of errors associated with the boundaries. 
+The numerical error is caused by the splitting of the equations which leads to non-trivial splitting
+of the boundary conditions.   
+It is beyond the scope to discuss these schemes and their differences in this text, but we mentioned that  
+this is the topic of the review article cite{langtangen2002numerical} and the more comprehensive books cite{gresho1998incompressible,turek1999efficient}.   
+!enotice
 
 ======= Discretization in time by a Forward Euler scheme =======
 label{fem:deq:diffu:FE}
@@ -398,7 +414,7 @@ coefficient matrix:
 !et
 
 
-===== Example using sinusoidal basis functions =====
+===== Example using cosinusoidal basis functions =====
 label{fem:deq:diffu:FE:cosex}
 
 Let us go through a computational example and demonstrate the
@@ -558,8 +574,8 @@ lead to improved overall accuracy in the finite element method.
 The interplay of the errors in the current problem is
 analyzed in detail in Section ref{fem:deq:diffu:anal}.
 The effect of the error is at least not more severe than what is
-produced by the finite difference method since both are
-$\mathcal{O}(h^2)$.
+produced by the finite difference method and both are of the same order  
+($\mathcal{O}(h^2)$).
 
 idx{mass matrix} idx{mass lumping} idx{lumped mass matrix}
 
@@ -567,8 +583,8 @@ Making $M$ diagonal is usually referred to as *lumping the mass matrix*.
 There is an alternative method to using an integration rule
 based on the node points: one can sum the entries in each row, place
 the sum on the diagonal, and set all other entries in the row equal
-to zero. For P1 elements the methods of lumping the mass matrix give
-the same result.
+to zero. For P1 elements both methods of lumping the mass matrix give
+the same result, but this is in general not true for higher order elements. 
 
 
 
@@ -594,13 +610,13 @@ the time-discrete differential equation becomes
 
 !bt
 \begin{equation}
-u^{n} - \Delta t \left( \dfc\nabla^2 u^n + f(\x, t_{n})\right) =
-u^{n-1}
+u^{n} - \Delta t  \dfc\nabla^2 u^n  =
+u^{n-1} + \Delta t f(\x, t_{n})
 label{fem:deq:diffu:BE:eq:un}
 \tp
 \end{equation}
 !et
-Equation (ref{fem:deq:diffu:BE:eq:un}) can compute
+From equation (ref{fem:deq:diffu:BE:eq:un}) we can compute
 $u^1,u^2,\dots,u^{N_t}$,
 if we have a start $u^0=I$ from the initial condition.
 However, (ref{fem:deq:diffu:BE:eq:un}) is a partial differential
@@ -1185,21 +1201,20 @@ can only be carried out if $f=0$) )
 
 !bt
 \begin{equation}
-[D_t^+(u + \frac{1}{6}h^2D_xD_x u)] = \dfc D_xD_x u]^n_q
+[D_t^+(u + \frac{1}{6}h^2D_xD_x u)]^n_q = \dfc [D_xD_x u]^n_q
 label{fem:deq:diffu:FE:fdinterp2}
 \tp
 \end{equation}
 !et
 We have (using (ref{fem:deq:diffu:analysis:fe:A})
-and (ref{fem:deq:diffu:analysis:ddx:A})
+and (ref{fem:deq:diffu:analysis:ddx:A})):
 
 !bt
-\[ [D_t^+D_xD_x Ae^{ikx}]^n_q = [D_t^+A]^n [D_xD_x e^{ikx}]_q
-= -A^ne^{ikp\Delta x}
+\[ [D_t^+ D_xD_x Ae^{ikx}]^n_q =  -A^ne^{ikp\Delta x} 
 \frac{A-1}{\Delta t}\frac{4}{\Delta x^2}\sin^2 (\frac{k\Delta x}{2})
 \tp  \]
 !et
-The term $[D_t^+Ae^{ikx} + \frac{1}{6}\Delta x^2 D_t^+D_xD_x Ae^{ikx}]^n_q$
+The term 
 then reduces to
 
 !bt
@@ -1255,7 +1270,8 @@ finite difference method for the diffusion equation, which demands
 $F\leq 1/2$.
 Lumping the mass matrix will, however, recover the finite difference
 method and therefore imply $F\leq 1/2$ for stability.
-In other words, introducing an error in the integration improves the
+In other words, introducing an error in the integration (while keeping the order 
+of accuracy) improves the
 stability by a factor of 3.
 
 
@@ -1390,7 +1406,26 @@ is dominated by the error in the amplification factor, we
 may expect it to die out quite quickly in terms of $k$. 
 To improve the error, we must decrease $\Delta t$ as 
 decreasing the $\Delta x$ will not improve the error
-in the amplification factor.  
+in the amplification factor. 
+In general, for a time-dependent problem with an appropriate scheme
+we expect an  error estimate in the asymptotic regime  of the form
+
+!bt
+\begin{equation}  
+\|u_e - u\| \le C (\Delta t)^\alpha + D h^\beta   
+\end{equation}  
+!et
+where $C, D, \alpha, \beta$ depend the discretization scheme. 
+However, this estimate only holds in the *asymptotic regime*. 
+As the amplification factor analysis shows, 
+we cannot remove the error in the amplification factor by decreasing $h$.   
+Similarly, we cannot remove spatial error by decreasing $\Delta t$. 
+As such, 
+the common way of determining the order of convergence is to 
+first choose a very small $h$ such that the $D h^\beta$ term is negligible  
+compared to $C(\Delta t)^\alpha$ and then determine $C, \alpha$. When 
+$C, \alpha$ are determined then $D, \beta$ is found in the same way 
+by choosing small $\Delta t$. 
 
 #As we saw earlier, the amplification factor varied with $k$, in
 #particular with respect to the resolution. Let us therefore consider
