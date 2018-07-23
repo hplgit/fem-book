@@ -1503,3 +1503,6 @@ equations should be replaced by $\uex^n$ and $\uex^{n+1}$ to
 indicate that the unknown is the exact solution of the PDE
 discretized in time, but not yet in space, see
 Section ref{fem:deq:diffu:FE}.)
+
+
+[kam: oppgave med fem, lumping, oppvarming av hytte/nedkjøling av øl]
