@@ -56,8 +56,7 @@ $f(\x,t)$ and $I(\x)$ are given functions. We have assigned the particular
 boundary condition (ref{fem:deq:diffu:bcN}) to minimize
 the details on handling boundary conditions in the finite element method.
 
-!bnotice
-For systems of PDEs the strategy for discretization in time may have great impact on
+__Remark.__ For systems of PDEs the strategy for discretization in time may have great impact on
 overall efficiency and accuracy. The Navier-Stokes equations for 
 an incompressible Newtonian fluid is a prime example where many methods have been proposed
 and where there are notable differences between the different methods. Furthermore, 
@@ -71,7 +70,6 @@ The numerical error is caused by the splitting of the equations which leads to n
 of the boundary conditions.   
 It is beyond the scope to discuss these schemes and their differences in this text, but we mentioned that  
 this is the topic of the review article cite{langtangen2002numerical} and the more comprehensive books cite{gresho1998incompressible,turek1999efficient}.   
-!enotice
 
 ======= Discretization in time by a Forward Euler scheme =======
 label{fem:deq:diffu:FE}

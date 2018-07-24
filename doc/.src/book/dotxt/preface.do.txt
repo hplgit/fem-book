@@ -161,17 +161,19 @@ of systems of PDEs, and in particular the way systems are treated in
 FEniCS, is the topic of Chapter ref{ch:femsys}.
 Nonlinear ODE and PDE problems are treated quite comprehensively in
 Chapter ref{ch:nonlin}.
-
-With all the
-fundamental building blocks from Chapter ref{ch:approx:global}, we have most
-of the elements in place for a quick treatment of the popular
-polynomial chaos expansion method for uncertainty quantification in
-Chapter ref{ch:pce}.
-This chapter becomes a nice illustration of the power of the theory in
-the beginning of the book.  A similar illustration of the applicability
-of variational thinking appears in Chapter ref{ch:cg} where we construct
+Finally, the applicability
+of variational thinking appears in a different context in  Chapter ref{ch:cg} where we construct
 iterative methods for linear systems and derive methods in the Conjugate
 gradient family.
+
+
+#With all the
+#fundamental building blocks from Chapter ref{ch:approx:global}, we have most
+#of the elements in place for a quick treatment of the popular
+#polynomial chaos expansion method for uncertainty quantification in
+#Chapter ref{ch:pce}.
+#This chapter becomes a nice illustration of the power of the theory in
+#the beginning of the book.  
 
 === Supplementary materials ===
 
@@ -183,5 +185,5 @@ URL: "http://hplgit.github.io/fem-book/doc/web/".
 \vspace{1cm}
 
 \noindent
-{\it Oslo, September 2016}  \hfill  {\it Hans Petter Langtangen, Kent-Andre Mardal}
+{\it Oslo, September 2018}  \hfill  {\it Hans Petter Langtangen, Kent-Andre Mardal}
 # #endif

@@ -1,14 +1,17 @@
 idx{polynomial chaos}
 label{ch:pce}
 
+\newcommand{\zzeta}{\bm{\zeta}}
+
 Differential equations often contain unknown parameters, but
 mathematically these must be prescribed to run the solution method.
 If some parameters are uncertain, how uncertain is then the answer?
 The simplest *conceptual* approach to this question is to let each
 parameter vary in an interval and use *interval arithmetics* to
-compute the interval of solution at the vertices of the
-mesh. Unfortunately, this approach is terribly inaccurate and not
-feasible. Also, any deterministic approach to the question hides fact
+compute the corresponding interval of the solution at the vertices of the
+mesh. Unfortunately, this approach is terribly inaccurate, computationally demanding, 
+and in general not
+feasible. Also, any deterministic approach to the question hides the fact
 that uncertainty is strongly connected to statistical
 variations. Therefore, a more sound approach is to prescribe some
 statistics of the input parameters and then compute some statistics of
@@ -21,10 +24,10 @@ One of the most exciting and promising methods of UQ for differential
 equation is *polynomial chaos expansions*. The literature on this method
 might seem complicated unless one has firm background in probability
 theory. However, it turns out that all the seemingly different variations
-of this method are all strongly connected if one knows the approximation
-framework of Chapter ref{ch:approx:global} of this book and some very basic
+of this method are all strongly connected. This becomes apparent if one knows 
+the approximation framework of Chapter ref{ch:approx:global} of this book and some very basic
 probability theory. It is therefore natural to present polynomial chaos
-expansions from perspective and make the ideas more accessible to a larger
+expansions from this perspective and make the ideas more accessible to a larger
 audience. This is exactly the purpose of the present chapter.
 
 There are some excellent expositions of polynomial chaos in the recent
@@ -36,7 +39,7 @@ concepts rather than the more traditional exposition in the literature.
 
 __Remark on a major probabilistic simplification.__
 
-We assume that we have some function $u(\x,t;\zeta)$, where $\zeta$ is
+We assume that we have some function $u(\x,t;\zzeta)$, where $\zzeta$ is
 a vector of *random parameters* $(\zeta_0,\ldots,\zeta_N)$ that
 introduces uncertainty in the problem. Note that the uncertainty is
 described by $M+1$ stochastic scalar parameters and is therefore

@@ -57,11 +57,11 @@ label{nonlin:app:fem_vs_fdm}
 # #include "dotxt/fem1D_symbolic.do.txt"
 
 
-!split
-========= Uncertainty quantification and polynomial chaos expansions =========
-label{ch:pc}
+#!split
+#========= Uncertainty quantification and polynomial chaos expansions =========
+#label{ch:pc}
 
-# #include "dotxt/polychaos.do.txt"
+## #include "dotxt/polychaos.do.txt"
 
 
 !split
