@@ -63,7 +63,7 @@ which is a linear equation in the unknown $u^{n+1}$ with solution
 !et
 
 The disadvantage with this discretization is
-the strict stability criterion $\Delta t \leq h^2/(6\max\alpha)$
+the strict stability criterion, e.g.,  $\Delta t \leq h^2/(6\max\alpha)$
 for the case $f=0$ and a standard 2nd-order finite difference discretization
 in 3D space with mesh cell sizes $h=\Delta x=\Delta y=\Delta z$.
 
@@ -230,7 +230,7 @@ label{nonlin:pdelevel:pde:BE:Newton2}
 !et
 The term $\dfc^{\prime}(u^{n,k})\delta u\nabla \delta u$ is of
 order $\delta u^2$
-and therefore omitted since we expect the correction $\delta u$
+and is therefore omitted since we expect the correction $\delta u$
 to be small ($\delta u \gg \delta u^2$).
 Reorganizing the equation gives a PDE
 for $\delta u$ that we can write in short form as
@@ -611,7 +611,6 @@ procedure is to fill a tridiagonal matrix data structure and the
 right-hand side vector with the right numbers and call a Gaussian
 elimination routine for tridiagonal linear systems.
 
-[kam: yapi checks the calculations of the following pages]
 === Mesh with two cells ===
 
 It helps on the understanding of the details to write out all the
@@ -831,7 +830,6 @@ J_{i,i+1} &= \frac{\partial A_{i,i+1}}{\partial u_{i-1}}u_{i+1}
 \end{align*}
 !et
 
-[kam: check completely!!]
 
 The explicit expression for nonlinear equation number $i$,
 $F_i(u_0,u_1,\ldots)$, arises from moving the $f(u_i)$ term in
@@ -946,7 +944,7 @@ C\baspsi_i(0),\quad i\in\If\tp
 === Fundamental integration problem ===
 
 Methods that use the Galerkin or weighted residual method face a
-fundamental difficulty in nonlinear problems: how can we integrate a
+fundamental difficulty in nonlinear problems: how can we integrate 
 terms like $\int_0^L
 \dfc(\sum_{k}c_k\baspsi_k)\baspsi_i^{\prime}\baspsi_j^{\prime}\dx$ and
 $\int_0^L f(\sum_{k}c_k\baspsi_k)\baspsi_i\dx$ when we do not know the
