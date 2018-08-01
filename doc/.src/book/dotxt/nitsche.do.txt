@@ -238,7 +238,8 @@ is computed by finding
 label{nitcshe:varform:Poisson1}
 \end{equation}
 !et
-and then let $\epsilon$ go to zero, which just results in $\int\limits_\Omega fv\dx$.
+and then let $\epsilon$ go to zero (not strickly needed in this case
+because the term is linear in $\epsilon$), which just results in $\int\limits_\Omega fv\dx$.
 The functional derivative of the other area integral becomes
 
 !bt
@@ -365,6 +366,8 @@ label{nitsche:pde:opt:penalty}
 
 The attention is now on optimization of a functional $F(u)$
 with a given constraint that $u=\uN$ on $\partial\Omega_N$.
+That is, we want to set Dirichlet conditions weakly 
+on the Neumann part of the boundary. 
 We could, of course, just extend the Dirichlet condition on $u$ in the
 previous set-up by saying that $\partial\Omega_D$ is the
 complete boundary $\partial\Omega$ and that $u$ takes on
@@ -392,7 +395,8 @@ __A penalty method.__
 The idea is to add a penalization term $\frac{1}{2}\lambda(u-\uN)^2$,
 integrated over the boundary $\partial\Omega_N$, to
 the functional $F(u)$, just as we do in the penalty method (the
-factor $\frac{1}{2}$ can be incorporated in $\lambda$, but makes the
+factor $\frac{1}{2}$ can be incorporated in $\lambda$, but we keep it
+because it makes the
 final result look nicer).
 
 
@@ -458,7 +462,7 @@ In other words, our problem on strong form reads:
 This means that the minimizing problem corresponds to solving a problem with Robin conditions.
 
 Nitsche's method consists of changing the above functional in order to obtain the
-true boundary conditions. As we saw in the previous calculations, integration by parts 
+*true Dirichlet conditions*. As we saw in the previous calculations, integration by parts 
 introduced the term $\frac{\partial u}{\partial n}$ in the strong formulations.   
 Hence, a natural idea is to subtract such a term from the functional. 
 
@@ -514,8 +518,9 @@ by the term
 $\int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds$
 and in terms of equations involving the derivatives of the test function $v$,  
 $\int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}(u-\uN) \ds$.  
-One may question why to terms are needed in order to enforce the boundary condition 
-in general this may not be needed and the penalty term may sometimes be dropped. 
+
+One may question why two terms are needed in order to enforce the boundary condition. 
+In general this may not be needed and the penalty term may sometimes be dropped. 
 However, the advantage of including the penalty term is that it keeps the functional
 convex and the bilinear form becomes becomes both positive and symmetric. 
 
@@ -523,17 +528,19 @@ convex and the bilinear form becomes becomes both positive and symmetric.
 We summarize the final formulation in terms of a weak formulation: 
 
 !bt
-\begin{align*}
+\begin{align}
+label{nitsche:finalform:a}
 a(u,v) &=
 \int\limits_\Omega \nabla u\cdot\nabla v \dx
 -\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
 - \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}u \ds
 + \int\limits_{\partial\Omega_N}\lambda uv \ds,\\
+label{nitsche:finalform:L}
 L(v) &= \int\limits_\Omega fv \dx
 - \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}\uN \ds
 + \int\limits_{\partial\Omega_N}\lambda \uN v \ds
 \tp
-\end{align*}
+\end{align}
 !et
 
 ===== Lagrange multiplier method for optimization with constraints =====
@@ -589,8 +596,8 @@ These equations can be written as a linear system of equations:
 Find $u, \lambda \in V\times Q$ such that  
 !bt
 \begin{align*}
-a(u,v) + b(\lambda, v) &= L(v), \\
-b(u, p)                &= 0, 
+a(u,v) + b(\lambda, v) &= L_u(v),  \quad (\frac{\delta F}{\delta u} = 0) \\
+b(u, p)                &= L_\lambda(\lambda) , \qaud (\frac{\delta F}{\delta \lambda = 0}, 
 \end{align*}
 !et
 for all test functions $v\in V$ and $p \in Q$ and 
@@ -598,8 +605,8 @@ for all test functions $v\in V$ and $p \in Q$ and
 \begin{align*}
 a(u,v)        &= \int\limits_{\Omega}\nabla u\cdot\nabla v\dx - \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v\ds, \\
 b(\lambda, v) &= \int\limits_\Omega \lambda v \ds, \\
-L(v)          &= \int\limits_\Omega fv \dx, \\
-L(\lambda)    &= \int\limits_\Omega \uN \lambda \ds . 
+L_u(v)          &= \int\limits_\Omega fv \dx, \\
+L_\lambda(\lambda)    &= \int\limits_\Omega \uN \lambda \ds . 
 \end{align*}
 !et
 
@@ -620,30 +627,28 @@ A\, c = \left[ \begin{array}{cc} A^{(u,u)} & A^{(\lambda,u)}\\ A^{(u,\lambda)} &
 where 
 !bt
 \begin{align*}
-A^{(u,u)}_{i,j} &=  a(\baspsi^{(w)}_j, \baspsi^{(w)}_i),  \\ 
-A^{(u,\lambda)}_{i,j} &=  b(\baspsi^{(u)}_j, \baspsi^{(w)}_i),  \\
+A^{(u,u)}_{i,j} &=  a(\baspsi^{(u)}_j, \baspsi^{(u)}_i),  \\ 
+A^{(u,\lambda)}_{i,j} &=  b(\baspsi^{(u)}_j, \baspsi^{(\lambda)}_i),  \\
 A^{(\lambda,u)}_{i,j} &= A^{(u,\lambda)}_{j,i}, \\
-b^{(w)}_i &= (f,\baspsi^{(w)}_i), \\
-b^{(u)}_i &= 0 \tp
+b^{(w)}_i &= L_u(\baspsi^{(u)}_i), \\
+b^{(u)}_i &= L_u(\baspsi^{(\lambda)}_i), \tp
 \end{align*}
 !et
 
-[kam: $a$ should be symmetric. Check why not. Also here $\partial \Omega_N$ is used almost everywhere. Should
-probably be $\partial \Omega$.]
 
 ===== Example: 1D problem =====
 label{nitsche:pde:opt:1Dex}
-__Penalty method.__
+__Nitsche method.__
 
 
 Let us do hand calculations to demonstrate weakly enforced boundary
-conditions via a penalty method and via the Lagrange multiplier method.
-We study the simple problem $-u'' = 2$ on $[0,1]$ with boundary
+conditions via a Nitsche's method and via the Lagrange multiplier method.
+We study the simple problem $-u'' = 2$ on $[0,1]$, c.f. ref{nitsche:form:a}-ref{nitsche:form:L}, with boundary
 conditions $u(0)=0$ and $u(1)=1$.
 !bt
 \begin{align*}
 a(u,v) &=
-\int_0^1 \nabla u\cdot\nabla v \dx
+\int_0^1  u_x\cdot v_x \dx
 -[u_x v]_0^1
 -[v_x u]_0^1
 +[\lambda uv]_0^1  \\
@@ -702,8 +707,23 @@ for i in range(len(basis)):
     a += (lam*phi_j*phi_i).subs(x,0) 
 !ec 
 
+A complete FEniCS code for investigating the sensitivity of the penalty parameter is here: 
 
-[kam: Do the thing in FEniCS. Check results for different $\lambda$.]
+@@@CODE src/nitsche.py 
+
+As we see in figure ref{nitsche:fig:penalty} and the zoom in ref{nitsche:fig:penalty:zoom}, Nitsche's method
+is not very sensitive to the value of the penalty parameter as long as it is above a certain treshold. In 
+our 1D example, the treshold seems to be $1/h$. Setting the parameter to $1/h$ or lower makes the solution
+blow up and there are some artifacts when setting the parameter very close to $1/h$ but 
+we see that $2/h$, $10/h$ and $100/h$ gives produce visually identical solutions. This is generally, the
+case with Nitsche's method although the treshold may depend on the application.  
+
+FIGURE: [fig/nitsche1D, width=200] Solution of the Poisson problem using Nitsche's method
+for various penalty paramenters. label{nitsche:fig:penalty}
+
+FIGURE: [fig/nitsche1D_zoom, width=200] A zoom towards the right boundary of the figure in ref{nitsche:fig:penalty}. label{nitsche:fig:penalty:zoom}
+
+
 
 
 
