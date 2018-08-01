@@ -238,7 +238,7 @@ is computed by finding
 label{nitcshe:varform:Poisson1}
 \end{equation}
 !et
-and then let $\epsilon$ go to zero (not strickly needed in this case
+and then let $\epsilon$ go to zero (not strictly needed in this case
 because the term is linear in $\epsilon$), which just results in $\int\limits_\Omega fv\dx$.
 The functional derivative of the other area integral becomes
 
@@ -712,14 +712,14 @@ A complete FEniCS code for investigating the sensitivity of the penalty paramete
 @@@CODE src/nitsche.py 
 
 As we see in figure ref{nitsche:fig:penalty} and the zoom in ref{nitsche:fig:penalty:zoom}, Nitsche's method
-is not very sensitive to the value of the penalty parameter as long as it is above a certain treshold. In 
-our 1D example, the treshold seems to be $1/h$. Setting the parameter to $1/h$ or lower makes the solution
+is not very sensitive to the value of the penalty parameter as long as it is above a certain threshold. In 
+our 1D example, the threshold seems to be $1/h$. Setting the parameter to $1/h$ or lower makes the solution
 blow up and there are some artifacts when setting the parameter very close to $1/h$ but 
 we see that $2/h$, $10/h$ and $100/h$ gives produce visually identical solutions. This is generally, the
-case with Nitsche's method although the treshold may depend on the application.  
+case with Nitsche's method although the threshold may depend on the application.  
 
 FIGURE: [fig/nitsche1D, width=200] Solution of the Poisson problem using Nitsche's method
-for various penalty paramenters. label{nitsche:fig:penalty}
+for various penalty parameters. label{nitsche:fig:penalty}
 
 FIGURE: [fig/nitsche1D_zoom, width=200] A zoom towards the right boundary of the figure in ref{nitsche:fig:penalty}. label{nitsche:fig:penalty:zoom}
 
@@ -746,9 +746,40 @@ Now, set
 
 ===== Example: adding a constraint in a Neumann problem =====
 
+The Poisson Neumann problem,  
+
+!bt
+\begin{align*}
+-\Delta u &= f, \quad &x\in\Omega, 
+\frac{\partial u}{\partial n} &= 0, \quad &x\in \partial \Omega,   
+\end{align*}
+!et
+is a singular problem with a one dimensional kernel. To see this, we
+remark that if $u$ is a solution to the problem then $\hat{u} = u + C$, 
+where $C$ is any number is also a solution since
+$-\Delta \hat{u} = -\Delta u - \Delta C = -\Delta u = f$ and
+$ \frac{\partial \hat{u}}{\partial n} =  \frac{\partial {u}}{\partial n}+  \frac{\partial \hat{C}}{\partial n}    
+= \frac{\partial {u}}{\partial n} = 0 $. As the PDE is singular, also the corresponding finite element matrix
+will be singular and this frequently (but not always) cause problems when solving the linear system.    
+
+There are two main remedies for this problem 1) to add an equation that fixates the solution in one point
+to the linear system, i.e., set $u(x) = 0$ in some point $x$ either at the boundary or in the interior.  
+
  * Neumann problem: add $\int_\Omega u\dx =0$ as constraint.
  * Set up Nitsche and Lagrange multiplier method and the simple
    trick $u$ fixed at a point. Compare in 1D.
+
+@@@CODE src/neumann_fixpoint.py 
+
+
+FIGURE: [fig/neumann_fixpoint_exact, width=200] The exact solution of the Poisson Neumann problem. 
+for various penalty parameters. label{nitsche:fig:fixpoint:exact}
+
+FIGURE: [fig/neumann_fixpoint, width=200] The computed solution of the Poisson Neumann problem. label{nitsche:fig:fixpoint}
+
+
+
+@@@CODE src/neumann_lagrangemultiplier.py 
 
 [kam: penalty is kind of hard, at least in fenics, it involves the terms
 $\int_\Omega u \times \int_\Omega v $ rather than $\int_\Omega u v$. ]
