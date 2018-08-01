@@ -1,14 +1,12 @@
 import matplotlib.pyplot as plt
 from dolfin import * 
 
-
 mesh = UnitIntervalMesh(100) 
 V = FunctionSpace(mesh, "Lagrange", 1) 
 u = TrialFunction(V) 
 v = TestFunction(V)
 
-
-lams = [1.01, 2, 10, 100]
+lams = [1.01, 1.1, 2, 10, 100]
 for lam in lams: 
     lam = Constant(lam) 
     h = CellSize(mesh)

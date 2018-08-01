@@ -626,8 +626,8 @@ where
 A^{(u,u)}_{i,j} &=  a(\baspsi^{(u)}_j, \baspsi^{(u)}_i),  \\ 
 A^{(u,\lambda)}_{i,j} &=  b(\baspsi^{(u)}_j, \baspsi^{(\lambda)}_i),  \\
 A^{(\lambda,u)}_{i,j} &= A^{(u,\lambda)}_{j,i}, \\
-b^{(w)}_i &= L_u(\baspsi^{(u)}_i), \\
-b^{(u)}_i &= L_u(\baspsi^{(\lambda)}_i), \tp
+b^{(u)}_i &= L_u(\baspsi^{(u)}_i), \\
+b^{(\lambda)}_i &= L_\lambda(\baspsi^{(\lambda)}_i), \tp
 \end{align*}
 !et
 
@@ -729,27 +729,25 @@ of the domain. In 1D with $\Omega=(0,1)$ the boundary is $x=0$ and $x=1$. Hence,
 can be spanned by two basis functions $\lambda_0$ and $\lambda_1$. These functions
 should be such that $\lambda_0=1$ for $x=0$ and zero everywhere else, while
 $\lambda_1=1$ for $x=1$ and zero everywhere else. 
-Now, set
+Hence, we may use the following function
 
 !bt
 \[ \lambda(x) = \lambda_0 \varphi_0(x) + \lambda_{N_x}\varphi_{N_x}(x)\tp
 \]
 !et
 
-[kam: ok, write this up in detail]
 
 
 ===== Example: adding a constraint in a Neumann problem =====
 
-The Poisson Neumann problem,  
-
+The Poisson Neumann problem reads:  
 !bt
 \begin{align*}
--\Delta u &= f, \quad &x\in\Omega, 
+-\Delta u &= f, \quad &x\in\Omega, \\ 
 \frac{\partial u}{\partial n} &= 0, \quad &x\in \partial \Omega,   
 \end{align*}
 !et
-is a singular problem with a one dimensional kernel. To see this, we
+is a singular problem with a one-dimensional kernel. To see this, we
 remark that if $u$ is a solution to the problem then $\hat{u} = u + C$, 
 where $C$ is any number is also a solution since
 $-\Delta \hat{u} = -\Delta u - \Delta C = -\Delta u = f$ and
@@ -758,23 +756,72 @@ $ \frac{\partial \hat{u}}{\partial n} =  \frac{\partial {u}}{\partial n}+  \frac
 will be singular and this frequently (but not always) cause problems when solving the linear system.    
 
 There are two main remedies for this problem 1) to add an equation that fixates the solution in one point
-to the linear system, i.e., set $u(x) = 0$ in some point $x$ either at the boundary or in the interior.  
+to the linear system, i.e., set $u(x) = 0$ in some point $x$ either at the boundary or in the interior  
+and 2) to enforce that $\int_\Omega u \dx =  0$ by using a Lagrange multiplier. The first method is
+the most used method as it is simple to implement. However, while fixating the solution in one point
+often work, it is not a bullet-proof procedure, as will be illustrated below.    
 
- * Neumann problem: add $\int_\Omega u\dx =0$ as constraint.
- * Set up Nitsche and Lagrange multiplier method and the simple
-   trick $u$ fixed at a point. Compare in 1D.
-
-@@@CODE src/neumann_fixpoint.py 
-
+The following code implements the Poisson Neumann problem in FEniCS and fixates the solution in one point. 
+@@@CODE src/neumann_fixpoint.py   fromto: from dolfin import@# plot 
 
 FIGURE: [fig/neumann_fixpoint_exact, width=200] The exact solution of the Poisson Neumann problem.  for various penalty parameters. label{nitsche:fig:fixpoint:exact}
 
 FIGURE: [fig/neumann_fixpoint, width=200] The computed solution of the Poisson Neumann problem. label{nitsche:fig:fixpoint}
 
+In Figure ref{nitsche:fig:fixpoint:exact} we show the exact solution the Poisson problem while Figure ref{nitsche:fig:fixpoint} shows the resulting solution of the problem implemented in the FEniCS code. Clearly, the numerical solution is wrong and the fixating of the solution in the point (0.3,0) has affected the solution in large parts of the domain. In our case this is however easily fixed
+by ensuring that the true solution $u$ and right-hand side $f$ both satisfy $\int_\Omega u \dx = 0$ and $\int_\Omega f \dx = 0$ and 
+that the fixation is compatible with this. While this may be fixed for scalar PDE problems, it may be more difficult 
+for systems of PDEs where determining compatibility conditions is more involved. 
 
+A more general strategy is to remove the kernel by a Lagrange multiplier, requiring that 
+$\int_\Omega u \dx = 0$. 
+ 
+\newcommand{\R}{\mathbb{R}}
+These equations can be written as a linear system of equations: 
+Find $u, \lambda \in V\times \R$ such that  
+!bt
+\begin{align*}
+a(u,v) + b(c, v) &= L_u(v),   \\
+b(u, d)                &= L_c(d) ,  
+\end{align*}
+!et
+for all test functions $v\in V$ and $d\in \R$ and 
+!bt
+\begin{align*}
+a(u,v)        &= \int\limits_{\Omega}\nabla u\cdot\nabla v\dx  \\
+b(c, v) &= \int\limits_\Omega c v \dx, \\
+L_u(v)          &= \int\limits_\Omega fv \dx, \\
+L_c(d)    &= 0  . 
+\end{align*}
+!et
 
-@@@CODE src/neumann_lagrangemultipler.py 
+Letting 
+$u=\sum_{j\in\If} c_j\baspsi^{(u)}_j$, 
+$v =  \baspsi^{(v)}_i$, and 
+$c, d$ are two constants, we obtain the following system 
+of linear equations   
+!bt
+\[
+A\, c = \left[ \begin{array}{cc} A^{(u,u)} & A^{(c,u)}\\ A^{(u,c)} & 0 \end{array} \right]
+\left[ \begin{array}{c} c^{(u)} \\ c \end{array} \right] =  
+\left[ \begin{array}{c} b^{(u)} \\ 0 \end{array} \right] 
+= b, 
+\]
+!et 
+where 
+!bt
+\begin{align*}
+A^{(u,u)}_{i,j} &=  a(\baspsi^{(u)}_j, \baspsi^{(u)}_i),  \\ 
+A^{(u,c)}_{i,j} &=  b(\baspsi^{(u)}_j, c),  \\
+A^{(c,u)}_{i,j} &= A^{(u,c)}_{j,i}, \\
+b^{(u)}_i &= L_u(\baspsi^{(u)}_i) \tp \\
+\end{align*}
+!et
 
-[kam: penalty is kind of hard, at least in fenics, it involves the terms
-$\int_\Omega u \times \int_\Omega v $ rather than $\int_\Omega u v$. ]
+The corresponding code in FEniCS resembles the mathematical problem: 
+
+@@@CODE src/neumann_lagrangemultipler.py fromto: from dolfin import@u.rename 
+
+The solution produced by running this script is visually identical to the exact solution. 
+
 

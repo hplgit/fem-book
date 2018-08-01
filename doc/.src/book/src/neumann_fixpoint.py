@@ -1,5 +1,5 @@
+import matplotlib.pyplot as plt 
 from dolfin import * 
-
 
 def boundary(x, on_boundary): 
   if near(x[0],0.3) and near(x[1],0): return True
@@ -22,12 +22,16 @@ point_condition = DirichletBC(V, ue, boundary, "pointwise")
 u = Function(V, name="u")
 solve(a == L, u, point_condition) 
 
-ufile = File("u.pvd")
-ufile << u
+
+# plot 
+plot(u)
+plt.show()
 
 ue = interpolate(ue, V)
 ue.rename("ue", "")
-uefile = File("ue.pvd")
-uefile << ue
+plot(ue)
+plt.show()
+
+
 
 
