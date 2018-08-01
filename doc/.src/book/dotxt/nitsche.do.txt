@@ -489,7 +489,6 @@ The result becomes
 \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}(u-\uN) \ds +
 \int\limits_{\partial\Omega_N}\lambda (u-\uN)v \ds
 =0\tp
-label{nitcshe:varform:Poisson2s}
 \end{align*}
 !et
 
@@ -529,17 +528,14 @@ We summarize the final formulation in terms of a weak formulation:
 
 !bt
 \begin{align}
-label{nitsche:finalform:a}
 a(u,v) &=
 \int\limits_\Omega \nabla u\cdot\nabla v \dx
 -\int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v \ds
 - \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}u \ds
-+ \int\limits_{\partial\Omega_N}\lambda uv \ds,\\
-label{nitsche:finalform:L}
++ \int\limits_{\partial\Omega_N}\lambda uv \ds,   label{nitsche:finalform:a} \\
 L(v) &= \int\limits_\Omega fv \dx
 - \int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}\uN \ds
-+ \int\limits_{\partial\Omega_N}\lambda \uN v \ds
-\tp
++ \int\limits_{\partial\Omega_N}\lambda \uN v \ds label{nitsche:finalform:L} \tp 
 \end{align}
 !et
 
@@ -596,8 +592,8 @@ These equations can be written as a linear system of equations:
 Find $u, \lambda \in V\times Q$ such that  
 !bt
 \begin{align*}
-a(u,v) + b(\lambda, v) &= L_u(v),  \quad (\frac{\delta F}{\delta u} = 0) \\
-b(u, p)                &= L_\lambda(\lambda) , \qaud (\frac{\delta F}{\delta \lambda = 0}, 
+a(u,v) + b(\lambda, v) &= L_u(v),   \\
+b(u, p)                &= L_\lambda(\lambda) ,  
 \end{align*}
 !et
 for all test functions $v\in V$ and $p \in Q$ and 
@@ -643,7 +639,7 @@ __Nitsche method.__
 
 Let us do hand calculations to demonstrate weakly enforced boundary
 conditions via a Nitsche's method and via the Lagrange multiplier method.
-We study the simple problem $-u'' = 2$ on $[0,1]$, c.f. ref{nitsche:form:a}-ref{nitsche:form:L}, with boundary
+We study the simple problem $-u'' = 2$ on $[0,1]$, c.f. (ref{nitsche:finalform:a})-(ref{nitsche:finalform:L}), with boundary
 conditions $u(0)=0$ and $u(1)=1$.
 !bt
 \begin{align*}
@@ -718,8 +714,7 @@ blow up and there are some artifacts when setting the parameter very close to $1
 we see that $2/h$, $10/h$ and $100/h$ gives produce visually identical solutions. This is generally, the
 case with Nitsche's method although the threshold may depend on the application.  
 
-FIGURE: [fig/nitsche1D, width=200] Solution of the Poisson problem using Nitsche's method
-for various penalty parameters. label{nitsche:fig:penalty}
+FIGURE: [fig/nitsche1D, width=200] Solution of the Poisson problem using Nitsche's method for various penalty parameters. label{nitsche:fig:penalty}
 
 FIGURE: [fig/nitsche1D_zoom, width=200] A zoom towards the right boundary of the figure in ref{nitsche:fig:penalty}. label{nitsche:fig:penalty:zoom}
 
@@ -772,14 +767,13 @@ to the linear system, i.e., set $u(x) = 0$ in some point $x$ either at the bound
 @@@CODE src/neumann_fixpoint.py 
 
 
-FIGURE: [fig/neumann_fixpoint_exact, width=200] The exact solution of the Poisson Neumann problem. 
-for various penalty parameters. label{nitsche:fig:fixpoint:exact}
+FIGURE: [fig/neumann_fixpoint_exact, width=200] The exact solution of the Poisson Neumann problem.  for various penalty parameters. label{nitsche:fig:fixpoint:exact}
 
 FIGURE: [fig/neumann_fixpoint, width=200] The computed solution of the Poisson Neumann problem. label{nitsche:fig:fixpoint}
 
 
 
-@@@CODE src/neumann_lagrangemultiplier.py 
+@@@CODE src/neumann_lagrangemultipler.py 
 
 [kam: penalty is kind of hard, at least in fenics, it involves the terms
 $\int_\Omega u \times \int_\Omega v $ rather than $\int_\Omega u v$. ]
