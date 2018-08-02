@@ -626,7 +626,7 @@ as
 \begin{align*}
 w_{e,x} &= - \int \frac{\beta}{\mu} \dx + C_w, \\
 w_e &= \int w_{e,x} \dx + D_w, \\
-T_{e,x} &= - \int \mu w_x^2 \dx + C_T,\\
+T_{e,x} &= - \int \mu w_{e,x}^2 \dx + C_T,\\
 T_e &= \int T_{e,x} \dx + D_T, \\
 \end{align*}
 !et
@@ -901,23 +901,24 @@ is implemented in the `project` method in FEniCS and is obtained as
 !bc pycod
 aux = project(-a_coeff*u.dx(0), V)
 !ec
-As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux}, this
+As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux} this 
 approach does not produce a good approximation of the flux.
-Moreover, the approximation close to the jump does not seem to 
-improve as the mesh is refined. The problem is that we try to approximate a 
-discontinuous function with continuous basis and this may often cause
+Moreover, the approximate solution does not seem to 
+improve close to the jump as the mesh is refined. The problem is that we try to approximate a 
+discontinuous function with a continuous basis and this may often cause
 spurious oscillations. In this case, we may fix the problem by alternative post-processing 
-methods for calculating the flux. For instance, we may project onto the piecewise constant 
-functions. However, we would still loose accuracy as the first order derivative involved
+methods for calculating the flux. For instance, we may project onto piecewise constant 
+functions instead. However, in general, we would still loose accuracy as the first order derivative involved
 in the flux calculation lower the order of accuracy by one.     
 
 FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
 
 
 
-An alternative method that makes the flux approximation more accurate than
-the pressure is an equivalent form
+An alternative method that makes the flux approximation $w$ more accurate than
+the underlying $u$ is an equivalent form
 of (ref{femsys:varcoeff:1D}) where the flux is one of the unknowns.
+This formulation is usually called the mixed formulation. 
 The equations reads:
 !bt
 \begin{align}
