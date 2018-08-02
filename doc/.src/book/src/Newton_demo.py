@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from numpy import * 
 
 from sys import argv 
-if len(argv) != 6: 
+if not len(argv) == 6: 
   print "usage: > Newton_demo.py f dfx x0 xmin xmax " 
 
 f_str = argv[1]
@@ -26,6 +26,7 @@ while abs(f) > tol and i <= maxit and x > xmin and x < xmax :
   x = x0 - f/dfdx
   f = eval(f_str, vars())
   dfdx = eval(dfdx_str, vars())
+  x0 = x 
   xs.append(x0)
   fs.append(f)
   i = i+1 
