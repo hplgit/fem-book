@@ -1218,16 +1218,18 @@ methods such as polynomial chaos expansions.
 
 !bnotice The residual: an indirect but computationally cheap measure of the error
 When attempting to  solve
-a system $A c = b$, we may question how far off a vector $c_0$ is.
-The error is clearly the difference between $c$ and $c_0$, $e=c-c_0$.
-The vector $c_0$ is obviously the solution of the problem $A c_0 = b_0$,
-where $b_0$ is easily computable as the matrix vector product $A c_0$.
-The residual can be seen as the error of the input data, $b - b_0$
-and is defined
-
+a system $A c = b$, we may question how far off a start vector or a current approximation $c_0$ is.
+The error is clearly the difference between $c$ and $c_0$, $e=c-c_0$, but since we do
+not know the true solution $c$ we are unable to assess the error. 
+However, the vector $c_0$ is the solution of the an alternative problem $A c_0 = b_0$. 
+If the input, i.e., the right-hand sides $b_0$ and $b$ are close to each other then 
+we expect the output of a solution process $c$ and $c_0$ to be close to each other.   
+Furthermore, while $b_0$ in principle is unknown, it is easily computable as $b_0 = A c_0$
+and does not require inversion of $A$.  
+The vector $b - b_0$ is the so-called residual $r$ defined by  
 !bt
 \[
-r = b - A c_0 .
+r = b - b_0 = b - A c_0 =  A c - A c_0 .
 \]
 !et
 Clearly, the error and the residual are related by
@@ -1239,9 +1241,7 @@ A e = r .
 !et
 While the computation of the error requires inversion of $A$,
 which may be computationally expensive, the residual
-is easily computable.
-
-[hpl: Here something is missing? What is actually the point? Try to insert a heading in the notice...]
+is easily computable and do only require a matrix-vector product and vector additions. 
 !enotice
 
 

@@ -7224,25 +7224,24 @@ Looking at the finite element equations in a), the equation for a general
 row $i$ reads
 
 !bt
-\[ -\frac{1}{h_{i-1}}c_{i-1} + (\frac{1}{h_{i-1}} - \frac{1}{h_{i}})c_i
+\[ \frac{1}{h_{i-1}}c_{i-1} - (\frac{1}{h_{i-1}} + \frac{1}{h_{i}})c_i
 + \frac{1}{h_{i}}c_{i+1} = h_{i-1} + h_i\tp\]
 !et
 Replacing $c_i$ by $u_i$ (assuming we keep unknowns at all nodes) and
 rearranging gives
 
 !bt
-\[ \frac{1}{h_{i-1}}(u_i - u_{i-1}) - \frac{1}{h_{i}}(u_{i+1}-u_i)
+\[ -\frac{1}{h_{i-1}}(u_i - u_{i-1}) + \frac{1}{h_{i}}(u_{i+1}-u_i)
  = h_{i-1} + h_i\tp\]
 !et
 Dividing by the right-hand side gives
 
 !bt
-\[ \frac{1}{h_{i-1} + h_i}\left(\frac{1}{h_{i-1}}(u_i - u_{i-1}) - \frac{1}{h_{i}}(u_{i+1}-u_i)\right) = 1\tp\]
+\[ -\frac{1}{h_{i-1} + h_i}\left(\frac{1}{h_{i-1}}(u_i - u_{i-1}) - \frac{1}{h_{i}}(u_{i+1}-u_i)\right) = 1\tp\]
 !et
 This is the same difference equation as we have in the finite difference
 method.
 
-[hpl: Is a minus wrong here?]
 !esol
 !esubex
 

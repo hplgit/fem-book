@@ -600,9 +600,9 @@ for all test functions $v\in V$ and $p \in Q$ and
 !bt
 \begin{align*}
 a(u,v)        &= \int\limits_{\Omega}\nabla u\cdot\nabla v\dx - \int\limits_{\partial\Omega_N}\frac{\partial u}{\partial n}v\ds, \\
-b(\lambda, v) &= \int\limits_\Omega \lambda v \ds, \\
+b(\lambda, v) &= \int\limits_{\partial \Omega_N} \lambda v \ds, \\
 L_u(v)          &= \int\limits_\Omega fv \dx, \\
-L_\lambda(\lambda)    &= \int\limits_\Omega \uN \lambda \ds . 
+L_\lambda(\lambda)    &= \int\limits_{\partial\Omega_N} \uN \lambda \ds . 
 \end{align*}
 !et
 
@@ -644,7 +644,7 @@ conditions $u(0)=0$ and $u(1)=1$.
 !bt
 \begin{align*}
 a(u,v) &=
-\int_0^1  u_x\cdot v_x \dx
+\int_0^1  u_x \, v_x \dx
 -[u_x v]_0^1
 -[v_x u]_0^1
 +[\lambda uv]_0^1  \\
@@ -703,11 +703,15 @@ for i in range(len(basis)):
     a += (lam*phi_j*phi_i).subs(x,0) 
 !ec 
 
-A complete FEniCS code for investigating the sensitivity of the penalty parameter is here: 
+In the symmetric variant of Nitsche's method that we have presented here, there is a need for a
+positive penalty parameter $\lambda$ in order for the method to work. A natural question 
+is therefore how sensitive the results are to this penalty parameter.    
+The following code implements Nitsche's method in FEniCS and tests various penalty parameters. 
 
 @@@CODE src/nitsche.py 
 
-As we see in figure ref{nitsche:fig:penalty} and the zoom in ref{nitsche:fig:penalty:zoom}, Nitsche's method
+Figure ref{nitsche:fig:penalty} displays the results obtained by running the above script.  
+As we see in Figure ref{nitsche:fig:penalty} and the zoom in Figure ref{nitsche:fig:penalty:zoom}, Nitsche's method
 is not very sensitive to the value of the penalty parameter as long as it is above a certain threshold. In 
 our 1D example, the threshold seems to be $1/h$. Setting the parameter to $1/h$ or lower makes the solution
 blow up and there are some artifacts when setting the parameter very close to $1/h$ but 
@@ -743,45 +747,47 @@ Hence, we may use the following function
 The Poisson Neumann problem reads:  
 !bt
 \begin{align*}
--\Delta u &= f, \quad &x\in\Omega, \\ 
-\frac{\partial u}{\partial n} &= 0, \quad &x\in \partial \Omega,   
+-\Delta u &= f, x\in\Omega&, \\ 
+\frac{\partial u}{\partial n} &= 0,  x\in \partial \Omega&,   
 \end{align*}
 !et
 is a singular problem with a one-dimensional kernel. To see this, we
 remark that if $u$ is a solution to the problem then $\hat{u} = u + C$, 
-where $C$ is any number is also a solution since
+where $C$ is any number, is also a solution since
 $-\Delta \hat{u} = -\Delta u - \Delta C = -\Delta u = f$ and
-$ \frac{\partial \hat{u}}{\partial n} =  \frac{\partial {u}}{\partial n}+  \frac{\partial \hat{C}}{\partial n}    
+$ \frac{\partial \hat{u}}{\partial n} =  \frac{\partial {u}}{\partial n}+  \frac{\partial C}{\partial n}    
 = \frac{\partial {u}}{\partial n} = 0 $. As the PDE is singular, also the corresponding finite element matrix
 will be singular and this frequently (but not always) cause problems when solving the linear system.    
 
 There are two main remedies for this problem 1) to add an equation that fixates the solution in one point
 to the linear system, i.e., set $u(x) = 0$ in some point $x$ either at the boundary or in the interior  
 and 2) to enforce that $\int_\Omega u \dx =  0$ by using a Lagrange multiplier. The first method is
-the most used method as it is simple to implement. However, while fixating the solution in one point
-often work, it is not a bullet-proof procedure, as will be illustrated below.    
+the most used method as it is easy to implement. The method often works well but 
+it is not a bullet-proof procedure, as we will  illustrate.    
 
 The following code implements the Poisson Neumann problem in FEniCS and fixates the solution in one point. 
 @@@CODE src/neumann_fixpoint.py   fromto: from dolfin import@# plot 
 
-FIGURE: [fig/neumann_fixpoint_exact, width=200] The exact solution of the Poisson Neumann problem.  for various penalty parameters. label{nitsche:fig:fixpoint:exact}
+We remark that we fixate the solution in one point here by using `DirichletBC` where we specify `pointwise` application 
+and further that we in this example know that $(0.3,0)$ is a vertex in the mesh.  
 
-FIGURE: [fig/neumann_fixpoint, width=200] The computed solution of the Poisson Neumann problem. label{nitsche:fig:fixpoint}
+FIGURE: [fig/neumann_fixpoint_exact, width=200] The exact solution of the Poisson Neumann problem.  label{nitsche:fig:fixpoint:exact}
 
-In Figure ref{nitsche:fig:fixpoint:exact} we show the exact solution the Poisson problem while Figure ref{nitsche:fig:fixpoint} shows the resulting solution of the problem implemented in the FEniCS code. Clearly, the numerical solution is wrong and the fixating of the solution in the point (0.3,0) has affected the solution in large parts of the domain. In our case this is however easily fixed
-by ensuring that the true solution $u$ and right-hand side $f$ both satisfy $\int_\Omega u \dx = 0$ and $\int_\Omega f \dx = 0$ and 
-that the fixation is compatible with this. While this may be fixed for scalar PDE problems, it may be more difficult 
-for systems of PDEs where determining compatibility conditions is more involved. 
+FIGURE: [fig/neumann_fixpoint, width=200] The computed solution of the Poisson Neumann problem with $u$ being fixated at $(0.3,0)$. label{nitsche:fig:fixpoint}
 
-A more general strategy is to remove the kernel by a Lagrange multiplier, requiring that 
-$\int_\Omega u \dx = 0$. 
- 
+Figure ref{nitsche:fig:fixpoint:exact} displays the exact solution the Poisson problem while Figure ref{nitsche:fig:fixpoint} shows the resulting solution of the problem implemented in the FEniCS code listed above. Clearly, the numerical solution is wrong and 
+our approach of fixating the solution in (0.3,0) has destroyed the solution in large parts of the domain. In our case the problem is however easily fixed
+by ensuring that the true solution $u$ and right-hand side $f$ satisfy $\int_\Omega u \dx = 0$ and $\int_\Omega f \dx = 0$, respectively, and 
+that the fixation is compatible with this. While ensuring compatibility is quite easy for scalar PDE problems, it may be more difficult 
+for systems of PDEs where determining the appropriate conditions is more involved. 
+
 \newcommand{\R}{\mathbb{R}}
-These equations can be written as a linear system of equations: 
+A more general strategy is to remove the kernel by a Lagrange multiplier, requiring that 
+$\int_\Omega u \dx = 0$.  The resulting equations can be written as a linear system of equations: 
 Find $u, \lambda \in V\times \R$ such that  
 !bt
 \begin{align*}
-a(u,v) + b(c, v) &= L_u(v),   \\
+a(u,v) + b(v, c) &= L_u(v),   \\
 b(u, d)                &= L_c(d) ,  
 \end{align*}
 !et
@@ -789,7 +795,7 @@ for all test functions $v\in V$ and $d\in \R$ and
 !bt
 \begin{align*}
 a(u,v)        &= \int\limits_{\Omega}\nabla u\cdot\nabla v\dx  \\
-b(c, v) &= \int\limits_\Omega c v \dx, \\
+b(v, c) &= \int\limits_\Omega c v \dx, \\
 L_u(v)          &= \int\limits_\Omega fv \dx, \\
 L_c(d)    &= 0  . 
 \end{align*}
@@ -798,7 +804,7 @@ L_c(d)    &= 0  .
 Letting 
 $u=\sum_{j\in\If} c_j\baspsi^{(u)}_j$, 
 $v =  \baspsi^{(v)}_i$, and 
-$c, d$ are two constants, we obtain the following system 
+$c, d$ be two arbitrary constants, we obtain the following system 
 of linear equations   
 !bt
 \[

@@ -19,13 +19,13 @@ u'(t_n) &\approx
 u'(t_n) &\approx
 \lbrack D_{2t}u\rbrack^n = \frac{u^{n+1} - u^{n-1}}{2\Delta t}
 label{Dop:fd1:center2}\\
-u'(t_n) &=
+u'(t_n) &\approx 
 \lbrack D_t^-u\rbrack^n = \frac{u^{n} - u^{n-1}}{\Delta t}
 label{Dop:fd1:bw}\\
 u'(t_n) &\approx
 \lbrack D_t^+u\rbrack^n = \frac{u^{n+1} - u^{n}}{\Delta t}
 label{Dop:fd1:fw}\\
-u'(t_{n+\theta}) &=
+u'(t_{n+\theta}) &\approx
 \lbrack \bar D_tu\rbrack^{n+\theta} = \frac{u^{n+1} - u^{n}}{\Delta t}
 label{Dop:fd1:theta}\\
 u'(t_n) &\approx
