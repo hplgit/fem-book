@@ -254,7 +254,6 @@ Appropriate code is
 
 @@@CODE exer/logistic_p.py fromto: import numpy as np@plt.show()
 
-[hpl: Not finished!]
 !esol
 !esubex
 
@@ -264,12 +263,9 @@ Appropriate code is
 ===== Problem: Experience the behavior of Newton's method =====
 label{nonlin:exer:Newton:problems1}
 
-[kam: where do we find this demo]
 
 The program "`Newton_demo.py`": "${fem_src}/Newton_demo.py" illustrates
 graphically each step in Newton's method and is run like
-
-[kam: where is this program?]
 
 !bc sys
 Terminal> python Newton_demo.py f dfdx x0 xmin xmax
@@ -285,6 +281,10 @@ Terminal>  python Newton_demo.py '0.2 + exp(-0.5*x**2)*cos(pi*x)' \
            0.85 -3 3
 !ec
 and repeat with 0.85 replaced by 0.8.
+Zoom in to see the details. 
+The program reads 
+
+@@@CODE src/Newton_demo.py
 
 ===== Problem: Compute the Jacobian of a $2\times 2$ system =====
 label{nonlin:exer:vib:Jacobian}

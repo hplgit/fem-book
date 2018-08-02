@@ -667,3 +667,43 @@ before it should be implemented in a code. For example, one will not
 run through a series of $(i,j)$ indices and test for each of them if
 $(i,j)\in\mathcal{I}$. Instead one should run more directly through
 the sparsity structure of $A$.
+
+
+===== Preconditioners developed for solving PDE problems =====
+
+The above mentioned preconditioners are general purpose 
+preconditioners that may be applied to solve any linear system
+and may speed up the solution process significantly. For linear
+systems arising from PDE problems there are however often more
+efficient preconditioners that exploit the fact that the matrices
+come from discretized PDEs. These preconditioners often enable
+the solution of linear systems involving millions of unknowns
+in a matter of seconds or less on a regular desktop computer. 
+This means that solving these huge linear systems often 
+takes less time than printing them file. Moreover, these preconditioners
+may be used on parallel computers in a scalable fashion such that
+simulations involving billions of degrees of freedom are available
+e.g. by cloud services or super-computing centers. 
+
+The most efficient preconditioners are the so-called multilevel preconditioners
+(e.g. multigrid and domain decomposition) which in particular for
+Poisson type problems yields error reduction of a factor 10 per iteration 
+and hence a typical iteration count of the iterative method of 5-10. 
+These preconditioners utilize the fact that different parts of the
+solution can be localized or represented on a coarser resolution during
+the computations before being glued together to a close match to
+the true solution. While a proper description of these methods
+are beyond the scope here, we mention that black-box preconditioners
+are implemented in open source frameworks such as PETSc, Hypre, and Trilinos
+and these frameworks are used by most available finite element software (such as FEniCS). 
+
+While these multilevel preconditioners are available and efficient for PDEs similar
+to the Poisson problem there is currently no black-box solver that handle
+general systems of PDEs. We mention, however, a promising approach for 
+tackling some systems of PDEs, namely the so-called operator preconditioning
+framework. This framework utilize tools from functional analysis to deduct
+appropriate block preconditioners typically involving blocks composed
+of for instance multilevel preconditioners in a systematic construction.   
+The framework has extended the use of Poisson type multilevel preconditioners
+to many systems of PDEs with success. 
+

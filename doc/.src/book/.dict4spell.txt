@@ -143,4 +143,8 @@ workflow
 jit
 cosinusoidal
 DirichletBC
+multigrid
+Hypre
+Trilinos
+PETSc
 
