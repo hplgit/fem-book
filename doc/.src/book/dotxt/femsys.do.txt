@@ -116,7 +116,7 @@ expansions of the unknown functions, one chooses $m$ linearly
 independent $\v$ vectors to generate $m$ independent variational forms
 from (ref{fem:sys:vform:inner}).  The particular choice $\v =
 (v^{(0)},0,\ldots,0)$ recovers (ref{fem:sys:vform:1by1a}), $\v =
-(0,\ldots,0,v^{(m)}$ recovers (ref{fem:sys:vform:1by1b}), and $\v =
+(0,\ldots,0,v^{(m)})$ recovers (ref{fem:sys:vform:1by1b}), and $\v =
 (0,\ldots,0,v^{(i)},0,\ldots,0)$ recovers the variational form number
 $i$, $\int_\Omega \mathcal{L}^{(i)} v^{(i)}\dx =0$, in
 (ref{fem:sys:vform:1by1a})-(ref{fem:sys:vform:1by1b}).
@@ -193,7 +193,7 @@ label{fem:sys:wT:ex:sum}
 !et
 Note that $w$ and $T$ in (ref{fem:sys:wT:ex:weq})-(ref{fem:sys:wT:ex:Teq})
 denote the exact solution of the PDEs, while $w$ and $T$
-(ref{fem:sys:wT:ex:sum}) are the discrete functions that approximate
+in (ref{fem:sys:wT:ex:sum}) are the discrete functions that approximate
 the exact solution. It should be clear from the context whether a
 symbol means the exact or approximate solution, but when we need both
 at the same time, we use a subscript e to denote the exact solution.
@@ -625,9 +625,9 @@ as
 !bt
 \begin{align*}
 w_{e,x} &= - \int \frac{\beta}{\mu} \dx + C_w, \\
-w_e &= \int w_x \dx + D_w, \\
+w_e &= \int w_{e,x} \dx + D_w, \\
 T_{e,x} &= - \int \mu w_x^2 \dx + C_T,\\
-w_e &= \int w_x \dx + D_T, \\
+T_e &= \int T_{e,x} \dx + D_T, \\
 \end{align*}
 !et
 where we determine the constants $C_w$, $D_w$, $C_T$, and $D_T$
@@ -810,7 +810,7 @@ A trick now is to divide by $a(x)$ on both sides to obtain
 - u' = \frac{C}{a}
 \]
 !et
-and hence
+and since $a$ is a piecewise constant 
 !bt
 \[
 u(x) = \frac{C}{a(x)} x + D
@@ -819,7 +819,7 @@ u(x) = \frac{C}{a(x)} x + D
 The boundary conditions demand that $u(0) = 0$, which means that $D=0$. 
 In order to obtain an expression for $u(1)=1$ 
 we note that $u$ is 
-a piecewise linear function. 
+a piecewise linear function 
 with $u' = C$ for $x\in(0,0.5)$
 and $u'=\frac{C}{a_0}$ for $x\in(0.5,1)$. 
 We may therefore express $u(1)$ in terms of 
@@ -832,7 +832,7 @@ label{varcoeff:analytical:solution}
 u_e(x) = 
 \left\{ \begin{array}{ll}
 \frac{2 a_0}{a_0 +1}   x & \mbox{ for } 0 < x \le 0.5 \\
-\frac{2}{a_0 +1} x) + \frac{a_0-1}{a_0 +1}  & \mbox{ for } 0.5 < x \le 1
+\frac{2}{a_0 +1} x + \frac{a_0-1}{a_0 +1}  & \mbox{ for } 0.5 < x \le 1
 \end{array}
 \right. 
 \end{equation}
@@ -904,14 +904,19 @@ aux = project(-a_coeff*u.dx(0), V)
 As shown in Figure ref{femsys:varcoeff:1D:Galerkin:plotsux}, this
 approach does not produce a good approximation of the flux.
 Moreover, the approximation close to the jump does not seem to 
-improve as the mesh is refined. 
+improve as the mesh is refined. The problem is that we try to approximate a 
+discontinuous function with continuous basis and this may often cause
+spurious oscillations. In this case, we may fix the problem by alternative post-processing 
+methods for calculating the flux. For instance, we may project onto the piecewise constant 
+functions. However, we would still loose accuracy as the first order derivative involved
+in the flux calculation lower the order of accuracy by one.     
 
 FIGURE: [fig/darcy_adx1D, width=800] The corresponding flux $a u'$ for the Darcy problem with discontinuous coefficient for different number of elements $N$. label{femsys:varcoeff:1D:Galerkin:plotsux}
 
 
 
-
-To improve the approximation of the flux, it is common to consider an equivalent form
+An alternative method that makes the flux approximation more accurate than
+the pressure is an equivalent form
 of (ref{femsys:varcoeff:1D}) where the flux is one of the unknowns.
 The equations reads:
 !bt
@@ -947,7 +952,7 @@ obtain
 !bt
 \[
 \int_\Omega  \frac{\partial u}{\partial x} v^{(w)} \dx  = 
-- \int_\Omega  \frac{\partial u}{\partial x} \frac{\partial v^{(w)}}{\partial x} \dx 
+- \int_\Omega  u \frac{\partial v^{(w)}}{\partial x} \dx 
 + \int_{\partial\Omega}  u v^{(w)} \dx
 \]
 !et
@@ -993,10 +998,12 @@ In Figure ref{femsys:varcoeff:1D:Galerkin:plotu:mx} the solution
 $u$ obtained by solving the of system  (ref{fem:sys:up:1D:eq:Darcy})
 using piecewise linear elements for $w$ and piecewise constants for $u$. 
 Clearly, $u$ converges towards the analytical solution as the mesh 
-is refined. In Figure ref{femsys:varcoeff:1D:Galerkin:plotsux:mx}
+is refined, although in a staggered way. In Figure ref{femsys:varcoeff:1D:Galerkin:plotsux:mx}
 we display the flux $a u'$. The flux appears to be a constant  
 as predicted by our analytical solution (ref{varcoeff:analytical:solution})
-and in our case $a_0=0.1$ which makes $C=\frac{2 a_0}{a_0 +1} \approx 0.18$.  
+and in our case $a_0=0.1$ which makes $C=\frac{2 a_0}{a_0 +1} \approx 0.18$, which is
+quite close to the estimate provided in  Figure ref{femsys:varcoeff:1D:Galerkin:plotsux:mx}.
+
 
 It is interesting to note that the standard Galerkin formulation
 of the problem results in a perfect approximation of $u$, while
@@ -1014,8 +1021,8 @@ several unknowns, we can not choose the approximation arbitrary.
 The polynomial spaces of the different unknowns have to be compatible
 and the accuracy of the different unknowns depend on each other. 
 We will not discuss the reasons for the need of compatibility here
-as it is rather mathematical and 
-well presented in many books, e.g. cite{brezzi2012mixed, Brenner_Scott, Braess, Silvester_et_al_2015}.
+as it is rather theoretical and beyond the scope of this book. Instead we 
+refer the interested reader to cite{brezzi2012mixed, Brenner_Scott, Braess, Silvester_et_al_2015}.
 
 
 The complete code for the mixed Darcy example is 
