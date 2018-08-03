@@ -6,10 +6,6 @@ take place on a time mesh for a function of time.
 The same formulas apply in space too (just replace
 $t$ by a spatial coordinate and add spatial coordinates in $u$).
 
-[kam: trenger å sette navn ved de forskjellge formlene. 
-      Noen steder er det $"="$ og andre steder er det 
-      $"\approx"$
-]
 
 
 !bt
