@@ -586,28 +586,28 @@
    entrytype: misc
 ** The finite element method
    key:       zienkiewicz1977finite
-   author:    Zienkiewicz, Olgierd Cecil and Taylor, Robert Leroy
+   author:    O. C. Zienkiewicz, R. L. Taylor
    year:      1977
    publisher: McGraw-hill London
 ** Galerkin finite element methods for parabolic problems
    key:       thomee
-   author: V. Thomée  
+   author:    V. Thomée  
    published: Springer-Verlag; 
    year:      1984 
 ** Introduction to partial differential equations: a computational approach 
    key:       tveitowinther
-   author:    Tveito A, Winther R 
+   author:    A. Tveito, R. Winther 
    year:      2004
    publisher: Springer Science & Business Media; 
 ** Mixed and hybrid finite element methods
    key:       brezzi2012mixed
-   author:    Brezzi, Franco and Fortin, Michel
+   author:    F. Brezzi, M. Fortin
    volume:    15
    year:      2012
    publisher: Springer Science \& Business Media
 ** Numerical methods for incompressible viscous flow
   key:        langtangen2002numerical
-  author:     Langtangen HP,  Mardal KA,  Winther R
+  author:     H. P. Langtangen ,  K.-A. Mardal,  R. Winther 
   journal:    Advances in water Resources
   volume:     25
   number:     8-12
@@ -616,16 +616,42 @@
   publisher:  Elsevier
 ** Incompressible flow and the finite element method
   key:        gresho1998incompressible
-  author:     Gresho PM,  Sani RL
+  author:     P. M. Gresho ,  R. L. Sani 
   year:       1998
   publisher:  John Wiley and Sons, Inc., New York, NY (United States)
 ** Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approache
   key:        turek1999efficient
   title:      Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approach
-  author:     Turek, Stefan
+  author:     S. Turek
   volume:     6
   year:       1999
   publisher:  Springer Science \& Business Media
+** Iterative solution of large sparse systems of equations **
+  key:        hackbusch1994iterative
+  author:     W. Hackbusch
+  volume:     95
+  year:       1994
+  publisher:  Springer
+** Domain decomposition: parallel multilevel methods for elliptic partial differential equations **
+  key:        smith2004domain
+  author:     B. Smith, P. Bjorstad, W. D. Gropp
+  year:       2004
+  publisher:  Cambridge university press 
+** Multigrid **
+  key:        trottenberg2000multigrid
+  author:     U. Trottenberg, C.W. Oosterlee, A. Schuller
+  year:       2000
+  publisher:  Elsevier
+** Preconditioning discretizations of systems of partial differential equations
+  key:        mardal2011preconditioning
+  author:     K.-A. Mardal, R. Winther
+  journal:    Numerical Linear Algebra with Applications
+  volume:     18
+  number:     1
+  pages:      1--40
+  year:       2011
+  publisher:  Wiley Online Library
+
 
 
 

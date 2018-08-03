@@ -585,7 +585,7 @@ $\mathcal{O}(h^{-2})$ to $\mathcal{O}(h^{-1})$, provided we use the
 optimal choice of the relaxation parameter $\omega$.  According to
 experiments, however, the performance of the SSOR preconditioned
 Conjugate Gradient method is not very sensitive to the choice of
-$\omega$. [hpl: Claim! Does TCSE1 have experiments?]
+$\omega$. 
 We refer to cite{Templates_LA,Bruaset_1995} for more information about
 classical iterative methods as preconditioners.
 
@@ -631,7 +631,6 @@ governs the maximum number of nonzeros per row in the factors.
 A popular ILU implementation is the open source C code
 "SuperLU": "https://fs.hlrs.de/projects/craydoc/docs_merged/books/S-6532-30/S-6532-30.pdf". This preconditioner is available to Python programmers through the
 `scipy.sparse.linalg.spilu` function.
-[hpl: Need some references to textbooks; Axelsson? Saad?]
 
 The general algorithm for MILU preconditioning follows the steps of
 traditional exact Gaussian elimination, except that
@@ -667,6 +666,8 @@ before it should be implemented in a code. For example, one will not
 run through a series of $(i,j)$ indices and test for each of them if
 $(i,j)\in\mathcal{I}$. Instead one should run more directly through
 the sparsity structure of $A$.
+More comprehensive material on how to solve sparse linear systems
+can be found in e.g. cite{Saad_2003} and cite{hackbusch1994iterative}.
 
 
 ===== Preconditioners developed for solving PDE problems =====
@@ -686,7 +687,7 @@ simulations involving billions of degrees of freedom are available
 e.g. by cloud services or super-computing centers. 
 
 The most efficient preconditioners are the so-called multilevel preconditioners
-(e.g. multigrid and domain decomposition) which in particular for
+(e.g. multigrid  and domain decomposition) which in particular for
 Poisson type problems yields error reduction of a factor 10 per iteration 
 and hence a typical iteration count of the iterative method of 5-10. 
 These preconditioners utilize the fact that different parts of the
@@ -696,12 +697,13 @@ the true solution. While a proper description of these methods
 are beyond the scope here, we mention that black-box preconditioners
 are implemented in open source frameworks such as PETSc, Hypre, and Trilinos
 and these frameworks are used by most available finite element software (such as FEniCS). 
+Many books have been devoted to the topic, c.f. e.g. cite{smith2004domain, trottenberg2000multigrid}
 
 While these multilevel preconditioners are available and efficient for PDEs similar
 to the Poisson problem there is currently no black-box solver that handle
 general systems of PDEs. We mention, however, a promising approach for 
 tackling some systems of PDEs, namely the so-called operator preconditioning
-framework. This framework utilize tools from functional analysis to deduct
+framework cite{mardal2011preconditioning}. This framework utilize tools from functional analysis to deduct
 appropriate block preconditioners typically involving blocks composed
 of for instance multilevel preconditioners in a systematic construction.   
 The framework has extended the use of Poisson type multilevel preconditioners
