@@ -589,8 +589,6 @@ $\omega$.
 We refer to cite{Templates_LA,Bruaset_1995} for more information about
 classical iterative methods as preconditioners.
 
-[kam: I would like some references here. ]
-
 ===== Incomplete factorization preconditioners =====
 label{linalg:ILU}
 

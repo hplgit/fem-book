@@ -181,10 +181,9 @@ $F(u)=0$, and here
 The Jacobian is
 
 !bt
-\[ J(u) = \frac{F(u)}{du} = 1 - \Delta t(a'(u)u + a(u))\tp\]
+\[ J(u) = \frac{d F(u)}{du} = 1 - \Delta t(a'(u)u + a(u))\tp\]
 !et
 The key equation in Newton's method is then
-[hpl: Check notation here with previously used notation!]
 
 !bt
 \[ J(u^-)\delta u = - F(u^-),\quad u\leftarrow u - \delta u\tp\]

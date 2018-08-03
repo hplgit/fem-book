@@ -2357,8 +2357,6 @@ in terms of model (ref{sec:approx:exp:model}). We avoid to
 compute estimates for the Taylor and Lagrange approximations as neither
 the log-log plot nor the log plot demonstrated linear behavior.
 
-[hpl: Any comment about the `regression_with_noise` function?]
-
 !bc pycod
 N_values = [2, 4, 8, 16, 32]
 Taylor     = [0.0983, 0.00263,  7.83e-07, 3.57e-10]
@@ -2405,6 +2403,10 @@ FIGURE: [fig/Bell_computations_loglog] CPU timings of the approximation with the
 
 The complete code can be found in
 "`convergence_rate_local.py`": "${fem_src}/convergence_rate_local.py".
+
+The code for the "`regression\_with\_noise`" is as follows: 
+
+@@@CODE src/approx1D.py fromto: def regression_with_noise@    return  
 
 !split
 ======= Approximation of functions in higher dimensions =======
