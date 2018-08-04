@@ -698,7 +698,7 @@ and these frameworks are used by most available finite element software (such as
 Many books have been devoted to the topic, c.f. e.g. cite{smith2004domain, trottenberg2000multigrid}
 
 While these multilevel preconditioners are available and efficient for PDEs similar
-to the Poisson problem there is currently no black-box solver that handle
+to the Poisson problem there is currently no black-box solver that handles
 general systems of PDEs. We mention, however, a promising approach for 
 tackling some systems of PDEs, namely the so-called operator preconditioning
 framework cite{mardal2011preconditioning}. This framework utilize tools from functional analysis to deduct
