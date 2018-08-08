@@ -626,13 +626,13 @@
   volume:     6
   year:       1999
   publisher:  Springer Science \& Business Media
-** Iterative solution of large sparse systems of equations **
+** Iterative solution of large sparse systems of equations 
   key:        hackbusch1994iterative
   author:     W. Hackbusch
   volume:     95
   year:       1994
   publisher:  Springer
-** Domain decomposition: parallel multilevel methods for elliptic partial differential equations **
+** Domain decomposition: parallel multilevel methods for elliptic partial differential equations 
   key:        smith2004domain
   author:     B. Smith, P. Bjorstad, W. D. Gropp
   year:       2004
