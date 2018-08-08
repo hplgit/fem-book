@@ -3,8 +3,8 @@ although we discuss many other choices of basis functions and other
 applications than partial differential equations. The
 literature on finite elements contains books of many different
 flavors, ranging from the abstract view of the method
-cite{JohnsonFEM87,Quarteroni_Valli,Brenner_Scott,Braess} to a more 
-practical, algorithmic treatment of the subject cite{zienkiewicz1977finite}. The present book has
+cite{JohnsonFEM87,Quarteroni_Valli,Brenner_Scott,Braess, Silvester_et_al_2015} to  more 
+practical, algorithmic treatment of the subject cite{Langtangen_2003a, zienkiewicz1977finite}. The present book has
 a very strong algorithmic focus (``how to compute''), but formulate
 the method in the abstract form with variational forms and function
 spaces.
@@ -22,8 +22,8 @@ far outside what is theoretically understood. Obviously, this is a
 trend that will continue in the future. Hence, it is our aim here
 provide the reader with the gory details of the implementation in an
 explicit, user-friendly and simplistic manner to lower the threshold
-of usage and to provide tools for verification and debugging that are
-applicable in general situations.
+of usage. At the same time, we want to present provide tools for verification 
+and debugging that are applicable in general situations. 
 
 An important motivation for writing this book was to provide an
 intuitive approach to the finite element method, using the
@@ -32,7 +32,10 @@ cite{fenics_book}. FEniCS is a modern, very powerful tool for solving
 partial differential equations by the finite element method, and it
 was designed to make implementations very compact for those who are
 used to the abstract formulation of the method.  Our aim here is
-different.
+different. Through explicit, detailed and sometimes lengthy derivations, the reader
+will be able to get direct exposition of all components in 
+a finite element engine. Furthermore,  we discuss methods and examples 
+that usable for verification also of black-box solvers.  
 
 A standard reference for FEniCS users have been the excellent text by
 Brenner and Scott cite{Brenner_Scott}, but for many students with weak
@@ -51,7 +54,9 @@ The learning outcomes of this book are four-fold
    with an emphasis on one-dimensional problems,
  o understanding potential artifacts in simulation results,
  o understanding how variational formulations can be used in other
-   contexts (polynomial chaos expansions, solving linear systems).
+   contexts (generalized boundary conditions, solving linear systems)
+ o understanding how variational methods may be used 
+   for complicated PDEs (systems of non-linear and time-dependent PDES)
 
 The exposition is recognized by very explicit mathematics, i.e., we
 have tried to write out all details of the finite element ``engine''
@@ -88,8 +93,8 @@ programs!
 Another learning outcome (although not needed to be a successful
 FEniCS user) is to understand how the finite element method is a
 special case of more general variational approaches to solving
-equations. Therefore, we also treat uncertainty quantification via
-polynomial chaos methods and conjugate gradient-like methods for
+equations. We consider approximation in general, solution
+of PDEs, as well as
 solving linear systems in a way that hopefully gives the reader an
 understanding of how seemingly very different numerical methods
 actually are just variants of a common way of reasoning.
