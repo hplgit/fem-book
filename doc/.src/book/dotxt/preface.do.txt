@@ -3,7 +3,7 @@ although we discuss many other choices of basis functions and other
 applications than partial differential equations. The
 literature on finite elements contains books of many different
 flavors, ranging from the abstract view of the method
-cite{JohnsonFEM87,Quarteroni_Valli,Brenner_Scott,Braess, Silvester_et_al_2015} to  more 
+cite{Braess, Brenner_Scott, Silvester_et_al_2015, JohnsonFEM87,Quarteroni_Valli} to  more 
 practical, algorithmic treatment of the subject cite{Langtangen_2003a, zienkiewicz1977finite}. The present book has
 a very strong algorithmic focus (``how to compute''), but formulate
 the method in the abstract form with variational forms and function
@@ -19,11 +19,13 @@ this mathematical theory of finite element methods is one of the
 highlights of numerical analysis. However, within scientific computing
 the computational engine of the finite element method is being used
 far outside what is theoretically understood. Obviously, this is a
-trend that will continue in the future. Hence, it is our aim here
+trend that will continue in the future. Hence, it is not our aim  to present
+the established mathematical theory here, but rather 
 provide the reader with the gory details of the implementation in an
 explicit, user-friendly and simplistic manner to lower the threshold
 of usage. At the same time, we want to present provide tools for verification 
-and debugging that are applicable in general situations. 
+and debugging that are applicable in general situations such 
+that the method can be used safely beyond what is theoretically proven. 
 
 An important motivation for writing this book was to provide an
 intuitive approach to the finite element method, using the
@@ -34,8 +36,7 @@ was designed to make implementations very compact for those who are
 used to the abstract formulation of the method.  Our aim here is
 different. Through explicit, detailed and sometimes lengthy derivations, the reader
 will be able to get direct exposition of all components in 
-a finite element engine. Furthermore,  we discuss methods and examples 
-that usable for verification also of black-box solvers.  
+a finite element engine.   
 
 A standard reference for FEniCS users have been the excellent text by
 Brenner and Scott cite{Brenner_Scott}, but for many students with weak
@@ -56,7 +57,7 @@ The learning outcomes of this book are four-fold
  o understanding how variational formulations can be used in other
    contexts (generalized boundary conditions, solving linear systems)
  o understanding how variational methods may be used 
-   for complicated PDEs (systems of non-linear and time-dependent PDES)
+   for complicated PDEs (systems of non-linear and time-dependent PDEs)
 
 The exposition is recognized by very explicit mathematics, i.e., we
 have tried to write out all details of the finite element ``engine''

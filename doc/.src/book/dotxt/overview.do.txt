@@ -90,6 +90,8 @@ u = \sum_{i=0}^N c_i \baspsi_i(x,y),
 where $\{c_i\}$ are the coefficients to be determined
 (often called the degrees of freedom)
 and $\baspsi_i(x,y)$ are prescribed polynomials.
+The basis functions $\baspsi_i(x,y)$ used to express the solution
+is often called the trial functions.  
 The next step is the variational formulation. This step
 may seem like a trick of magic or a cumbersome
 mathematical exercise at first glance.
@@ -126,7 +128,7 @@ label{overview:fem:a}
 \end{equation}
 !et
 to weaken the requirement of the polynomial space used for the
-trial function (that here needs to be twice differentiable)
+trial functions (that here needs to be twice differentiable)
 and write this term on its corresponding weak form.
 That
 is, the term is rewritten in terms of first-derivatives only (of
@@ -309,14 +311,21 @@ the FEniCS tutorial cite{ftut1,ftut2} for lots of examples.
 
 Although we assert here that the finite element method is a tool that
 can solve any PDE problem on any domain of any complexity, the
-fundamental ideas of the method are in fact even more general. This
-book will emphasize this general framework and show how the finite
-element method is actually just one way to choose the expansion
-functions $\baspsi$, but there are many others, giving rise to other
-frameworks for other problems, such as uncertainty quantification via
-polynomial chaos theory in Chapter ref{ch:pc}. By understanding the
-general framework of approximations of the form (ref{overview:u:fem}),
-i.e, understanding how $\baspsi_i$ are constructed and how $c_i$ are
-computed, we believe the reader can develop a better intuitive
-understanding the finite element method in particular and its
-foundation in general.
+fundamental ideas of the method are in fact even more general. 
+We will therefore start the book by variational 
+methods for approximation in general, then consider the finite
+element in a wide range of applications, and finally we end up with 
+a short description of how the solution of linear systems
+also fit into this framework. 
+
+#This
+#book will emphasize this general framework and show how the finite
+#element method is actually just one way to choose the expansion
+#functions $\baspsi$, but there are many others, giving rise to other
+#frameworks for other problems, such as uncertainty quantification via
+#polynomial chaos theory in Chapter ref{ch:pc}. By understanding the
+#general framework of approximations of the form (ref{overview:u:fem}),
+#i.e, understanding how $\baspsi_i$ are constructed and how $c_i$ are
+#computed, we believe the reader can develop a better intuitive
+#understanding the finite element method in particular and its
+#foundation in general.
