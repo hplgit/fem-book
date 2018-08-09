@@ -20,13 +20,13 @@ jobs:
             conda update -q conda
             conda config --add channels conda-forge
             conda create -n ${ENV_NAME}
-            conda activate ${ENV_NAME}
+            source activate ${ENV_NAME}
             conda install doconce fenics matplotlib scipy sympy=1.1
             conda list -n ${ENV_NAME}
       - run:
           name: test
           command: |
-            conda activate ${ENV_NAME}
+            source activate ${ENV_NAME}
             cd doc/.src/book/src
             python approx_fenics.py
             python approx_fenics_2Dcase.py
@@ -54,7 +54,7 @@ jobs:
       - run:
           name: build_book
           command: |
-            conda activate ${ENV_NAME}
+            source activate ${ENV_NAME}
             cd doc/.src/book
             ./make.sh
       - save_cache:
