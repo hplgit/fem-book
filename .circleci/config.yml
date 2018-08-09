@@ -1,0 +1,65 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: continuumio/miniconda3:latest
+    environment:
+      MPLBACKEND: "agg"
+      DOLFIN_NOPLOT: 1
+      DEBIAN_FRONTEND: "noninteractive"
+      ENV_NAME: "fem-book-test"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - cache
+      - run:
+          name: setup
+          command: |
+            apt-get update; apt-get install -y gcc g++ ispell
+            conda config --set always_yes true --set changeps1 false --set quiet true
+            conda update -q conda
+            conda config --add channels conda-forge
+            conda create -n ${ENV_NAME}
+            conda activate ${ENV_NAME}
+            conda install doconce fenics matplotlib scipy sympy=1.1
+            conda list -n ${ENV_NAME}
+      - run:
+          name: test
+          command: |
+            conda activate ${ENV_NAME}
+            cd doc/.src/book/src
+            python approx_fenics.py
+            python approx_fenics_2Dcase.py
+            python borehole_fenics.py
+            python ex_approx1D.py run_parabola_by_linear_leastsq
+            python ex_approx1D.py run_parabola_by_taylor_leastsq_illconditioning
+            python ex_approx1D.py run_parabola_by_sines_leastsq
+            python ex_approx1D.py run_sin_by_powers 2
+            python ex_approx1D.py run_Lagrange_poly 2
+            python ex_approx1D.py run_sin_by_Lagrange_leastsq 2
+            python ex_approx1D.py run_abs_by_Lagrange_leastsq 2
+            python ex_approx1D.py run_parabola_by_linear_interp1
+            python ex_approx1D.py run_parabola_by_linear_interp2
+            python ex_approx1D.py run_parabola_by_quadratic_interp
+            python ex_approx1D.py run_sin_by_poly_interp 2
+            python ex_approx1D.py run_parabola_by_linear_regression
+            python ex_approx1D.py run_noisy_parabola_by_quadratic_regression
+            python ex_approx1D.py python ex_approx1D.py run_sin_by_Lagrange_interp_ 2
+            python ex_approx1D.py run_poly_by_Lagrange_interp_ 2 2
+            python ex_approx1D.py run_abs_by_Lagrange_interp_ 2
+            python ex_approx1D.py python ex_approx1D.py run_abs_by_Lagrange_interp__Cheb 2
+            python ex_approx1D.py run_abs_by_Lagrange_interp__conv
+            python fe1D.py
+            python logistic.py
+      - run:
+          name: build_book
+          command: |
+            conda activate ${ENV_NAME}
+            cd doc/.src/book
+            ./make.sh
+      - save_cache:
+          keys:
+            - cache
+          paths:
+            - "/opt/conda/envs/${ENV_NAME}"
