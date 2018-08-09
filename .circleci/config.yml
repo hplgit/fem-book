@@ -23,6 +23,10 @@ jobs:
             source activate ${ENV_NAME}
             conda install doconce fenics matplotlib scipy sympy=1.1
             conda list -n ${ENV_NAME}
+      - save_cache:
+          key: cache
+          paths:
+            - "/opt/conda/envs/${ENV_NAME}"
       - run:
           name: test
           command: |
@@ -44,10 +48,10 @@ jobs:
             python ex_approx1D.py run_sin_by_poly_interp 2
             python ex_approx1D.py run_parabola_by_linear_regression
             python ex_approx1D.py run_noisy_parabola_by_quadratic_regression
-            python ex_approx1D.py python ex_approx1D.py run_sin_by_Lagrange_interp_ 2
+            python ex_approx1D.py run_sin_by_Lagrange_interp_ 2
             python ex_approx1D.py run_poly_by_Lagrange_interp_ 2 2
             python ex_approx1D.py run_abs_by_Lagrange_interp_ 2
-            python ex_approx1D.py python ex_approx1D.py run_abs_by_Lagrange_interp__Cheb 2
+            python ex_approx1D.py run_abs_by_Lagrange_interp__Cheb 2
             python ex_approx1D.py run_abs_by_Lagrange_interp__conv
             python fe1D.py
             python logistic.py
@@ -57,7 +61,3 @@ jobs:
             source activate ${ENV_NAME}
             cd doc/.src/book
             ./make.sh
-      - save_cache:
-          key: cache
-          paths:
-            - "/opt/conda/envs/${ENV_NAME}"
