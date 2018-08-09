@@ -11,8 +11,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - cache
+          key: cache
       - run:
           name: setup
           command: |
@@ -59,7 +58,6 @@ jobs:
             cd doc/.src/book
             ./make.sh
       - save_cache:
-          keys:
-            - cache
+          key: cache
           paths:
             - "/opt/conda/envs/${ENV_NAME}"
