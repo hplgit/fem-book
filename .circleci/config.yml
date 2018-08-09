@@ -60,4 +60,4 @@ jobs:
           command: |
             source activate ${ENV_NAME}
             cd doc/.src/book
-            ./make.sh
+            #./make.sh
