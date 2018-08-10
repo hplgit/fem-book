@@ -6127,7 +6127,7 @@ The Dirichlet conditions make a nonzero solution.
 
 We suppose that we have a function `make_mesh` that can make the mesh for us. More
 details about this function will be provided later. 
-A next step is then to  to define proper Dirichlet conditions.
+A next step is then to define proper Dirichlet conditions.
 This might seem a bit complicated, but we introduce *markers* at the
 boundary for marking the Dirichlet boundaries. The inner boundary has
 marker 1 and the outer has marker 2. In this way, we can recognize the

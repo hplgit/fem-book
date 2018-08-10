@@ -5930,6 +5930,17 @@ was previously represented by the `elements` lists.  The cell mapping
 is the same affine mapping (ref{fem:approx:fe:affine:mapping}) as
 before.
 
+!bnotice
+The extended finite element concept introduced above is quite general and
+has served as a successful recipe for implementing many finite element frameworks
+and for developing the theory behind. Here, we have seen several different examples
+but the exposition is most focused on 1D examples and the diversity is limited
+as many of the different methods in 2D and 3D collapse to the same method in 1D.    
+The curious reader is advised to for instance look into the numerous 
+examples of finite elements implemented in FEniCS cite{fenics_book}
+to gain insight into the variety of methods that exists. 
+!enotice
+
 
 
 ===== Implementation =====
