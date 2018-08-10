@@ -1,16 +1,3 @@
 
-[kam: 
-Jeg husker tilbake til min egen master, etter kurs i matematiske metoder
-i fysikk hvor vi lærte om separable pde'er, kompleks integrasjon, 
-partikulær løsninger som alltid var metoder som kunne brukes under
-spesielle omstendigheter. Så kom jeg til NMFPD og lærte metoder
-som kunne brukes på alt. Det synes jeg var utrolig spennende. 
-Og jeg likte den respektløse holdningen til at ingen problemer 
-var for vanskelige, bare man kunne programmere]
+More exercises  in 6, 7 and 8  
 
-[kam: jeg foreslår også en liten oppsummering av hva man 
-lærer: symbolisk verktøy, transformasjon av funksjoner, approksimasjon, 
-nummerisk integrasjon,  linear algebra, linjær/ikke-linjær optimering ] 
-]
-
-[kam: approksimasjonsegenskaper og stabilitet]

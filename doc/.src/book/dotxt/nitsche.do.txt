@@ -747,11 +747,11 @@ Hence, we may use the following function
 The Poisson Neumann problem reads:  
 !bt
 \begin{align*}
--\Delta u &= f, x\in\Omega&, \\ 
-\frac{\partial u}{\partial n} &= 0,  x\in \partial \Omega&,   
+-\Delta u &= f, \quad x\in\Omega&, \\ 
+\frac{\partial u}{\partial n} &= 0,  \quad x\in \partial \Omega&,   
 \end{align*}
 !et
-is a singular problem with a one-dimensional kernel. To see this, we
+It is a singular problem with a one-dimensional kernel. To see this, we
 remark that if $u$ is a solution to the problem then $\hat{u} = u + C$, 
 where $C$ is any number, is also a solution since
 $-\Delta \hat{u} = -\Delta u - \Delta C = -\Delta u = f$ and

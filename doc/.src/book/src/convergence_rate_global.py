@@ -13,7 +13,6 @@ import time
 
 def Lagrange_series(N): 
   psi = []
-#  h = Rational(1, N)
   h = 1.0/N
   points = [i*h for i in range(N+1)]
   for i in range(len(points)): 
@@ -24,17 +23,12 @@ def Lagrange_series(N):
     psi.append(p)
   return psi
 
-
 def Bernstein_series(N): 
-  # FIXME: check if a normalization constant is common in the definition 
-  # advantage is that the basis is always positive 
   psi = []
   for k in range(0,N+1): 
     psi_k = sym.binomial(N, k)*x**k*(1-x)**(N-k)  
     psi.append(psi_k)
   return psi
-
-
 
 def Sinusoidal_series(N): 
   psi = []

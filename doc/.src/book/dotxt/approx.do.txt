@@ -2184,6 +2184,29 @@ B_{i,j,k} = \frac{n!}{i! j! k!} x^i y^j (1-x-y)^k, \quad \mbox{ for }  i+j+k = n
 \]
 !et
 
+!bnotice 
+We have considered approximation with a sinusoidal basis and with  Lagrange or Bernstein polynomials, 
+all of which are frequently used for scientific computing. The Lagrange polynomials (of various
+order) are extensively used in finite element methods, while the Bernstein polynomials are more used
+in computational geometry. However, we mention a few recent efforts in finite element computations that   
+explore the combination of symbolic and numerical evaluation for finite element methods 
+and have demonstrated that the Bernstein basis
+enables fast computations through their explicit representation (of both the basis functions and their derivatives)
+cite{alnaes2010efficiency,kirby2011fast}. The Lagrange and the Bernstein families are, however, but a few in the jungle of polynomials
+spaces used for finite element computations and their efficiency and accuracy can very quite substantially.  
+Furthermore, while a method may be efficient and accurate for one type of PDE it might not even converge for
+another type of PDE.  The development and analysis of finite element methods for different purposes is currently an intense research field
+and has been so for several decades.
+Some structure in this vast jungle of methods can be found in cite{arnold2014periodic}.  
+FEniCS has implemented a wide range of polynomial spaces cite{kirby2012common} and has a general
+framework for implementing new elements cite{kirby2012constructing}. While finite element methods
+explore different families of polynomials, the so-called spectral methods explore the use
+of sinusoidal functions or polynomials with high order. From an abstract point of view, the different methods
+can all be obtained simply by changing the basis for the trial and test functions. However, their
+efficiency and accuracy may vary substantially, as we will also see in the following.    
+     
+!enotice 
+
 ======= Approximation properties and convergence rates =======
 
 We will now compare the different approximation methods in terms of
@@ -2257,6 +2280,50 @@ for series_type in series_types:
     plt.loglog(N_values, norms)
 plt.show()
 !ec
+and the different families of basis functions are: 
+!bc pycod
+def Lagrange_series(N): 
+  psi = []
+  h = 1.0/N
+  points = [i*h for i in range(N+1)]
+  for i in range(len(points)): 
+    p = 1 
+    for k in range(len(points)): 
+      if k != i:
+        p *= (x - points[k])/(points[i] - points[k])
+    psi.append(p)
+  return psi
+
+def Bernstein_series(N): 
+  psi = []
+  for k in range(0,N+1): 
+    psi_k = sym.binomial(N, k)*x**k*(1-x)**(N-k)  
+    psi.append(psi_k)
+  return psi
+
+def Sinusoidal_series(N): 
+  psi = []
+  for k in range(1,N): 
+    psi_k = sym.sin(sym.pi*k*x)
+    psi.append(psi_k)
+  return psi
+
+def Taylor_series(N): 
+  psi = []
+  for k in range(1,N): 
+    psi_k = x**k 
+    psi.append(psi_k)
+  return psi
+
+def series(series_type, N): 
+  if   series_type== "Taylor"     : return Taylor_series(N)
+  elif series_type== "Sinusoidal" : return Sinusoidal_series(N)
+  elif series_type== "Bernstein"  : return Bernstein_series(N)
+  elif series_type== "Lagrange"   : return Lagrange_series(N)
+  else: print("series type unknown ") 
+!ec
+
+
 
 
 Below we list the numerical error for different $N$  when approximating the Gaussian bell function.
@@ -2384,10 +2451,16 @@ for N in N_values:
     print(exp(c[0]) * exp(N * c[1]))
 !ec
 
-The program estimates the sine approximation convergences as
-$1.43e-02\cdot N^{-2.3}$, which means that the convergence is slightly
+The program estimates the sinusoidal approximation convergences as
+$1.4 10^{-2} N^{-2.3}$, which means that the convergence is slightly
 above second order.  The Bernstein approximation on the other hand is
-$8.01e-02 \cdot \exp(-1.92e+00 N)$.
+$8.01 10^{-2} \exp(-1.9 N)$. Considering now that
+we have $N=100$ then we can estimate that the sinusoidal approximation 
+would give us an error of $\approx 3.6 10^{-7}$ while the estimate for
+the Bernstein polynomials amounts to $\approx 3.3 10^{-85}$ and is hence 
+vastly superior.  
+We remark here that floating point errors likely will be an issue, but libraries
+with arbitrary precision is available in Python.  
 
 
 The CPU time in this example here would be significantly faster if the
@@ -2397,6 +2470,8 @@ efficiency of the different methods based on this example
 alone. However, for completeness we include a log-log plot in Figure
 ref{fem:comp:bell:loglogfig} to illustrate the polynomial increase in
 CPU time with respect to N.
+It seems that the efficiency of both the Taylor and Bernstein approximations can be estimated to be of the order of $N^2$,
+but the sinusoidal and Lagrange approximations seem to grow faster.  
 
 FIGURE: [fig/Bell_computations_loglog] CPU timings of the approximation with the difference basis in a log-log plot.  label{fem:comp:bell:loglogfig}
 
@@ -3764,7 +3839,7 @@ label{ch:approx:fe}
 
 The purpose of this chapter is to use the ideas from the previous
 chapter to approximate functions, but the basis functions are now
-of finite element type.
+of finite element type. 
 
 ======= Finite element basis functions =======
 label{fem:approx:fe}

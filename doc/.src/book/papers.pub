@@ -651,6 +651,50 @@
   pages:      1--40
   year:       2011
   publisher:  Wiley Online Library
+** Periodic table of the finite elements
+  key:        arnold2014periodic
+  author:     D. N. Arnold and A. Logg
+  journal:    SIAM News
+  volume:     47
+  number:     9
+  url:        https://femtable.org/
+  pages:      212
+  year:       2014
+** On the efficiency of symbolic computations combined with code generation for finite element methods
+  key:        alnaes2010efficiency
+  author:     M. S. Aln{\ae}s and K.-A. Mardal
+  journal:    ACM Transactions on Mathematical Software (TOMS)
+  volume:     37
+  number:     1
+  pages:      6
+  year:       2010
+  publisher:  ACM
+** Fast simplicial finite element algorithms using Bernstein polynomials
+  key:        kirby2011fast
+  author:     R. C. Kirby
+  journal:    Numerische Mathematik
+  volume:     117
+  number:     4
+  pages:      631--652
+  year:       2011
+  publisher:  Springer
+** Common and unusual finite elements
+  key:        kirby2012common
+  author:     R. C. Kirby and Anders Logg and M. E. Rognes, and A. R. Terrel
+  booktitle:  Automated Solution of Differential Equations by the Finite Element Method
+  pages:      95--119
+  year:       2012
+  publisher:  Springer
+** Constructing general reference finite elements
+  key:        kirby2012constructing
+  author:     R. C. Kirby and K.-A. Mardal
+  booktitle:  Automated Solution of Differential Equations by the Finite Element Method
+  pages:      121--132
+  year:       2012
+  publisher:  Springer
+
+
+
 
 
 
