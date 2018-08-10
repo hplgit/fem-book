@@ -54,6 +54,57 @@
    pages:     242-272
    status:    published
    entrytype: article
+** Preconditioning discretizations of systems of partial differential equations
+  key:        mardal2011preconditioning
+  author:     K.-A. Mardal, R. Winther
+  journal:    Numerical Linear Algebra with Applications
+  volume:     18
+  number:     1
+  pages:      1--40
+  year:       2011
+  publisher:  Wiley Online Library
+  status:    published
+  entrytype: article
+** Periodic table of the finite elements
+  key:        arnold2014periodic
+  author:     D. N. Arnold and A. Logg
+  journal:    SIAM News
+  volume:     47
+  number:     9
+  url:        https://femtable.org/
+  pages:      212
+  year:       2014
+  status:    published
+  entrytype: article
+** On the efficiency of symbolic computations combined with code generation for finite element methods
+   key:        alnaes2010efficiency
+   author:     M. S. Aln{\ae}s, K.-A. Mardal
+   year:       2010
+   journal:    ACM Transactions on Mathematical Software (TOMS)
+   volume:     37
+   number:     1
+   pages:      6
+   status:     published
+   entrytype:  article
+** Fast simplicial finite element algorithms using Bernstein polynomials
+   key:        kirby2011fast
+   author:     R. C. Kirby
+   journal:    Numerische Mathematik
+   volume:     117
+   number:     4
+   pages:      631--652
+   year:       2011
+   status:    published
+   entrytype: article
+** Numerical methods for incompressible viscous flow
+  key:        langtangen2002numerical
+  author:     H. P. Langtangen ,  K.-A. Mardal,  R. Winther 
+  journal:    Advances in water Resources
+  volume:     25
+  number:     8-12
+  pages:      1125--1146
+  year:       2002
+  publisher:  Elsevier
 * books
 ** Numerical Methods for Stochastic Computations: A Spectral Method Approach
    key:       Xiu_2010
@@ -605,15 +656,6 @@
    volume:    15
    year:      2012
    publisher: Springer Science \& Business Media
-** Numerical methods for incompressible viscous flow
-  key:        langtangen2002numerical
-  author:     H. P. Langtangen ,  K.-A. Mardal,  R. Winther 
-  journal:    Advances in water Resources
-  volume:     25
-  number:     8-12
-  pages:      1125--1146
-  year:       2002
-  publisher:  Elsevier
 ** Incompressible flow and the finite element method
   key:        gresho1998incompressible
   author:     P. M. Gresho ,  R. L. Sani 
@@ -642,49 +684,7 @@
   author:     U. Trottenberg, C.W. Oosterlee, A. Schuller
   year:       2000
   publisher:  Elsevier
-** Preconditioning discretizations of systems of partial differential equations
-  key:        mardal2011preconditioning
-  author:     K.-A. Mardal, R. Winther
-  journal:    Numerical Linear Algebra with Applications
-  volume:     18
-  number:     1
-  pages:      1--40
-  year:       2011
-  publisher:  Wiley Online Library
-  status:    published
-  entrytype: article
-** Periodic table of the finite elements
-  key:        arnold2014periodic
-  author:     D. N. Arnold and A. Logg
-  journal:    SIAM News
-  volume:     47
-  number:     9
-  url:        https://femtable.org/
-  pages:      212
-  year:       2014
-  status:    published
-  entrytype: article
-** On the efficiency of symbolic computations combined with code generation for finite element methods
-   key:        alnaes2010efficiency
-   author:     M. S. Aln{\ae}s, K.-A. Mardal
-   year:       2010
-   journal:    ACM Transactions on Mathematical Software (TOMS)
-   volume:     37
-   number:     1
-   pages:      6
-   doi:        10.1016/j.advwatres.2011.02.013
-   status:     published
-   entrytype:  article
-** Fast simplicial finite element algorithms using Bernstein polynomials
-   key:        kirby2011fast
-   author:     R. C. Kirby
-   journal:    Numerische Mathematik
-   volume:     117
-   number:     4
-   pages:      631--652
-   year:       2011
-   status:    published
-   entrytype: article
+* proceedings
 ** Common and unusual finite elements
   key:        kirby2012common
   author:     R. C. Kirby and A. Logg and M. E. Rognes, and A. R. Terrel
