@@ -17,6 +17,18 @@ def lagrange_series(x, N):
     psi = psi[1:-1]
     return psi
 
+def analytical(): 
+    eps_values = [1.0, 0.1, 0.01, 0.001]
+    for eps in eps_values: 
+      x = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0))
+      ue =  (numpy.exp(-x/eps) - 1)/ (numpy.exp(-1/eps) - 1)
+      print len(x), len(ue)
+      plt.plot(x, ue)
+    plt.legend(["$\epsilon$=%.1e" % eps for eps in eps_values],
+               loc="lower right")
+    plt.title("Analytical Solution")
+    plt.show()
+
 
 def bernstein_series(x, N):
     # FIXME: check if a normalization constant is common in the definition
@@ -68,7 +80,7 @@ def epsilon_experiment(N, series_type, Omega,
         x_ = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0))
         U_ = U(x_)
         plt.plot(x_, U_)
-    plt.legend(["eps=%.1e" % eps for eps in eps_values],
+    plt.legend(["$\epsilon$=%.1e" % eps for eps in eps_values],
                loc="upper left")
     plt.title(series_type)
     plt.show()
@@ -90,6 +102,7 @@ if __name__ == '__main__':
     Omega = [0, 1]
     x = sym.Symbol("x")
 
+    analytical()
     epsilon_experiment(N, series_type, Omega)
 
 
