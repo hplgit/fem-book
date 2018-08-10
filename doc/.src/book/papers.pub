@@ -651,6 +651,8 @@
   pages:      1--40
   year:       2011
   publisher:  Wiley Online Library
+  status:    published
+  entrytype: article
 ** Periodic table of the finite elements
   key:        arnold2014periodic
   author:     D. N. Arnold and A. Logg
@@ -660,31 +662,38 @@
   url:        https://femtable.org/
   pages:      212
   year:       2014
+  status:    published
+  entrytype: article
 ** On the efficiency of symbolic computations combined with code generation for finite element methods
-  key:        alnaes2010efficiency
-  author:     M. S. Aln{\ae}s and K.-A. Mardal
-  journal:    ACM Transactions on Mathematical Software (TOMS)
-  volume:     37
-  number:     1
-  pages:      6
-  year:       2010
-  publisher:  ACM
+   key:        alnaes2010efficiency
+   author:     M. S. Aln{\ae}s, K.-A. Mardal
+   year:       2010
+   journal:    ACM Transactions on Mathematical Software (TOMS)
+   volume:     37
+   number:     1
+   pages:      6
+   doi:        10.1016/j.advwatres.2011.02.013
+   status:     published
+   entrytype:  article
 ** Fast simplicial finite element algorithms using Bernstein polynomials
-  key:        kirby2011fast
-  author:     R. C. Kirby
-  journal:    Numerische Mathematik
-  volume:     117
-  number:     4
-  pages:      631--652
-  year:       2011
-  publisher:  Springer
+   key:        kirby2011fast
+   author:     R. C. Kirby
+   journal:    Numerische Mathematik
+   volume:     117
+   number:     4
+   pages:      631--652
+   year:       2011
+   status:    published
+   entrytype: article
 ** Common and unusual finite elements
   key:        kirby2012common
-  author:     R. C. Kirby and Anders Logg and M. E. Rognes, and A. R. Terrel
+  author:     R. C. Kirby and A. Logg and M. E. Rognes, and A. R. Terrel
   booktitle:  Automated Solution of Differential Equations by the Finite Element Method
   pages:      95--119
   year:       2012
   publisher:  Springer
+  entrytype:  inbook 
+  editor:     A. Logg and K.-A. Mardal and G. N. Wells
 ** Constructing general reference finite elements
   key:        kirby2012constructing
   author:     R. C. Kirby and K.-A. Mardal
@@ -692,6 +701,9 @@
   pages:      121--132
   year:       2012
   publisher:  Springer
+  entrytype:  inbook 
+  editor:    A. Logg and K.-A. Mardal and G. N. Wells
+
 
 
 

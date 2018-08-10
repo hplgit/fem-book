@@ -2150,12 +2150,12 @@ for eps in eps_valuess:
     plt.plot(x_, U_)
 !ec
 
-FIGURE: [fig/Bernstein_convdiff_8, width=400] Solution obtained with Galerkin approximation using Bernstein polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
+FIGURE: [fig/Bernstein_convdiff_8, width=400] Solution obtained with Galerkin approximation using Bernstein polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Bernstein8}
 
-FIGURE: [fig/Bernstein_convdiff_16, width=400] Solution obtained with Galerkin approximation using Bernstein polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
+FIGURE: [fig/Bernstein_convdiff_16, width=400] Solution obtained with Galerkin approximation using Bernstein polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Bernstein16}
 
 The numerical solutions for different $\epsilon$ is shown in Figure
-ref{convdiff:osc:Lagrange8} and ref{convdiff:osc:Lagrange16} for $N=8$
+ref{convdiff:osc:Bernstein8} and ref{convdiff:osc:Bernstein16} for $N=8$
 and $N=16$, respectively.  From these figures we can make two
 observations. The first observation is that the numerical solution
 contains non-physical oscillations that grows as $\epsilon$
@@ -2167,9 +2167,9 @@ for $\epsilon=1/100$ and larger than 10 for $\epsilon=1/1000$.  The
 second observation is that the numerical solutions appear to improve
 as $N$ increases. While the numerical solution is outside the interval
 $[0,1]$ for $\epsilon$ less than $1/10$ the magnitude of the
-oscillations clearly has decreased. Both Lagrange and Bernstein polynomials
-here have similar problems with the approximation but the computations using
-Bernstein polynomials are significantly more efficient.  
+oscillations clearly has decreased. Both Lagrange and Bernstein approximations  
+have similar problems,  but the computations using
+Bernstein polynomials are significantly more efficient and are therefore shown.  
 
 We will return to this example later and show examples of
 techniques that can be used to improve the approximation.
@@ -6335,7 +6335,8 @@ changes!
 idx{convection-diffusion}
 idx{Petrov-Galerkin methods}
 
-Let us now return to the problem in Section ref{sec:varform:general:convdiff}
+Let us now return to the convection-diffusion problem introduced in Section ref{sec:varform:general:convdiff}. The
+problem  in general reads,
 
 !bt
 \begin{alignat}{2}
