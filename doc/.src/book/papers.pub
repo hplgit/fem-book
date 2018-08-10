@@ -106,6 +106,55 @@
   year:       2002
   publisher:  Elsevier
 * books
+** The finite element method
+   key:       zienkiewicz1977finite
+   author:    O. C. Zienkiewicz, R. L. Taylor
+   year:      1977
+   publisher: McGraw-hill London
+** Galerkin finite element methods for parabolic problems
+   key:       thomee
+   author:    V. Thomée  
+   published: Springer-Verlag; 
+   year:      1984 
+** Introduction to partial differential equations: a computational approach 
+   key:       tveitowinther
+   author:    A. Tveito, R. Winther 
+   year:      2004
+   publisher: Springer Science \& Business Media; 
+** Mixed and hybrid finite element methods
+   key:       brezzi2012mixed
+   author:    F. Brezzi, M. Fortin
+   volume:    15
+   year:      2012
+   publisher: Springer Science \& Business Media
+** Incompressible flow and the finite element method
+  key:        gresho1998incompressible
+  author:     P. M. Gresho ,  R. L. Sani 
+  year:       1998
+  publisher:  John Wiley and Sons, Inc., New York, NY (United States)
+** Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approache
+  key:        turek1999efficient
+  title:      Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approach
+  author:     S. Turek
+  volume:     6
+  year:       1999
+  publisher:  Springer Science \& Business Media
+** Iterative solution of large sparse systems of equations 
+  key:        hackbusch1994iterative
+  author:     W. Hackbusch
+  volume:     95
+  year:       1994
+  publisher:  Springer
+** Domain decomposition: parallel multilevel methods for elliptic partial differential equations 
+  key:        smith2004domain
+  author:     B. Smith, P. Bjorstad, W. D. Gropp
+  year:       2004
+  publisher:  Cambridge university press 
+** Multigrid 
+  key:        trottenberg2000multigrid
+  author:     U. Trottenberg, C.W. Oosterlee, A. Schuller
+  year:       2000
+  publisher:  Elsevier
 ** Numerical Methods for Stochastic Computations: A Spectral Method Approach
    key:       Xiu_2010
    author:    D. Xiu
@@ -635,55 +684,6 @@
    note:      \url{http://hplgit.github.io/web4sciapps/doc/web/index.html}
    url:       http://hplgit.github.io/web4sciapps/doc/web/index.html
    entrytype: misc
-** The finite element method
-   key:       zienkiewicz1977finite
-   author:    O. C. Zienkiewicz, R. L. Taylor
-   year:      1977
-   publisher: McGraw-hill London
-** Galerkin finite element methods for parabolic problems
-   key:       thomee
-   author:    V. Thomée  
-   published: Springer-Verlag; 
-   year:      1984 
-** Introduction to partial differential equations: a computational approach 
-   key:       tveitowinther
-   author:    A. Tveito, R. Winther 
-   year:      2004
-   publisher: Springer Science & Business Media; 
-** Mixed and hybrid finite element methods
-   key:       brezzi2012mixed
-   author:    F. Brezzi, M. Fortin
-   volume:    15
-   year:      2012
-   publisher: Springer Science \& Business Media
-** Incompressible flow and the finite element method
-  key:        gresho1998incompressible
-  author:     P. M. Gresho ,  R. L. Sani 
-  year:       1998
-  publisher:  John Wiley and Sons, Inc., New York, NY (United States)
-** Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approache
-  key:        turek1999efficient
-  title:      Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approach
-  author:     S. Turek
-  volume:     6
-  year:       1999
-  publisher:  Springer Science \& Business Media
-** Iterative solution of large sparse systems of equations 
-  key:        hackbusch1994iterative
-  author:     W. Hackbusch
-  volume:     95
-  year:       1994
-  publisher:  Springer
-** Domain decomposition: parallel multilevel methods for elliptic partial differential equations 
-  key:        smith2004domain
-  author:     B. Smith, P. Bjorstad, W. D. Gropp
-  year:       2004
-  publisher:  Cambridge university press 
-** Multigrid **
-  key:        trottenberg2000multigrid
-  author:     U. Trottenberg, C.W. Oosterlee, A. Schuller
-  year:       2000
-  publisher:  Elsevier
 * proceedings
 ** Common and unusual finite elements
   key:        kirby2012common
