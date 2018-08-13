@@ -77,10 +77,9 @@ python logistic.py
 python neumann_fixpoint.py
 python neumann_lagrangemultipler.py
 
-#python python Newton_demo.py  # fails
-#python Newton_demo_session.sh  # fails
+python python Newton_demo.py
 
-#python nitsche.py  # fails
+python nitsche.py
 
 #python ODE_Picard_tricks.py  # fails
 
