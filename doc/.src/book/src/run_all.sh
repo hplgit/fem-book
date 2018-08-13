@@ -19,8 +19,8 @@ python convergence_rate_fem.py  # fails?
 python convergence_rate_global.py
 python convergence_rate_local.py
 
-#python darcy1D_mixed.py  # fails
-#python darcy1D.py  # fails
+python darcy1D_mixed.py
+python darcy1D.py
 
 python diffop_lib.py
 
