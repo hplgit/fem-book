@@ -21,7 +21,7 @@ for N in Ns:
     w = Function(V)
     solve(a == L, w, bc)
 
-    plt.plot(V.dofmap().tabulate_all_coordinates(mesh), w.vector().array())
+    plt.plot(V.tabulate_dof_coordinates(), w.vector().get_local())
     plt.hold(True)
 plt.legend(["N=%d"%N for N in Ns], loc="upper left")
 plt.show()
@@ -54,7 +54,7 @@ for N in Ns:
     T = Function(V)
     solve(a == L, T, bc)
 
-    plt.plot(V.dofmap().tabulate_all_coordinates(mesh), T.vector().array())
+    plt.plot(V.tabulate_dof_coordinates(), T.vector().get_local())
     plt.hold(True)
 plt.legend(["N=%d"%N for N in Ns], loc="upper left")
 plt.savefig('fenics_cooling.png'); plt.savefig('fenics_cooling.pdf')

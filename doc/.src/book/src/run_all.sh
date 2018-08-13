@@ -84,7 +84,7 @@ python neumann_lagrangemultipler.py
 
 #python ODE_Picard_tricks.py  # fails
 
-#python pipecooling_fem.py  # fails
+python pipecooling_fem.py
 
 python plot_fe_approx2D.py
 
