@@ -77,7 +77,7 @@ python logistic.py
 python neumann_fixpoint.py
 python neumann_lagrangemultipler.py
 
-python python Newton_demo.py
+python Newton_demo.py
 
 python nitsche.py
 
