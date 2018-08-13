@@ -90,7 +90,7 @@ python plot_fe_approx2D.py
 
 python plot_global_bell.py
 
-#python plot_phi.py phi  # fails
+python plot_phi.py phi
 python plot_phi.py pattern 3 3 random
 python plot_phi.py pattern 3 3 uniform
 python plot_phi.py u_sines
