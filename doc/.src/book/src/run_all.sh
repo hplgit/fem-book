@@ -10,10 +10,10 @@ python Bernstein_vs_Lagrange_plot.py
 
 python borehole_fenics.py
 
-#python conv-diff-pg.py  # fails
+python conv-diff-pg.py
 python conv_diff.py
-#python conv-diff.py  # fails
-#python conv-diff-stab.py  # fails
+python conv-diff.py
+python conv-diff-stab.py
 
 python convergence_rate_fem.py  # fails?
 python convergence_rate_global.py
