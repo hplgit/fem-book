@@ -1,9 +1,11 @@
+import sys
 import matplotlib.pyplot as plt
 from numpy import *
 
 from sys import argv
 if not len(argv) == 6:
   print("usage: > Newton_demo.py f dfx x0 xmin xmax ")
+  sys.exit(0)
 
 f_str = argv[1]
 dfdx_str = argv[2]
