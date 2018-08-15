@@ -10,8 +10,8 @@ python Bernstein_vs_Lagrange_plot.py
 
 python borehole_fenics.py
 
+python conv-diff-global.py
 python conv-diff-pg.py
-python conv_diff.py
 python conv-diff.py
 python conv-diff-stab.py
 
