@@ -22,7 +22,7 @@ def analytical():
     for eps in eps_values: 
       x = numpy.arange(Omega[0], Omega[1], 1/((N+1)*100.0))
       ue =  (numpy.exp(-x/eps) - 1)/ (numpy.exp(-1/eps) - 1)
-      print len(x), len(ue)
+      print(len(x), len(ue))
       plt.plot(x, ue)
     plt.legend(["$\epsilon$=%.1e" % eps for eps in eps_values],
                loc="lower right")
