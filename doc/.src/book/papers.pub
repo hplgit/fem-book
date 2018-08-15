@@ -54,7 +54,107 @@
    pages:     242-272
    status:    published
    entrytype: article
+** Preconditioning discretizations of systems of partial differential equations
+  key:        mardal2011preconditioning
+  author:     K.-A. Mardal, R. Winther
+  journal:    Numerical Linear Algebra with Applications
+  volume:     18
+  number:     1
+  pages:      1--40
+  year:       2011
+  publisher:  Wiley Online Library
+  status:    published
+  entrytype: article
+** Periodic table of the finite elements
+  key:        arnold2014periodic
+  author:     D. N. Arnold and A. Logg
+  journal:    SIAM News
+  volume:     47
+  number:     9
+  url:        https://femtable.org/
+  pages:      212
+  year:       2014
+  status:    published
+  entrytype: article
+** On the efficiency of symbolic computations combined with code generation for finite element methods
+   key:        alnaes2010efficiency
+   author:     M. S. Aln{\ae}s, K.-A. Mardal
+   year:       2010
+   journal:    ACM Transactions on Mathematical Software (TOMS)
+   volume:     37
+   number:     1
+   pages:      6
+   status:     published
+   entrytype:  article
+** Fast simplicial finite element algorithms using Bernstein polynomials
+   key:        kirby2011fast
+   author:     R. C. Kirby
+   journal:    Numerische Mathematik
+   volume:     117
+   number:     4
+   pages:      631--652
+   year:       2011
+   status:    published
+   entrytype: article
+** Numerical methods for incompressible viscous flow
+  key:        langtangen2002numerical
+  author:     H. P. Langtangen ,  K.-A. Mardal,  R. Winther 
+  journal:    Advances in water Resources
+  volume:     25
+  number:     8-12
+  pages:      1125--1146
+  year:       2002
+  publisher:  Elsevier
 * books
+** The finite element method
+   key:       zienkiewicz1977finite
+   author:    O. C. Zienkiewicz, R. L. Taylor
+   year:      1977
+   publisher: McGraw-hill London
+** Galerkin finite element methods for parabolic problems
+   key:       thomee
+   author:    V. Thomée  
+   published: Springer-Verlag; 
+   year:      1984 
+** Introduction to partial differential equations: a computational approach 
+   key:       tveitowinther
+   author:    A. Tveito, R. Winther 
+   year:      2004
+   publisher: Springer Science \& Business Media; 
+** Mixed and hybrid finite element methods
+   key:       brezzi2012mixed
+   author:    F. Brezzi, M. Fortin
+   volume:    15
+   year:      2012
+   publisher: Springer Science \& Business Media
+** Incompressible flow and the finite element method
+  key:        gresho1998incompressible
+  author:     P. M. Gresho ,  R. L. Sani 
+  year:       1998
+  publisher:  John Wiley and Sons, Inc., New York, NY (United States)
+** Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approache
+  key:        turek1999efficient
+  title:      Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approach
+  author:     S. Turek
+  volume:     6
+  year:       1999
+  publisher:  Springer Science \& Business Media
+** Iterative solution of large sparse systems of equations 
+  key:        hackbusch1994iterative
+  author:     W. Hackbusch
+  volume:     95
+  year:       1994
+  publisher:  Springer
+** Domain decomposition: parallel multilevel methods for elliptic partial differential equations 
+  key:        smith2004domain
+  author:     B. Smith, P. Bjorstad, W. D. Gropp
+  year:       2004
+  publisher:  Cambridge university press 
+** Multigrid 
+  key:        trottenberg2000multigrid
+  author:     U. Trottenberg, C.W. Oosterlee, A. Schuller
+  year:       2000
+  publisher:  Elsevier
 ** Numerical Methods for Stochastic Computations: A Spectral Method Approach
    key:       Xiu_2010
    author:    D. Xiu
@@ -584,73 +684,29 @@
    note:      \url{http://hplgit.github.io/web4sciapps/doc/web/index.html}
    url:       http://hplgit.github.io/web4sciapps/doc/web/index.html
    entrytype: misc
-** The finite element method
-   key:       zienkiewicz1977finite
-   author:    O. C. Zienkiewicz, R. L. Taylor
-   year:      1977
-   publisher: McGraw-hill London
-** Galerkin finite element methods for parabolic problems
-   key:       thomee
-   author:    V. Thomée  
-   published: Springer-Verlag; 
-   year:      1984 
-** Introduction to partial differential equations: a computational approach 
-   key:       tveitowinther
-   author:    A. Tveito, R. Winther 
-   year:      2004
-   publisher: Springer Science & Business Media; 
-** Mixed and hybrid finite element methods
-   key:       brezzi2012mixed
-   author:    F. Brezzi, M. Fortin
-   volume:    15
-   year:      2012
-   publisher: Springer Science \& Business Media
-** Numerical methods for incompressible viscous flow
-  key:        langtangen2002numerical
-  author:     H. P. Langtangen ,  K.-A. Mardal,  R. Winther 
-  journal:    Advances in water Resources
-  volume:     25
-  number:     8-12
-  pages:      1125--1146
-  year:       2002
-  publisher:  Elsevier
-** Incompressible flow and the finite element method
-  key:        gresho1998incompressible
-  author:     P. M. Gresho ,  R. L. Sani 
-  year:       1998
-  publisher:  John Wiley and Sons, Inc., New York, NY (United States)
-** Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approache
-  key:        turek1999efficient
-  title:      Efficient Solvers for Incompressible Flow Problems: An Algorithmic and Computational Approach
-  author:     S. Turek
-  volume:     6
-  year:       1999
-  publisher:  Springer Science \& Business Media
-** Iterative solution of large sparse systems of equations 
-  key:        hackbusch1994iterative
-  author:     W. Hackbusch
-  volume:     95
-  year:       1994
+* proceedings
+** Common and unusual finite elements
+  key:        kirby2012common
+  author:     R. C. Kirby and A. Logg and M. E. Rognes, and A. R. Terrel
+  booktitle:  Automated Solution of Differential Equations by the Finite Element Method
+  pages:      95--119
+  year:       2012
   publisher:  Springer
-** Domain decomposition: parallel multilevel methods for elliptic partial differential equations 
-  key:        smith2004domain
-  author:     B. Smith, P. Bjorstad, W. D. Gropp
-  year:       2004
-  publisher:  Cambridge university press 
-** Multigrid **
-  key:        trottenberg2000multigrid
-  author:     U. Trottenberg, C.W. Oosterlee, A. Schuller
-  year:       2000
-  publisher:  Elsevier
-** Preconditioning discretizations of systems of partial differential equations
-  key:        mardal2011preconditioning
-  author:     K.-A. Mardal, R. Winther
-  journal:    Numerical Linear Algebra with Applications
-  volume:     18
-  number:     1
-  pages:      1--40
-  year:       2011
-  publisher:  Wiley Online Library
+  entrytype:  inbook 
+  editor:     A. Logg and K.-A. Mardal and G. N. Wells
+** Constructing general reference finite elements
+  key:        kirby2012constructing
+  author:     R. C. Kirby and K.-A. Mardal
+  booktitle:  Automated Solution of Differential Equations by the Finite Element Method
+  pages:      121--132
+  year:       2012
+  publisher:  Springer
+  entrytype:  inbook 
+  editor:    A. Logg and K.-A. Mardal and G. N. Wells
+
+
+
+
 
 
 

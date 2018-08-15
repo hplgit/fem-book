@@ -6,7 +6,7 @@ V = FunctionSpace(mesh, "Lagrange", 1)
 u = TrialFunction(V) 
 v = TestFunction(V)
 
-lams = [1.01, 1.1, 2, 10, 100]
+lams = [1.001, 1.01, 1.1, 2, 10, 100]
 for lam in lams: 
     lam = Constant(lam) 
     h = CellDiameter(mesh)
@@ -25,5 +25,5 @@ for lam in lams:
 
     plt.plot(V.tabulate_dof_coordinates(), U.vector().get_local())
 
-plt.legend(["lam=%3.2f" %lam for lam in lams], loc=2)
+plt.legend(["lam=%4.3f" %lam for lam in lams], loc=2)
 plt.show()

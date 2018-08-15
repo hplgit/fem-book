@@ -16,7 +16,8 @@ label{ch:varform:global}
 The finite element method is a very flexible approach for solving partial
 differential equations. Its two most attractive features are the ease
 of handling domains of complex shape in two and three dimensions and
-the ease of using higher-degree polynomials in the approximations.
+the variety of polynomials (with different properties and orders) 
+that are available.
 The latter feature typically leads to errors proportional to
 $h^{d+1}$, where $h$ is the element length and $d$ is the polynomial
 degree. When the solution is sufficiently smooth, the ability to use
@@ -1990,12 +1991,11 @@ idx{convection-diffusion}
 
 In the previous examples we have obtained reasonable approximations
 of the continuous solution with several different approaches. In this
-chapter we will consider a convection-diffusion equation where
+section we will consider a convection-diffusion equation where
 many methods will fail. The failure is purely numerical
 and it is often tied to the resolution. The current example is perhaps
 the prime example of numerical instabilities in the context of
 numerical solution algorithms for PDEs.
-
 Consider the equation
 !bt
 \begin{align}
@@ -2006,7 +2006,7 @@ u(1) &= 0 .
 \end{align}
 !et
 
-The problem describes a convection-diffusion problem where the
+The PDE problem describes a convection-diffusion problem where the
 convection is modelled by the first order term $-u_x$ and diffusion is
 described by the second order term $-\epsilon u_{xx}$. In many
 applications $\epsilon \ll 1$ and the dominating term is $-u_x$. The
@@ -2150,12 +2150,12 @@ for eps in eps_valuess:
     plt.plot(x_, U_)
 !ec
 
-FIGURE: [fig/Lagrange_convdiff_8, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Lagrange8}
+FIGURE: [fig/Bernstein_convdiff_8, width=400] Solution obtained with Galerkin approximation using Bernstein polynomials of order up to 8 for various $\epsilon$. label{convdiff:osc:Bernstein8}
 
-FIGURE: [fig/Lagrange_convdiff_16, width=400] Solution obtained with Galerkin approximation using Lagrangian polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Lagrange16}
+FIGURE: [fig/Bernstein_convdiff_16, width=400] Solution obtained with Galerkin approximation using Bernstein polynomials of order up to 16 for various $\epsilon$. label{convdiff:osc:Bernstein16}
 
 The numerical solutions for different $\epsilon$ is shown in Figure
-ref{convdiff:osc:Lagrange8} and ref{convdiff:osc:Lagrange16} for $N=8$
+ref{convdiff:osc:Bernstein8} and ref{convdiff:osc:Bernstein16} for $N=8$
 and $N=16$, respectively.  From these figures we can make two
 observations. The first observation is that the numerical solution
 contains non-physical oscillations that grows as $\epsilon$
@@ -2167,7 +2167,9 @@ for $\epsilon=1/100$ and larger than 10 for $\epsilon=1/1000$.  The
 second observation is that the numerical solutions appear to improve
 as $N$ increases. While the numerical solution is outside the interval
 $[0,1]$ for $\epsilon$ less than $1/10$ the magnitude of the
-oscillations clearly has decreased.
+oscillations clearly has decreased. Both Lagrange and Bernstein approximations  
+have similar problems,  but the computations using
+Bernstein polynomials are significantly more efficient and are therefore shown.  
 
 We will return to this example later and show examples of
 techniques that can be used to improve the approximation.
@@ -6127,7 +6129,7 @@ The Dirichlet conditions make a nonzero solution.
 
 We suppose that we have a function `make_mesh` that can make the mesh for us. More
 details about this function will be provided later. 
-A next step is then to  to define proper Dirichlet conditions.
+A next step is then to define proper Dirichlet conditions.
 This might seem a bit complicated, but we introduce *markers* at the
 boundary for marking the Dirichlet boundaries. The inner boundary has
 marker 1 and the outer has marker 2. In this way, we can recognize the
@@ -6333,7 +6335,8 @@ changes!
 idx{convection-diffusion}
 idx{Petrov-Galerkin methods}
 
-Let us now return to the problem in Section ref{sec:varform:general:convdiff}
+Let us now return to the convection-diffusion problem introduced in Section ref{sec:varform:general:convdiff}. The
+problem  in general reads,
 
 !bt
 \begin{alignat}{2}
