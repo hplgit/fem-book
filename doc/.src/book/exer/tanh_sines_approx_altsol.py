@@ -25,7 +25,7 @@ def least_squares_orth(f, x, psi):
     # Calculates the approximation u
     u = np.zeros_like(f)
     for n in range(N):
-	u += c[n]*psi[n](x)
+        u += c[n]*psi[n](x)
     return u
 
 
@@ -66,24 +66,24 @@ def main(basis='all', boundary_correction=False, interactive=True):
         u = np.zeros(Nx) + B
 
         for i in range(N+1):
-            print s, i
-	    if basis == 'all':
+            print(s, i)
+            if basis == 'all':
                 psi_str = r'$\sin((i+1)x)$'
                 psi_list = [lambda x: np.sin((i+1)*x)]
-	    else:
+            else:
                 psi_str = r'$\sin((2i+1)x)$'
                 psi_list = [lambda x: np.sin((2*i+1)*x)]
             u +=  least_squares_orth(f-B, x, psi_list)
             lines[1].set_ydata(u)
             plt.title(r'Approximation of $\tanh(%g(x-\pi))$ by %s, $i=0,...%d$' % (s, psi_str, i))
             plt.savefig(fileformat % frame_counter)
-	    frame_counter += 1
-	    plt.draw()
-	    if interactive:
+            frame_counter += 1
+            plt.draw()
+            if interactive:
                 raw_input()
 
     cmd = 'ffmpeg -r 2 -i %s -vcodec libtheora movie.ogg' % (fileformat)
-    print cmd
+    print(cmd)
     os.system(cmd)
 
 if __name__=='__main__':
@@ -91,13 +91,13 @@ if __name__=='__main__':
     try:
         basis = sys.argv[1]
         boundary_correction = int(sys.argv[2])
-	interactive = int(sys.argv[3])
+        interactive = int(sys.argv[3])
     except IndexError:
         basis = 'odd'
         boundary_correction = False
-	interactive = False
+        interactive = False
     main(basis=basis, boundary_correction=boundary_correction,
-	 interactive=interactive)
+         interactive=interactive)
 
 
 
