@@ -15,7 +15,7 @@ jobs:
       - run:
           name: Setup environment
           command: |
-            apt-get update; apt-get install -y gcc g++ ispell
+            apt-get update; apt-get install -y gcc g++ ispell graphicsmagick-imagemagick-compat texlive-extra-utils pdftk ffmpeg
             conda config --set always_yes true --set changeps1 false --set quiet true
             conda update -q conda
             conda config --add channels conda-forge
@@ -32,6 +32,12 @@ jobs:
           command: |
             source activate ${ENV_NAME}
             cd doc/.src/book/src
+            ./run_all.sh
+      - run:
+          name: Run scripts in exer
+          command: |
+            source activate ${ENV_NAME}
+            cd doc/.src/book/exer
             ./run_all.sh
       - run:
           name: Build book
