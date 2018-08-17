@@ -2,46 +2,27 @@ version: 2
 jobs:
   build:
     docker:
-      - image: continuumio/miniconda3:latest
+      - image: johannr/fem-book-test:latest
     environment:
       MPLBACKEND: "agg"
-      DOLFIN_NOPLOT: 1
-      DEBIAN_FRONTEND: "noninteractive"
       ENV_NAME: "fem-book-test"
     steps:
       - checkout
-      - restore_cache:
-          key: conda-cache
-      - run:
-          name: Setup environment
-          command: |
-            apt-get update; apt-get install -y gcc g++ ispell graphicsmagick-imagemagick-compat texlive-extra-utils pdftk ffmpeg
-            conda config --set always_yes true --set changeps1 false --set quiet true
-            conda update -q conda
-            conda config --add channels conda-forge
-            conda create -n ${ENV_NAME}
-            source activate ${ENV_NAME}
-            conda install doconce fenics matplotlib scipy sympy=1.1
-            conda list -n ${ENV_NAME}
-      - save_cache:
-          key: conda-cache
-          paths:
-            - "/opt/conda/envs/${ENV_NAME}"
       - run:
           name: Run scripts in src
           command: |
-            source activate ${ENV_NAME}
+            conda activate ${ENV_NAME}
             cd doc/.src/book/src
             ./run_all.sh
       - run:
           name: Run scripts in exer
           command: |
-            source activate ${ENV_NAME}
+            conda activate ${ENV_NAME}
             cd doc/.src/book/exer
             ./run_all.sh
       - run:
           name: Build book
           command: |
-            source activate ${ENV_NAME}
+            conda activate ${ENV_NAME}
             cd doc/.src/book
             #./make.sh
