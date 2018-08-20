@@ -5,7 +5,9 @@ USER root
 ENV ENV_NAME=fem-book-test
 
 RUN apt update && \
-    apt install -y gcc g++ ispell graphicsmagick-imagemagick-compat texlive-extra-utils pdftk ffmpeg
+    apt install -y gcc g++ ispell graphicsmagick-imagemagick-compat texlive-extra-utils texlive-latex-extra texlive-fonts-recommended pdftk ffmpeg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN conda config --set always_yes true && \
     conda update -q conda && \
