@@ -50,17 +50,17 @@ f = lambda u: eval(sys.argv[1])
 integral_L = integrate(f(u['L'])*phi['L']['i'], (x, x_im1, x_i))
 integral_R = integrate(f(u['R'])*phi['R']['i'], (x, x_i, x_ip1))
 expr_i = simplify(expand(integral_L + integral_R))
-print expr_i
+print(expr_i)
 latex_code = latex(expr_i, mode='plain')
 # Replace u_im1 sympy symbol name by latex symbol u_{i-1}
 latex_code = latex_code.replace('im1', '{i-1}')
 # Replace u_ip1 sympy symbol name by latex symbol u_{i+1}
 latex_code = latex_code.replace('ip1', '{i+1}')
-print latex_code
+print(latex_code)
 # Escape (quote) latex_code so it can be sent as HTML text
 import cgi
 html_code = cgi.escape(latex_code)
-print html_code
+print(html_code)
 # Make a file with HTML code for displaying the LaTeX formula
 f = open('tmp.html', 'w')
 # Include an image that can be clicked on to yield a new

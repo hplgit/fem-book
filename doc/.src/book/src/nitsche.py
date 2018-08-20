@@ -9,7 +9,7 @@ v = TestFunction(V)
 lams = [1.001, 1.01, 1.1, 2, 10, 100]
 for lam in lams: 
     lam = Constant(lam) 
-    h = CellSize(mesh)
+    h = CellDiameter(mesh)
     n = FacetNormal(mesh)
     f = Expression("-12*pow(x[0], 2)", degree=2) 
     u0 = Expression("pow(x[0],4)", degree=4)

@@ -60,7 +60,7 @@ def fe_basis_function_figure(d, target_elm=[1], N_e=3,
     plot_fe_mesh(nodes, elements, element_marker=[ymin-0.1, ymax+0.1])
     plt.plot([0, 0], [0, 0], '-')
     plt.axis([nodes[0], nodes[-1], ymin-0.1, ymax+0.1])
-    plt.axes.set_aspect('')
+    #plt.axes.set_aspect('')
     #plt.daspect([0.2, 1, 1])
     #plt.daspactmode('manual')
     plt.savefig(filename)

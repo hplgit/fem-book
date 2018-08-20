@@ -46,7 +46,7 @@ chapters = {
 def admon(tp, title, text):
     if tp not in ('notice', 'question', 'warning', 'summary'):
         import sys
-        print 'wrong type of admon:', tp; sys.exit(1)
+        print('wrong type of admon:' % tp); sys.exit(1)
     r = '\n!b%s %s\n' % (tp, title) + text.strip() + '\n!e%s\n\n' % tp
     #r = text
     return r
