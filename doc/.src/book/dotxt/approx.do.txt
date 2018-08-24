@@ -1829,8 +1829,7 @@ label{fem:inter:prop}
 !et
 when $x_s$ is an interpolation (collocation) point.
 Here we have used the *Kronecker delta* symbol $\delta_{is}$.
-This property implies that $A$ is a diagonal matrix, that is
-that  $A_{i,j}=0$ for $i\neq j$ and
+This property implies that $A$ is a diagonal matrix, i.e., $A_{i,j}=0$ for $i\neq j$ and
 $A_{i,j}=1$ when $i=j$. The solution of the linear system is
 then simply
 
@@ -1845,8 +1844,8 @@ and
 \begin{equation}
 u(x) = \sum_{j\in\If} c_i \baspsi_i(x) = \sum_{j\in\If} f(\xno{i})\baspsi_i(x)\tp  \end{equation}
 !et
-We remark however that (ref{fem:inter:prop}) does not necessary imply that the matrix
-obtained by the least squares or project methods are diagonal.
+We remark however that (ref{fem:inter:prop}) does not necessarily imply that the matrix
+obtained by the least squares or project methods is diagonal.
 
 
 The following function computes the Lagrange interpolating polynomial
@@ -1874,13 +1873,13 @@ def Lagrange_polynomials_01(x, N):
     psi = [Lagrange_polynomial(x, i, points) for i in range(N)]
     return psi, points
 !ec
-When `x` is an `sym.Symbol` object, we let the spacing between the
+When `x` is a `sym.Symbol` object, we let the spacing between the
 interpolation points, `h`, be a `sympy` rational number, so that we
 get nice end results in the formulas for $\baspsi_i$.  The other case,
 when `x` is a plain Python `float`, signifies numerical computing, and
 then we let `h` be a floating-point number.  Observe that the
 `Lagrange_polynomial` function works equally well in the symbolic and
-numerical case - just think of `x` being an `sym.Symbol` object or a
+numerical case - just think of `x` being a `sym.Symbol` object or a
 Python `float`.  A little interactive session illustrates the
 difference between symbolic and numerical computing of the basis
 functions and points:
@@ -1959,7 +1958,7 @@ comparison_plot(f, u, Omega)
 !ec
 Figure ref{fem:approx:global:Lagrange:fig:sine:ls:colloc} shows the results.
 There is a difference between the least squares and the interpolation
-technique but the difference decreases rapidly with  Increasing $N$.
+technique but the difference decreases rapidly with  increasing $N$.
 
 FIGURE: [fig/Lagrange_ls_interp_sin_4, width=800]  Approximation via least squares (left) and interpolation (right) of a sine function by Lagrange interpolating polynomials of degree 3. label{fem:approx:global:Lagrange:fig:sine:ls:colloc}
 
@@ -2052,7 +2051,7 @@ FIGURE: [fig/Lagrange_basis_12, width=400]  Illustration of the oscillatory beha
 
 FIGURE: [fig/Lagrange_interp_abs_Cheb_8_15, width=800]  Interpolation of an absolute value function by Lagrange polynomials and Chebyshev nodes as interpolation points: degree 7 (left) and 14 (right).  label{fem:approx:global:Lagrange:fig:abs:Lag:Cheb:7:14}
 
-FIGURE: [fig/Lagrange_basis_Cheb_12, width=400]  Illustration of the less oscillatory behavior of two Lagrange polynomials based on 12 Chebyshev points (marked by circles).  label{fem:approx:global:Lagrange:fig:abs:Lag:Cheb:osc}
+FIGURE: [fig/Lagrange_basis_Cheb_12, width=400]  Illustration of the less oscillatory behavior of two Lagrange polynomials based on 12 Chebyshev points (marked by circles).  label{fem:approx:global:Lagrange:fig:abs:Lag:Cheb:osc} Note that the y-axis is different from Figure ref{fem:approx:global:Lagrange:fig:abs:Lag:unif:osc}. 
 
 How does the least squares or projection methods work with Lagrange
 polynomials?
@@ -2170,7 +2169,7 @@ a nodal basis. In fact, all functions contribute everywhere except $x=0$ and $x=
 
 
 Both Lagrange and Bernstein polynomials take larger values towards the element boundaries than in
-the middle of the element, but the Bernstein polynomials always remain less or equal to 1.
+the middle of the element, but the Bernstein polynomials always remain less than or equal to 1.
 
 We  remark that the Bernstein basis is easily extended to polygons in 2D and
 3D in terms of the barycentric coordinates. For example, consider the reference triangle in
@@ -2192,8 +2191,8 @@ in computational geometry. However, we mention a few recent efforts in finite el
 explore the combination of symbolic and numerical evaluation for finite element methods 
 and have demonstrated that the Bernstein basis
 enables fast computations through their explicit representation (of both the basis functions and their derivatives)
-cite{alnaes2010efficiency,kirby2011fast}. The Lagrange and the Bernstein families are, however, but a few in the jungle of polynomials
-spaces used for finite element computations and their efficiency and accuracy can very quite substantially.  
+cite{alnaes2010efficiency,kirby2011fast}. The Lagrange and the Bernstein families are, however, but a few in the jungle of polynomial
+spaces used for finite element computations and their efficiency and accuracy can vary quite substantially.  
 Furthermore, while a method may be efficient and accurate for one type of PDE it might not even converge for
 another type of PDE.  The development and analysis of finite element methods for different purposes is currently an intense research field
 and has been so for several decades.
@@ -2235,7 +2234,7 @@ We may therefore study the behavior as $N\rightarrow\infty$.
 
 To quantify the behavior of the error as well as the
 complexity of the computations we  compute the approximation
-with increasing number of basis functions and time
+with an increasing number of basis functions and time
 the computations by using `time.clock` (returning the CPU time so far
 in the program). A code example goes as
 follows:
@@ -2359,10 +2358,10 @@ Here, the timings are in seconds.  The Taylor basis is the most
 efficient and is in fact more than 60 times faster than the Lagrange
 basis for $N=16$ (with our naive implementation of basic formulas).
 
-In order to get a more precise idea of how the approximation methods
+In order to get a more precise idea of how the error of our different approximation methods
 behave as $N$ increases, we investigate two simple data models which
-may be used in a regression analysis.  These two are the polynomial
-and exponential model defined by
+may be used in a regression analysis.  The error is modeled in terms of either a polynomial
+or an exponential function defined as follows 
 
 !bt
 \begin{align}
@@ -2460,12 +2459,12 @@ would give us an error of $\approx 3.6 10^{-7}$ while the estimate for
 the Bernstein polynomials amounts to $\approx 3.3 10^{-85}$ and is hence 
 vastly superior.  
 We remark here that floating point errors likely will be an issue, but libraries
-with arbitrary precision is available in Python.  
+with arbitrary precision are available in Python.  
 
 
-The CPU time in this example here would be significantly faster if the
+The CPU time in the example here would be significantly faster if the
 algorithms were implemented in a compiled language like C/C++ or
-Fortran and we should not be careful in drawing conclusion about the
+Fortran and we should be careful in drawing conclusions about the
 efficiency of the different methods based on this example
 alone. However, for completeness we include a log-log plot in Figure
 ref{fem:comp:bell:loglogfig} to illustrate the polynomial increase in
@@ -2479,7 +2478,7 @@ FIGURE: [fig/Bell_computations_loglog] CPU timings of the approximation with the
 The complete code can be found in
 "`convergence_rate_local.py`": "${fem_src}/convergence_rate_local.py".
 
-The code for the "`regression\_with\_noise`" is as follows: 
+The code for the regression algorithm  is as follows: 
 
 @@@CODE src/approx1D.py fromto: def regression_with_noise@    return  
 

@@ -521,7 +521,7 @@ $\int\limits_{\partial\Omega_N}\frac{\partial v}{\partial n}(u-\uN) \ds$.
 One may question why two terms are needed in order to enforce the boundary condition. 
 In general this may not be needed and the penalty term may sometimes be dropped. 
 However, the advantage of including the penalty term is that it keeps the functional
-convex and the bilinear form becomes becomes both positive and symmetric. 
+convex and the bilinear form becomes both positive and symmetric. 
 
 
 We summarize the final formulation in terms of a weak formulation: 

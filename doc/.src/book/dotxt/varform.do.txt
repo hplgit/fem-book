@@ -1778,7 +1778,7 @@ we introduce two additional functions, `boundary_lhs(psi, i, j)` and
 `boundary_rhs(psi, i)` for returning terms in the variational
 formulation that are not to be integrated over the domain $\Omega$.
 Examples, to be shown later, will explain in more detail how these
-user-supplied function may look like.
+user-supplied functions may look like.
 
 The linear system can be computed and solved symbolically by
 the following function:
@@ -1809,7 +1809,7 @@ def solver(integrand_lhs, integrand_rhs, psi, Omega,
     return u, c
 !ec
 
-===== Fallback on numerical methods =====
+===== Fallback to numerical methods =====
 
 Not surprisingly, symbolic solution of differential
 equations, discretized by a Galerkin or least squares method
@@ -2007,7 +2007,7 @@ u(1) &= 0 .
 !et
 
 The PDE problem describes a convection-diffusion problem where the
-convection is modelled by the first order term $-u_x$ and diffusion is
+convection is modeled by the first order term $-u_x$ and diffusion is
 described by the second order term $-\epsilon u_{xx}$. In many
 applications $\epsilon \ll 1$ and the dominating term is $-u_x$. The
 sign of $-u_x$ is not important, the same problem occurs for

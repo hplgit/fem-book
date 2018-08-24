@@ -1375,7 +1375,7 @@ The $L_2$ error of the numerical solution at time step $n$ is
 \]
 !et
 Again this yields a complicated expression for hand-calculations, but
-the following `sympy` provides the estimate:
+the following `sympy` commands provides the estimate:
 !bc ipy
 >>> n, i, x = sym.symbols("n i x")
 >>> e = (Ae**n - Af**n)*sym.exp(i*k*x)
@@ -1388,7 +1388,7 @@ the Taylor-series.
 
 We may also compute the expansion in terms of $k$ and $\Delta x$ for both the amplification 
 factor or the $L2$ error of the error in the amplification factor and we find that
-both are first order in $\Delta t$, forth order in $k$, and zeroth order in $\Delta x$. 
+both are first order in $\Delta t$, fourth order in $k$, and zeroth order in $\Delta x$. 
 
 !bc ipy
 >>> (Ae-Af).series(k, n=4) 
@@ -1413,7 +1413,7 @@ we expect an  error estimate in the asymptotic regime  of the form
 \|u_e - u\| \le C (\Delta t)^\alpha + D h^\beta   
 \end{equation}  
 !et
-where $C, D, \alpha, \beta$ depend the discretization scheme. 
+where $C, D, \alpha, \beta$ depend on the discretization scheme. 
 However, this estimate only holds in the *asymptotic regime*. 
 As the amplification factor analysis shows, 
 we cannot remove the error in the amplification factor by decreasing $h$.   

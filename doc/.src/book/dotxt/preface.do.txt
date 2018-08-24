@@ -2,17 +2,17 @@ The present book is essentially a book on the finite element method,
 although we discuss many other choices of basis functions and other
 applications than partial differential equations. The
 literature on finite elements contains books of many different
-flavors, ranging from the abstract view of the method
-cite{Braess, Brenner_Scott, Silvester_et_al_2015, JohnsonFEM87,Quarteroni_Valli} to  more 
+flavors, ranging from an abstract view of the method
+cite{Braess, Brenner_Scott, Silvester_et_al_2015, JohnsonFEM87,Quarteroni_Valli} to  a more 
 practical, algorithmic treatment of the subject cite{Langtangen_2003a, zienkiewicz1977finite}. The present book has
 a very strong algorithmic focus (``how to compute''), but formulate
-the method in the abstract form with variational forms and function
+the method in abstract form with variational forms and function
 spaces.
 
 
 One highly valued feature of the finite element method is the prospect
 of rigorous analysis provided by the functional analysis framework. In
-particular, for elliptic problems (or in general symmetric problems)
+particular, for elliptic problems (or, in general, symmetric problems)
 the theory provides error control via sharp estimates and efficient
 computations via multiscale algorithms. In fact, the development of
 this mathematical theory of finite element methods is one of the
@@ -28,27 +28,27 @@ and debugging that are applicable in general situations such
 that the method can be used safely beyond what is theoretically proven. 
 
 An important motivation for writing this book was to provide an
-intuitive approach to the finite element method, using the
+intuitive approach to the finite element method, using 
 mathematical language frameworks such as the FEniCS software
 cite{fenics_book}. FEniCS is a modern, very powerful tool for solving
 partial differential equations by the finite element method, and it
-was designed to make implementations very compact for those who are
-used to the abstract formulation of the method.  Our aim here is
+was designed to make implementations very compact, which is attractive 
+for those who are used to the abstract formulation of the method.  Our aim here is
 different. Through explicit, detailed and sometimes lengthy derivations, the reader
 will be able to get direct exposition of all components in 
 a finite element engine.   
 
-A standard reference for FEniCS users have been the excellent text by
+A standard reference for FEniCS users has been the excellent text by
 Brenner and Scott cite{Brenner_Scott}, but for many students with weak
-formal mathematical background, the learning curve became
-unnecessarily steep using this book to take advantage of FEniCS.  The
+formal mathematical background the learning curve still becomes  
+too steep. The
 present book grew out of the need to explain variational formulations
 in the most intuitive way so FEniCS users can transform their PDE
 problem into the proper formulation for FEniCS programming. We then
 added material such that also the details of the most fundamental
 finite element algorithms could easily be understood.
 
-The learning outcomes of this book are four-fold
+The learning outcomes of this book are five-fold:
 
  o understanding various types of variational formulations of PDE problems,
  o understanding the machinery of finite element algorithms,
@@ -73,7 +73,7 @@ method, which is best gained by hand calculations of the steps in the
 algorithms. Also, hand calculations are indispensable for debugging
 finite element programs: one can run a one-dimensional problem, print
 out intermediate results, and compare with separate hand calculations.
-When the program is fully verified in 1D, ideally the program should
+When the program is fully verified in 1D, ideally the program should be
 turned into a 2D/3D simulation simply by switching from a 1D mesh
 to the relevant 2D/3D mesh.
 
@@ -127,7 +127,7 @@ compare the two methods, which is frequently done throughout the text.
 
 The mathematical notation in this text makes deviations from the
 literature trends. Especially books on the abstract formulation of the
-finite element method often denotes the numerical solution by $u_h$.
+finite element method often denote the numerical solution by $u_h$.
 Our mathematical notation is dictated by the natural notation in a
 computer code, so if `u` is the unknown in the code, we let $u$ be the
 corresponding quantity in the mathematical description as well. When
