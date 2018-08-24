@@ -26,6 +26,7 @@ jobs:
             source activate ${ENV_NAME}
             cd doc/.src/book
             ./make.sh
+            ./make_html.sh
             mkdir /tmp/artifacts
             cp ../../pub/book/pdf/*.pdf /tmp/artifacts
       - store_artifacts:
