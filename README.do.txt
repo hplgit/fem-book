@@ -6,7 +6,7 @@ Resources for the book *Introduction to Numerical Methods for Variational Proble
 
  * `src`: source code for book examples
  * `doc`: documents for the book
- * `doc/pub`: "published documents": "http://hplgit/github.io/fdm-book/doc/web/index.html"
+ * `doc/pub`: "published documents": "http://hplgit.github.io/fem-book/doc/web/index.html"
  * `doc/pub/book`: complete (preliminary) published book
  * `doc/.src/book`: DocOnce source code, computer code, figures etc
  * `doc/.src/book/dotxt`: Text files for individual chapters
