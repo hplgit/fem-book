@@ -1,0 +1,1749 @@
+<!--
+Automatically generated HTML file from DocOnce source
+(https://github.com/hplgit/doconce/)
+-->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="DocOnce: https://github.com/hplgit/doconce/" />
+<meta name="description" content="Introduction to Numerical Methods for Variational Problems">
+<meta name="keywords" content="trial function,test function,approximation of vectors in the plane,basis vector,norm,least squreas method vectors,Galerkin method vectors,projection vectors,approximation of general vectors,Galerkin method vectors,projection vectors,approximation of functions,Galerkin method functions,projection functions,normal equations,$A^TA=A^Tb$ (normal equations),approximation by sines,collocation method (approximation),approximation collocation,interpolation method (approximation),approximation interpolation,Lagrange (interpolating) polynomial,Kronecker delta,Runge's phenomenon,Chebyshev nodes,Bernstein(interpolating) polynomial,tensor product,finite element mesh,mesh finite elements,internal node,shared node,Kronecker delta,chapeau function,hat function,finite element basis function,linear elements,quadratic elements,P1 element,P2 element,element matrix,assembly,affine mapping,mapping of reference cells affine mapping,sparse matrices,mass matrix,mass lumping,lumped mass matrix,cell,vertex,degree of freedom,reference cell,finite element, definition,dof map,finite element expansion reference element,Hermite polynomials,numerical integration Midpoint rule,numerical integration Trapezoidal rule,numerical integration Simpson's rule,numerical integration Newton-Cotes formulas,Midpoint rule,Trapezoidal rule,Simpson's rule,Newton-Cotes rules,Gauss-Legendre quadrature,simplex elements,simplices,faces,edges,affine mapping,isoparametric mapping,mapping of reference cells isoparametric mapping,FEniCS,residual,weighted residuals,method of weighted residuals,variational formulation,weak formulation,trial function,test function,trial space,test space,integration by parts,weak form,strong form,natural boundary condition,essential boundary condition,convection-diffusion,convection-diffusion,Petrov-Galerkin methods,mass matrix,stiffness matrix,mass matrix,mass lumping,lumped mass matrix,mixed finite elements,linearization explicit time integration,linearization,Picard iteration,successive substitutions,fixed-point iteration,linearization Picard iteration,linearization successive substitutions,linearization fixed-point iteration,stopping criteria (nonlinear problems),single Picard iteration technique,relaxation (nonlinear equations),stopping criteria (nonlinear problems),continuation method,continuation method,group finite element method,product approximation technique,Krylov space,linear solvers GMRES,linear solvers GCR,linear solvers minimum residuals,linear solvers generalized conjugate residuals,search (direction) vectors,linear solvers conjugate gradients,linear systems preconditioned,linear solvers preconditioning,preconditioning,preconditioning classical iterations,MILU,ILU,incomplete factorization">
+
+<title>Introduction to Numerical Methods for Variational Problems</title>
+
+<!-- Bootstrap style: bootswatch_readable -->
+<link href="https://netdna.bootstrapcdn.com/bootswatch/3.1.1/readable/bootstrap.min.css" rel="stylesheet">
+<!-- not necessary
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+-->
+
+<style type="text/css">
+/* Let inline verbatim have the same color as the surroundings */
+code { color: inherit; background-color: transparent; }
+
+/* Add scrollbar to dropdown menus in bootstrap navigation bar */
+.dropdown-menu {
+   height: auto;
+   max-height: 400px;
+   overflow-x: hidden;
+}
+
+/* Adds an invisible element before each target to offset for the navigation
+   bar */
+.anchor::before {
+  content:"";
+  display:block;
+  height:64px;      /* fixed header height for style bootswatch_readable */
+  margin:-64px 0 0; /* negative fixed header height */
+}
+</style>
+
+
+</head>
+
+<!-- tocinfo
+{'highest level': 0,
+ 'sections': [('Table of contents',
+               0,
+               'table_of_contents',
+               'table_of_contents'),
+              ('Preface', 0, 'ch:preface', 'ch:preface'),
+              ('Contents', 3, None, '___sec1'),
+              ('Supplementary materials', 3, None, '___sec2'),
+              ('Quick overview of the finite element method',
+               0,
+               'ch:overview',
+               'ch:overview'),
+              ('Function approximation by global functions',
+               0,
+               'ch:approx:global',
+               'ch:approx:global'),
+              ('Approximation of vectors',
+               1,
+               'fem:approx:vec',
+               'fem:approx:vec'),
+              ('Approximation of planar vectors',
+               2,
+               'fem:approx:vec:plane',
+               'fem:approx:vec:plane'),
+              ('The least squares method', 3, None, '___sec7'),
+              ('The projection method', 3, None, '___sec8'),
+              ('Approximation of general vectors',
+               2,
+               'fem:approx:vec:Np1dim',
+               'fem:approx:vec:Np1dim'),
+              ('The least squares method', 3, None, '___sec10'),
+              ('The Galerkin or projection method', 3, None, '___sec11'),
+              ('Approximation principles',
+               1,
+               'fem:approx:global',
+               'fem:approx:global'),
+              ('The least squares method', 2, 'fem:approx:LS', 'fem:approx:LS'),
+              ('The projection (or Galerkin) method', 2, None, '___sec14'),
+              ('Example on linear approximation',
+               2,
+               'fem:approx:global:linear',
+               'fem:approx:global:linear'),
+              ('Implementation of the least squares method',
+               2,
+               'fem:approx:global:LS:code',
+               'fem:approx:global:LS:code'),
+              ('Symbolic integration', 3, None, '___sec17'),
+              ('Fall back on numerical integration', 3, None, '___sec18'),
+              ('Plotting the approximation', 3, None, '___sec19'),
+              ('Perfect approximation',
+               2,
+               'fem:approx:global:exact1',
+               'fem:approx:global:exact1'),
+              ('The regression method',
+               2,
+               'fem:approx:global:regression',
+               'fem:approx:global:regression'),
+              ('Overdetermined equation system', 3, None, '___sec22'),
+              ('The normal equations derived from a least squares principle',
+               3,
+               None,
+               '___sec23'),
+              ('Implementation', 3, None, '___sec24'),
+              ('Example', 3, None, '___sec25'),
+              ('Orthogonal basis functions', 1, None, '___sec26'),
+              ('Ill-conditioning',
+               2,
+               'fem:approx:global:illconditioning',
+               'fem:approx:global:illconditioning'),
+              ('Fourier series',
+               2,
+               'fem:approx:global:Fourier',
+               'fem:approx:global:Fourier'),
+              ('Orthogonal basis functions',
+               2,
+               'fem:approx:global:orth',
+               'fem:approx:global:orth'),
+              ('Numerical computations', 2, None, '___sec30'),
+              ('Interpolation', 1, None, '___sec31'),
+              ('The interpolation (or collocation) principle',
+               2,
+               'fem:approx:global:interp',
+               'fem:approx:global:interp'),
+              ('Example', 3, None, '___sec33'),
+              ('Lagrange polynomials',
+               2,
+               'fem:approx:global:Lagrange',
+               'fem:approx:global:Lagrange'),
+              ('Approximation of a polynomial', 3, None, '___sec35'),
+              ('Successful example', 3, None, '___sec36'),
+              ('Less successful example', 3, None, '___sec37'),
+              ('Remedy for strong oscillations', 3, None, '___sec38'),
+              ('Bernstein polynomials',
+               2,
+               'fem:approx:global:Bernstein',
+               'fem:approx:global:Bernstein'),
+              ('Approximation properties and convergence rates',
+               1,
+               None,
+               '___sec40'),
+              ('Approximation of functions in higher dimensions',
+               1,
+               'fem:approx:2D',
+               'fem:approx:2D'),
+              ('2D basis functions as tensor products of 1D functions',
+               2,
+               'fem:approx:2D:global',
+               'fem:approx:2D:global'),
+              ('Example on polynomial basis in 2D', 2, None, '___sec43'),
+              ('Implementation',
+               2,
+               'fem:approx:2D:global:code',
+               'fem:approx:2D:global:code'),
+              ('Extension to 3D',
+               2,
+               'fem:approx:3D:global',
+               'fem:approx:3D:global'),
+              ('Exercises', 1, None, '___sec46'),
+              ('Problem 1: Linear algebra refresher',
+               2,
+               'fem:approx:exer:linalg1',
+               'fem:approx:exer:linalg1'),
+              ('Problem 2: Approximate a three-dimensional vector in a plane',
+               2,
+               'fem:approx:exer:vec:3Dby2D',
+               'fem:approx:exer:vec:3Dby2D'),
+              ('Problem 3: Approximate a parabola by a sine',
+               2,
+               'fem:approx:exer:parabola_sine',
+               'fem:approx:exer:parabola_sine'),
+              ('Problem 4: Approximate the exponential function by power '
+               'functions',
+               2,
+               'fem:approx:exer:exp:powers',
+               'fem:approx:exer:exp:powers'),
+              ('Problem 5: Approximate the sine function by power functions',
+               2,
+               'fem:approx:exer:sin:powers',
+               'fem:approx:exer:sin:powers'),
+              ('Problem 6: Approximate a steep function by sines',
+               2,
+               'fem:approx:exer:tanh:sine1',
+               'fem:approx:exer:tanh:sine1'),
+              ('Remarks', 3, None, '___sec53'),
+              ('Problem 7: Approximate a steep function by sines with boundary '
+               'adjustment',
+               2,
+               'fem:approx:exer:tanh:sine3',
+               'fem:approx:exer:tanh:sine3'),
+              ('Remarks', 3, None, '___sec55'),
+              ('Exercise 8: Fourier series as a least squares approximation',
+               2,
+               'fem:approx:exer:Fourier',
+               'fem:approx:exer:Fourier'),
+              ('Problem 9: Approximate a steep function by Lagrange '
+               'polynomials',
+               2,
+               'fem:approx:exer:tanh:Lagrange',
+               'fem:approx:exer:tanh:Lagrange'),
+              ('Problem 10: Approximate a steep function by Lagrange '
+               'polynomials and regression',
+               2,
+               'fem:approx:exer:tanh:Lagrange:regression',
+               'fem:approx:exer:tanh:Lagrange:regression'),
+              ('Function approximation by finite elements',
+               0,
+               'ch:approx:fe',
+               'ch:approx:fe'),
+              ('Finite element basis functions',
+               1,
+               'fem:approx:fe',
+               'fem:approx:fe'),
+              ('Elements and nodes',
+               2,
+               'fem:approx:fe:def:elements:nodes',
+               'fem:approx:fe:def:elements:nodes'),
+              ('Example', 3, None, '___sec62'),
+              ('The basis functions', 2, None, '___sec63'),
+              ('Construction principles', 3, None, '___sec64'),
+              ('Properties of $\\basphi_i$', 3, None, '___sec65'),
+              ('Example on quadratic finite element functions',
+               2,
+               None,
+               '___sec66'),
+              ('Example on linear finite element functions',
+               2,
+               None,
+               '___sec67'),
+              ('Example on cubic finite element functions',
+               2,
+               None,
+               '___sec68'),
+              ('Calculating the linear system',
+               2,
+               'fem:approx:global:linearsystem',
+               'fem:approx:global:linearsystem'),
+              ('Calculating specific matrix entries', 3, None, '___sec70'),
+              ('Calculating a general row in the matrix', 3, None, '___sec71'),
+              ('Assembly of elementwise computations',
+               2,
+               'fem:approx:fe:elementwise',
+               'fem:approx:fe:elementwise'),
+              ('The element matrix', 3, None, '___sec73'),
+              ('Assembly of element matrices', 3, None, '___sec74'),
+              ('Assembly of irregularly numbered elements and nodes',
+               3,
+               None,
+               '___sec75'),
+              ('The element vector', 3, None, '___sec76'),
+              ('Mapping to a reference element',
+               2,
+               'fem:approx:fe:mapping',
+               'fem:approx:fe:mapping'),
+              ('The coordinate transformation', 3, None, '___sec78'),
+              ('Formulas for the element matrix and vector entries',
+               3,
+               None,
+               '___sec79'),
+              ('Formulas for local basis functions', 3, None, '___sec80'),
+              ('Example on integration over a reference element',
+               2,
+               'fem:approx:fe:intg:ref',
+               'fem:approx:fe:intg:ref'),
+              ('Implementation', 1, 'fem:approx:fe:impl', 'fem:approx:fe:impl'),
+              ('Integration',
+               2,
+               'fem:approx:fe:impl:intg',
+               'fem:approx:fe:impl:intg'),
+              ('Linear system assembly and solution',
+               2,
+               'fem:approx:fe:impl:linsys',
+               'fem:approx:fe:impl:linsys'),
+              ('Example on computing symbolic approximations',
+               2,
+               'fem:approx:fe:impl:ex1:symbolic',
+               'fem:approx:fe:impl:ex1:symbolic'),
+              ('Using interpolation instead of least squares',
+               2,
+               'fem:approx:fe:impl:ex1:collocation',
+               'fem:approx:fe:impl:ex1:collocation'),
+              ('Example on computing numerical approximations',
+               2,
+               'fem:approx:fe:impl:ex1:numeric',
+               'fem:approx:fe:impl:ex1:numeric'),
+              ('The structure of the coefficient matrix',
+               2,
+               'fem:approx:fe:A:structure',
+               'fem:approx:fe:A:structure'),
+              ('Applications',
+               2,
+               'fem:approx:fe:impl:ex2',
+               'fem:approx:fe:impl:ex2'),
+              ('Sparse matrix storage and solution',
+               2,
+               'fem:approx:fe:impl:sparse',
+               'fem:approx:fe:impl:sparse'),
+              ('Comparison of finite elements and finite differences',
+               1,
+               'fem:approx:fe:fd',
+               'fem:approx:fe:fd'),
+              ('Finite difference approximation of given functions',
+               2,
+               'fem:approx:fe:fd:fdproj',
+               'fem:approx:fe:fd:fdproj'),
+              ('Interpretation of a finite element approximation in terms of '
+               'finite difference operators',
+               2,
+               'fem:approx:fe:fd:feproj',
+               'fem:approx:fe:fd:feproj'),
+              ('Making finite elements behave as finite differences',
+               2,
+               'fem:deq:1D:approx:fem_vs_fdm',
+               'fem:deq:1D:approx:fem_vs_fdm'),
+              ('Computations in physical space', 3, None, '___sec95'),
+              ('Elementwise computations', 3, None, '___sec96'),
+              ('Terminology', 3, None, '___sec97'),
+              ('A generalized element concept',
+               1,
+               'fem:approx:fe:element',
+               'fem:approx:fe:element'),
+              ('Cells, vertices, and degrees of freedom',
+               2,
+               'fem:approx:fe:element:terminology',
+               'fem:approx:fe:element:terminology'),
+              ('Extended finite element concept',
+               2,
+               'fem:approx:fe:element:def',
+               'fem:approx:fe:element:def'),
+              ('Implementation',
+               2,
+               'fem:approx:fe:element:impl',
+               'fem:approx:fe:element:impl'),
+              ('Computing the error of the approximation',
+               2,
+               'fem:approx:fe:error',
+               'fem:approx:fe:error'),
+              ('Example on cubic Hermite polynomials',
+               2,
+               'fem:approx:fe:element:impl:Hermite',
+               'fem:approx:fe:element:impl:Hermite'),
+              ('Numerical integration', 1, None, '___sec104'),
+              ('Newton-Cotes rules',
+               2,
+               'fem:approx:fe:numint1',
+               'fem:approx:fe:numint1'),
+              ('Gauss-Legendre rules with optimized points',
+               2,
+               None,
+               '___sec106'),
+              ('Finite elements in 2D and 3D', 1, None, '___sec107'),
+              ('Basis functions over triangles in the physical domain',
+               2,
+               None,
+               '___sec108'),
+              ('Element matrices and vectors', 3, None, '___sec109'),
+              ('Basis functions over triangles in the reference cell',
+               2,
+               None,
+               '___sec110'),
+              ('Affine mapping of the reference cell', 2, None, '___sec111'),
+              ('Isoparametric mapping of the reference cell',
+               2,
+               None,
+               '___sec112'),
+              ('Computing integrals', 2, None, '___sec113'),
+              ('Implementation', 1, 'fe:approx:fenics', 'fe:approx:fenics'),
+              ('Example on approximation in 2D using FEniCS',
+               2,
+               'fem:approx:fenics:2D',
+               'fem:approx:fenics:2D'),
+              ('Mathematical problem', 3, None, '___sec116'),
+              ('The code', 3, None, '___sec117'),
+              ('Dissection of the code', 3, None, '___sec118'),
+              ('Integrating SymPy and FEniCS', 3, None, '___sec119'),
+              ('Refined code with curve plotting',
+               2,
+               'fem:approx:fenics:2D:2',
+               'fem:approx:fenics:2D:2'),
+              ('Interpolation and projection', 3, None, '___sec121'),
+              ('Plotting the solution along a line', 3, None, '___sec122'),
+              ('Integrating plotting and computations', 3, None, '___sec123'),
+              ('Exercises', 1, None, '___sec124'),
+              ('Problem 11: Define nodes and elements',
+               2,
+               'fem:approx:fe:exer:mesh1',
+               'fem:approx:fe:exer:mesh1'),
+              ('Problem 12: Define vertices, cells, and dof maps',
+               2,
+               'fem:approx:fe:exer:mesh2',
+               'fem:approx:fe:exer:mesh2'),
+              ('Problem 13: Construct matrix sparsity patterns',
+               2,
+               'fem:approx:fe:exer:defmesh:sparsity',
+               'fem:approx:fe:exer:defmesh:sparsity'),
+              ('Problem 14: Perform symbolic finite element computations',
+               2,
+               'fem:approx:fe:exer:Asinwt:symbolic',
+               'fem:approx:fe:exer:Asinwt:symbolic'),
+              ('Problem 15: Approximate a steep function by P1 and P2 elements',
+               2,
+               'fem:approx:exer:tanh:P1P2',
+               'fem:approx:exer:tanh:P1P2'),
+              ('Problem 16: Approximate a steep function by P3 and P4 elements',
+               2,
+               'fem:approx:exer:tanh:P3P4',
+               'fem:approx:exer:tanh:P3P4'),
+              ('Exercise 17: Investigate the approximation error in finite '
+               'elements',
+               2,
+               'fem:approx:fe:exer:Asinwt:interpol:error',
+               'fem:approx:fe:exer:Asinwt:interpol:error'),
+              ('Problem 18: Approximate a step function by finite elements',
+               2,
+               'fem:approx:fe:exer:Heaviside',
+               'fem:approx:fe:exer:Heaviside'),
+              ('Exercise 19: 2D approximation with orthogonal functions',
+               2,
+               'fem:approx:fe:exer:2Dsines:symbolic',
+               'fem:approx:fe:exer:2Dsines:symbolic'),
+              ('Exercise 20: Use the Trapezoidal rule and P1 elements',
+               2,
+               'fem:approx:fe:exer:1D:trapez',
+               'fem:approx:fe:exer:1D:trapez'),
+              ('Exercise 21: Compare P1 elements and interpolation',
+               2,
+               'fem:approx:fe:exer:1D:P1:vs:interp',
+               'fem:approx:fe:exer:1D:P1:vs:interp'),
+              ('Exercise 22: Implement 3D computations with global basis '
+               'functions',
+               2,
+               'fem:approx:fe:exer:3D:approx3D',
+               'fem:approx:fe:exer:3D:approx3D'),
+              ("Exercise 23: Use Simpson's rule and P2 elements",
+               2,
+               'fem:approx:fe:exer:1D:simpson',
+               'fem:approx:fe:exer:1D:simpson'),
+              ('Exercise 24: Make a 3D code for Lagrange elements of arbitrary '
+               'order',
+               2,
+               None,
+               '___sec138'),
+              ('Variational formulations with global basis functions',
+               0,
+               'ch:varform:global',
+               'ch:varform:global'),
+              ('Basic principles for approximating differential equations',
+               1,
+               'fem:deq:1D:principles',
+               'fem:deq:1D:principles'),
+              ('Differential equation models',
+               2,
+               'fem:deq:1D:models',
+               'fem:deq:1D:models'),
+              ('Simple model problems and their solutions',
+               2,
+               'fem:deq:1D:models:simple',
+               'fem:deq:1D:models:simple'),
+              ('Forming the residual',
+               2,
+               'fem:deq:1D:residual:min',
+               'fem:deq:1D:residual:min'),
+              ('The least squares method', 2, None, '___sec144'),
+              ('The Galerkin method', 2, None, '___sec145'),
+              ('The method of weighted residuals', 2, None, '___sec146'),
+              ('The method of weighted residual and the truncation error',
+               2,
+               'varform:trunc',
+               'varform:trunc'),
+              ('Test and trial functions', 2, None, '___sec148'),
+              ('The collocation method', 2, None, '___sec149'),
+              ('The subdomain collocation method', 3, None, '___sec150'),
+              ('Examples on using the principles',
+               2,
+               'fem:deq:1D:ex:sines',
+               'fem:deq:1D:ex:sines'),
+              ('The model problem', 3, None, '___sec152'),
+              ('Basis functions', 3, None, '___sec153'),
+              ('The residual', 3, None, '___sec154'),
+              ('The least squares method', 3, None, '___sec155'),
+              ('The Galerkin method', 3, None, '___sec156'),
+              ('The collocation method', 3, None, '___sec157'),
+              ('Comparison', 3, None, '___sec158'),
+              ('Integration by parts',
+               2,
+               'fem:deq:1D:varform',
+               'fem:deq:1D:varform'),
+              ('Weak form', 3, None, '___sec160'),
+              ('Boundary function',
+               2,
+               'fem:deq:1D:essBC:Bfunc',
+               'fem:deq:1D:essBC:Bfunc'),
+              ('Computing with global polynomials', 1, None, '___sec162'),
+              ('Computing with Dirichlet and Neumann conditions',
+               2,
+               'fem:deq:1D:varform:ex:DN:case',
+               'fem:deq:1D:varform:ex:DN:case'),
+              ('When the numerical method is exact', 2, None, '___sec164'),
+              ('Abstract notation for variational formulations',
+               2,
+               'fem:deq:1D:varform:abstract',
+               'fem:deq:1D:varform:abstract'),
+              ('Variational problems and minimization of functionals',
+               2,
+               'fem:deq:1D:optimization',
+               'fem:deq:1D:optimization'),
+              ('Example', 3, None, '___sec167'),
+              ('The general minimization problem', 3, None, '___sec168'),
+              ('Derivation', 3, None, '___sec169'),
+              ('Minimization of the discretized functional',
+               3,
+               None,
+               '___sec170'),
+              ('Calculus of variations', 3, None, '___sec171'),
+              ('Examples on variational formulations',
+               1,
+               'fem:deq:1D:varform:ex',
+               'fem:deq:1D:varform:ex'),
+              ('Variable coefficient', 2, None, '___sec173'),
+              ('First-order derivative in the equation and boundary condition',
+               2,
+               None,
+               '___sec174'),
+              ('Nonlinear coefficient', 2, None, '___sec175'),
+              ('Implementation of the algorithms',
+               1,
+               'fem:global:deq:1D:code',
+               'fem:global:deq:1D:code'),
+              ('Extensions of the code for approximation',
+               2,
+               'fem:deq:1D:code:global',
+               'fem:deq:1D:code:global'),
+              ('Fallback to numerical methods', 2, None, '___sec178'),
+              ('Example with constant right-hand side', 2, None, '___sec179'),
+              ('Approximations may fail: convection-diffusion',
+               1,
+               'ch:convdiff',
+               'ch:convdiff'),
+              ('Exercises', 1, None, '___sec181'),
+              ('Exercise 25: Refactor functions into a more general class',
+               2,
+               'fem:deq:exer:BVP1D:class',
+               'fem:deq:exer:BVP1D:class'),
+              ('Exercise 26: Compute the deflection of a cable with sine '
+               'functions',
+               2,
+               'fem:deq:exer:tension:cable',
+               'fem:deq:exer:tension:cable'),
+              ('Exercise 27: Compute the deflection of a cable with power '
+               'functions',
+               2,
+               'fem:deq:exer:tension:cable_xn',
+               'fem:deq:exer:tension:cable_xn'),
+              ('Exercise 28: Check integration by parts',
+               2,
+               'fem:deq:exer:intg:parts',
+               'fem:deq:exer:intg:parts'),
+              ('Variational formulations with finite elements',
+               0,
+               'ch:varform:fe',
+               'ch:varform:fe'),
+              ('Computing with finite elements',
+               1,
+               'fem:deq:1D:fem1',
+               'fem:deq:1D:fem1'),
+              ('Finite element mesh and basis functions', 2, None, '___sec188'),
+              ('Computation in the global physical domain',
+               2,
+               'fem:deq:1D:comp:global',
+               'fem:deq:1D:comp:global'),
+              ('Comparison with a finite difference discretization',
+               2,
+               'fem:deq:1D:fdm_vs_fem',
+               'fem:deq:1D:fdm_vs_fem'),
+              ('Cellwise computations',
+               2,
+               'fem:deq:1D:comp:elmwise',
+               'fem:deq:1D:comp:elmwise'),
+              ('The integral for the element matrix', 3, None, '___sec192'),
+              ('The integral for the element vector', 3, None, '___sec193'),
+              ('Detailed calculations of the element matrix and vector',
+               3,
+               None,
+               '___sec194'),
+              ('Contributions from the first and last cell',
+               3,
+               None,
+               '___sec195'),
+              ('Assembly', 3, None, '___sec196'),
+              ('Boundary conditions: specified nonzero value',
+               1,
+               'fem:deq:1D:essBC',
+               'fem:deq:1D:essBC'),
+              ('General construction of a boundary function',
+               2,
+               'fem:deq:1D:fem:essBC:Bfunc',
+               'fem:deq:1D:fem:essBC:Bfunc'),
+              ('Example on computing with a finite element-based boundary '
+               'function',
+               2,
+               None,
+               '___sec199'),
+              ('Computations in physical coordinates', 3, None, '___sec200'),
+              ('Cellwise computations on the reference element',
+               3,
+               None,
+               '___sec201'),
+              ('Modification of the linear system',
+               2,
+               'fem:deq:1D:fem:essBC:Bfunc:modsys',
+               'fem:deq:1D:fem:essBC:Bfunc:modsys'),
+              ('Computations in the physical system', 3, None, '___sec203'),
+              ('Symmetric modification of the linear system',
+               2,
+               'fem:deq:1D:fem:essBC:Bfunc:modsys:symm',
+               'fem:deq:1D:fem:essBC:Bfunc:modsys:symm'),
+              ('Modification of the element matrix and vector',
+               2,
+               'fem:bc:elmat:mod',
+               'fem:bc:elmat:mod'),
+              ('Boundary conditions: specified derivative',
+               1,
+               'fem:deq:1D:BC:nat',
+               'fem:deq:1D:BC:nat'),
+              ('The variational formulation', 2, None, '___sec207'),
+              ('Boundary term vanishes because of the test functions',
+               2,
+               'fem:deq:1D:BC:nat:uLtest',
+               'fem:deq:1D:BC:nat:uLtest'),
+              ('Boundary term vanishes because of linear system modifications',
+               2,
+               'fem:deq:1D:BC:nat:uLmod',
+               'fem:deq:1D:BC:nat:uLmod'),
+              ('Direct computation of the global linear system',
+               2,
+               'fem:deq:1D:BC:nat:Aub',
+               'fem:deq:1D:BC:nat:Aub'),
+              ('Cellwise computations', 2, None, '___sec211'),
+              ('Implementation of finite element algorithms',
+               1,
+               'fem:deq:1D:code',
+               'fem:deq:1D:code'),
+              ('Extensions of the code for approximation',
+               2,
+               'fem:deq:1D:code:fe',
+               'fem:deq:1D:code:fe'),
+              ('Utilizing a sparse matrix',
+               2,
+               'fem:deq:1D:code:fe_sparse',
+               'fem:deq:1D:code:fe_sparse'),
+              ('Application to our model problem', 2, None, '___sec215'),
+              ('Variational formulations in 2D and 3D',
+               1,
+               'fem:deq:2D:varform',
+               'fem:deq:2D:varform'),
+              ('Integration by parts', 2, None, '___sec217'),
+              ('Example on a multi-dimensional variational problem',
+               2,
+               'sec:varform:general:convdiff',
+               'sec:varform:general:convdiff'),
+              ('Transformation to a reference cell in 2D and 3D',
+               2,
+               None,
+               '___sec219'),
+              ('Numerical integration', 2, None, '___sec220'),
+              ('Convenient formulas for P1 elements in 2D',
+               2,
+               None,
+               '___sec221'),
+              ('A glimpse of the mathematical theory of the finite element '
+               'method',
+               2,
+               None,
+               '___sec222'),
+              ('Abstract variational forms', 3, None, '___sec223'),
+              ('Example on an abstract variational form and associated spaces',
+               3,
+               None,
+               '___sec224'),
+              ('Assumptions', 3, None, '___sec225'),
+              ('Existence and uniqueness', 3, None, '___sec226'),
+              ('Stability', 3, None, '___sec227'),
+              ('Equivalent minimization problem', 3, None, '___sec228'),
+              ('Best approximation principle', 3, None, '___sec229'),
+              ('Best approximation property in the norm of the space',
+               3,
+               None,
+               '___sec230'),
+              ('Symmetric, positive definite coefficient matrix',
+               3,
+               None,
+               '___sec231'),
+              ('Equivalent matrix minimization problem', 3, None, '___sec232'),
+              ('A priori error estimate for the derivative',
+               3,
+               None,
+               '___sec233'),
+              ('A priori error estimate for the solution',
+               3,
+               None,
+               '___sec234'),
+              ('Implementation in 2D and 3D via FEniCS',
+               1,
+               'fem:varform:fenics',
+               'fem:varform:fenics'),
+              ('Mathematical problem',
+               2,
+               'fem:varform:fenics:problem',
+               'fem:varform:fenics:problem'),
+              ('Symmetry', 3, None, '___sec237'),
+              ('Variational formulation',
+               2,
+               'fem:varform:fenics:varform',
+               'fem:varform:fenics:varform'),
+              ('The FEniCS solver', 2, None, '___sec239'),
+              ('Making the mesh', 2, None, '___sec240'),
+              ('Solving a problem', 2, None, '___sec241'),
+              ('Convection-diffusion and Petrov-Galerkin methods',
+               1,
+               None,
+               '___sec242'),
+              ('Summary', 1, None, '___sec243'),
+              ('Exercises', 1, None, '___sec244'),
+              ('Exercise 29: Compute the deflection of a cable with 2 P1 '
+               'elements',
+               2,
+               'fem:deq:exer:cable:2P1',
+               'fem:deq:exer:cable:2P1'),
+              ('Exercise 30: Compute the deflection of a cable with 1 P2 '
+               'element',
+               2,
+               'fem:deq:exer:cable:1P2',
+               'fem:deq:exer:cable:1P2'),
+              ('Exercise 31: Compute the deflection of a cable with a step '
+               'load',
+               2,
+               'fem:deq:exer:cable:stepload',
+               'fem:deq:exer:cable:stepload'),
+              ('Exercise 32: Compute with a non-uniform mesh',
+               2,
+               'fem:deq:exer:1D:mesh:nonuniform',
+               'fem:deq:exer:1D:mesh:nonuniform'),
+              ('Problem 33: Solve a 1D finite element problem by hand',
+               2,
+               'fem:deq:exer:1D:gen:problem1',
+               'fem:deq:exer:1D:gen:problem1'),
+              ('Exercise 34: Investigate exact finite element solutions',
+               2,
+               'fem:deq:exer:1D:exact_numerics',
+               'fem:deq:exer:1D:exact_numerics'),
+              ('Exercise 35: Compare finite elements and differences for a '
+               'radially symmetric Poisson equation',
+               2,
+               'fem:deq:exer:1D:Poisson:polar',
+               'fem:deq:exer:1D:Poisson:polar'),
+              ('Exercise 36: Compute with variable coefficients and P1 '
+               'elements by hand',
+               2,
+               'fem:deq:exer:1D:gen:problem2',
+               'fem:deq:exer:1D:gen:problem2'),
+              ('Exercise 37: Solve a 2D Poisson equation using polynomials and '
+               'sines',
+               2,
+               'fem:deq:exer:2D:torsion:xy:sin',
+               'fem:deq:exer:2D:torsion:xy:sin'),
+              ('Exercise 38: Solve a 3D Laplace problem with FEniCS',
+               2,
+               'fem:fenics:borehole:exer:3D',
+               'fem:fenics:borehole:exer:3D'),
+              ('Exercise 39: Solve a 1D Laplace problem with FEniCS',
+               2,
+               'fem:fenics:borehole:exer:1D',
+               'fem:fenics:borehole:exer:1D'),
+              ('Time-dependent variational forms',
+               0,
+               'ch:femtime',
+               'ch:femtime'),
+              ('Discretization in time by a Forward Euler scheme',
+               1,
+               'fem:deq:diffu:FE',
+               'fem:deq:diffu:FE'),
+              ('Time discretization', 2, None, '___sec258'),
+              ('Space discretization', 2, None, '___sec259'),
+              ('Variational forms', 2, None, '___sec260'),
+              ('Notation for the solution at recent time levels',
+               2,
+               None,
+               '___sec261'),
+              ('Deriving the linear systems', 2, None, '___sec262'),
+              ('Computational algorithm', 2, None, '___sec263'),
+              ('Example using cosinusoidal basis functions',
+               2,
+               'fem:deq:diffu:FE:cosex',
+               'fem:deq:diffu:FE:cosex'),
+              ('Comparing P1 elements with the finite difference method',
+               2,
+               'fem:deq:diffu:FE:fdvsP1fe',
+               'fem:deq:diffu:FE:fdvsP1fe'),
+              ('Lumping the mass matrix', 3, None, '___sec266'),
+              ('Discretization in time by a Backward Euler scheme',
+               1,
+               'fem:deq:diffu:BE',
+               'fem:deq:diffu:BE'),
+              ('Time discretization', 2, None, '___sec268'),
+              ('Variational forms', 2, None, '___sec269'),
+              ('Linear systems', 2, None, '___sec270'),
+              ('Finite difference operators corresponding to P1 elements',
+               3,
+               None,
+               '___sec271'),
+              ('Dirichlet boundary conditions',
+               1,
+               'fem:deq:diffu:Dirichlet',
+               'fem:deq:diffu:Dirichlet'),
+              ('Boundary function', 2, None, '___sec273'),
+              ('Finite element basis functions', 2, None, '___sec274'),
+              ('Modification of the linear system', 2, None, '___sec275'),
+              ('Example: Oscillating Dirichlet boundary condition',
+               2,
+               'fem:deq:diffu:Dirichlet:ex',
+               'fem:deq:diffu:Dirichlet:ex'),
+              ('Accuracy of the finite element solution',
+               1,
+               'fem:deq:diffu:anal',
+               'fem:deq:diffu:anal'),
+              ('Methods of analysis', 2, None, '___sec278'),
+              ('Fourier components and dispersion relations',
+               2,
+               None,
+               '___sec279'),
+              ('Forward Euler discretization', 2, None, '___sec280'),
+              ('Backward Euler discretization', 2, None, '___sec281'),
+              ('Comparing amplification factors', 2, None, '___sec282'),
+              ('Exercises', 1, None, '___sec283'),
+              ('Exercise 40: Analyze a Crank-Nicolson scheme for the diffusion '
+               'equation',
+               2,
+               'fem:deq:exer:diffu:analysis:CN',
+               'fem:deq:exer:diffu:analysis:CN'),
+              ('Variational forms for systems of PDEs',
+               0,
+               'ch:femsys',
+               'ch:femsys'),
+              ('Variational forms', 1, 'fem:sys:vform', 'fem:sys:vform'),
+              ('Sequence of scalar PDEs formulation', 2, None, '___sec287'),
+              ('Vector PDE formulation', 2, None, '___sec288'),
+              ('A worked example', 1, 'fem:sys:uT:ex', 'fem:sys:uT:ex'),
+              ('Identical function spaces for the unknowns',
+               1,
+               None,
+               '___sec290'),
+              ('Variational form of each individual PDE', 2, None, '___sec291'),
+              ('Compound scalar variational form', 2, None, '___sec292'),
+              ('Decoupled linear systems', 2, None, '___sec293'),
+              ('Coupled linear systems', 2, None, '___sec294'),
+              ('Different function spaces for the unknowns',
+               1,
+               None,
+               '___sec295'),
+              ('Computations in 1D',
+               1,
+               'femsys:cooling:1D',
+               'femsys:cooling:1D'),
+              ('Another example in 1D', 2, 'fem:sys:up:1D', 'fem:sys:up:1D'),
+              ('Exercises', 1, None, '___sec298'),
+              ('Problem 41: Estimate order of convergence for the Cooling law',
+               2,
+               'femsys:exer:cooling:1',
+               'femsys:exer:cooling:1'),
+              ('Problem 42: Estimate order of convergence for the Cooling law',
+               2,
+               'femsys:exer:cooling:2',
+               'femsys:exer:cooling:2'),
+              ('Flexible implementations of boundary conditions',
+               0,
+               'ch:nitsche',
+               'ch:nitsche'),
+              ('Optimization with constraint',
+               1,
+               'nitsche:fxy:opt',
+               'nitsche:fxy:opt'),
+              ('Elimination of variables', 2, None, '___sec303'),
+              ('Lagrange multiplier method',
+               2,
+               'nitsche:fxy:opt:Lagrange',
+               'nitsche:fxy:opt:Lagrange'),
+              ('Penalty method',
+               2,
+               'nitsche:fxy:opt:penalty',
+               'nitsche:fxy:opt:penalty'),
+              ('Optimization of functionals',
+               1,
+               'nitsche:pde:opt',
+               'nitsche:pde:opt'),
+              ('Classical calculus of variations',
+               2,
+               'nitsche:pde:opt:varcalculus',
+               'nitsche:pde:opt:varcalculus'),
+              ("Penalty and Nitsche's methods for optimization with "
+               'constraints',
+               2,
+               'nitsche:pde:opt:penalty',
+               'nitsche:pde:opt:penalty'),
+              ('Lagrange multiplier method for optimization with constraints',
+               2,
+               'nitsche:pde:opt:Lagrange',
+               'nitsche:pde:opt:Lagrange'),
+              ('Example: 1D problem',
+               2,
+               'nitsche:pde:opt:1Dex',
+               'nitsche:pde:opt:1Dex'),
+              ('Example: adding a constraint in a Neumann problem',
+               2,
+               None,
+               '___sec311'),
+              ('Nonlinear problems', 0, 'ch:nonlin', 'ch:nonlin'),
+              ('Introduction of basic concepts',
+               1,
+               'nonlin:timediscrete:logistic',
+               'nonlin:timediscrete:logistic'),
+              ('Linear versus nonlinear equations', 2, None, '___sec314'),
+              ('Algebraic equations', 3, None, '___sec315'),
+              ('Differential equations', 3, None, '___sec316'),
+              ('A simple model problem', 2, None, '___sec317'),
+              ('Linearization by explicit time discretization',
+               2,
+               'nonlin:timediscrete:logistic:FE',
+               'nonlin:timediscrete:logistic:FE'),
+              ('Exact solution of nonlinear algebraic equations',
+               2,
+               'nonlin:timediscrete:logistic:roots',
+               'nonlin:timediscrete:logistic:roots'),
+              ('Linearization', 2, None, '___sec320'),
+              ('Picard iteration',
+               2,
+               'nonlin:timediscrete:logistic:Picard',
+               'nonlin:timediscrete:logistic:Picard'),
+              ('Stopping criteria', 3, None, '___sec322'),
+              ('A single Picard iteration', 3, None, '___sec323'),
+              ('Linearization by a geometric mean',
+               2,
+               'nonlin:timediscrete:logistic:geometric:mean',
+               'nonlin:timediscrete:logistic:geometric:mean'),
+              ("Newton's method",
+               2,
+               'nonlin:timediscrete:logistic:Newton',
+               'nonlin:timediscrete:logistic:Newton'),
+              ('Relaxation',
+               2,
+               'nonlin:timediscrete:logistic:relaxation',
+               'nonlin:timediscrete:logistic:relaxation'),
+              ('Implementation and experiments',
+               2,
+               'nonlin:timediscrete:logistic:impl',
+               'nonlin:timediscrete:logistic:impl'),
+              ('Generalization to a general nonlinear ODE',
+               2,
+               'nonlin:ode:generic',
+               'nonlin:ode:generic'),
+              ('Explicit time discretization', 3, None, '___sec329'),
+              ('Backward Euler discretization', 3, None, '___sec330'),
+              ('Crank-Nicolson discretization', 3, None, '___sec331'),
+              ('Systems of ODEs',
+               2,
+               'nonlin:ode:generic:sys:pendulum',
+               'nonlin:ode:generic:sys:pendulum'),
+              ('Example', 3, None, '___sec333'),
+              ('Systems of nonlinear algebraic equations',
+               1,
+               'nonlin:systems:alg',
+               'nonlin:systems:alg'),
+              ('Picard iteration',
+               2,
+               'nonlin:systems:alg:Picard',
+               'nonlin:systems:alg:Picard'),
+              ("Newton's method",
+               2,
+               'nonlin:systems:alg:Newton',
+               'nonlin:systems:alg:Newton'),
+              ('Stopping criteria',
+               2,
+               'nonlin:systems:alg:terminate',
+               'nonlin:systems:alg:terminate'),
+              ('Example: A nonlinear ODE model from epidemiology',
+               2,
+               'nonlin:systems:alg:SI',
+               'nonlin:systems:alg:SI'),
+              ('Implicit time discretization', 3, None, '___sec339'),
+              ('A Picard iteration', 3, None, '___sec340'),
+              ("Newton's method", 3, None, '___sec341'),
+              ('Linearization at the differential equation level',
+               1,
+               'nonlin:pdelevel',
+               'nonlin:pdelevel'),
+              ('Explicit time integration',
+               2,
+               'nonlin:pdelevel:explicit',
+               'nonlin:pdelevel:explicit'),
+              ('Backward Euler scheme and Picard iteration',
+               2,
+               'nonlin:pdelevel:Picard',
+               'nonlin:pdelevel:Picard'),
+              ("Backward Euler scheme and Newton's method",
+               2,
+               'nonlin:pdelevel:Newton',
+               'nonlin:pdelevel:Newton'),
+              ('Linearization via Taylor expansions', 3, None, '___sec346'),
+              ('Similarity with Picard iteration', 3, None, '___sec347'),
+              ('Implementation', 3, None, '___sec348'),
+              ('Derivation with alternative notation', 3, None, '___sec349'),
+              ('Crank-Nicolson discretization',
+               2,
+               'nonlin:pdelevel:Picard:CN',
+               'nonlin:pdelevel:Picard:CN'),
+              ('1D stationary nonlinear differential equations',
+               1,
+               'nonlin:alglevel:1D',
+               'nonlin:alglevel:1D'),
+              ('Finite difference discretization',
+               2,
+               'nonlin:alglevel:1D:fd',
+               'nonlin:alglevel:1D:fd'),
+              ('Solution of algebraic equations', 2, None, '___sec353'),
+              ('The structure of the equation system', 3, None, '___sec354'),
+              ('Picard iteration', 3, None, '___sec355'),
+              ('Mesh with two cells', 3, None, '___sec356'),
+              ("Newton's method", 3, None, '___sec357'),
+              ('Multi-dimensional PDE problems', 1, None, '___sec358'),
+              ('Finite difference discretization',
+               2,
+               'nonlin:alglevel:dD:fd',
+               'nonlin:alglevel:dD:fd'),
+              ('Picard iteration', 3, None, '___sec360'),
+              ("Newton's method", 3, None, '___sec361'),
+              ('Continuation methods', 2, None, '___sec362'),
+              ('Exercises', 1, 'nonlin:exer', 'nonlin:exer'),
+              ('Problem 43: Determine if equations are nonlinear or not',
+               2,
+               'nonlin:exer:lin:vs:nonlin',
+               'nonlin:exer:lin:vs:nonlin'),
+              ('Exercise 44: Derive and investigate a generalized logistic '
+               'model',
+               2,
+               'nonlin:exer:logistic:gen',
+               'nonlin:exer:logistic:gen'),
+              ("Problem 45: Experience the behavior of Newton's method",
+               2,
+               'nonlin:exer:Newton:problems1',
+               'nonlin:exer:Newton:problems1'),
+              ('Problem 46: Compute the Jacobian of a $2\\times 2$ system',
+               2,
+               'nonlin:exer:vib:Jacobian',
+               'nonlin:exer:vib:Jacobian'),
+              ('Problem 47: Solve nonlinear equations arising from a vibration '
+               'ODE',
+               2,
+               'nonlin:exer:vib:geometric:mean',
+               'nonlin:exer:vib:geometric:mean'),
+              ('Exercise 48: Find the truncation error of arithmetic mean of '
+               'products',
+               2,
+               'nonlin:exer:products:arith:mean',
+               'nonlin:exer:products:arith:mean'),
+              ("Problem 49: Newton's method for linear problems",
+               2,
+               'nonlin:exer:Newton:linear',
+               'nonlin:exer:Newton:linear'),
+              ('Exercise 50: Discretize a 1D problem with a nonlinear '
+               'coefficient',
+               2,
+               'nonlin:exer:1D:1pu2:fem',
+               'nonlin:exer:1D:1pu2:fem'),
+              ('Exercise 51: Linearize a 1D problem with a nonlinear '
+               'coefficient',
+               2,
+               'nonlin:exer:1D:1pu2:PicardNewton',
+               'nonlin:exer:1D:1pu2:PicardNewton'),
+              ('Problem 52: Finite differences for the 1D Bratu problem',
+               2,
+               'nonlin:exer:1D:fu:discretize:fd',
+               'nonlin:exer:1D:fu:discretize:fd'),
+              ('Exercise 53: Discretize a nonlinear 1D heat conduction PDE by '
+               'finite differences',
+               2,
+               'nonlin:exer:1D:heat:nonlinear:fdm',
+               'nonlin:exer:1D:heat:nonlinear:fdm'),
+              ('Exercise 54: Differentiate a highly nonlinear term',
+               2,
+               'nonlin:exer:grad:pow:term',
+               'nonlin:exer:grad:pow:term'),
+              ('Exercise 55: Crank-Nicolson for a nonlinear 3D diffusion '
+               'equation',
+               2,
+               'nonlin:exer:2D:heat:nonlinear:fd',
+               'nonlin:exer:2D:heat:nonlinear:fd'),
+              ('Exercise 56: Find the sparsity of the Jacobian',
+               2,
+               'nonlin:exer:sparsity:Jacobian',
+               'nonlin:exer:sparsity:Jacobian'),
+              ('Problem 57: Investigate a 1D problem with a continuation '
+               'method',
+               2,
+               'nonlin:exer:continuation:1DnNflow',
+               'nonlin:exer:continuation:1DnNflow'),
+              ('Symbolic nonlinear finite element equations',
+               1,
+               'nonlin:app:fem_vs_fdm',
+               'nonlin:app:fem_vs_fdm'),
+              ('Finite element basis functions',
+               2,
+               'nonlin:alglevel:1D:fe_basis',
+               'nonlin:alglevel:1D:fe_basis'),
+              ('The group finite element method',
+               2,
+               'nonlin:alglevel:1D:fe:group',
+               'nonlin:alglevel:1D:fe:group'),
+              ('Finite element approximation of functions of $u$',
+               3,
+               None,
+               '___sec382'),
+              ('Simplified problem', 3, None, '___sec383'),
+              ('Integrating nonlinear functions', 3, None, '___sec384'),
+              ('Application of the group finite element method',
+               3,
+               None,
+               '___sec385'),
+              ('Numerical integration of nonlinear terms by hand',
+               2,
+               'nonlin:alglevel:1D:fe:f',
+               'nonlin:alglevel:1D:fe:f'),
+              ('Discretization of a variable coefficient Laplace term',
+               2,
+               'nonlin:alglevel:1D:fe:Laplace',
+               'nonlin:alglevel:1D:fe:Laplace'),
+              ('Group finite element method', 3, None, '___sec388'),
+              ('Numerical integration at the nodes', 3, None, '___sec389'),
+              ('Variational methods for linear systems', 0, 'ch:cg', 'ch:cg'),
+              ('Conjugate gradient-like iterative methods',
+               1,
+               'ch:linalg:CGmethods',
+               'ch:linalg:CGmethods'),
+              ('The Galerkin method', 2, None, '___sec392'),
+              ('The least squares method', 2, None, '___sec393'),
+              ('Krylov subspaces', 2, None, '___sec394'),
+              ('Computation of the basis vectors', 2, None, '___sec395'),
+              ('Computation of a new solution vector', 2, None, '___sec396'),
+              ('Summary of the least squares method', 2, None, '___sec397'),
+              ('Remark', 3, None, '___sec398'),
+              ('Truncation and restart', 2, None, '___sec399'),
+              ('Summary of the Galerkin method', 2, None, '___sec400'),
+              ('A framework based on the error', 2, None, '___sec401'),
+              ('Preconditioning',
+               1,
+               'ch:linalg2:preconditioning',
+               'ch:linalg2:preconditioning'),
+              ('Motivation and Basic Principles', 2, None, '___sec403'),
+              ('Use of the preconditioning matrix in the iterative methods',
+               2,
+               None,
+               '___sec404'),
+              ('Classical iterative methods as preconditioners',
+               2,
+               'ch:linalg:SORprecond',
+               'ch:linalg:SORprecond'),
+              ('Incomplete factorization preconditioners',
+               2,
+               'linalg:ILU',
+               'linalg:ILU'),
+              ('Preconditioners developed for solving PDE problems',
+               2,
+               None,
+               '___sec407'),
+              ('Appendix: Useful formulas', 0, 'ch:formulas', 'ch:formulas'),
+              ('Finite difference operator notation',
+               1,
+               'sec:form:fdop',
+               'sec:form:fdop'),
+              ('Truncation errors of finite difference approximations',
+               1,
+               'sec:form:truncerr',
+               'sec:form:truncerr'),
+              ('Finite differences of exponential functions',
+               1,
+               'sec:form:fdexp',
+               'sec:form:fdexp'),
+              ('Complex exponentials', 3, None, '___sec412'),
+              ('Real exponentials', 3, None, '___sec413'),
+              ('Finite differences of $t^n$',
+               1,
+               'sec:form:fdtn',
+               'sec:form:fdtn'),
+              ('Software', 2, None, '___sec415'),
+              ('References', 1, None, '___sec416')]}
+end of tocinfo -->
+
+<body>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+     equationNumbers: {  autoNumber: "none"  },
+     extensions: ["AMSmath.js", "AMSsymbols.js", "autobold.js", "color.js"]
+  }
+});
+</script>
+<script type="text/javascript" async
+ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<!-- newcommands_keep.tex -->
+$$
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\halfi}{{1/2}}
+\newcommand{\tp}{\thinspace .}
+\newcommand{\uex}{{u_{\small\mbox{e}}}}
+\newcommand{\Aex}{{A_{\small\mbox{e}}}}
+\newcommand{\normalvec}{\boldsymbol{n}}
+\newcommand{\Oof}[1]{\mathcal{O}(#1)}
+\newcommand{\x}{\boldsymbol{x}}
+\newcommand{\X}{\boldsymbol{X}}
+\renewcommand{\u}{\boldsymbol{u}}
+\renewcommand{\v}{\boldsymbol{v}}
+\newcommand{\w}{\boldsymbol{w}}
+\newcommand{\V}{\boldsymbol{V}}
+\newcommand{\e}{\boldsymbol{e}}
+\newcommand{\f}{\boldsymbol{f}}
+\newcommand{\q}{{q}}
+\newcommand{\residual}{r}
+\newcommand{\dfc}{\alpha}  % diffusion coefficient
+\newcommand{\Ix}{\mathcal{I}_x}
+\newcommand{\Iy}{\mathcal{I}_y}
+\newcommand{\Iz}{\mathcal{I}_z}
+\newcommand{\If}{\mathcal{I}_s}     % for FEM
+\newcommand{\Ifd}{{I_d}}  % for FEM
+\newcommand{\Ifb}{{I_b}}  % for FEM
+\newcommand{\sequencei}[1]{\left\{ {#1}_i \right\}_{i\in\If}}
+\newcommand{\sequencej}[1]{\left\{ {#1}_j \right\}_{j\in\If}}
+\newcommand{\basphi}{\varphi}
+\newcommand{\baspsi}{\psi}
+\newcommand{\refphi}{\tilde\basphi}
+\newcommand{\psib}{\boldsymbol{\psi}}
+\newcommand{\sinL}[1]{\sin\left((#1+1)\pi\frac{x}{L}\right)}
+\newcommand{\xno}[1]{x_{#1}}
+\newcommand{\Xno}[1]{X_{(#1)}}
+\newcommand{\yno}[1]{y_{#1}}
+\newcommand{\xdno}[1]{\boldsymbol{x}_{#1}}
+\newcommand{\dX}{\, \mathrm{d}X}
+\newcommand{\dx}{\, \mathrm{d}x}
+\newcommand{\ds}{\, \mathrm{d}s}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Integer}{\mathbb{Z}}
+$$
+
+
+
+
+    
+<!-- Bootstrap navigation bar -->
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="fem-book-sol.html">Introduction to Numerical Methods for Variational Problems</a>
+  </div>
+
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Contents <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+     <!-- navigation toc: --> <li><a href="._fem-book-sol002.html#table_of_contents" style="font-size: 80%;"><b>Table of contents</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol001.html#ch:preface" style="font-size: 80%;"><b>Preface</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol001.html#___sec1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contents</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol001.html#___sec2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Supplementary materials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol003.html#ch:overview" style="font-size: 80%;"><b>Quick overview of the finite element method</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol003.html#ch:approx:global" style="font-size: 80%;"><b>Function approximation by global functions</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol004.html#fem:approx:vec" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Approximation of vectors</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol004.html#fem:approx:vec:plane" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Approximation of planar vectors</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol004.html#___sec7" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol004.html#___sec8" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The projection method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol004.html#fem:approx:vec:Np1dim" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Approximation of general vectors</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol004.html#___sec10" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol004.html#___sec11" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Galerkin or projection method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#fem:approx:global" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Approximation principles</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#fem:approx:LS" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec14" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The projection (or Galerkin) method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#fem:approx:global:linear" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on linear approximation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#fem:approx:global:LS:code" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Implementation of the least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec17" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symbolic integration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec18" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fall back on numerical integration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec19" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plotting the approximation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#fem:approx:global:exact1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Perfect approximation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#fem:approx:global:regression" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The regression method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec22" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Overdetermined equation system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec23" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The normal equations derived from a least squares principle</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec24" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Implementation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol005.html#___sec25" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol006.html#___sec26" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Orthogonal basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol006.html#fem:approx:global:illconditioning" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ill-conditioning</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol006.html#fem:approx:global:Fourier" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fourier series</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol006.html#fem:approx:global:orth" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orthogonal basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol006.html#___sec30" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Numerical computations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#___sec31" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Interpolation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#fem:approx:global:interp" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The interpolation (or collocation) principle</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#___sec33" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#fem:approx:global:Lagrange" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lagrange polynomials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#___sec35" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Approximation of a polynomial</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#___sec36" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Successful example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#___sec37" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Less successful example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#___sec38" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remedy for strong oscillations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#fem:approx:global:Bernstein" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bernstein polynomials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol007.html#___sec40" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Approximation properties and convergence rates</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol008.html#fem:approx:2D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Approximation of functions in higher dimensions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol008.html#fem:approx:2D:global" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2D basis functions as tensor products of 1D functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol008.html#___sec43" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on polynomial basis in 2D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol008.html#fem:approx:2D:global:code" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Implementation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol008.html#fem:approx:3D:global" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Extension to 3D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#___sec46" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Exercises</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:linalg1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 1: Linear algebra refresher</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:vec:3Dby2D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 2: Approximate a three-dimensional vector in a plane</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:parabola_sine" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 3: Approximate a parabola by a sine</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:exp:powers" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 4: Approximate the exponential function by power functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:sin:powers" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 5: Approximate the sine function by power functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:tanh:sine1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 6: Approximate a steep function by sines</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#___sec53" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remarks</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:tanh:sine3" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 7: Approximate a steep function by sines with boundary adjustment</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#___sec55" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remarks</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:Fourier" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 8: Fourier series as a least squares approximation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:tanh:Lagrange" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 9: Approximate a steep function by Lagrange polynomials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol009.html#fem:approx:exer:tanh:Lagrange:regression" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 10: Approximate a steep function by Lagrange polynomials and regression</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#ch:approx:fe" style="font-size: 80%;"><b>Function approximation by finite elements</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#fem:approx:fe" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Finite element basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#fem:approx:fe:def:elements:nodes" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elements and nodes</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec62" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec63" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec64" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Construction principles</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec65" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Properties of \( \basphi_i \)</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec66" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on quadratic finite element functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec67" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on linear finite element functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec68" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on cubic finite element functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#fem:approx:global:linearsystem" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calculating the linear system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec70" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calculating specific matrix entries</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec71" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calculating a general row in the matrix</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#fem:approx:fe:elementwise" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assembly of elementwise computations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec73" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The element matrix</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec74" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assembly of element matrices</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec75" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assembly of irregularly numbered elements and nodes</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec76" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The element vector</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#fem:approx:fe:mapping" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mapping to a reference element</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec78" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The coordinate transformation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec79" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Formulas for the element matrix and vector entries</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#___sec80" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Formulas for local basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol010.html#fem:approx:fe:intg:ref" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on integration over a reference element</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Implementation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl:intg" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl:linsys" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linear system assembly and solution</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl:ex1:symbolic" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on computing symbolic approximations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl:ex1:collocation" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Using interpolation instead of least squares</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl:ex1:numeric" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on computing numerical approximations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:A:structure" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The structure of the coefficient matrix</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl:ex2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Applications</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol011.html#fem:approx:fe:impl:sparse" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sparse matrix storage and solution</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol012.html#fem:approx:fe:fd" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Comparison of finite elements and finite differences</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol012.html#fem:approx:fe:fd:fdproj" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite difference approximation of given functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol012.html#fem:approx:fe:fd:feproj" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interpretation of a finite element approximation in terms of finite difference operators</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol012.html#fem:deq:1D:approx:fem_vs_fdm" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Making finite elements behave as finite differences</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol012.html#___sec95" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computations in physical space</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol012.html#___sec96" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elementwise computations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol012.html#___sec97" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Terminology</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol013.html#fem:approx:fe:element" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;A generalized element concept</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol013.html#fem:approx:fe:element:terminology" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cells, vertices, and degrees of freedom</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol013.html#fem:approx:fe:element:def" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Extended finite element concept</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol013.html#fem:approx:fe:element:impl" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Implementation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol013.html#fem:approx:fe:error" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computing the error of the approximation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol013.html#fem:approx:fe:element:impl:Hermite" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on cubic Hermite polynomials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol014.html#___sec104" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Numerical integration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol014.html#fem:approx:fe:numint1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Newton-Cotes rules</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol014.html#___sec106" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gauss-Legendre rules with optimized points</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec107" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Finite elements in 2D and 3D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec108" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Basis functions over triangles in the physical domain</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec109" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Element matrices and vectors</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec110" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Basis functions over triangles in the reference cell</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec111" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Affine mapping of the reference cell</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec112" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Isoparametric mapping of the reference cell</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec113" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computing integrals</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fe:approx:fenics" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Implementation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fenics:2D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on approximation in 2D using FEniCS</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec116" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mathematical problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec117" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The code</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec118" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dissection of the code</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec119" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integrating SymPy and FEniCS</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fenics:2D:2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Refined code with curve plotting</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec121" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interpolation and projection</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec122" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plotting the solution along a line</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec123" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integrating plotting and computations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec124" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Exercises</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:mesh1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 11: Define nodes and elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:mesh2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 12: Define vertices, cells, and dof maps</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:defmesh:sparsity" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 13: Construct matrix sparsity patterns</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:Asinwt:symbolic" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 14: Perform symbolic finite element computations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:exer:tanh:P1P2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 15: Approximate a steep function by P1 and P2 elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:exer:tanh:P3P4" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 16: Approximate a steep function by P3 and P4 elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:Asinwt:interpol:error" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 17: Investigate the approximation error in finite elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:Heaviside" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 18: Approximate a step function by finite elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:2Dsines:symbolic" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 19: 2D approximation with orthogonal functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:1D:trapez" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 20: Use the Trapezoidal rule and P1 elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:1D:P1:vs:interp" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 21: Compare P1 elements and interpolation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:3D:approx3D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 22: Implement 3D computations with global basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#fem:approx:fe:exer:1D:simpson" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 23: Use Simpson's rule and P2 elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol015.html#___sec138" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 24: Make a 3D code for Lagrange elements of arbitrary order</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#ch:varform:global" style="font-size: 80%;"><b>Variational formulations with global basis functions</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:principles" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Basic principles for approximating differential equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:models" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Differential equation models</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:models:simple" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Simple model problems and their solutions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:residual:min" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Forming the residual</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec144" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec145" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Galerkin method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec146" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The method of weighted residuals</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#varform:trunc" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The method of weighted residual and the truncation error</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec148" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Test and trial functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec149" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The collocation method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec150" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The subdomain collocation method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:ex:sines" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Examples on using the principles</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec152" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The model problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec153" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec154" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The residual</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec155" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec156" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Galerkin method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec157" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The collocation method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec158" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comparison</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:varform" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integration by parts</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec160" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Weak form</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:essBC:Bfunc" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Boundary function</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec162" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Computing with global polynomials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#fem:deq:1D:varform:ex:DN:case" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computing with Dirichlet and Neumann conditions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol016.html#___sec164" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;When the numerical method is exact</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol017.html#fem:deq:1D:varform:abstract" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Abstract notation for variational formulations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol017.html#fem:deq:1D:optimization" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Variational problems and minimization of functionals</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol017.html#___sec167" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol017.html#___sec168" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The general minimization problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol017.html#___sec169" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Derivation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol017.html#___sec170" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Minimization of the discretized functional</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol017.html#___sec171" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calculus of variations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#fem:deq:1D:varform:ex" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Examples on variational formulations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#___sec173" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Variable coefficient</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#___sec174" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;First-order derivative in the equation and boundary condition</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#___sec175" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nonlinear coefficient</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#fem:global:deq:1D:code" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Implementation of the algorithms</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#fem:deq:1D:code:global" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Extensions of the code for approximation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#___sec178" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fallback to numerical methods</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#___sec179" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example with constant right-hand side</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol018.html#ch:convdiff" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Approximations may fail: convection-diffusion</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol019.html#___sec181" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Exercises</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol019.html#fem:deq:exer:BVP1D:class" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 25: Refactor functions into a more general class</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol019.html#fem:deq:exer:tension:cable" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 26: Compute the deflection of a cable with sine functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol019.html#fem:deq:exer:tension:cable_xn" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 27: Compute the deflection of a cable with power functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol019.html#fem:deq:exer:intg:parts" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 28: Check integration by parts</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#ch:varform:fe" style="font-size: 80%;"><b>Variational formulations with finite elements</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#fem:deq:1D:fem1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Computing with finite elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#___sec188" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite element mesh and basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#fem:deq:1D:comp:global" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computation in the global physical domain</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#fem:deq:1D:fdm_vs_fem" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comparison with a finite difference discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#fem:deq:1D:comp:elmwise" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cellwise computations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#___sec192" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The integral for the element matrix</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#___sec193" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The integral for the element vector</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#___sec194" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Detailed calculations of the element matrix and vector</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#___sec195" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contributions from the first and last cell</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol020.html#___sec196" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assembly</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#fem:deq:1D:essBC" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Boundary conditions: specified nonzero value</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#fem:deq:1D:fem:essBC:Bfunc" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;General construction of a boundary function</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#___sec199" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on computing with a finite element-based boundary function</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#___sec200" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computations in physical coordinates</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#___sec201" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cellwise computations on the reference element</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#fem:deq:1D:fem:essBC:Bfunc:modsys" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Modification of the linear system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#___sec203" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computations in the physical system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#fem:deq:1D:fem:essBC:Bfunc:modsys:symm" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetric modification of the linear system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol021.html#fem:bc:elmat:mod" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Modification of the element matrix and vector</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol022.html#fem:deq:1D:BC:nat" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Boundary conditions: specified derivative</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol022.html#___sec207" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The variational formulation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol022.html#fem:deq:1D:BC:nat:uLtest" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Boundary term vanishes because of the test functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol022.html#fem:deq:1D:BC:nat:uLmod" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Boundary term vanishes because of linear system modifications</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol022.html#fem:deq:1D:BC:nat:Aub" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Direct computation of the global linear system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol022.html#___sec211" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cellwise computations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol023.html#fem:deq:1D:code" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Implementation of finite element algorithms</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol023.html#fem:deq:1D:code:fe" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Extensions of the code for approximation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol023.html#fem:deq:1D:code:fe_sparse" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Utilizing a sparse matrix</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol023.html#___sec215" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Application to our model problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#fem:deq:2D:varform" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Variational formulations in 2D and 3D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec217" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integration by parts</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#sec:varform:general:convdiff" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on a multi-dimensional variational problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec219" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Transformation to a reference cell in 2D and 3D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec220" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Numerical integration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec221" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Convenient formulas for P1 elements in 2D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec222" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A glimpse of the mathematical theory of the finite element method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec223" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Abstract variational forms</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec224" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example on an abstract variational form and associated spaces</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec225" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assumptions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec226" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Existence and uniqueness</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec227" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stability</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec228" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Equivalent minimization problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec229" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Best approximation principle</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec230" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Best approximation property in the norm of the space</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec231" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetric, positive definite coefficient matrix</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec232" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Equivalent matrix minimization problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec233" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A priori error estimate for the derivative</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec234" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A priori error estimate for the solution</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#fem:varform:fenics" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Implementation in 2D and 3D via FEniCS</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#fem:varform:fenics:problem" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mathematical problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec237" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#fem:varform:fenics:varform" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Variational formulation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec239" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The FEniCS solver</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec240" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Making the mesh</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol024.html#___sec241" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Solving a problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol025.html#___sec242" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Convection-diffusion and Petrov-Galerkin methods</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol025.html#___sec243" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Summary</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#___sec244" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Exercises</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:cable:2P1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 29: Compute the deflection of a cable with 2 P1 elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:cable:1P2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 30: Compute the deflection of a cable with 1 P2 element</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:cable:stepload" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 31: Compute the deflection of a cable with a step load</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:1D:mesh:nonuniform" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 32: Compute with a non-uniform mesh</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:1D:gen:problem1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 33: Solve a 1D finite element problem by hand</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:1D:exact_numerics" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 34: Investigate exact finite element solutions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:1D:Poisson:polar" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 35: Compare finite elements and differences for a radially symmetric Poisson equation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:1D:gen:problem2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 36: Compute with variable coefficients and P1 elements by hand</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:deq:exer:2D:torsion:xy:sin" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 37: Solve a 2D Poisson equation using polynomials and sines</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:fenics:borehole:exer:3D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 38: Solve a 3D Laplace problem with FEniCS</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol026.html#fem:fenics:borehole:exer:1D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 39: Solve a 1D Laplace problem with FEniCS</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#ch:femtime" style="font-size: 80%;"><b>Time-dependent variational forms</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:diffu:FE" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Discretization in time by a Forward Euler scheme</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec258" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Time discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec259" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Space discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec260" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Variational forms</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec261" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Notation for the solution at recent time levels</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec262" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deriving the linear systems</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec263" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computational algorithm</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:diffu:FE:cosex" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example using cosinusoidal basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:diffu:FE:fdvsP1fe" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comparing P1 elements with the finite difference method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec266" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lumping the mass matrix</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:diffu:BE" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Discretization in time by a Backward Euler scheme</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec268" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Time discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec269" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Variational forms</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec270" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linear systems</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec271" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite difference operators corresponding to P1 elements</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:diffu:Dirichlet" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Dirichlet boundary conditions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec273" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Boundary function</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec274" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite element basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec275" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Modification of the linear system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:diffu:Dirichlet:ex" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example: Oscillating Dirichlet boundary condition</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:diffu:anal" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Accuracy of the finite element solution</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec278" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Methods of analysis</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec279" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fourier components and dispersion relations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec280" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Forward Euler discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec281" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Backward Euler discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec282" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comparing amplification factors</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#___sec283" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Exercises</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol027.html#fem:deq:exer:diffu:analysis:CN" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 40: Analyze a Crank-Nicolson scheme for the diffusion equation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#ch:femsys" style="font-size: 80%;"><b>Variational forms for systems of PDEs</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#fem:sys:vform" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Variational forms</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec287" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sequence of scalar PDEs formulation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec288" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vector PDE formulation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#fem:sys:uT:ex" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;A worked example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec290" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Identical function spaces for the unknowns</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec291" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Variational form of each individual PDE</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec292" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compound scalar variational form</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec293" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decoupled linear systems</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec294" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Coupled linear systems</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec295" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Different function spaces for the unknowns</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#femsys:cooling:1D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Computations in 1D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#fem:sys:up:1D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Another example in 1D</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec298" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Exercises</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#femsys:exer:cooling:1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 41: Estimate order of convergence for the Cooling law</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#femsys:exer:cooling:2" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 42: Estimate order of convergence for the Cooling law</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#ch:nitsche" style="font-size: 80%;"><b>Flexible implementations of boundary conditions</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:fxy:opt" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Optimization with constraint</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec303" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elimination of variables</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:fxy:opt:Lagrange" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lagrange multiplier method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:fxy:opt:penalty" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Penalty method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:pde:opt" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Optimization of functionals</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:pde:opt:varcalculus" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Classical calculus of variations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:pde:opt:penalty" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Penalty and Nitsche's methods for optimization with constraints</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:pde:opt:Lagrange" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lagrange multiplier method for optimization with constraints</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nitsche:pde:opt:1Dex" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example: 1D problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec311" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example: adding a constraint in a Neumann problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#ch:nonlin" style="font-size: 80%;"><b>Nonlinear problems</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Introduction of basic concepts</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec314" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linear versus nonlinear equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec315" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Algebraic equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec316" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Differential equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec317" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A simple model problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic:FE" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linearization by explicit time discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic:roots" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exact solution of nonlinear algebraic equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec320" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linearization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic:Picard" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec322" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stopping criteria</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec323" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A single Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic:geometric:mean" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linearization by a geometric mean</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic:Newton" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Newton's method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic:relaxation" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Relaxation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:timediscrete:logistic:impl" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Implementation and experiments</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:ode:generic" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generalization to a general nonlinear ODE</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec329" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Explicit time discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec330" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Backward Euler discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec331" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Crank-Nicolson discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#nonlin:ode:generic:sys:pendulum" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Systems of ODEs</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol028.html#___sec333" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#nonlin:systems:alg" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Systems of nonlinear algebraic equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#nonlin:systems:alg:Picard" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#nonlin:systems:alg:Newton" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Newton's method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#nonlin:systems:alg:terminate" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stopping criteria</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#nonlin:systems:alg:SI" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example: A nonlinear ODE model from epidemiology</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#___sec339" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Implicit time discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#___sec340" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol029.html#___sec341" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Newton's method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#nonlin:pdelevel" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Linearization at the differential equation level</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#nonlin:pdelevel:explicit" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Explicit time integration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#nonlin:pdelevel:Picard" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Backward Euler scheme and Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#nonlin:pdelevel:Newton" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Backward Euler scheme and Newton's method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#___sec346" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linearization via Taylor expansions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#___sec347" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Similarity with Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#___sec348" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Implementation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#___sec349" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Derivation with alternative notation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol030.html#nonlin:pdelevel:Picard:CN" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Crank-Nicolson discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol031.html#nonlin:alglevel:1D" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;1D stationary nonlinear differential equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol031.html#nonlin:alglevel:1D:fd" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite difference discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol031.html#___sec353" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Solution of algebraic equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol031.html#___sec354" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The structure of the equation system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol031.html#___sec355" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol031.html#___sec356" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mesh with two cells</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol031.html#___sec357" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Newton's method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol032.html#___sec358" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Multi-dimensional PDE problems</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol032.html#nonlin:alglevel:dD:fd" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite difference discretization</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol032.html#___sec360" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Picard iteration</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol032.html#___sec361" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Newton's method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol032.html#___sec362" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Continuation methods</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Exercises</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:lin:vs:nonlin" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 43: Determine if equations are nonlinear or not</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:logistic:gen" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 44: Derive and investigate a generalized logistic model</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:Newton:problems1" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 45: Experience the behavior of Newton's method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:vib:Jacobian" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 46: Compute the Jacobian of a \( 2\times 2 \) system</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:vib:geometric:mean" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 47: Solve nonlinear equations arising from a vibration ODE</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:products:arith:mean" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 48: Find the truncation error of arithmetic mean of products</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:Newton:linear" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 49: Newton's method for linear problems</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:1D:1pu2:fem" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 50: Discretize a 1D problem with a nonlinear coefficient</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:1D:1pu2:PicardNewton" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 51: Linearize a 1D problem with a nonlinear coefficient</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:1D:fu:discretize:fd" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 52: Finite differences for the 1D Bratu problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:1D:heat:nonlinear:fdm" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 53: Discretize a nonlinear 1D heat conduction PDE by finite differences</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:grad:pow:term" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 54: Differentiate a highly nonlinear term</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:2D:heat:nonlinear:fd" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 55: Crank-Nicolson for a nonlinear 3D diffusion equation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:sparsity:Jacobian" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exercise 56: Find the sparsity of the Jacobian</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:exer:continuation:1DnNflow" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Problem 57: Investigate a 1D problem with a continuation method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:app:fem_vs_fdm" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Symbolic nonlinear finite element equations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:alglevel:1D:fe_basis" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite element basis functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:alglevel:1D:fe:group" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The group finite element method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#___sec382" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finite element approximation of functions of \( u \)</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#___sec383" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Simplified problem</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#___sec384" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integrating nonlinear functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#___sec385" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Application of the group finite element method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:alglevel:1D:fe:f" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Numerical integration of nonlinear terms by hand</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#nonlin:alglevel:1D:fe:Laplace" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Discretization of a variable coefficient Laplace term</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#___sec388" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Group finite element method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol033.html#___sec389" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Numerical integration at the nodes</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#ch:cg" style="font-size: 80%;"><b>Variational methods for linear systems</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#ch:linalg:CGmethods" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Conjugate gradient-like iterative methods</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec392" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Galerkin method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec393" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec394" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Krylov subspaces</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec395" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computation of the basis vectors</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec396" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Computation of a new solution vector</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec397" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Summary of the least squares method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec398" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remark</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec399" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Truncation and restart</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec400" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Summary of the Galerkin method</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec401" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A framework based on the error</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#ch:linalg2:preconditioning" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Preconditioning</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec403" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Motivation and Basic Principles</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec404" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use of the preconditioning matrix in the iterative methods</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#ch:linalg:SORprecond" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Classical iterative methods as preconditioners</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#linalg:ILU" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Incomplete factorization preconditioners</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol035.html#___sec407" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Preconditioners developed for solving PDE problems</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#ch:formulas" style="font-size: 80%;"><b>Appendix: Useful formulas</b></a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#sec:form:fdop" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Finite difference operator notation</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#sec:form:truncerr" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Truncation errors of finite difference approximations</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#sec:form:fdexp" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Finite differences of exponential functions</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#___sec412" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Complex exponentials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#___sec413" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Real exponentials</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#sec:form:fdtn" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;Finite differences of \( t^n \)</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol036.html#___sec415" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Software</a></li>
+     <!-- navigation toc: --> <li><a href="._fem-book-sol037.html#___sec416" style="font-size: 80%;">&nbsp;&nbsp;&nbsp;References</a></li>
+
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+</div> <!-- end of navigation bar -->
+
+<div class="container">
+
+<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p> <!-- add vertical space -->
+
+<a name="part0034"></a>
+<!-- !split -->
+<!-- ========= Uncertainty quantification and polynomial chaos expansions ========= -->
+<!-- <div id="ch:pc"></div> -->
+
+<p>
+<p>
+<!-- navigation buttons at the bottom of the page -->
+<ul class="pager">
+
+  <li class="previous">
+    <a href="._fem-book-sol033.html">&larr; Prev</a>
+  </li>
+
+  <li class="next">
+    <a href="._fem-book-sol035.html">Next &rarr;</a>
+  </li>
+</ul>
+<!-- ------------------- end of main content --------------- -->
+
+</div>  <!-- end container -->
+<!-- include javascript, jQuery *first* -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+<!-- Bootstrap footer
+<footer>
+<a href="http://..."><img width="250" align=right src="http://..."></a>
+</footer>
+-->
+
+
+<center style="font-size:80%">
+<!-- copyright only on the titlepage -->
+</center>
+
+
+</body>
+</html>
+    
+
