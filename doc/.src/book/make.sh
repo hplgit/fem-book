@@ -86,6 +86,7 @@ compile --device=screen
 newname=${topicname}-book-4screen-sol
 password="f!e!m"
 pdftk $name.pdf output $newname.pdf owner_pw foo user_pw $password
+cp $name.pdf $newname.pdf 
 cp $name.pdf ${name}-sol.pdf # good to have a copy without password
 
 compile --device=screen --without_solutions --without_answers
