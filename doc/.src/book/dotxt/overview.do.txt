@@ -32,7 +32,7 @@ label{overview:2d:fdm0}
  = f_{i}
 \end{equation}
 !et
-or reordered to the more famous
+or reordered to the more recognizable 
 
 !bt
 \begin{equation}
@@ -44,14 +44,14 @@ label{overview:2d:fdm}
 
 On a structured mesh, the stencil appears natural and
 is convenient to implement.
-However, for a unstructured, ``complicated''domain
+However, for a unstructured, ``complicated'' domain
 as shown in Figure ref{overview:meshex},
 we would need to be careful when placing
 points and evaluating stencils and functions.  Both accuracy and efficiency
 may easily be sacrificed by a reckless implementation.
 
 In general, a domain like the one represented in Figure
-ref{overview:meshex} will be representation by a triangulation. The
+ref{overview:meshex} will be represented by a triangulation. The
 finite element method (and the finite volume method which often is a
 special case of the finite element method) is a methodology for
 creating stencils like (ref{overview:2d:fdm}) in a structured manner
@@ -66,7 +66,7 @@ us therefore denote the mesh as $\Omega$ while $\Omega_e$ is the domain
 of a generic element such that $\Omega=\cup_e \Omega_e$.
 
 This is exactly the point where the challenges of the finite element
-method starts and where we need some new concepts.  The basic question
+method start and where we need some new concepts.  The basic question
 is: How should we create a stencil like (ref{overview:2d:fdm}) for a
 general element and a general PDE that has the maximal accuracy and
 minimal computational complexity at the current triangulation?  The
@@ -93,9 +93,9 @@ and $\baspsi_i(x,y)$ are prescribed polynomials.
 The basis functions $\baspsi_i(x,y)$ used to express the solution
 is often called the trial functions.  
 The next step is the variational formulation. This step
-may seem like a trick of magic or a cumbersome
+may seem like a magic trick or a cumbersome
 mathematical exercise at first glance.
-We take the PDE and multiply by a function $v$ (usually called a
+We take the PDE and multiply by a function $v$ (usually called 
 the test function)
 and integrate over an element $\Omega_e$ and obtain the expression
 
@@ -108,7 +108,7 @@ label{overview:poisson}
 
 A perfectly natural question at this point is: Why multiply
 with a test function $v$? The simple answer is that
-there are $N+1$ unknowns that needs to be determined in $u$
+there are $N+1$ unknowns that need to be determined in $u$
 in (ref{overview:u:fem})
 and for this we need $N+1$ equations. The equations are
 obtained by using  $N+1$ different test functions which when used
@@ -129,7 +129,7 @@ label{overview:fem:a}
 !et
 to weaken the requirement of the polynomial space used for the
 trial functions (that here needs to be twice differentiable)
-and write this term on its corresponding weak form.
+and write this term in its corresponding weak form.
 That
 is, the term is rewritten in terms of first-derivatives only (of
 both the trial and the test function)  with the aid of Gauss-Green's lemma:
@@ -141,11 +141,11 @@ label{overview:fem:a:weak}
 \int_{\Omega_e} \nabla u \cdot \nabla v \dx   - \int_{\partial \Omega_e} \frac{\partial u}{\partial n} \,  v \,  dS
 \end{equation}
 !et
-The reasons behind this alternative formulation is rather mathematical and will
-not be a major subject of this book as it is well described elsewhere.
+The reasons behind this alternative formulation are rather mathematical and will
+not be a major subject of this book as they are well described elsewhere.
 In fact, a precise explanation would need tools from functional analysis.
 
-With the above rewrite assuming now that the boundary term vanish due to
+With the above rewrite and assuming now that the boundary term vanishes due to
 boundary conditions (why this is possible will be dealt with in detail
 later in this book) the
 stencil, corresponding to (ref{overview:2d:fdm}),  is represented by
@@ -176,7 +176,7 @@ finite element packages like FEniCS are typically structured as
 general toolboxes that can be adapted to any PDE as soon as the
 derivation of variational formulations is mastered.  The main obstacle
 here for a novice FEM user is then to understand the concept of trial
-functions and test functions realised in terms of polynomial spaces.
+functions and test functions realized in terms of polynomial spaces.
 
 
 Hence, a finite element formulation (or a weak formulation) of
@@ -227,12 +227,10 @@ plot(solution)
 While the finite element method is versatile and may be adapted to any
 PDE on any domain in any dimension, the different methods that are
 derived by using different trial and test functions may vary
-significantly in terms of accuracy and efficiency. In fact, even
-though the process of deriving at a variational formulation is
-general, a bad choice of polynomial space may in some cases lead to a
+significantly in terms of accuracy and efficiency. In fact, a bad choice of polynomial space may in some cases lead to a
 completely wrong result. This is particularly the case for complicated
 PDEs. For this reason, it is dangerous to regard the method as a black
-box and not do proper verification of the method for a particular
+box and not do proper verification of the method for a  particular
 application.
 
 
@@ -247,14 +245,14 @@ during verification:
 
  o reducing the model problem to 1D and carefully check the calculations involved in the variational formulation on a small 1D mesh
  o perform the calculation involved on one general or random element
- o test whether convergence is obtained and to what order the method converge by refining the mesh
+ o test whether convergences is obtained and to what order the method converge by refining the mesh
 
-The two first task here should ideally be performed by independent calculations
+The two first tasks here should ideally be performed by independent calculations
 outside the framework used for the simulations. In our view `sympy` is a
 convenient tool that can be used to assist hand calculations.
 
 So far, we have outlined how the finite element method handles derivatives
-in a PDE, but we also had a right-hand side $f$. This term is multiplied
+in a PDE, but we also had a right-hand side function $f$. This term is multiplied
 by the test function $v$ as well, such that the entire Poisson equation
 is transformed to
 

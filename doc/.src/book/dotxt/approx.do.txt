@@ -18,7 +18,7 @@ Solution methods for differential equations
 utilizing (ref{fem:u}) must
 have a *principle* for constructing $N+1$ equations to
 determine $c_0,\ldots,c_N$. Then there is a *machinery* regarding
-the actual constructions of the equations for $c_0,\ldots,c_N$, in a
+the actual construction of the equations for $c_0,\ldots,c_N$, in a
 particular problem. Finally, there is a *solve* phase for computing
 the solution $c_0,\ldots,c_N$ of the $N+1$ equations.
 
@@ -29,7 +29,7 @@ details entering the scene at the same time. From an ease-of-learning
 perspective it can therefore be wise to follow an idea of Larson and
 Bengzon cite{Larson_2013} and introduce the computational machinery
 for a trivial equation: $u=f$. Solving this equation with $f$ given
-and $u$ on the form (ref{fem:u}), means that we seek an approximation
+and $u$ of the form (ref{fem:u}), means that we seek an approximation
 $u$ to $f$.  This approximation problem has the advantage of
 introducing most of the finite element toolbox, but without involving
 demanding topics related to differential equations (e.g., integration
@@ -46,11 +46,11 @@ by global basis functions with support throughout the entire
 domain. That is, the functions are in general nonzero on the entire
 domain.  Third, we introduce the finite element type of basis
 functions globally.  These basis functions will later,
-in ref {ch:approx:fe},
+in ref{ch:approx:fe},
 be used with local support
 (meaning that each function is nonzero except in a small part of the domain)
 to enhance stability and efficiency.
-We explain all details of the
+We explain all the details of the
 computational algorithms involving such functions.  Four types of
 approximation principles are covered: 1) the least squares method, 2)
 the $L_2$ projection or Galerkin method, 3) interpolation or
@@ -60,11 +60,11 @@ collocation, and 4) the regression method.
 ======= Approximation of vectors =======
 label{fem:approx:vec}
 
-We shall start with introducing two fundamental methods for
+We shall start by introducing two fundamental methods for
 determining the coefficients $c_i$ in (ref{fem:u}). These methods
-will be introduce for
+will be introduced for
 approximation of vectors. Using vectors in vector
-spaces to bring across the ideas is believed to appear more intuitive
+spaces to bring across the ideas is believed to be more intuitive
 to the reader than starting directly with functions in function spaces.
 The extension from vectors to functions will be trivial as soon as
 the fundamental ideas are understood.
@@ -142,7 +142,7 @@ $\u=(u_0,u_1)$ and $\v =(v_0,v_1)$ is defined as
 
 __Remark.__ We should point out that we use the notation
 $(\cdot,\cdot)$ for two different things: $(a,b)$ for scalar
-quantities $a$ and $b$ means the vector starting in the origin and
+quantities $a$ and $b$ means the vector starting at the origin and
 ending in the point $(a,b)$, while $(\u,\v)$ with vectors $\u$ and
 $\v$ means the inner product of these vectors.  Since vectors are here
 written in boldface font there should be no confusion.  We may add
@@ -170,7 +170,7 @@ E(c_0) = (\e,\e) = (\f - c_0\psib_0, \f - c_0\psib_0)
 \end{equation}
 !et
 We can rewrite the expressions of the right-hand side in a more
-convenient form for further work:
+convenient form for further use:
 
 !bt
 \begin{equation}
@@ -686,7 +686,7 @@ Whether we work with vectors in the plane, general vectors, or
 functions in function spaces, the least squares principle and
 the projection or Galerkin method are equivalent.
 
-===== Example on linear approximation =====
+===== Example of linear approximation =====
 label{fem:approx:global:linear}
 
 Let us apply the theory in the previous section to a simple problem:
@@ -703,7 +703,7 @@ We seek
 \begin{equation*} u=c_0\baspsi_0(x) + c_1\baspsi_1(x) = c_0 + c_1x,\end{equation*}
 !et
 where
-$c_0$ and $c_1$ are found by solving a $2\times 2$ the linear system.
+$c_0$ and $c_1$ are found by solving a $2\times 2$ linear system.
 The coefficient matrix has elements
 
 !bt
@@ -821,7 +821,7 @@ In the latter case, the returned value from `sympy`'s
 We can test on this type and utilize the `mpmath` module
 to perform numerical integration of high precision.
 Even when `sympy` manages to integrate symbolically, it can
-take an undesirable long time. We therefore include an
+take an undesirably long time. We therefore include an
 argument `symbolic` that governs whether or not to try
 symbolic integration. Here is a complete and
 improved version of the previous function `least_squares`:
@@ -866,7 +866,7 @@ The function is found in the file `approx1D.py`.
 === Plotting the approximation ===
 
 Comparing the given $f(x)$ and the approximate $u(x)$ visually is done
-by the following function, which utilizes `sympy`'s `lambdify` tool to
+with the following function, which utilizes `sympy`'s `lambdify` tool to
 convert a `sympy` expression to a Python function for numerical
 computations:
 
@@ -923,7 +923,7 @@ label{fem:approx:global:exact1}
 
 Let us use the code above to recompute the problem from
 Section ref{fem:approx:global:linear} where we want to approximate
-a parabola. What happens if we add an element $x^2$ to the basis and test what
+a parabola. What happens if we add an element $x^2$ to the set of basis functions and test what
 the best approximation is if $V$ is the space of all parabolic functions?
 The answer is quickly found by running
 
@@ -1001,7 +1001,7 @@ We can write it in matrix form as
 \sum_{j\in\If} A_{i,j}c_j = b_i,\quad i=0,1,\ldots,m,
 \end{equation}
 !et
-with coefficient matrix and right-hand side vector given by
+with the coefficient matrix and right-hand side vector given by
 
 !bt
 \begin{align}
@@ -1022,7 +1022,7 @@ system $\sum_{j\in\If} A_{i,j}c_j = b_i$ more compactly in matrix form
 as $Ac=b$.  Since we have more equations than unknowns, it is (in
 general) impossible to find a vector $c$ that fulfills $Ac=b$. The
 best we can do is to make the residual $r=b-Ac$ as small as
-possible. That is, we can find $c$ such that it minimizes the norm
+possible. That is, we can find $c$ such that it minimizes the 
 Euclidean norm of $r$: $||r||$.  The algebra simplifies significantly
 by minimizing $||r||^2$ instead.  This principle corresponds to a
 least squares method.
@@ -1088,9 +1088,9 @@ matrix, and $A^Tb$ becomes a vector of length $N+1$. Often, $m\gg N$,
 so $A^TA$ is much smaller than $A$.
 
 Many prefer to write the linear system
-(ref{fem:approx:global:regression:normal1}) on the standard form
+(ref{fem:approx:global:regression:normal1}) in the standard form
 $\sum_j B_{i,j}c_j=d_i$, $i=0,\ldots,N$.  We can easily do so by
-exchanging the $i$ and $k$ index ($i\leftrightarrow k$), $\sum_i
+exchanging the $i$ and $k$ indices ($i\leftrightarrow k$), $\sum_i
 A^T_{k,i}A_{i,j} = \sum_k A^T_{i,k}A_{k,j}$, and setting $B_{i,j}=\sum_k
 A^T_{i,k}A_{k,j}$. Similarly, we exchange $i$ and $k$ in the right-hand
 side expression and get $\sum_k A^T_{i,k}b_k = d_i$.  Expressing
@@ -1116,7 +1116,7 @@ to (ref{fem:approx:global:regression:Bij}) and the right-hand side
 entries $d_i$ according
 (ref{fem:approx:global:regression:di}). Thereafter, it solves the
 linear system $\sum_jB_{i,j}c_j=d_i$.  The input data `f` and `psi`
-hold $f(x)$ and $\baspsi_i$, $i=0,\ldots,N$, as symbolic expression, but
+hold $f(x)$ and $\baspsi_i$, $i=0,\ldots,N$, as a symbolic expression, but
 since $m$ is thought to be much larger than $N$, and there are loops
 from $0$ to $m$, we use numerical computing to speed up the
 computations.
@@ -1176,7 +1176,7 @@ for m in m_values:
 Figure ref{fem:approx:global:linear:regression:fig1} shows results for
 $m+1=2$ (left), $m+1=8$ (middle), and $m+1=64$ (right) data points.
 The approximating function is not so sensitive to the number of
-points as long as they cover a significant part of the domain (the first 2 point approximation puts too much weight on the center,
+points as long as they covers a significant part of the domain (the first 2 point approximation puts too much weight on the center,
 while the 8 point approximation cover almost the entire
 domain and produces a good approximation which is barely improved with 64 points):
 
@@ -1260,7 +1260,7 @@ label{fem:approx:global:illconditioning}
 
 For basis functions that are not orthogonal the condition number
 of the matrix may create problems during the solution process
-due to for example round-off errors as will be illustrated in the
+due to, for example, round-off errors as will be illustrated in the
 following.   The computational example in Section ref{fem:approx:global:exact1}
 applies the `least_squares` function which invokes symbolic
 methods to calculate and solve the linear system. The correct
@@ -1276,7 +1276,7 @@ is reasonably close to the exact one. Increasing $N$ shows that
 seriously wrong coefficients are computed.
 Below is a table showing the solution of the linear system arising from
 approximating a parabola
-by functions on the form $u(x)=c_0 + c_1x + c_2x^2 + \cdots + c_{10}x^{10}$.
+by functions of the form $u(x)=c_0 + c_1x + c_2x^2 + \cdots + c_{10}x^{10}$.
 Analytically, we know that $c_j=0$ for $j>2$, but numerically we may get
 $c_j\neq 0$ for $j>2$.
 
@@ -1315,7 +1315,7 @@ We see from the numbers in the table that
 double precision performs much better than single precision.
 Nevertheless, when plotting all these solutions the curves cannot be
 visually distinguished (!). This means that the approximations look
-perfect, despite the partially very wrong values of the coefficients.
+perfect, despite the very wrong values of the coefficients.
 
 Increasing $N$ to 12 makes the numerical solver in `numpy`
 abort with the message: "matrix is numerically singular".
@@ -1346,7 +1346,7 @@ On the other hand, the double precision `numpy` solver does run for
 $N=100$, resulting in answers that are not significantly worse than
 those in the table above, and large powers are
 associated with small coefficients (e.g., $c_j < 10^{-2}$ for $10\leq
-j\leq 20$ and $c<10^{-5}$ for $j > 20$). Even for $N=100$ the
+j\leq 20$ and $c_j<10^{-5}$ for $j > 20$). Even for $N=100$ the
 approximation still lies on top of the exact curve in a plot (!).
 
 The conclusion is that visual inspection of the quality of the approximation
@@ -1357,8 +1357,8 @@ is a bad basis. The best basis from a matrix conditioning point of view
 is to have orthogonal functions such that $(\psi_i,\psi_j)=0$ for
 $i\neq j$. There are many known sets of orthogonal polynomials and
 other functions.
-The functions used in the finite element methods are almost orthogonal,
-and this property helps to avoid problems with solving matrix systems.
+The functions used in the finite element method are almost orthogonal,
+and this property helps to avoid problems when solving matrix systems.
 Almost orthogonal is helpful, but not enough when it comes to
 partial differential equations, and ill-conditioning
 of the coefficient matrix is a theme when solving large-scale matrix
@@ -1448,7 +1448,7 @@ u = B + u_sum
 
 Figure ref{fem:approx:global:fig:parabola:sine2} shows the result
 of the technique for
-ensuring right boundary values. Even 3 sines can now adjust the
+ensuring the right boundary values. Even 3 sines can now adjust the
 $f(0)(1-x) + xf(1)$ term such that $u$ approximates the parabola really
 well, at least visually.
 
@@ -1553,7 +1553,7 @@ consuming or impossible.
 Even though we implemented a fallback on numerical integration
 of $\int f\basphi_i \dx$, considerable time might still be required
 by `sympy` just by *attempting* to integrate symbolically.
-Therefore, it will be handy to have function for fast
+Therefore, it will be handy to have a function for fast
 *numerical integration and numerical solution
 of the linear system*. Below is such a method. It requires
 Python functions `f(x)` and `psi(x,i)` for $f(x)$ and $\baspsi_i(x)$
@@ -1845,7 +1845,7 @@ and
 u(x) = \sum_{j\in\If} c_i \baspsi_i(x) = \sum_{j\in\If} f(\xno{i})\baspsi_i(x)\tp  \end{equation}
 !et
 We remark however that (ref{fem:inter:prop}) does not necessarily imply that the matrix
-obtained by the least squares or project methods is diagonal.
+obtained by the least squares or projection methods is diagonal.
 
 
 The following function computes the Lagrange interpolating polynomial
@@ -1903,7 +1903,7 @@ functions and points:
 
 That is, when used symbolically, the `Lagrange_polynomials_01`
 function returns the symbolic expression for the Lagrange functions
-while when `x` is a numerical valued the function returns the value of
+while when `x` is a numerical value the function returns the value of
 the basis function evaluate in `x`.  In the present example only the
 second basis function should be 1 in the mid-point while the others
 are zero according to (ref{fem:inter:prop}).
@@ -1914,7 +1914,7 @@ are zero according to (ref{fem:inter:prop}).
 The Galerkin or least squares methods lead to an exact approximation
 if $f$ lies in the space spanned by the basis functions. It could be
 of interest to see how the interpolation method with Lagrange
-polynomials as basis is able to approximate a polynomial, e.g., a
+polynomials as the basis is able to approximate a polynomial, e.g., a
 parabola. Running
 
 !bc pycod
@@ -1981,7 +1981,7 @@ all $i$, except $\psi_2(\xno{2})=1$ and $\psi_7(\xno{7})=1$.  The most
 striking feature, however, is the dominating oscillation near the
 boundary where $\psi_2>5$ and $\psi_7=-10$ in some points. The reason is easy to understand: since we force the
 functions to be zero at so many points, a polynomial of high degree is
-forced to oscillate between the points.  The phenomenon is named
+forced to oscillate between the points.  This is called 
 *Runge's phenomenon* and you can read a more detailed explanation on
 "Wikipedia": "http://en.wikipedia.org/wiki/Runge%27s_phenomenon".
 
@@ -2157,11 +2157,11 @@ However, looking at Figure ref{Lagrange_basis_8}
 we also notice that the basis function are oscillatory and have absolute
 values that are significantly larger than 1 between the nodal points.
 Consider for instance the basis function represented by the purple color.
-It is 1 in $x=0.5$ and 0 at all other nodal points
+It is 1 at $x=0.5$ and 0 at all other nodal points
 and hence this basis function represents the value at the mid-point.
 However, this function also has strong
 negative contributions close to the element boundaries where
-it takes negative values less than $-2$.
+it takes negative values lower than $-2$.
 For the Bernstein basis, all  functions are positive and
 all functions output values in $[0,1]$. Therefore there is no oscillatory behavior.
 The main disadvantage of the Bernstein basis is that the basis is not
@@ -2174,7 +2174,7 @@ the middle of the element, but the Bernstein polynomials always remain less than
 We  remark that the Bernstein basis is easily extended to polygons in 2D and
 3D in terms of the barycentric coordinates. For example, consider the reference triangle in
 2D consisting of the faces $x=0$, $y=0$, and $x+y=1$. The barycentric coordinates
-are $b_1(x,y)=x$, $b_2(x,y)$, and $b_3(x,y)=1-x-y$ and the Bernstein basis functions
+are $b_1(x,y)=x$, $b_2(x,y)=y$, and $b_3(x,y)=1-x-y$ and the Bernstein basis functions
 of order $n$ is of the form
 
 !bt
@@ -2216,7 +2216,7 @@ as we increase the number of basis functions in our
 representations. We also expect that the computational complexity
 increases. Let us therefore try to quantify the accuracy and
 efficiency of the different methods in terms of the number of basis
-functions $N$. In the present example we consider the least square
+functions $N$. In the present example we consider the least squares
 method.
 
 Let us consider the approximation of a Gaussian bell function, i.e.,
@@ -2227,7 +2227,7 @@ that the exact solution is
 u_e = \exp(-(x-0.5)^2) - \exp(-0.5^2)
 \]
 !et
-We remark that $u_e$ is zero in $x=0$ and $x=1$ and that
+We remark that $u_e$ is zero at $x=0$ and $x=1$ and that
 we have chosen the bell function because it cannot be expressed
 as a finite sum of either polynomials or sines.
 We may therefore study the behavior as $N\rightarrow\infty$.
@@ -2343,7 +2343,7 @@ more than 500 times more accurate than the Lagrange basis! The
 approximations obtained by sines are far behind the polynomial
 approximations for $N>4$.
 
-The corresponding CPU time of the required computations also vary quite a bit:
+The corresponding CPU times for the required computations also vary quite a bit:
 
 |------------------------------------------------------------------|
 |  N          |  2        |  4          |  8         |  16         |
@@ -2368,7 +2368,7 @@ or an exponential function defined as follows
 label{sec:approx:pol:model}
 E_{1}(N) &= \alpha_{1} N^{\beta_{1}}, \\
 label{sec:approx:exp:model}
-E_{2}(N) &= \alpha_{2} \exp(\beta_2 N)
+E_{2}(N) &= \alpha_{2} \exp(\beta_2 N) . 
 \end{align}
 !et
 Taking the logarithm of (ref{sec:approx:pol:model}) we
@@ -2376,7 +2376,7 @@ obtain
 
 !bt
 \[
-\log (E_1(N)) = \beta_1 \log(N) + log(\alpha_1)
+\log (E_1(N)) = \beta_1 \log(N) + log(\alpha_1) . 
 \]
 !et
 Hence, letting $x=\log(N)$ be the independent variable and $y=\log
@@ -2389,26 +2389,26 @@ the natural logarithm and obtain
 
 !bt
 \[
-\ln (E_2(N)) = \beta_2 N + \ln(\alpha_2)
+\ln (E_2(N)) = \beta_2 N + \ln(\alpha_2) . 
 \]
 !et
 Again, regression analysis provides the means to estimate the convergence,
 but here we let $x=N$ be the independent variable,
 $y=\ln (E_2(N))$, $a=\beta_2$ and $b= \ln(\alpha_2)$.
 To summarize, the polynomial model should have the data around a straight
-line in a log-log plot, while the exponential model has its date around
+line in a log-log plot, while the exponential model has its data around
 a straight line in a log plot with the logarithmic scale on the $y$ axis.
 
 Before we perform the regression analysis, a good rule is to inspect
 the behavior visually in log and log-log plots. Figure
 ref{fem:approx:bell:loglogfig} shows a log-log plot of the error with
 respect to $N$ for the various methods. Clearly, the sinusoidal basis
-seems to have a polynomial convergence rate as the log-log plot is a
-linear line. The Bernstein, Lagrange, and Taylor methods appear to
+seems to have a polynomial convergence rate as the log-log plot is 
+linear. The Bernstein, Lagrange, and Taylor methods appear to
 have convergence that is faster than polynomial. It is then
 interesting to consider a log plot and see if the behavior is
 exponential. Figure ref{fem:approx:bell:semilogfig} is a log
-plot. Here, the Bernstein approximation appears to be a linear line
+plot. Here, the Bernstein approximation appears to be  linear 
 which suggests that the convergence is exponential.
 
 
@@ -2418,9 +2418,9 @@ FIGURE: [fig/Bell_convergence_semilogy] Convergence of least square approximatio
 
 The following program computes the order of convergence for
 the sines using the polynomial model (ref{sec:approx:pol:model})
-while the Bernstein approximation is estimates
-in terms of model (ref{sec:approx:exp:model}). We avoid to
-compute estimates for the Taylor and Lagrange approximations as neither
+while the Bernstein approximation is estimated
+in terms of model (ref{sec:approx:exp:model}). We avoid 
+computing estimates for the Taylor and Lagrange approximations as neither
 the log-log plot nor the log plot demonstrated linear behavior.
 
 !bc pycod
@@ -2507,7 +2507,7 @@ where the inner product of two functions $f(x,y)$ and $g(x,y)$ is defined
 completely analogously to the 1D case (ref{fem:approx:LS:innerprod}):
 !bt
 \begin{equation}
-(f,g) = \int_\Omega f(x,y)g(x,y) dx dy
+(f,g) = \int_\Omega f(x,y)g(x,y) dx dy . 
 \end{equation}
 !et
 
@@ -2612,7 +2612,7 @@ $i=p (N_y+1) + q$ or $i=q (N_x+1) + p$.
 
 ===== Example on polynomial basis in 2D =====
 
-Let us again consider approximation with the least squares method, but now
+Let us again consider an approximation with the least squares method, but now
 with basis functions in 2D.
 Suppose we choose $\hat\baspsi_p(x)=x^p$, and try an approximation with
 $N_x=N_y=1$:
@@ -3226,7 +3226,7 @@ find an approximation in the function space
 !bsubex
 Sketch or plot $f(x)$. Think intuitively how an expansion in terms
 of the basis functions of $V$, $\baspsi_0(x)=1$, $\baspsi_1(x)=\sin(\pi x)$,
-can be construction to yield a best approximation to $f$. Or
+can be constructed to yield a best approximation to $f$. Or
 phrased differently, see if you can guess the coefficients $c_0$ and $c_1$
 in the expansion
 
@@ -3352,7 +3352,7 @@ V_2 &= \{1,x,x^2,x^3,\ldots, x^N\}\tp
 !et
 The basis $V_1$ is motivated by the fact that the Taylor polynomial
 approximation to the sine function has only odd powers, while $V_2$
-is motivated by the assumption that also the even powers could
+is motivated by the assumption that including the even powers could
 improve the approximation in a least-squares setting.
 
 Compute the best approximation to $f(x)=\sin(x)$ among all functions
@@ -3438,7 +3438,7 @@ suitable).
 Approximation of a discontinuous (or steep) $f(x)$ by sines,
 results in slow convergence and oscillatory behavior of the
 approximation close to the abrupt changes in $f$.
-This is known as the "Gibb's phenomenon": "http://en.wikipedia.org/wiki/Gibbs_phenomenon".
+This is known as the "Gibb's phenomenon":"http://en.wikipedia.org/wiki/Gibbs_phenomenon".
 !eremarks
 
 !bsol
@@ -3837,7 +3837,7 @@ FIGURE: [fig/tanh_Lagrange_regr_Chebyshev_s20, width=800 frac=1]
 label{ch:approx:fe}
 
 The purpose of this chapter is to use the ideas from the previous
-chapter to approximate functions, but the basis functions are now
+chapter on how to approximate functions, but the basis functions are now
 of finite element type. 
 
 ======= Finite element basis functions =======
@@ -3898,7 +3898,7 @@ $i=0,\ldots,N_n-1$.  Figure
 ref{fem:approx:fe:def:elements:nodes:fig:P1} shows nodes as small
 circular disks and element boundaries as small vertical lines.  Global
 node numbers appear under the nodes, but local node numbers are not
-shown. Since there are two nodes in each elements, the local nodes are
+shown. Since there are two nodes in each element, the local nodes are
 numbered 0 (left) and 1 (right) in each element.
 
 FIGURE: [fig/fe_mesh1D_P1, width=500 frac=0.7] Finite element mesh with 5 elements and 6 nodes. label{fem:approx:fe:def:elements:nodes:fig:P1}
@@ -3912,8 +3912,8 @@ each element has the same length and the distance between nodes is
 constant.  Figure ref{fem:approx:fe:def:elements:nodes:fig:P1} shows
 an example on a uniformly partitioned mesh. The strength of the finite
 element method (in contrast to the finite difference method) is that
-it is equally easy to work with a non-uniformly partitioned mesh as a
-uniformly partitioned one.
+it is just as easy to work with a non-uniformly partitioned mesh in 3D as a
+uniformly partitioned mesh in 1D.
 
 === Example ===
 
@@ -3955,7 +3955,7 @@ is 4, so we could alternatively look up the coordinate as `nodes[4]`.
 
 The numbering of elements and nodes does not need to be regular.
 Figure ref{fem:approx:fe:def:elements:nodes:fig:P1:irregular} shows
-and example corresponding to
+an example corresponding to
 
 !bc pycod
 nodes = [1.5, 5.5, 4.2, 0.3, 2.2, 3.1]
@@ -4002,7 +4002,7 @@ are now defined as follows.
 A visual impression of three such basis functions is given in
 Figure ref{fem:approx:fe:fig:P2}. When solving differential equations,
 we need the derivatives of these basis functions as well, and the
-corresponding derivatives are shown in Figure refref{fem:approx:fe:fig:dP2}.
+corresponding derivatives are shown in Figure ref{fem:approx:fe:fig:dP2}.
 Note that the derivatives are highly discontinuous!
 In these figures,
 the domain $\Omega = [0,1]$ is divided into four equal-sized elements,
@@ -4027,7 +4027,7 @@ by the coordinates of the local nodes in the element.
 
 FIGURE: [fig/phi/mpl_fe_basis_p2_4e_lab, width=600 frac=1]  Illustration of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:P2}
 
-FIGURE: [fig/phi/mpl_fe_dbasis_p2_4e_lab, width=600 frac=1]  Illustration of the derivatives of piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:dP2}
+FIGURE: [fig/phi/mpl_fe_dbasis_p2_4e_lab, width=600 frac=1]  Illustration of the derivatives of the piecewise quadratic basis functions associated with nodes in an element.  label{fem:approx:fe:fig:dP2}
 
 === Properties of $\basphi_i$ ===
 
@@ -4132,7 +4132,7 @@ given by the formula (ref{fem:approx:global:Lagrange:poly}):
 \begin{align*}
 \basphi_3(x) &= \frac{(x-0.25)(x-0.5)}{(0.375-0.25)(0.375-0.5)},\quad x\in\Omega^{(1)}\\
 \basphi_2(x) &= \frac{(x-0.375)(x-0.5)}{(0.25-0.375)(0.25-0.5)},\quad x\in\Omega^{(1)}\\
-\basphi_4(x) &= \frac{(x-0.25)(x-0.375)}{(0.5-0.25)(0.5-0.25)},\quad x\in\Omega^{(1)}
+\basphi_4(x) &= \frac{(x-0.25)(x-0.375)}{(0.5-0.25)(0.5-0.25)},\quad x\in\Omega^{(1)} . 
 \end{align*}
 !et
 
@@ -4221,7 +4221,7 @@ For elements of equal length $h$ the formulas can be simplified to
 1 -
 (x - x_{i})/h,
 & \xno{i} \leq x < \xno{i+1},\\
-0, & x\geq \xno{i+1}
+0, & x\geq \xno{i+1} . 
 \end{array}
 \right.
 label{fem:approx:fe:phi:1:formula2}
@@ -4260,7 +4260,7 @@ elements with two local nodes associated with
 piecewise linear basis functions. Similarly, *quadratic elements* and
 *cubic elements* refer to piecewise quadratic or cubic functions
 over elements with three or four local nodes, respectively.
-Alternative names, frequently used in the following, are P1 elements for linear
+Alternative names, frequently used in the following, are P1 for linear
 elements, P2 for quadratic elements, and so forth: P$d$ signifies
 degree $d$ of the polynomial basis functions.
 
@@ -4686,7 +4686,7 @@ the element length $h=x_R-x_L$.
 
 === Formulas for the element matrix and vector entries ===
 
-Integrating on the reference element is a matter of just changing the
+Integrating over the reference element is a matter of just changing the
 integration variable from $x$ to $X$. Let
 
 !bt
@@ -4711,7 +4711,7 @@ In 2D and 3D, $\dx$ is transformed to $\hbox{det} J\dX$, where $J$ is
 the Jacobian of the mapping from $x$ to $X$. In 1D,
 $\hbox{det} J\dX = \dx/\dX = h/2$. To obtain a uniform
 notation for 1D, 2D, and 3D problems we therefore replace
-$\dx/\dX$ by $\det J$ already now.
+$\dx/\dX$ by $\det J$ now.
 The integration over the reference element is then written as
 
 !bt
@@ -4764,9 +4764,9 @@ polynomials
 
 !bt
 \begin{align}
-\refphi_0(X) &= \half (1 - X)
+\refphi_0(X) &= \half (1 - X) , 
 label{fem:approx:fe:mapping:P1:phi0}\\
-\refphi_1(X) &= \half (1 + X)
+\refphi_1(X) &= \half (1 + X) . 
 label{fem:approx:fe:mapping:P1:phi1}
 \end{align}
 !et
@@ -4774,11 +4774,11 @@ Quadratic polynomials, $d=2$, have the formulas
 
 !bt
 \begin{align}
-\refphi_0(X) &= \half (X-1)X
+\refphi_0(X) &= \half (X-1)X, 
 label{fem:approx:fe:mapping:P2:phi0}\\
-\refphi_1(X) &= 1 - X^2
+\refphi_1(X) &= 1 - X^2, 
 label{fem:approx:fe:mapping:P2:phi1}\\
-\refphi_2(X) &= \half (X+1)X
+\refphi_2(X) &= \half (X+1)X . 
 label{fem:approx:fe:mapping:P2:phi2}
 \end{align}
 !et
@@ -4841,7 +4841,7 @@ using (ref{fem:approx:fe:affine:mapping2}))
 &= \int_{-1}^1 f(x(X))\refphi_0(X)\frac{h}{2} \dX\nonumber\\
 &= \int_{-1}^1 (x_m + \half hX)(1-(x_m + \half hX))
 \half(1-X)\frac{h}{2} \dX \nonumber\\
-&= - \frac{1}{24} h^{3} + \frac{1}{6} h^{2} x_{m} - \frac{1}{12} h^{2} - \half h x_{m}^{2} + \half h x_{m}
+&= - \frac{1}{24} h^{3} + \frac{1}{6} h^{2} x_{m} - \frac{1}{12} h^{2} - \half h x_{m}^{2} + \half h x_{m}, 
 label{fem:approx:fe:intg:ref:be0}\\
 \tilde b^{(e)}_{1}
 &= \int_{-1}^1 f(x(X))\refphi_1(X)\frac{h}{2} \dX\nonumber\\
@@ -5028,7 +5028,7 @@ right-hand side `sympy` may face difficulties with certain types of
 expressions `f`. The result of the integral is then an `Integral`
 object and not a number or expression
 as when symbolic integration is successful.
-It may therefore be wise to introduce a fall back on numerical
+It may therefore be wise to introduce a fall back to the numerical
 integration. The symbolic integration can also spend considerable time
 before reaching an unsuccessful conclusion, so we may also introduce a parameter
 `symbolic` to turn symbolic integration on and off:
@@ -5228,7 +5228,7 @@ The details are found in the `u_glob` function in
 ===== The structure of the coefficient matrix =====
 label{fem:approx:fe:A:structure}
 
-Let us first see how the global matrix looks like if we assemble
+Let us first see how the global matrix looks if we assemble
 symbolic element matrices, expressed in terms of `h`, from
 several elements:
 
@@ -5342,7 +5342,7 @@ A^{(e)} = \frac{h}{30}
 4 & 2 & -1\\
 2 & 16 & 2\\
 -1 & 2 & 4
-\end{array}\right)
+\end{array}\right), 
 \end{equation}
 !et
 and the following global matrix, assembled here from four elements:
@@ -5366,16 +5366,16 @@ A = \frac{h}{30}
   2 & 16 & 2\\0 & 0 & 0 & 0 & 0
   & 0 & - 1 & 2 & 4
 \end{array}
-\right)
+\right) .
 \end{equation}
 !et
-In general, for $i$ odd we have the nonzeroes
+In general, for $i$ odd we have the nonzero elements
 
 !bt
 \begin{equation*} A_{i,i-2} = -1,\quad A_{i-1,i}=2,\quad A_{i,i} = 8,\quad A_{i+1,i}=2,
 \quad A_{i+2,i}=-1,\end{equation*}
 !et
-multiplied by $h/30$, and for $i$ even we have the nonzeros
+multiplied by $h/30$, and for $i$ even we have the nonzero elements
 
 !bt
 \begin{equation*} A_{i-1,i}=2,\quad A_{i,i} = 16,\quad A_{i+1,i}=2,\end{equation*}
@@ -5410,7 +5410,7 @@ approximate(f=x*(1-x)**8, symbolic=False, d=2, N_e=4)
 The quadratic functions are seen to be better than the linear ones for the same
 value of $N$, as we increase $N$. This observation has some generality:
 higher degree is not necessarily better on a coarse mesh, but it is as
-we refine the mesh and the function is properly resolved.
+we refine the mesh and the function becomes properly resolved.
 
 
 FIGURE: [fig/fe_p1_p2_x9_248e, width=800 frac=1.0]  Comparison of the finite element approximations: 4 P1 elements with 5 nodes (upper left), 2 P2 elements with 5 nodes (upper right), 8 P1 elements with 9 nodes (lower left), and 4 P2 elements with 9 nodes (lower right).  label{fem:approx:fe:x9:sin}
@@ -5498,7 +5498,7 @@ only the nonzero entries in the matrix will be stored.
 To solve a system with right-hand side `b` (one-dimensional `numpy`
 array) with a sparse coefficient matrix `A`, we must use some kind of
 a sparse linear system solver. The safest choice is a method based on
-sparse Gaussian elimination. One high-qualify package for
+sparse Gaussian elimination. One high-quality package for
 this purpose if "UMFPACK": "https://en.wikipedia.org/wiki/UMFPACK".
 It is interfaced from SciPy by
 
@@ -5591,7 +5591,7 @@ different, see Section ref{fem:approx:fe:A:structure}.
 The finite difference counterpart to
 (ref{fem:deq:1D:approx:deq:massmat:diffeq2}) is just $u_i=f_i$
 as explained in Section ref{fem:approx:fe:fd:fdproj}.
-To easier compare this result to
+To more easier compare this result to
 the finite element approach to approximating functions, we can rewrite
 the left-hand side of (ref{fem:deq:1D:approx:deq:massmat:diffeq2})
 as
@@ -5844,7 +5844,7 @@ to revise the simple node and element concept presented so far and
 introduce a more powerful terminology. Much literature employs the
 definition of node and element introduced in the previous sections
 so it is important have this knowledge, besides being a good pedagogical
-background from understanding the extended element concept in the following.
+background for understanding the extended element concept in the following.
 
 ===== Cells, vertices, and degrees of freedom =====
 label{fem:approx:fe:element:terminology}
@@ -5884,7 +5884,7 @@ The concept of a *finite element* is now
 
   * a *reference cell* in a local reference coordinate system;
   * a set of *basis functions* $\refphi_i$ defined on the cell;
-  * a set of *degrees of freedom* that uniquely how basis functions
+  * a set of *degrees of freedom* that uniquely determine how basis functions
     from different elements are glued together across element interfaces.
     A common technique is to choose
     the basis functions such that $\refphi_i=1$ for degree of freedom
@@ -5971,7 +5971,7 @@ cells = [[0, 1], [1, 2]]
 dof_map = [[0, 1, 2], [2, 3, 4]]
 !ec
 
-If we would approximate $f$ by piecewise constants, known as
+If we approximate $f$ by piecewise constants, known as
 P0 elements, we simply
 introduce one point or node in an element, preferably $X=0$,
 and define one degree of freedom, which is the function value
@@ -6105,7 +6105,7 @@ where $C$ is a constant depending on $d$ and $\Omega=[0,L]$,
 but not on $h$, and the norm $|f^{(d+1)}|$ is defined through
 
 !bt
-\[ |f^{(d+1)}|^2 = \int_0^L \left(\frac{d^{d+1}f}{dx^{d+1}}\right)^2dx\]
+\[ |f^{(d+1)}|^2 = \int_0^L \left(\frac{d^{d+1}f}{dx^{d+1}}\right)^2dx . \]
 !et
 
 !enotice
@@ -6147,7 +6147,7 @@ The four basis functions can be written in a general form
 !et
 with four coefficients $C_{i,j}$, $j=0,1,2,3$, to be determined for
 each $i$. The constraints
-that basis function number $i$ must be 1 for degree of
+that basis function $i$ must be 1 for degree of
 freedom number $i$ and zero for the other three degrees of freedom,
 gives four equations to determine $C_{i,j}$ for each $i$. In mathematical
 detail,
@@ -6414,7 +6414,7 @@ three degrees of freedom
 that $i$ and $j$ run over. Again, as in 1D, we number the
 local vertices in a cell, starting at 0, and add the entries in
 the element matrix into the global system matrix, exactly as in 1D.
-All details and code appear below.
+All the details and code appear below.
 
 
 
@@ -6431,7 +6431,7 @@ The reference cell in an $(X,Y)$ coordinate system has vertices
 $(0,0)$, $(1,0)$, and $(0,1)$, corresponding to local vertex numbers
 0, 1, and 2, respectively. The P1 element has linear functions
 $\refphi_r(X,Y)$ as basis functions, $r=0,1,2$.
-Since a linear function $\refphi_r(X,Y)$ in 2D is on
+Since a linear function $\refphi_r(X,Y)$ in 2D is of
 the form $C_{r,0} + C_{r,1}X + C_{r,2}Y$, and hence has three
 parameters $C_{r,0}$, $C_{r,1}$, and $C_{r,2}$, we need three
 degrees of freedom. These are in general taken as the function values at a
@@ -6492,7 +6492,7 @@ as *simplex* cells (the geometry) or *simplex* elements (the geometry,
 basis functions, degrees of freedom, etc.). The plural forms
 "simplices": "http://en.wikipedia.org/wiki/Simplex" and
 simplexes are
-also a much used shorter terms when referring to this type of cells or elements.
+also  much used shorter terms when referring to this type of cells or elements.
 The side of a simplex is called a *face*, while the tetrahedron also
 has *edges*.
 
@@ -6622,11 +6622,11 @@ With the affine mapping
 the area or volume of the cell in the physical coordinate system.
 
 __Remark.__
-Observe that finite elements in 2D and 3D builds on the same
+Observe that finite elements in 2D and 3D build on the same
 *ideas* and *concepts* as in 1D, but there is simply much
 more to compute because the
 specific mathematical formulas in 2D and 3D are more complicated
-and the book keeping with dof maps also gets more complicated.
+and the book-keeping with dof maps also gets more complicated.
 The manual work is tedious, lengthy, and error-prone
 so automation by the computer is a must.
 
@@ -6661,17 +6661,17 @@ idx{FEniCS}
 Our previous programs for doing 1D approximation by finite element
 basis function had a focus on all the small details needed to compute
 the solution. When going to 2D and 3D, the basic algorithms are the
-same, but the amount of computational details with basis functions,
+same, but the amount of computational detail with basis functions,
 reference functions, mappings, numerical integration and so on,
 becomes overwhelming because of all the flexibility and choices of
 elements. For this purpose, we *must*, except in the simplest cases
 with P1 elements, use some well-developed, existing computer
 library. 
-===== Example on approximation in 2D using FEniCS =====
+===== Example of approximation in 2D using FEniCS =====
 label{fem:approx:fenics:2D}
 
 Here we shall use "FEniCS": "http://fenicsproject.org", which
-is a free, open finite element package for advanced computations. The
+is a free, open source finite element package for advanced computations. The
 package can be programmed in C++ or Python. How it works is best
 illustrated by an example.
 
@@ -6808,7 +6808,7 @@ label{fem:approx:fenics:2D:2}
 
 === Interpolation and projection ===
 
-The operation with defining `a`, `L`, and solving for a `u` is so
+The operation of defining `a`, `L`, and solving for a `u` is so
 common that it has been implemented in the FEniCS function `project`:
 
 !bc pycod
@@ -7317,7 +7317,7 @@ that if $f\in V$, then $u=f$).
 label{fem:approx:fe:exer:1D:trapez}
 file=fe_P1_trapez
 
-Consider approximation of some $f(x)$ on an interval $\Omega$ using
+Consider the approximation of some $f(x)$ on an interval $\Omega$ using
 the least squares or Galerkin methods with P1 elements. Derive
 the element matrix and vector using the
 Trapezoidal rule (ref{fem:approx:fe:numint1:trapez}) for calculating
@@ -7403,13 +7403,13 @@ We shall approximate the function
 where $n\in\Integer$ and $\epsilon \geq 0$.
 
 !bsubex
-Plot $f(x)$ for $n=1,2,3$ and find the wave length of the function.
+Plot $f(x)$ for $n=1,2,3$ and find the wavelength of the function.
 !esubex
 
 ## lambda = 1/n
 
 !bsubex
-We want to use $N_P$ elements per wave length. Show that the number
+We want to use $N_P$ elements per wavelength. Show that the number
 of elements is then $nN_P$.
 !esubex
 
@@ -7417,8 +7417,8 @@ of elements is then $nN_P$.
 
 !bsubex
 The critical quantity for accuracy is the number of elements per
-wave length, not the element size in itself. It therefore suffices
-to study an $f$ with just one wave length in $\Omega = [0,1]$.
+wavelength, not the element size in itself. It therefore suffices
+to study an $f$ with just one wavelength in $\Omega = [0,1]$.
 Set $\epsilon = 0.5$.
 
 Run the least squares or projection/Galerkin method for
@@ -7447,7 +7447,7 @@ label{fem:approx:fe:exer:3D:approx3D}
 file=approx3D
 
 Extend the "`approx2D.py`": "${fem_src}/approx2D.py" code to 3D
-applying ideas from Section ref{fem:approx:3D:global}.
+by applying ideas from Section ref{fem:approx:3D:global}.
 Construct some 3D problem to make a test function for the
 implementation.
 

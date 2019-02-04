@@ -1,0 +1,19 @@
+
+
+Last ned og installer Miniconda fra https://conda.io/miniconda.html:
+
+  wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+  bash Miniconda3-latest-Linux-x86_64.sh
+
+Deretter kjører du:
+
+  conda create -n fem-book -c conda-forge doconce fenics matplotlib scipy sympy=1.1
+
+Dette vil lage et nytt environment 'fem-book' som du kan bruke ved å kjøre:
+
+  source activate fem-book
+
+Du kan deaktivere det ved å kjøre:
+
+  source deactivate
+

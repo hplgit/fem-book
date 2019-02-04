@@ -5,7 +5,7 @@ def comparison_plot2D(
     u, f,           # Function expressions in x and y
     value=0.5,      # x or y equals this value
     variation='y',  # independent variable
-    n=100,          # no if intervals in plot
+    n=100,          # no of intervals in plot
     tol=1E-8,       # tolerance for points inside the domain
     plottitle='',   # heading in plot
     filename='tmp', # stem of filename

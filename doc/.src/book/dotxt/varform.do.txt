@@ -1168,8 +1168,8 @@ Writing also $u$ on the same form $u=B+F$, $F\in V$, we have
 
 !bt
 \begin{align*}
-a(B+E,v) &= L(v)\quad\forall v\in V,\\
-a(B+F,v) &= L(v)\quad\forall v\in V\tp
+a(u_e, v) &= a(B+E,v) &= L(v)\quad\forall v\in V,\\
+a(u, v) &= a(B+F,v) &= L(v)\quad\forall v\in V\tp
 \end{align*}
 !et
 Since these are two variational statements in the same space, we
