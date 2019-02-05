@@ -1,0 +1,36 @@
+
+It is now three years since Hans Petter asked me to help him finalize this book on finite 
+element methods. This book is also in many ways similar to Hans Petter's first book 
+on finite element methods and the software library Diffpack - the first book that
+I read about finite element methods in the late ninties and it was precious to me
+for many years. In particular, it combined interesting mathematics and skillfull
+programming with detailed examples that one could play around with to learn.     
+The Diffpack book had widespread influence as can be seen in many of today's
+finite element packages. 
+
+A lot has changed since the ninties: There are many powerful and successful
+open source packages for finite elements in particular and scientific computing
+in general. Students today are not expected to develop code from scratch, but rather
+to use and combine the tools out there. The programming enviroment is also different
+at first glance, e.g., by a user-friendly Python interface. However, the advanced
+and hybrid programming paradigm that enable such user-friendly scripting also 
+poses challenges as there are many layers of code in different languages that
+combine both languages, code generation and symbolic and numerical mathematics.    
+As such, there is for teaching material that explore the possibilities of these new tools. 
+ 
+This book is born out of a desire to explain the powerful combination of explicit mathematics
+where symbolic and numerical approaches are combined. Furthermore, the aim is to provide
+all details, although only in simplifed examples. Finally, Hans Petter always wanted to lower
+the bar for introducing finite elements by avoiding the theoretical issues with Sobolev spaces etc.   
+
+========= Acknowledgement =========
+Many people have helped with this book over the years as it evolved from the Diffpack book to 
+the current book which is very very different. Unfortuntately, I did not discuss this process
+with Hans Petter and neither did we discuss the acknowledgedment on his behalf.  
+
+Johannes Ring and  Kristian Hustad have helped with many technical issues regarding DocOnce.  
+I have received comments, advice and corrections from  Yapi Achou, Svein Linge, Matthew Moelter, and  Murilo Moreira.   
+
+Finally, I would like to thank Nancy, Natalie and Niklas for their support and for providing excellent 
+working conditions during the writing of this book. 
+

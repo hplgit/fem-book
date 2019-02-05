@@ -20,6 +20,8 @@ label{ch:preface}
 
 # #include "dotxt/preface.do.txt"
 
+# #include "dotxt/preface2.do.txt"
+
 !split
 TOC: on
 
