@@ -4,7 +4,7 @@ label{ch:overview}
 
 FIGURE: [fig/dolfin_mesh.png, width=500 frac=0.8] Example on a complicated domain for solving PDEs. label{overview:meshex}
 
-The finite element method is a versatile approach to construct
+The finite element method is a rich and versatile approach to construct
 computational schemes to solve any partial differential equation on
 any domain in any dimension. The method may at first glance appear
 cumbersome and even unnatural as it relies on variational formulations
@@ -47,7 +47,11 @@ is convenient to implement.
 However, for a unstructured, ``complicated'' domain
 as shown in Figure ref{overview:meshex},
 we would need to be careful when placing
-points and evaluating stencils and functions.  Both accuracy and efficiency
+points and evaluating stencils and functions.   
+In particular, 
+it will be difficult to evaluate the stencil near the dolphin in 
+ref{overview:meshex} because some points will be on the inside and some outside on the outside of the dolphin. 
+Both accuracy and efficiency
 may easily be sacrificed by a reckless implementation.
 
 In general, a domain like the one represented in Figure

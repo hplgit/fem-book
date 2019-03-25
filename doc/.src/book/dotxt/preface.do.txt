@@ -23,7 +23,7 @@ trend that will continue in the future. Hence, it is not our aim  to present
 the established mathematical theory here, but rather 
 provide the reader with the gory details of the implementation in an
 explicit, user-friendly and simplistic manner to lower the threshold
-of usage. At the same time, we want to present provide tools for verification 
+of usage. At the same time, we want to present tools for verification 
 and debugging that are applicable in general situations such 
 that the method can be used safely beyond what is theoretically proven. 
 

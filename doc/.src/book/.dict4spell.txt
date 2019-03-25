@@ -148,4 +148,16 @@ Hypre
 Trilinos
 PETSc
 LU
+Kristian
+Hustad
+DocOnce
+Yapi
+Achou
+Svein
+Linge
+Moelter
+Murilo
+Moreira
+Niklas
+scrutinous
 
