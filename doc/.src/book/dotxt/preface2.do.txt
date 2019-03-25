@@ -23,7 +23,7 @@ However, the advanced
 and hybrid programming paradigm that enable such user-friendly scripting also 
 poses challenges as there are many layers of code in different languages that
 combine both languages, code generation and symbolic and numerical mathematics.    
-As such, there is a for teaching material that 
+As such, there is a need for teaching material that 
 expose the internals of a finite element engine and allow for scrutinous investigation 
 in a clean environment. In particular, Hans Petter always wanted to lower
 the bar for introducing finite elements by avoiding the theoretical issues with Sobolev spaces etc.   
