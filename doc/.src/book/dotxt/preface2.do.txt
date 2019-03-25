@@ -38,3 +38,6 @@ I have received comments, advice and corrections from  Yapi Achou, Svein Linge, 
 Finally, I would like to thank Nancy, Natalie and Niklas for their support and for providing excellent 
 working conditions during the writing of this book. 
 
+\noindent
+{\it Oslo, March 2019}  \hfill  {\it Kent-Andre Mardal}
+
