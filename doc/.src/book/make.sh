@@ -35,7 +35,7 @@ if [ "$spellcheck" != 'nospell' ]; then
     cd ..
 fi
 
-system preprocess -DFORMAT=pdflatex ../chapters/newcommands_keep.p.tex > newcommands_keep.tex
+system preprocess -DFORMAT=pdflatex newcommands_keep.p.tex > newcommands_keep.tex
 doconce replace 'newcommand{\E}' 'renewcommand{\E}' newcommands_keep.tex
 doconce replace 'newcommand{\I}' 'renewcommand{\I}' newcommands_keep.tex
 
