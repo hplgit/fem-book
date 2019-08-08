@@ -185,8 +185,7 @@ gradient family.
 
 All program and data files referred to in this book are available
 from the book's primary web site:
-URL: "http://hplgit.github.io/fem-book/doc/web/".
-
+URL: "http://folk.uio.no/kent-and/hpl-fem-book/doc/web"
 # #if FORMAT in ("latex", "pdflatex")
 \vspace{1cm}
 
