@@ -187,7 +187,7 @@ Hence, a finite element formulation (or a weak formulation) of
 the Poisson problem that works on any mesh $\Omega$ can be written
 in terms of solving the problem:
 !bt
-\[ \int_\Omega\nabla u\cdot\nabla vd\dx = \int_\Omega fv\dx\tp\]
+\[ \int_\Omega\nabla u\cdot\nabla v \dx = \int_\Omega fv\dx\tp\]
 !et
 By varying the trial and test spaces we obtain different stencils,
 some of which will be identical to finite difference schemes on
@@ -261,7 +261,7 @@ by the test function $v$ as well, such that the entire Poisson equation
 is transformed to
 
 !bt
-\[ \int_\Omega\nabla u\cdot\nabla vd\dx = \int_\Omega fv\dx\tp\]
+\[ \int_\Omega\nabla u\cdot\nabla v \dx = \int_\Omega fv\dx\tp\]
 !et
 This statement is assumed valid for all test functions $v$ in some
 function space $V$ of polynomials. The right-hand side expression is

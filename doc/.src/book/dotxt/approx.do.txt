@@ -596,7 +596,7 @@ pairwise ``components'' (values), with summation replaced by integration:
 \tp
 \end{equation*}
 !et
-To fix the integration domain, we let $f(x)$ and $\baspsi_i(x)$
+To fix the integration domain, we let $f(x)$ and $g(x)$
 be defined for a domain $\Omega\subset\Real$.
 The inner product of two functions $f(x)$ and $g(x)$ is then
 

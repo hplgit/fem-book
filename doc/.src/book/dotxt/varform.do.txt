@@ -5649,7 +5649,7 @@ formula
 
 !bt
 \begin{equation}
-\basphi_I (x,y) = \half\Delta \left( \alpha_I + \beta_Ix
+\basphi_I (x,y) = $\frac{1}{2 \Delta}$ \left( \alpha_I + \beta_Ix
 + \gamma_Iy\right),
 label{fem:approx:fe:2D:phi:I}
 \end{equation}
