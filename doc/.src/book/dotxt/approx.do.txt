@@ -2750,7 +2750,7 @@ b = \left[\begin{array}{c}
 \quad c = \left[
 \begin{array}{r}
 -\frac{1}{9}\\
-- \frac{2}{3}
+- \frac{2}{3}\\
 \frac{4}{3} \\
  8
 \end{array}\right]
