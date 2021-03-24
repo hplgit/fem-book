@@ -2,7 +2,7 @@
 ========= Quick overview of the finite element method =========
 label{ch:overview}
 
-FIGURE: [fig/dolfin_mesh.png, width=500 frac=0.8] Example on a complicated domain for solving PDEs. label{overview:meshex}
+FIGURE: [fig/dolfin_mesh.png, width=500 frac=0.8] Example of a complicated domain for solving PDEs. label{overview:meshex}
 
 The finite element method is a rich and versatile approach to construct
 computational schemes to solve any partial differential equation on
@@ -279,7 +279,7 @@ solve(a == L, u, bc)
 where `bc` holds information about boundary conditions. This information
 is connected to information about the triangulation, the *mesh*.
 Assuming $u=0$ on the boundary, we can in FEniCS generate a triangular
-mesh over a rectangular domain $[-1,-1]\times [-1,1]$ as follows:
+mesh over a rectangular domain $[-1,1]\times [-1,1]$ as follows:
 
 !bc pycod
 mesh = RectangleMesh(Point(-1, -1), Point(1, 1), 10, 10)
