@@ -5499,7 +5499,7 @@ To solve a system with right-hand side `b` (one-dimensional `numpy`
 array) with a sparse coefficient matrix `A`, we must use some kind of
 a sparse linear system solver. The safest choice is a method based on
 sparse Gaussian elimination. One high-quality package for
-this purpose if "UMFPACK": "https://en.wikipedia.org/wiki/UMFPACK".
+this purpose is "UMFPACK": "https://en.wikipedia.org/wiki/UMFPACK".
 It is interfaced from SciPy by
 
 !bc pycod
@@ -6014,9 +6014,9 @@ N_e = 10
 vertices, cells, dof_map = mesh_uniform(N_e, d=3, Omega=[0,1])
 phi = [basis(len(dof_map[e])-1) for e in range(N_e)]
 A, b = assemble(vertices, cells, dof_map, phi, f)
-c = np.linalg.solve(A, b)
+c = A.LUsolve(b)
 # Make very fine mesh and sample u(x) on this mesh for plotting
-x_u, u = u_glob(c, vertices, cells, dof_map,
+x_u, u, _ = u_glob(c, cells, vertices, dof_map,
                 resolution_per_element=51)
 plot(x_u, u)
 !ec
@@ -6061,7 +6061,7 @@ in the `fe_approx1D_numint` module does this for $u(x)$ and returns
 an array `x` with coordinates and an array `u` with the $u$ values:
 
 !bc pycod
-x, u = u_glob(c, vertices, cells, dof_map,
+x, u, nodes = u_glob(c, cells, vertices, dof_map,
               resolution_per_element=101)
 e = f(x) - u
 !ec
@@ -6153,7 +6153,7 @@ gives four equations to determine $C_{i,j}$ for each $i$. In mathematical
 detail,
 !bt
 \begin{align*}
-\refphi_0 (-1) &= 1,\quad \refphi_0 (1)=\refphi_0'(-1)=\refphi_i' (1)=0,\\
+\refphi_0 (-1) &= 1,\quad \refphi_0 (1)=\refphi_0'(-1)=\refphi_0' (1)=0,\\
 \refphi_1' (-1) &= 1,\quad \refphi_1 (-1)=\refphi_1(1)=\refphi_1' (1)=0,\\
 \refphi_2 (1) &= 1,\quad \refphi_2 (-1)=\refphi_2'(-1)=\refphi_2' (1)=0,\\
 \refphi_3' (1) &= 1,\quad \refphi_3 (-1)=\refphi_3'(-1)=\refphi_3 (1)=0

@@ -1179,10 +1179,10 @@ can subtract them and use the bilinear property of $a(\cdot,\cdot)$:
 \begin{align*}
 a(B+E,v) - a(B+F, v) &= L(v) - L(v)\\
 a(B+E-(B+F),v) &= 0\\
-a(E-F),v) &= 0
+a(E-F,v) &= 0
 \end{align*}
 !et
-If $a(E-F),v) = 0$ for all $v$ in $V$, then $E-F$ must be zero everywhere
+If $a(E-F,v) = 0$ for all $v$ in $V$, then $E-F$ must be zero everywhere
 in the domain, i.e., $E=F$. Or in other words: $u=\uex$. This proves
 that the exact solution is recovered if $\uex - B$ lies in $V$., i.e.,
 can be expressed as $\sum_{j\in\If}d_j\baspsi_j$ where $\{\baspsi_j\}_{j\in\If}$
@@ -3641,7 +3641,7 @@ $B'=C\basphi_0' + D\basphi_{N_n-1}'$.
 
 Most of the terms in the linear system have already been computed
 so we concentrate on the new contribution from the boundary function.
-The integral $C\int_0^L \basphi_{0}'(x))\basphi_i'(x) \dx$, associated
+The integral $C\int_0^L \basphi_{0}'(x)\basphi_i'(x) \dx$, associated
 with the Dirichlet condition in $x=0$,  can only get
 a nonzero contribution from the first cell,
 $\Omega^{(0)}=[\xno{0},\xno{1}]$
@@ -3650,7 +3650,7 @@ $\basphi_{0}'(x)\basphi_i'(x) \dx \neq 0$ only for $i=0$ and $i=1$
 (but node $i=0$ is excluded from the formulation),
 since $\basphi_{i}=0$ on the first cell if $i>1$.
 With a similar reasoning we realize that
-$D\int_0^L \basphi_{N_n-1}'(x))\basphi_i'(x) \dx$ can only get
+$D\int_0^L \basphi_{N_n-1}'(x)\basphi_i'(x) \dx$ can only get
 a nonzero contribution from the last cell.
 From the explanations of the
 calculations in ref[Section ref{fem:approx:global:linearsystem}][ in
@@ -5748,7 +5748,7 @@ and general results for elliptic PDEs.
 
 __Remark.__
 The mathematical theory of finite element methods is primarily
-developed for to stationary PDE problems of elliptic nature whose
+developed for stationary PDE problems of elliptic nature whose
 solutions are smooth. However, such problems can be solved with the
 desired accuracy by most numerical methods and pose no difficulties.
 Time-dependent problems, on the other hand, easily lead to
@@ -6445,7 +6445,7 @@ using a central difference scheme.
 Finite difference upwinding is difficult to express using finite
 elements methods, but it is closely to adding some kind of diffusion
 to the scheme.  A clever method of adding diffusion is the so-called
-*Petrov-Galerkin* method.  The Galerkin approximation consist of
+*Petrov-Galerkin* method.  The Galerkin approximation consists of
 finding $u\in V$ such that for all $v\in V$ the variational
 formulation is satisfied.
 
@@ -6612,7 +6612,7 @@ the boundary layer is not artificially smoothed.
    such that the Dirichlet values are imposed on the unknown parameters.
  * Neumann conditions, involving prescribed values of the derivative
    (or flux) of $u$, are incorporated in boundary terms arising from
-   integrating terms with second-order derivatives by part.
+   integrating terms with second-order derivatives by parts.
    Forgetting to account for the boundary terms implies the
    condition $\partial u/\partial n=0$ at parts of the boundary where
    no Dirichlet condition is set.

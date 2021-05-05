@@ -52,3 +52,10 @@ Trash
 *.pvd
 *.vtu
 *.tar.gz
+/doc/.src/book/src/approx_fenics_by_P2.png
+/doc/.src/book/src/approx_fenics_by_P2.pdf
+/doc/.src/book/src/approx_fenics_by_P1.png
+/doc/.src/book/src/approx_fenics_by_P1.pdf
+/doc/.src/book/src/approx_fenics_by_P0.png
+/doc/.src/book/src/approx_fenics_by_P0.pdf
+/doc/.src/book/answers/ch4/

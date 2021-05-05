@@ -85,17 +85,9 @@ def element_vector(f, phi, Omega_e, symbolic=True, numint=None):
                 h = Omega_e[1] - Omega_e[0]
                 detJ = h/2
                 f_func = sym.lambdify([X], f, 'mpmath')
-                # phi is function
-                integrand = lambda X: f_func(X)*phi[r](X)*detJ
-                #integrand = integrand.subs(sym.pi, np.pi)
-                # integrand may still contain symbols like sym.pi that
-                # prevents numerical evaluation...
-                try:
-                    I = mpmath.quad(integrand, [-1, 1])
-                except Exception as e:
-                    print('Could not integrate f*phi[r] numerically:')
-                    print(e)
-                    sys.exit(0)
+                phi_func = sym.lambdify([X], phi[r], 'mpmath')
+                integrand = lambda X: f_func(X)*phi_func(X)*detJ
+                I = mpmath.quad(integrand, [-1, 1])
             b_e[r] = I
     else:
         #phi = [sym.lambdify([X], phi[r]) for r in range(n)]
@@ -249,10 +241,11 @@ def approximate(f, symbolic=False, d=1, N_e=4, numint=None,
             title += ', exact integration'
         else:
             title += ', integration: %s' % numint_name
-        x_u, u, _ = u_glob(c, vertices, cells, dof_map,
+        x_u, u, _ = u_glob(c, cells, vertices, dof_map,
                            resolution_per_element=51)
         x_f = np.linspace(Omega[0], Omega[1], 10001) # mesh for f
-        import scitools.std as plt
+        import matplotlib.pyplot as plt
+        # import scitools.std as plt
         plt.plot(x_u, u, '-',
                  x_f, f(x_f), '--')
         plt.legend(['u', 'f'])
@@ -285,7 +278,12 @@ def u_glob(U, cells, vertices, dof_map, resolution_per_element=51):
         u_cell = 0  # u(x) over this cell
         for r in range(d+1):
             i = dof_map[e][r]  # global dof number
-            u_cell += U[i]*phi[r](X)
+            try:
+                u_cell += U[i]*phi[r](X)
+            except TypeError as error:
+                # if d=0, phi will not be symbolic
+                print(error, '  <--caught!')
+                u_cell += U[i]*phi[r]*np.ones_like(X)
         u_patches.append(u_cell)
         # Compute global coordinates of local nodes,
         # assuming all dofs corresponds to values at nodes
@@ -297,6 +295,7 @@ def u_glob(U, cells, vertices, dof_map, resolution_per_element=51):
     x = np.concatenate(x_patches)
     u = np.concatenate(u_patches)
     return x, u, nodes
+
 
 if __name__ == '__main__':
     pass
